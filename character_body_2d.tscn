@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://6k211e174sio"]
+
+[ext_resource type="Script" uid="uid://drkkfs3v6wr5y" path="res://character_body_2d.gd" id="1_ghijl"]
+[ext_resource type="Texture2D" uid="uid://dq0q0s6shlr2p" path="res://icon.svg" id="2_44cfe"]
+[ext_resource type="Script" uid="uid://cb1i42pvlsmvf" path="res://movement_component.gd" id="3_dd465"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7yr4s"]
+size = Vector2(129, 127)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_o6v1h"]
+radius = 61.008198
+
+[node name="Player" type="CharacterBody2D" unique_id=84994044]
+script = ExtResource("1_ghijl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1608910991]
+position = Vector2(-0.5, 0.5)
+shape = SubResource("RectangleShape2D_7yr4s")
+
+[node name="Visuals" type="Node2D" parent="." unique_id=95643105]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals" unique_id=756750501]
+
+[node name="Sprite2D" type="Sprite2D" parent="Visuals" unique_id=1993543808]
+texture = ExtResource("2_44cfe")
+
+[node name="Components" type="Node" parent="." unique_id=1665519693]
+
+[node name="HealthComponent" type="Node" parent="Components" unique_id=1530187044]
+
+[node name="MovementComponent" type="Node" parent="Components" unique_id=586301046]
+script = ExtResource("3_dd465")
+move_speed = 650.0
+acceleration = 1600.0
+friction = 1400.0
+
+[node name="AbilityComponent" type="Node" parent="Components" unique_id=1338266210]
+
+[node name="StatusComponent" type="Node" parent="Components" unique_id=433472165]
+
+[node name="WeaponPivot" type="Node2D" parent="." unique_id=1051153276]
+
+[node name="WeaponComponent" type="Node2D" parent="WeaponPivot" unique_id=426544236]
+
+[node name="Sprite2D" type="Sprite2D" parent="WeaponPivot/WeaponComponent" unique_id=178012776]
+
+[node name="Muzzle" type="Marker2D" parent="WeaponPivot/WeaponComponent" unique_id=1326252875]
+
+[node name="Hurtbox" type="Area2D" parent="." unique_id=394146905]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=1842521062]
+shape = SubResource("CircleShape2D_o6v1h")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1414159496]
