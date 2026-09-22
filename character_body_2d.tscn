@@ -3,6 +3,9 @@
 [ext_resource type="Script" uid="uid://drkkfs3v6wr5y" path="res://character_body_2d.gd" id="1_ghijl"]
 [ext_resource type="Texture2D" uid="uid://dq0q0s6shlr2p" path="res://icon.svg" id="2_44cfe"]
 [ext_resource type="Script" uid="uid://cb1i42pvlsmvf" path="res://movement_component.gd" id="3_dd465"]
+[ext_resource type="Script" uid="uid://bw5jcrgosia6v" path="res://weapon_component.gd" id="4_44cfe"]
+[ext_resource type="Script" uid="uid://do1hlsrh8b7rc" path="res://fire_cooldown_timer.gd" id="5_dd465"]
+[ext_resource type="Script" uid="uid://d38ryedjwx2sh" path="res://reload_timer.gd" id="6_lhvu3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7yr4s"]
 size = Vector2(129, 127)
@@ -41,10 +44,20 @@ friction = 1400.0
 [node name="WeaponPivot" type="Node2D" parent="." unique_id=1051153276]
 
 [node name="WeaponComponent" type="Node2D" parent="WeaponPivot" unique_id=426544236]
+script = ExtResource("4_44cfe")
+fire_rate = 15.0
 
 [node name="Sprite2D" type="Sprite2D" parent="WeaponPivot/WeaponComponent" unique_id=178012776]
 
 [node name="Muzzle" type="Marker2D" parent="WeaponPivot/WeaponComponent" unique_id=1326252875]
+
+[node name="FireCooldownTimer" type="Timer" parent="WeaponPivot/WeaponComponent" unique_id=35502368]
+one_shot = true
+script = ExtResource("5_dd465")
+
+[node name="ReloadTimer" type="Timer" parent="WeaponPivot/WeaponComponent" unique_id=750251779]
+one_shot = true
+script = ExtResource("6_lhvu3")
 
 [node name="Hurtbox" type="Area2D" parent="." unique_id=394146905]
 
