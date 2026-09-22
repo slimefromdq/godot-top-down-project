@@ -7,6 +7,7 @@
 script = ExtResource("2_md0e3")
 stopping_distance = 300.0
 shooting_distance = 700.0
+enemy_size = 0.5
 
 [node name="HealthComponent" parent="Components" parent_id_path=PackedInt32Array(1665519693) index="0" unique_id=1530187044]
 max_health = 80.0
