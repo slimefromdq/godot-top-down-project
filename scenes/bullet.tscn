@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://d4l8hqtrdwthh"]
+
+[ext_resource type="Script" uid="uid://be6334p6t0wvl" path="res://bullet.gd" id="1_y25gk"]
+[ext_resource type="Texture2D" uid="uid://bc2hfpnfy6685" path="res://bullettransparent.png" id="2_l5glv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nw6xe"]
+size = Vector2(13, 3.5)
+
+[node name="Bullet" type="Area2D" unique_id=1369947273]
+collision_layer = 8
+collision_mask = 21
+script = ExtResource("1_y25gk")
+bullet_velocity = 500.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=364454243]
+shape = SubResource("RectangleShape2D_nw6xe")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1719381592]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("2_l5glv")
+
+[node name="ExpiryTimer" type="Timer" parent="." unique_id=1652596812]
+wait_time = 2.0
+one_shot = true
+autostart = true
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="ExpiryTimer" to="." method="_on_expiry_timer_timeout"]

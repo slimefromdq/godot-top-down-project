@@ -1,12 +1,17 @@
 extends Node2D
 class_name WeaponComponent
 
+@export_flags_2d_physics var projectile_collision_mask: int
 @export var mag_capacity: int = 30
 @export_range(0.01, 100.0, 0.01) var fire_rate: float = 0.8
 @export var reload_duration: float = 1.0
 @export var damage: float = 20.0
 @export var projectile_speed: float = 1000.0
+@export_range(0.1, 3.0, 0.1) var projectile_scale: float = 1.0
 
+@onready var muzzle: Marker2D = $Muzzle
+
+var bullet_scene: PackedScene = preload("res://scenes/bullet.tscn")
 
 # These paths are relative to WeaponComponent, because the timers are its children.
 @onready var fire_cooldown_timer: FireCooldownTimer = $FireCooldownTimer
@@ -52,7 +57,15 @@ func _fire() -> void:
 	fire_cooldown_timer.start(1.0 / fire_rate)
 
 	# This confirms the state loop works before projectile spawning is added.
-	print("Fired. Ammo: %d/%d" % [current_ammo, mag_capacity])
+	var new_bullet = bullet_scene.instantiate()
+	get_tree().current_scene.add_child(new_bullet)
+	new_bullet.collision_mask = projectile_collision_mask
+	new_bullet.global_position = muzzle.global_position
+	new_bullet.global_rotation = muzzle.global_rotation
+	new_bullet.bullet_direction = muzzle.global_transform.x.normalized()
+	new_bullet.scale = Vector2.ONE * projectile_scale
+	new_bullet.bullet_velocity = projectile_speed
+	new_bullet.bullet_damage = damage
 
 
 func try_reload() -> void:
