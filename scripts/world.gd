@@ -2,6 +2,22 @@ extends Node
 
 const WINDOWED_SIZE := Vector2i(1280, 720)
 
+@onready var player: Actor = $Player
+@onready var game_over_screen: GameOverScreen = $GameOverScreen
+
+
+func _ready() -> void:
+	# The world owns both the player and the UI, so it connects them. The
+	# player only reports that it died; it never reaches into the UI itself.
+	player.health_component.died.connect(_on_player_died)
+
+
+func _on_player_died() -> void:
+	# Pausing stops every node whose process_mode is Inherit or Pausable:
+	# enemies, bullets and timers freeze. GameOverScreen is set to Always.
+	get_tree().paused = true
+	game_over_screen.show_screen()
+
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not event is InputEventKey:

@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://6k211e174sio" path="res://scenes/player.tscn" id="2_k0juu"]
 [ext_resource type="PackedScene" uid="uid://dlrkaas51pc3b" path="res://scenes/wall.tscn" id="3_71j4m"]
 [ext_resource type="PackedScene" uid="uid://byp4feihr3pos" path="res://scenes/enemy.tscn" id="4_k0juu"]
+[ext_resource type="PackedScene" uid="uid://d2gq8vn5o0xk4" path="res://scenes/game_over_screen.tscn" id="5_gover"]
 
 [node name="World" type="Node" unique_id=260588280]
 script = ExtResource("1_4wyf3")
@@ -16,3 +17,5 @@ position = Vector2(257, 169)
 
 [node name="Enemy" parent="." unique_id=1641887658 instance=ExtResource("4_k0juu")]
 position = Vector2(875, 446)
+
+[node name="GameOverScreen" parent="." unique_id=2046518337 instance=ExtResource("5_gover")]
