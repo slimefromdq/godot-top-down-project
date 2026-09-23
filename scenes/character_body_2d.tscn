@@ -69,7 +69,7 @@ position = Vector2(70, 0)
 scale = Vector2(0.4, 0.4)
 script = ExtResource("5_x5gf8")
 projectile_collision_mask = 17
-fire_rate = 1.3
+fire_rate = 3.0
 projectile_speed = 1500.0
 projectile_scale = 1.5
 

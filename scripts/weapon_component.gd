@@ -83,5 +83,6 @@ func _on_reload_timer_timeout() -> void:
 	# There is no reserve-ammo system yet, so a completed reload fills the
 	# magazine. Reserve ammo can be accounted for here later.
 	current_ammo = mag_capacity
+	ammo_changed.emit(current_ammo, mag_capacity)
 	is_reloading = false
 	print("Reload complete. Ammo: %d/%d" % [current_ammo, mag_capacity])
