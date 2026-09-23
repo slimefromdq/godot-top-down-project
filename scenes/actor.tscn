@@ -1,12 +1,10 @@
-[gd_scene format=3 uid="uid://6k211e174sio"]
+[gd_scene format=3 uid="uid://b4n7r2kx9qm5w"]
 
-[ext_resource type="Script" uid="uid://drkkfs3v6wr5y" path="res://scripts/character_body_2d.gd" id="1_cibgq"]
+[ext_resource type="Script" uid="uid://c7qk2m4xw8n3a" path="res://scripts/actor.gd" id="1_actor"]
 [ext_resource type="Texture2D" uid="uid://dq0q0s6shlr2p" path="res://icon.svg" id="2_mfdas"]
 [ext_resource type="Script" uid="uid://be63uic2wcldj" path="res://scripts/health_component.gd" id="3_8nwgm"]
 [ext_resource type="Script" uid="uid://cb1i42pvlsmvf" path="res://scripts/movement_component.gd" id="4_7pl6r"]
-[ext_resource type="PackedScene" uid="uid://cyyaiv1fa5ptb" path="res://scenes/health_bar.tscn" id="5_8nwgm"]
 [ext_resource type="Script" uid="uid://bw5jcrgosia6v" path="res://scripts/weapon_component.gd" id="5_x5gf8"]
-[ext_resource type="PackedScene" uid="uid://cu7jdhqryuynq" path="res://scenes/ammo_label.tscn" id="6_8nwgm"]
 [ext_resource type="Texture2D" uid="uid://c2t3hdedhl6m1" path="res://sprites/guntransparent.png" id="6_42hdn"]
 [ext_resource type="Script" uid="uid://do1hlsrh8b7rc" path="res://scripts/fire_cooldown_timer.gd" id="7_el37e"]
 [ext_resource type="Script" uid="uid://d38ryedjwx2sh" path="res://scripts/reload_timer.gd" id="8_inrnk"]
@@ -18,9 +16,9 @@ size = Vector2(129, 127)
 [sub_resource type="CircleShape2D" id="CircleShape2D_o6v1h"]
 radius = 61.008198
 
-[node name="Player" type="CharacterBody2D" unique_id=84994044 groups=["player"]]
+[node name="Actor" type="CharacterBody2D" unique_id=84994044]
 collision_layer = 2
-script = ExtResource("1_cibgq")
+script = ExtResource("1_actor")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1608910991]
 position = Vector2(-0.5, 0.5)
@@ -48,27 +46,12 @@ friction = 1400.0
 
 [node name="StatusComponent" type="Node" parent="Components" unique_id=433472165]
 
-[node name="HealthBar" parent="." unique_id=321437189 node_paths=PackedStringArray("health_component") instance=ExtResource("5_8nwgm")]
-offset_left = -31.0
-offset_top = -98.0
-offset_right = 29.0
-offset_bottom = -71.0
-health_component = NodePath("../Components/HealthComponent")
-
-[node name="AmmoLabel" parent="." unique_id=1461201986 node_paths=PackedStringArray("weapon_component") instance=ExtResource("6_8nwgm")]
-offset_left = 41.0
-offset_top = -96.0
-offset_right = 81.0
-offset_bottom = -73.0
-weapon_component = NodePath("../WeaponPivot/WeaponComponent")
-
 [node name="WeaponPivot" type="Node2D" parent="." unique_id=1051153276]
 
 [node name="WeaponComponent" type="Node2D" parent="WeaponPivot" unique_id=426544236]
 position = Vector2(70, 0)
 scale = Vector2(0.4, 0.4)
 script = ExtResource("5_x5gf8")
-projectile_collision_mask = 17
 fire_rate = 3.0
 projectile_speed = 1500.0
 projectile_scale = 1.5
@@ -88,16 +71,10 @@ one_shot = true
 script = ExtResource("8_inrnk")
 
 [node name="Hurtbox" type="Area2D" parent="." unique_id=394146905 node_paths=PackedStringArray("health_component")]
-collision_layer = 4
+collision_layer = 0
 collision_mask = 0
 script = ExtResource("9_wqsd8")
 health_component = NodePath("../Components/HealthComponent")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=1842521062]
 shape = SubResource("CircleShape2D_o6v1h")
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1414159496]
-
-[connection signal="health_changed" from="Components/HealthComponent" to="." method="_on_health_component_health_changed"]
-[connection signal="health_changed" from="Components/HealthComponent" to="Components/HealthComponent" method="_on_health_changed"]
-[connection signal="ammo_changed" from="WeaponPivot/WeaponComponent" to="WeaponPivot/WeaponComponent" method="_on_ammo_changed"]

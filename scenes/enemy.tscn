@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://byp4feihr3pos"]
 
-[ext_resource type="PackedScene" uid="uid://6k211e174sio" path="res://scenes/character_body_2d.tscn" id="1_7p1mj"]
+[ext_resource type="PackedScene" uid="uid://b4n7r2kx9qm5w" path="res://scenes/actor.tscn" id="1_7p1mj"]
 [ext_resource type="Script" uid="uid://7cif2hiixy1q" path="res://scenes/enemy.gd" id="2_md0e3"]
 
 [node name="Enemy" unique_id=84994044 instance=ExtResource("1_7p1mj")]
@@ -24,5 +24,5 @@ damage = 10.0
 projectile_speed = 700.0
 projectile_scale = 1.0
 
-[node name="Hurtbox" parent="." index="6" unique_id=394146905]
+[node name="Hurtbox" parent="." index="4" unique_id=394146905]
 collision_layer = 16

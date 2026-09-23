@@ -1,26 +1,14 @@
-extends CharacterBody2D
+extends Actor
 
 @export var stopping_distance: float = 300.0
 @export var shooting_distance: float = 700.0
 @export_range(0.1, 1.0, 0.05) var enemy_size: float = 0.65
 
-@onready var movement_component: MovementComponent = \
-	$Components/MovementComponent
-
-@onready var weapon_component: WeaponComponent = \
-	$WeaponPivot/WeaponComponent
-
-@onready var health_component: HealthComponent = \
-	$Components/HealthComponent
-
-@onready var weapon_pivot: Node2D = $WeaponPivot
-
 var player: CharacterBody2D
 
 
 func _ready() -> void:
-	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
-	health_component.died.connect(_on_died)
+	super()
 	scale = Vector2.ONE * enemy_size
 	player = get_tree().get_first_node_in_group("player")
 
@@ -57,6 +45,3 @@ func _physics_process(delta: float) -> void:
 	if weapon_component.current_ammo <= 0:
 		weapon_component.try_reload()
 
-
-func _on_died() -> void:
-	queue_free()

@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://6k211e174sio"]
+
+[ext_resource type="PackedScene" uid="uid://b4n7r2kx9qm5w" path="res://scenes/actor.tscn" id="1_actor"]
+[ext_resource type="Script" uid="uid://drkkfs3v6wr5y" path="res://scripts/player.gd" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://cyyaiv1fa5ptb" path="res://scenes/health_bar.tscn" id="3_health"]
+[ext_resource type="PackedScene" uid="uid://cu7jdhqryuynq" path="res://scenes/ammo_label.tscn" id="4_ammo"]
+
+[node name="Player" unique_id=84994044 groups=["player"] instance=ExtResource("1_actor")]
+collision_mask = 3
+script = ExtResource("2_player")
+
+[node name="WeaponComponent" parent="WeaponPivot" parent_id_path=PackedInt32Array(1051153276) index="0" unique_id=426544236]
+projectile_collision_mask = 17
+
+[node name="Hurtbox" parent="." index="4" unique_id=394146905]
+collision_layer = 4
+
+[node name="HealthBar" parent="." unique_id=321437189 node_paths=PackedStringArray("health_component") instance=ExtResource("3_health")]
+offset_left = -31.0
+offset_top = -98.0
+offset_right = 29.0
+offset_bottom = -71.0
+health_component = NodePath("../Components/HealthComponent")
+
+[node name="AmmoLabel" parent="." unique_id=1461201986 node_paths=PackedStringArray("weapon_component") instance=ExtResource("4_ammo")]
+offset_left = 41.0
+offset_top = -96.0
+offset_right = 81.0
+offset_bottom = -73.0
+weapon_component = NodePath("../WeaponPivot/WeaponComponent")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1414159496]
