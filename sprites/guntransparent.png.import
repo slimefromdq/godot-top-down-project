@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bc2hfpnfy6685"
-path="res://.godot/imported/bullettransparent.png-02b68f1c783f94872eaaf9cfcbcc9b52.ctex"
+uid="uid://c2t3hdedhl6m1"
+path="res://.godot/imported/guntransparent.png-0fdc52178d610e74fc59f99006fff6a1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://bullettransparent.png"
-dest_files=["res://.godot/imported/bullettransparent.png-02b68f1c783f94872eaaf9cfcbcc9b52.ctex"]
+source_file="res://sprites/guntransparent.png"
+dest_files=["res://.godot/imported/guntransparent.png-0fdc52178d610e74fc59f99006fff6a1.ctex"]
 
 [params]
 

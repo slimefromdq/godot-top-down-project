@@ -1,14 +1,14 @@
 [gd_scene format=3 uid="uid://6k211e174sio"]
 
-[ext_resource type="Script" uid="uid://drkkfs3v6wr5y" path="res://character_body_2d.gd" id="1_cibgq"]
+[ext_resource type="Script" uid="uid://drkkfs3v6wr5y" path="res://scripts/character_body_2d.gd" id="1_cibgq"]
 [ext_resource type="Texture2D" uid="uid://dq0q0s6shlr2p" path="res://icon.svg" id="2_mfdas"]
-[ext_resource type="Script" uid="uid://be63uic2wcldj" path="res://health_component.gd" id="3_8nwgm"]
-[ext_resource type="Script" uid="uid://cb1i42pvlsmvf" path="res://movement_component.gd" id="4_7pl6r"]
-[ext_resource type="Script" uid="uid://bw5jcrgosia6v" path="res://weapon_component.gd" id="5_x5gf8"]
-[ext_resource type="Texture2D" uid="uid://c2t3hdedhl6m1" path="res://guntransparent.png" id="6_42hdn"]
-[ext_resource type="Script" uid="uid://do1hlsrh8b7rc" path="res://fire_cooldown_timer.gd" id="7_el37e"]
-[ext_resource type="Script" uid="uid://d38ryedjwx2sh" path="res://reload_timer.gd" id="8_inrnk"]
-[ext_resource type="Script" uid="uid://dmrfv1kntx1v6" path="res://hurtbox.gd" id="9_wqsd8"]
+[ext_resource type="Script" uid="uid://be63uic2wcldj" path="res://scripts/health_component.gd" id="3_8nwgm"]
+[ext_resource type="Script" uid="uid://cb1i42pvlsmvf" path="res://scripts/movement_component.gd" id="4_7pl6r"]
+[ext_resource type="Script" uid="uid://bw5jcrgosia6v" path="res://scripts/weapon_component.gd" id="5_x5gf8"]
+[ext_resource type="Texture2D" uid="uid://c2t3hdedhl6m1" path="res://sprites/guntransparent.png" id="6_42hdn"]
+[ext_resource type="Script" uid="uid://do1hlsrh8b7rc" path="res://scripts/fire_cooldown_timer.gd" id="7_el37e"]
+[ext_resource type="Script" uid="uid://d38ryedjwx2sh" path="res://scripts/reload_timer.gd" id="8_inrnk"]
+[ext_resource type="Script" uid="uid://dmrfv1kntx1v6" path="res://scripts/hurtbox.gd" id="9_wqsd8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7yr4s"]
 size = Vector2(129, 127)
