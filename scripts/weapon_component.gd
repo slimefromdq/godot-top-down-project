@@ -23,6 +23,7 @@ var current_ammo: int
 var is_reloading: bool = false
 var is_disarmed: bool = false
 
+signal ammo_changed(current: float, capacity: float)
 
 func _ready() -> void:
 	# Initialize this after the scene loads so an Inspector override of
@@ -51,6 +52,7 @@ func try_fire() -> void:
 
 func _fire() -> void:
 	current_ammo -= 1
+	ammo_changed.emit(current_ammo, mag_capacity)
 
 	# fire_rate is expressed as shots per second, so its reciprocal is the
 	# number of seconds that must pass before another shot is allowed.
