@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dq0q0s6shlr2p" path="res://icon.svg" id="2_mfdas"]
 [ext_resource type="Script" uid="uid://be63uic2wcldj" path="res://scripts/health_component.gd" id="3_8nwgm"]
 [ext_resource type="Script" uid="uid://cb1i42pvlsmvf" path="res://scripts/movement_component.gd" id="4_7pl6r"]
+[ext_resource type="PackedScene" uid="uid://cyyaiv1fa5ptb" path="res://scenes/health_bar.tscn" id="5_8nwgm"]
 [ext_resource type="Script" uid="uid://bw5jcrgosia6v" path="res://scripts/weapon_component.gd" id="5_x5gf8"]
 [ext_resource type="Texture2D" uid="uid://c2t3hdedhl6m1" path="res://sprites/guntransparent.png" id="6_42hdn"]
 [ext_resource type="Script" uid="uid://do1hlsrh8b7rc" path="res://scripts/fire_cooldown_timer.gd" id="7_el37e"]
@@ -46,6 +47,13 @@ friction = 1400.0
 
 [node name="StatusComponent" type="Node" parent="Components" unique_id=433472165]
 
+[node name="HealthBar" parent="." unique_id=321437189 node_paths=PackedStringArray("health_component") instance=ExtResource("5_8nwgm")]
+offset_left = -31.0
+offset_top = -98.0
+offset_right = 29.0
+offset_bottom = -71.0
+health_component = NodePath("../Components/HealthComponent")
+
 [node name="WeaponPivot" type="Node2D" parent="." unique_id=1051153276]
 
 [node name="WeaponComponent" type="Node2D" parent="WeaponPivot" unique_id=426544236]
@@ -81,3 +89,6 @@ health_component = NodePath("../Components/HealthComponent")
 shape = SubResource("CircleShape2D_o6v1h")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1414159496]
+
+[connection signal="health_changed" from="Components/HealthComponent" to="." method="_on_health_component_health_changed"]
+[connection signal="health_changed" from="Components/HealthComponent" to="Components/HealthComponent" method="_on_health_changed"]

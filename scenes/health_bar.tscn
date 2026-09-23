@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cyyaiv1fa5ptb"]
+
+[ext_resource type="Script" uid="uid://csgbeie5i2y70" path="res://scenes/health_bar.gd" id="1_1bvlm"]
+
+[node name="HealthBar" type="ProgressBar" unique_id=1704249897]
+custom_minimum_size = Vector2(60, 8)
+offset_right = 60.0
+offset_bottom = 27.0
+show_percentage = false
+script = ExtResource("1_1bvlm")
