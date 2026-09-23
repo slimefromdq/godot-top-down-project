@@ -1,17 +1,7 @@
-extends CharacterBody2D
+extends Actor
 
-@onready var movement_component: MovementComponent = $Components/MovementComponent
-	
-@onready var weapon_component: WeaponComponent = $WeaponPivot/WeaponComponent
+var mouse_global_position
 
-@onready var health_component: HealthComponent = $Components/HealthComponent
-
-func _ready() -> void:
-	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
-	health_component.died.connect(_on_died)
-
-func _on_died() -> void:
-	queue_free()
 
 func _physics_process(delta: float) -> void:
 	var input_direction := Input.get_vector(
@@ -31,19 +21,18 @@ func _physics_process(delta: float) -> void:
 	# velocity so collision behavior remains consistent.
 	move_and_slide()
 
-var mouse_global_position
 
 func _process(_delta: float) -> void:
 	# Holding the action supports automatic fire; WeaponComponent owns the
 	# cooldown, so input cannot force shots faster than the configured rate.
 	mouse_global_position = get_global_mouse_position()
-	$WeaponPivot.look_at(mouse_global_position)
-	
+	weapon_pivot.look_at(mouse_global_position)
+
 	if Input.is_action_pressed("fire"):
 		weapon_component.try_fire()
 
 	if Input.is_action_just_pressed("reload"):
 		weapon_component.try_reload()
-		
+
 	if Input.is_action_just_pressed("ui_accept"):
-		health_component.take_damage(20.0)	
+		health_component.take_damage(20.0)
