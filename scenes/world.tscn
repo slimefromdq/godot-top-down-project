@@ -5,6 +5,9 @@
 [ext_resource type="PackedScene" uid="uid://dlrkaas51pc3b" path="res://scenes/wall.tscn" id="3_71j4m"]
 [ext_resource type="PackedScene" uid="uid://byp4feihr3pos" path="res://scenes/enemy.tscn" id="4_k0juu"]
 [ext_resource type="PackedScene" uid="uid://d2gq8vn5o0xk4" path="res://scenes/game_over_screen.tscn" id="5_gover"]
+[ext_resource type="PackedScene" path="res://scenes/training_dummy.tscn" id="6_dummy"]
+[ext_resource type="PackedScene" path="res://scenes/hud/ability_bar.tscn" id="7_bar"]
+[ext_resource type="Script" path="res://scripts/audio/music_request.gd" id="8_music"]
 
 [node name="World" type="Node" unique_id=260588280]
 script = ExtResource("1_4wyf3")
@@ -19,3 +22,16 @@ position = Vector2(257, 169)
 position = Vector2(875, 446)
 
 [node name="GameOverScreen" parent="." unique_id=2046518337 instance=ExtResource("5_gover")]
+
+[node name="TrainingDummy" parent="." instance=ExtResource("6_dummy")]
+position = Vector2(-700, -150)
+
+[node name="UnkillableDummy" parent="." instance=ExtResource("6_dummy")]
+position = Vector2(-700, 150)
+can_die = false
+
+[node name="AbilityBar" parent="." node_paths=PackedStringArray("actor") instance=ExtResource("7_bar")]
+actor = NodePath("../Player")
+
+[node name="LevelMusic" type="Node" parent="."]
+script = ExtResource("8_music")

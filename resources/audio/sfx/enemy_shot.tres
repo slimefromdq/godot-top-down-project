@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="SoundCue" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_6m1fr"]
+[ext_resource type="AudioStream" path="res://audio/sfx/enemy_shot.wav" id="2_wnnng"]
+
+[resource]
+script = ExtResource("1_6m1fr")
+streams = Array[AudioStream]([ExtResource("2_wnnng")])
+volume_db = -6.0
+pitch_min = 0.95
+pitch_max = 1.05

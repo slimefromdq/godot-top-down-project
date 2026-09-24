@@ -2,6 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://b4n7r2kx9qm5w" path="res://scenes/actor.tscn" id="1_7p1mj"]
 [ext_resource type="Script" uid="uid://7cif2hiixy1q" path="res://scenes/enemy.gd" id="2_md0e3"]
+[ext_resource type="Resource" path="res://resources/visuals/enemy_visuals.tres" id="3_visuals"]
+[ext_resource type="Resource" path="res://resources/audio/enemy_audio.tres" id="4_audio"]
 
 [node name="Enemy" unique_id=84994044 instance=ExtResource("1_7p1mj")]
 script = ExtResource("2_md0e3")
@@ -9,12 +11,18 @@ stopping_distance = 300.0
 shooting_distance = 700.0
 enemy_size = 0.5
 
+[node name="Visuals" parent="." index="1" unique_id=95643105]
+profile = ExtResource("3_visuals")
+
 [node name="HealthComponent" parent="Components" parent_id_path=PackedInt32Array(1665519693) index="0" unique_id=1530187044]
 max_health = 80.0
 
 [node name="MovementComponent" parent="Components" parent_id_path=PackedInt32Array(1665519693) index="1" unique_id=586301046]
 move_speed = 250.0
 acceleration = 800.0
+
+[node name="AudioComponent" parent="Components" parent_id_path=PackedInt32Array(1665519693) index="4" unique_id=1907751327]
+profile = ExtResource("4_audio")
 
 [node name="WeaponComponent" parent="WeaponPivot" parent_id_path=PackedInt32Array(1051153276) index="0" unique_id=426544236]
 projectile_collision_mask = 5

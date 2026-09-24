@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="PackedScene" path="res://effects/overdrive_aura.tscn" id="1_r00g3"]
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="2_0eetw"]
+
+[resource]
+script = ExtResource("2_0eetw")
+id = &"overdrive"
+display_name = "Overdrive"
+duration = 4.0
+stat_multipliers = Dictionary[StringName, float]({
+&"fire_rate": 1.75,
+&"move_speed": 1.25
+})
+attached_vfx = ExtResource("1_r00g3")
+body_tint = Color(1, 0.6, 0.15, 0.3)

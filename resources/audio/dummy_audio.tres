@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_lp3d3"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="2_ouain"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="3_075cs"]
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="4_vk6pr"]
+
+[resource]
+script = ExtResource("4_vk6pr")
+cues = Dictionary[StringName, ExtResource("1_lp3d3")]({
+&"death": ExtResource("3_075cs"),
+&"hurt": ExtResource("2_ouain")
+})
