@@ -3,6 +3,15 @@ extends Actor
 var mouse_global_position
 
 
+# Actor's default is queue_free(), but the player's Camera2D is a child, so
+# freeing the player would snap the view away. Hide it and stop its input
+# instead; the world pauses the game and shows the game-over screen.
+func _on_died() -> void:
+	hide()
+	set_physics_process(false)
+	set_process(false)
+
+
 func _physics_process(delta: float) -> void:
 	var input_direction := Input.get_vector(
 		"move_left",

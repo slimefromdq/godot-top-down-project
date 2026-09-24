@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://d2gq8vn5o0xk4"]
+
+[ext_resource type="Script" uid="uid://bfl2u1tghctkd" path="res://scenes/game_over_screen.gd" id="1_gover"]
+
+[node name="GameOverScreen" type="CanvasLayer" unique_id=1904417731]
+process_mode = 3
+layer = 10
+script = ExtResource("1_gover")
+
+[node name="Dim" type="ColorRect" parent="." unique_id=1288203655]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=530611902]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1740338120]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=871224519]
+layout_mode = 2
+theme_override_font_sizes/font_size = 96
+text = "YOU DIED"
+horizontal_alignment = 1
+
+[node name="RestartButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1377093388]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 72)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 36
+text = "Restart"
