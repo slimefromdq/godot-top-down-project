@@ -14,7 +14,10 @@ The project currently has:
 - Ammo, fire cooldown, and reload behavior.
 - A basic ranged enemy that follows and shoots the player.
 - Collision layers for the world, characters, hurtboxes, and projectiles.
-- A small test world with a player, enemy, wall, and camera.
+- A small test world with a player, enemy, wall, training dummies, and camera.
+- A first hero kit: rapid-fire rifle, skillshot, dash, buff, and click-cast ability (see `docs/HERO_KIT.md`).
+- Status effects (buffs/debuffs) with stat multipliers and visuals.
+- Reusable, profile-driven visuals and audio components with a music manager (see `docs/VISUALS_AND_AUDIO.md`).
 
 Before adding large amounts of content, the next milestone should turn this prototype into a stable vertical slice.
 
@@ -71,7 +74,7 @@ Goal: create a reliable, testable combat loop before expanding the content.
 - [ ] Add factions/teams to actors, hurtboxes, and projectiles.
 - [ ] Replace projectile setup fields with `ProjectileData` resources.
 - [ ] Add projectile hit data: damage, knockback, critical hit, source, and tags.
-- [ ] Add health signals for `health_changed`, `damaged`, `healed`, and `died`.
+- [x] Add health signals for `health_changed`, `damaged`, `healed`, and `died`.
 - [ ] Add invulnerability windows and optional armor/resistance hooks.
 - [ ] Add player HUD: health, ammo/reload, ability slots, cooldowns, and wave state.
 - [ ] Add pause, restart, victory, and defeat flow.
@@ -87,7 +90,7 @@ Done when:
 
 Goal: make abilities reusable across heroes, enemies, elites, bosses, and items.
 
-- [ ] Create an `AbilityController` with configurable slots and input bindings.
+- [x] Create an `AbilityController` with configurable slots and input bindings.
 - [ ] Create an `AbilityComponent` base with cooldown, charges, cast time, targeting, cancel, and activation signals.
 - [ ] Support targeting modes: self, aimed direction, cursor point, nearest target, and placed area.
 - [ ] Add reusable effect components: damage, heal, dash, knockback, shield, spawn projectile, spawn area, and apply status.
@@ -98,7 +101,7 @@ Goal: make abilities reusable across heroes, enemies, elites, bosses, and items.
 
 First ability set:
 
-- [ ] Dash: directional movement, brief invulnerability, trail, and impact-safe collision.
+- [x] Dash: directional movement, brief invulnerability, trail, and impact-safe collision.
 - [ ] Grenade: aimed arc or target point, explosion radius, damage, and knockback.
 - [ ] Barrier: temporary shield or placed projectile blocker.
 - [ ] Ultimate: radial projectile burst or high-impact area strike.

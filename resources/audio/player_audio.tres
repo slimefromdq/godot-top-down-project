@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_grvmp"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/rifle_shot.tres" id="2_ip1su"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="3_5mvr7"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="4_yqbrk"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/reload.tres" id="5_subyi"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/dry_fire.tres" id="6_dxijs"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="7_k3ocd"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/skillshot.tres" id="8_qr24m"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/dash.tres" id="9_xghmo"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/overdrive.tres" id="10_xw5d8"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/zap.tres" id="11_p5b1p"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/kill_chime.tres" id="12_cheww"]
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="13_ke7pw"]
+
+[resource]
+script = ExtResource("13_ke7pw")
+cues = Dictionary[StringName, ExtResource("1_grvmp")]({
+&"ability_failed": ExtResource("7_k3ocd"),
+&"arc_zap": ExtResource("11_p5b1p"),
+&"death": ExtResource("4_yqbrk"),
+&"dry_fire": ExtResource("6_dxijs"),
+&"fire": ExtResource("2_ip1su"),
+&"hurt": ExtResource("3_5mvr7"),
+&"overdrive": ExtResource("10_xw5d8"),
+&"phase_dash": ExtResource("9_xghmo"),
+&"piercing_lance": ExtResource("8_qr24m"),
+&"reload": ExtResource("5_subyi")
+})
+kill_sound = ExtResource("12_cheww")

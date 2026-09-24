@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_oxv4s"]
+[ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="2_c1280"]
+[ext_resource type="PackedScene" path="res://effects/muzzle_flash.tscn" id="3_vt1sw"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="4_pmurl"]
+[ext_resource type="PackedScene" path="res://effects/spawn_puff.tscn" id="5_hcmva"]
+[ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="6_jhhpb"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="7_vohtl"]
+
+[sub_resource type="Resource" id="Resource_ym21y"]
+script = ExtResource("1_oxv4s")
+effect_scene = ExtResource("2_c1280")
+align_to_direction = false
+flash_color = Color(1, 1, 1, 0.9)
+flash_duration = 0.08
+
+[sub_resource type="Resource" id="Resource_dd886"]
+script = ExtResource("1_oxv4s")
+effect_scene = ExtResource("3_vt1sw")
+tint = Color(1, 0.5, 0.5, 1)
+
+[sub_resource type="Resource" id="Resource_32f4s"]
+script = ExtResource("1_oxv4s")
+effect_scene = ExtResource("4_pmurl")
+align_to_direction = false
+screen_shake = 0.3
+
+[sub_resource type="Resource" id="Resource_r67q7"]
+script = ExtResource("1_oxv4s")
+effect_scene = ExtResource("5_hcmva")
+align_to_direction = false
+tint = Color(1, 0.5, 0.5, 1)
+
+[resource]
+script = ExtResource("7_vohtl")
+body_tint = Color(1, 0.25, 0.2, 0.55)
+cues = Dictionary[StringName, ExtResource("1_oxv4s")]({
+&"death": SubResource("Resource_32f4s"),
+&"fire": SubResource("Resource_dd886"),
+&"hurt": SubResource("Resource_ym21y"),
+&"spawn": SubResource("Resource_r67q7")
+})

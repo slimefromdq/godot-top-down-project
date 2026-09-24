@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="SoundCue" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_ctib4"]
+[ext_resource type="AudioStream" path="res://audio/sfx/overdrive.wav" id="2_okhes"]
+
+[resource]
+script = ExtResource("1_ctib4")
+streams = Array[AudioStream]([ExtResource("2_okhes")])
+volume_db = -4.0
+pitch_min = 1.0
+pitch_max = 1.0

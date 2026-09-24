@@ -1,0 +1,75 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/training_dummy.gd" id="1_dummy"]
+[ext_resource type="Texture2D" uid="uid://dq0q0s6shlr2p" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Script" path="res://scripts/visuals/visuals_component.gd" id="3_vis"]
+[ext_resource type="Resource" path="res://resources/visuals/dummy_visuals.tres" id="4_visprofile"]
+[ext_resource type="Script" uid="uid://be63uic2wcldj" path="res://scripts/health_component.gd" id="5_health"]
+[ext_resource type="Script" path="res://scripts/combat/status_effect_component.gd" id="6_status"]
+[ext_resource type="Script" path="res://scripts/audio/audio_component.gd" id="7_audio"]
+[ext_resource type="Resource" path="res://resources/audio/dummy_audio.tres" id="8_audioprofile"]
+[ext_resource type="Script" uid="uid://dmrfv1kntx1v6" path="res://scripts/hurtbox.gd" id="9_hurtbox"]
+[ext_resource type="PackedScene" uid="uid://cyyaiv1fa5ptb" path="res://scenes/health_bar.tscn" id="10_bar"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(80, 110)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hurt"]
+radius = 55.0
+
+[node name="TrainingDummy" type="StaticBody2D"]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_dummy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Visuals" type="Node2D" parent="."]
+script = ExtResource("3_vis")
+profile = ExtResource("4_visprofile")
+
+[node name="Sprite2D" type="Sprite2D" parent="Visuals"]
+scale = Vector2(0.7, 0.9)
+texture = ExtResource("2_icon")
+
+[node name="Components" type="Node" parent="."]
+
+[node name="HealthComponent" type="Node" parent="Components" node_paths=PackedStringArray("status_component")]
+script = ExtResource("5_health")
+max_health = 300.0
+status_component = NodePath("../StatusComponent")
+
+[node name="StatusComponent" type="Node" parent="Components"]
+script = ExtResource("6_status")
+
+[node name="AudioComponent" type="Node" parent="Components"]
+script = ExtResource("7_audio")
+profile = ExtResource("8_audioprofile")
+
+[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("health_component", "status_component")]
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("9_hurtbox")
+health_component = NodePath("../Components/HealthComponent")
+status_component = NodePath("../Components/StatusComponent")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("CircleShape2D_hurt")
+
+[node name="HealthBar" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("10_bar")]
+offset_left = -40.0
+offset_top = -90.0
+offset_right = 40.0
+offset_bottom = -80.0
+health_component = NodePath("../Components/HealthComponent")
+
+[node name="DpsLabel" type="Label" parent="."]
+offset_left = -60.0
+offset_top = -124.0
+offset_right = 60.0
+offset_bottom = -94.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+text = "DPS 0"
+horizontal_alignment = 1

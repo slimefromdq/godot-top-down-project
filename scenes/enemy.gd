@@ -23,7 +23,9 @@ func _physics_process(delta: float) -> void:
 	var direction_to_player := offset_to_player.normalized()
 
 	weapon_pivot.look_at(player.global_position)
+	aim_direction = direction_to_player
 
+	move_direction = direction_to_player if distance_to_player > stopping_distance else Vector2.ZERO
 	if distance_to_player > stopping_distance:
 		velocity = movement_component.get_velocity(
 			velocity,

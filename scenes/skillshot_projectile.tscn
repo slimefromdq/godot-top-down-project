@@ -1,0 +1,62 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://be6334p6t0wvl" path="res://scripts/bullet.gd" id="1_proj"]
+[ext_resource type="Texture2D" uid="uid://bc2hfpnfy6685" path="res://sprites/bullettransparent.png" id="2_tex"]
+[ext_resource type="PackedScene" path="res://effects/skillshot_impact.tscn" id="3_hit"]
+[ext_resource type="PackedScene" path="res://effects/skillshot_impact.tscn" id="4_wall"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/wall_hit.tres" id="6_wallsfx"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_proj"]
+radius = 16.0
+height = 70.0
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_trail"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.85, 0.6, 1, 0.9, 0.4, 0.1, 1, 0)
+
+[node name="SkillshotProjectile" type="Area2D"]
+collision_layer = 8
+collision_mask = 17
+script = ExtResource("1_proj")
+bullet_velocity = 1400.0
+bullet_damage = 60.0
+pierce = 3
+knockback = 700.0
+hit_effect = ExtResource("3_hit")
+wall_effect = ExtResource("4_wall")
+wall_sound = ExtResource("6_wallsfx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_proj")
+
+[node name="Trail" type="CPUParticles2D" parent="."]
+material = SubResource("CanvasItemMaterial_add")
+amount = 40
+lifetime = 0.3
+direction = Vector2(-1, 0)
+spread = 12.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 20.0
+initial_velocity_max = 80.0
+scale_amount_min = 4.0
+scale_amount_max = 9.0
+color_ramp = SubResource("Gradient_trail")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.85, 0.55, 1, 1)
+material = SubResource("CanvasItemMaterial_add")
+scale = Vector2(0.55, 0.4)
+texture = ExtResource("2_tex")
+
+[node name="ExpiryTimer" type="Timer" parent="."]
+wait_time = 0.8
+one_shot = true
+autostart = true
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="ExpiryTimer" to="." method="_on_expiry_timer_timeout"]

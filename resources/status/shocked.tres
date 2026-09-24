@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="PackedScene" path="res://effects/shocked_sparks.tscn" id="1_ommum"]
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="2_jkqu7"]
+
+[resource]
+script = ExtResource("2_jkqu7")
+id = &"shocked"
+display_name = "Shocked"
+stat_multipliers = Dictionary[StringName, float]({
+&"damage_taken": 1.25,
+&"move_speed": 0.5
+})
+attached_vfx = ExtResource("1_ommum")
+body_tint = Color(0.4, 0.85, 1, 0.35)

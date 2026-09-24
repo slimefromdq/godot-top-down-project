@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/one_shot_effect.gd" id="1_fx"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_0"]
+offsets = PackedFloat32Array(0.0, 0.5, 1.0)
+colors = PackedColorArray(1, 1, 0.7, 1, 1, 0.85, 0.2, 1, 1, 0.7, 0, 0)
+
+[node name="KillConfirm" type="Node2D"]
+script = ExtResource("1_fx")
+lifetime = 1.2
+
+[node name="Stars" type="CPUParticles2D" parent="."]
+material = SubResource("CanvasItemMaterial_add")
+emitting = false
+amount = 18
+lifetime = 0.9
+one_shot = true
+explosiveness = 1.0
+local_coords = false
+direction = Vector2(1, 0)
+spread = 180.0
+gravity = Vector2(0, -150)
+initial_velocity_min = 120
+initial_velocity_max = 300
+damping_min = 250
+damping_max = 350
+scale_amount_min = 3
+scale_amount_max = 6
+color_ramp = SubResource("Gradient_0")
