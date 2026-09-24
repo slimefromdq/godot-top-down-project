@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="VisualProfile" format=3]
+[gd_resource type="Resource" script_class="VisualProfile" format=3 uid="uid://b1i1bn4o2ycno"]
 
-[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_ydo8y"]
+[ext_resource type="Script" uid="uid://csa0nd6f6od0s" path="res://scripts/visuals/visual_cue.gd" id="1_ydo8y"]
 [ext_resource type="PackedScene" path="res://effects/muzzle_flash.tscn" id="2_5f4dj"]
 [ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="3_0lh55"]
 [ext_resource type="PackedScene" path="res://effects/skillshot_cast.tscn" id="4_q2tqf"]
@@ -12,50 +12,11 @@
 [ext_resource type="PackedScene" path="res://effects/spawn_puff.tscn" id="10_o35k7"]
 [ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="11_pewgk"]
 [ext_resource type="PackedScene" path="res://effects/kill_confirm.tscn" id="12_jh0ps"]
-[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="13_w1ukg"]
-
-[sub_resource type="Resource" id="Resource_r2ru6"]
-script = ExtResource("1_ydo8y")
-flash_color = Color(1, 0.25, 0.25, 0.9)
-flash_duration = 0.15
-screen_shake = 0.35
-
-[sub_resource type="Resource" id="Resource_kjvl3"]
-script = ExtResource("1_ydo8y")
-effect_scene = ExtResource("2_5f4dj")
-screen_shake = 0.04
-
-[sub_resource type="Resource" id="Resource_apxuj"]
-script = ExtResource("1_ydo8y")
-flash_color = Color(1, 1, 1, 0.25)
+[ext_resource type="Script" uid="uid://ddytdyue2svwr" path="res://scripts/visuals/visual_profile.gd" id="13_w1ukg"]
 
 [sub_resource type="Resource" id="Resource_m02gu"]
 script = ExtResource("1_ydo8y")
 effect_scene = ExtResource("3_0lh55")
-
-[sub_resource type="Resource" id="Resource_q6guo"]
-script = ExtResource("1_ydo8y")
-effect_scene = ExtResource("4_q2tqf")
-flash_color = Color(0.8, 0.5, 1, 0.5)
-screen_shake = 0.25
-
-[sub_resource type="Resource" id="Resource_rndlb"]
-script = ExtResource("1_ydo8y")
-effect_scene = ExtResource("5_1m4qv")
-attach_to_actor = true
-
-[sub_resource type="Resource" id="Resource_ur3jk"]
-script = ExtResource("1_ydo8y")
-effect_scene = ExtResource("6_kbgtc")
-align_to_direction = false
-
-[sub_resource type="Resource" id="Resource_tie3j"]
-script = ExtResource("1_ydo8y")
-effect_scene = ExtResource("7_7evxf")
-align_to_direction = false
-flash_color = Color(1, 0.8, 0.3, 0.8)
-flash_duration = 0.25
-screen_shake = 0.2
 
 [sub_resource type="Resource" id="Resource_v7sod"]
 script = ExtResource("1_ydo8y")
@@ -67,16 +28,55 @@ script = ExtResource("1_ydo8y")
 effect_scene = ExtResource("9_npa0q")
 screen_shake = 0.15
 
-[sub_resource type="Resource" id="Resource_phsl7"]
-script = ExtResource("1_ydo8y")
-effect_scene = ExtResource("10_o35k7")
-align_to_direction = false
-
 [sub_resource type="Resource" id="Resource_1i5oq"]
 script = ExtResource("1_ydo8y")
 effect_scene = ExtResource("11_pewgk")
 align_to_direction = false
 screen_shake = 0.8
+
+[sub_resource type="Resource" id="Resource_kjvl3"]
+script = ExtResource("1_ydo8y")
+effect_scene = ExtResource("2_5f4dj")
+screen_shake = 0.04
+
+[sub_resource type="Resource" id="Resource_r2ru6"]
+script = ExtResource("1_ydo8y")
+flash_color = Color(1, 0.25, 0.25, 0.9)
+flash_duration = 0.15
+screen_shake = 0.35
+
+[sub_resource type="Resource" id="Resource_tie3j"]
+script = ExtResource("1_ydo8y")
+effect_scene = ExtResource("7_7evxf")
+align_to_direction = false
+flash_color = Color(1, 0.8, 0.3, 0.8)
+flash_duration = 0.25
+screen_shake = 0.2
+
+[sub_resource type="Resource" id="Resource_rndlb"]
+script = ExtResource("1_ydo8y")
+effect_scene = ExtResource("5_1m4qv")
+attach_to_actor = true
+
+[sub_resource type="Resource" id="Resource_ur3jk"]
+script = ExtResource("1_ydo8y")
+effect_scene = ExtResource("6_kbgtc")
+align_to_direction = false
+
+[sub_resource type="Resource" id="Resource_q6guo"]
+script = ExtResource("1_ydo8y")
+effect_scene = ExtResource("4_q2tqf")
+flash_color = Color(0.8, 0.5, 1, 0.5)
+screen_shake = 0.25
+
+[sub_resource type="Resource" id="Resource_apxuj"]
+script = ExtResource("1_ydo8y")
+flash_color = Color(1, 1, 1, 0.25)
+
+[sub_resource type="Resource" id="Resource_phsl7"]
+script = ExtResource("1_ydo8y")
+effect_scene = ExtResource("10_o35k7")
+align_to_direction = false
 
 [sub_resource type="Resource" id="Resource_kcyl8"]
 script = ExtResource("1_ydo8y")
