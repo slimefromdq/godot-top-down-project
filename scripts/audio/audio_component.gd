@@ -16,8 +16,9 @@ const META_KEY := &"audio_component"
 @export var print_cues: bool = false
 
 
-static func find_on(node: Node) -> AudioComponent:
-	if node != null and is_instance_valid(node) and node.has_meta(META_KEY):
+# Untyped on purpose: callers may pass a reference to an actor that was freed.
+static func find_on(node) -> AudioComponent:
+	if is_instance_valid(node) and node.has_meta(META_KEY):
 		return node.get_meta(META_KEY)
 	return null
 

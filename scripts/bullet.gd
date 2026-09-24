@@ -46,7 +46,10 @@ func _on_area_entered(area: Area2D) -> void:
 		return
 	_already_hit.append(area)
 
-	var hit := HitData.create(bullet_damage, source)
+	# The shooter may have died while this was in flight. A freed object can't
+	# be passed as a typed Node, so the hit just loses its kill credit.
+	var shooter: Node = source if is_instance_valid(source) else null
+	var hit := HitData.create(bullet_damage, shooter)
 	hit.knockback = bullet_direction * knockback
 	hit.status_effect = status_effect
 	area.take_hit(hit)

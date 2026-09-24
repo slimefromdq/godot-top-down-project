@@ -39,8 +39,9 @@ var _status_tints: Array[StatusEffect] = []
 
 
 # Look up the VisualsComponent that belongs to any node (actor, dummy, ...).
-static func find_on(node: Node) -> VisualsComponent:
-	if node != null and is_instance_valid(node) and node.has_meta(META_KEY):
+# Untyped on purpose: callers may pass a reference to an actor that was freed.
+static func find_on(node) -> VisualsComponent:
+	if is_instance_valid(node) and node.has_meta(META_KEY):
 		return node.get_meta(META_KEY)
 	return null
 
@@ -225,7 +226,7 @@ func _on_died() -> void:
 	play_cue(&"death", {"align": false})
 	play_body_animation(&"death")
 
-	var killer := health_component.last_damage_source
+	var killer = health_component.last_damage_source
 	var killer_visuals := find_on(killer)
 	if killer_visuals != null and killer_visuals != self and killer_visuals.profile.kill_effect != null:
 		play_definition(killer_visuals.profile.kill_effect, {"source": killer, "align": false})
