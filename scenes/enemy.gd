@@ -46,4 +46,3 @@ func _physics_process(delta: float) -> void:
 
 	if weapon_component.current_ammo <= 0:
 		weapon_component.try_reload()
-
