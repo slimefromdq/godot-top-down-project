@@ -130,14 +130,14 @@ def render(m):
     # cover
     FULLC = {"tree": "#3f6b35", "hedge": "#2f5a2a", "rock": "#6b6560", "cliffrock": "#5c5650",
              "pillar": "#8d85a8", "wall": "#4b4b4b", "ruin": "#7a6a55", "basewall": "#3d3d3d",
-             "cloister": "#6a5a48", "sundial": "#b99a4a", "statue": "#b99a4a"}
+             "cloister": "#6a5a48", "sundial": "#b99a4a", "statue": "#b99a4a", "building": "#9c7f62"}
     for c in m["full"]:
         fill = FULLC.get(c["kind"], "#555")
         if c["kind"] == "basewall":
             fill = TEAM_INK[c["team"]]
         o.append(poly(c["pts"], fill=fill, stroke="#222", stroke_width="0.6"))
     for c in m["low"]:
-        o.append(poly(c["pts"], fill="#c9b88f" if c["kind"] == "crate" else "#b8b2a6",
+        o.append(poly(c["pts"], fill={"crate": "#c9b88f", "fountain": "#8fc4d6"}.get(c["kind"], "#b8b2a6"),
                       stroke="#5a5347", stroke_width="1.2", stroke_dasharray="3 1.5"))
 
     # sight lanes

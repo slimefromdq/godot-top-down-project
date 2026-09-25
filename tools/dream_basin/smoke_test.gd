@@ -26,6 +26,7 @@ func _run() -> void:
 	player = world.get_node("Player")
 	await _frames(10)
 
+	await _test_movement_feel()
 	await _test_ledge_blocks_climbing()
 	await _test_ledge_allows_drop()
 	await _test_jump_pad_climbs_cliff()
@@ -36,6 +37,34 @@ func _run() -> void:
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
 	get_tree().quit(failures)
+
+
+func _test_movement_feel() -> void:
+	# Open Glade floor. Run right, let go, measure the stop.
+	_place(Vector2(-4300, -700))
+	Input.action_press("move_right")
+	var t := 0.0
+	var speed := player.movement_component.get_move_speed()
+	while player.velocity.x < speed * 0.99 and t < 2.0:
+		await get_tree().physics_frame
+		t += get_physics_process_delta_time()
+	await _seconds(0.3)
+	Input.action_release("move_right")
+	var released_at := player.global_position.x
+	await _seconds(0.6)
+	var slide := player.global_position.x - released_at
+	_check("reaches full speed quickly", t < 0.3, "%.2f s to %.0f px/s" % [t, speed])
+	_check("stops within a short slide", slide < 80.0, "%.0f px" % slide)
+	# Push diagonally into the outer map wall: should slide along it, not stick.
+	_place(Vector2(-4680, -300))
+	var start_y := player.global_position.y
+	Input.action_press("move_left")
+	Input.action_press("move_up")
+	await _seconds(0.5)
+	Input.action_release("move_left")
+	Input.action_release("move_up")
+	var slid := start_y - player.global_position.y
+	_check("slides along walls when pushing into them", slid > 120.0, "%.0f px along the wall" % slid)
 
 
 func _test_ledge_blocks_climbing() -> void:

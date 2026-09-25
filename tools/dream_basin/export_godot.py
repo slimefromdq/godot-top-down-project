@@ -33,17 +33,20 @@ COVER = {
     "tree": "3f6b35", "hedge": "2f5a2a", "rock": "7a736b", "cliffrock": "5c5650",
     "pillar": "8d85a8", "wall": "4b4b4b", "ruin": "7a6a55", "cloister": "6a5a48",
     "boundary": "2b2b30", "lowrock": "b8b2a6", "lowwall": "a39d90", "crate": "c9a66b",
+    "fountain": "8fc4d6", "building": "9c7f62",
 }
 TEAM_COVER = {
     "basewall": {"A": "2f8f6a", "B": "c05a3c"},
     "sundial": {"A": "d4ad4f", "B": "8fa3d4"},   # Dawn sun-dial / Dusk moon-dial
-    "statue": {"A": "d4ad4f", "B": "8fa3d4"},
+    "statue": {"A": "d4ad4f", "B": "8fa3d4", None: "d8d2c4"},
+    "fountain": {"A": "8fc4d6", "B": "8fc4d6", None: "8fc4d6"},
 }
 GROUP = {
     "tree": "Trees", "hedge": "Hedges", "rock": "Rocks", "cliffrock": "Rocks",
     "pillar": "Pillars", "wall": "Walls", "ruin": "Walls", "cloister": "Walls",
     "basewall": "Walls", "sundial": "Landmarks", "statue": "Landmarks",
     "boundary": "Boundary", "lowrock": "LowCover", "lowwall": "LowCover", "crate": "LowCover",
+    "fountain": "Landmarks", "building": "Buildings",
 }
 
 
@@ -177,7 +180,8 @@ def export_map(m):
         [(-HX - edge, -HY), (-HX, -HY), (-HX, HY), (-HX - edge, HY)],
         [(HX, -HY), (HX + edge, -HY), (HX + edge, HY), (HX, HY)],
     ]
-    items = [(o, 0) for o in m["full"]] + [(o, 1) for o in m["low"]] + \
+    # Low cover first so full cover (taller) draws on top where they overlap.
+    items = [(o, 1) for o in m["low"]] + [(o, 0) for o in m["full"]] + \
             [({"pts": p, "kind": "boundary", "team": None}, 0) for p in boundary]
     for o, height in items:
         kind = o["kind"]
@@ -244,6 +248,7 @@ def export_world(m):
     over = s.res("PackedScene", "res://scenes/game_over_screen.tscn")
     dummy = s.res("PackedScene", "res://scenes/training_dummy.tscn")
     bar = s.res("PackedScene", "res://scenes/hud/ability_bar.tscn")
+    minimap = s.res("PackedScene", "res://scenes/hud/minimap.tscn")
     music = s.res("Script", "res://scripts/audio/music_request.gd")
     debug = s.res("Script", "res://scripts/map/map_debug_view.gd")
 
@@ -254,6 +259,7 @@ def export_world(m):
         s.node(f"TrainingDummy{i + 1}", ".", instance=dummy, position=v2(d))
     s.node("GameOverScreen", ".", instance=over)
     s.node("AbilityBar", ".", instance=bar, node_paths=["actor"], actor='NodePath("../Player")')
+    s.node("Minimap", ".", instance=minimap)
     s.node("LevelMusic", ".", "Node", script=music)
     s.node("MapDebugView", ".", "Node", script=debug)
     return s.text()
