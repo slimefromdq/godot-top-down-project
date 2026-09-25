@@ -10,6 +10,13 @@ func _ready() -> void:
 	# The world owns both the player and the UI, so it connects them. The
 	# player only reports that it died; it never reaches into the UI itself.
 	player.health_component.died.connect(_on_player_died)
+	add_to_group(&"player_listeners")
+
+
+# The debug panel can swap the player for another hero.
+func on_player_replaced(new_player: Actor) -> void:
+	player = new_player
+	player.health_component.died.connect(_on_player_died)
 
 
 func _on_player_died() -> void:

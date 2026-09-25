@@ -33,7 +33,9 @@ func _enter_tree() -> void:
 		return
 	_applied = true
 	var stats := get_node(^"Components/StatsComponent") as StatsComponent
-	stats.stat_block = definition.stats
+	# Private copies (like abilities' data): the debug panel can edit live
+	# numbers without touching the .tres files, and reset_tuning() restores them.
+	stats.stat_block = definition.stats.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	stats.level = start_level
 	var movement := get_node(^"Components/MovementComponent") as MovementComponent
 	movement.move_speed = definition.move_speed
@@ -43,7 +45,8 @@ func _enter_tree() -> void:
 		(get_node(^"Visuals") as VisualsComponent).profile = definition.visual_profile
 	if definition.audio_profile != null:
 		(get_node(^"Components/AudioComponent") as AudioComponent).profile = definition.audio_profile
-	feel_profile = definition.feel_profile
+	if definition.feel_profile != null:
+		feel_profile = definition.feel_profile.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 
 
 func _ready() -> void:
@@ -77,6 +80,14 @@ func get_ability(slot_id: StringName) -> Ability:
 
 func get_level() -> int:
 	return stats_component.level
+
+
+# Debug: throw away live edits to stats and feel, back to the definition.
+func reset_tuning() -> void:
+	stats_component.stat_block = definition.stats.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
+	stats_component.stats_changed.emit()
+	if definition.feel_profile != null:
+		feel_profile = definition.feel_profile.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 
 
 # One node per filled slot, created from the slot's AbilityData.
