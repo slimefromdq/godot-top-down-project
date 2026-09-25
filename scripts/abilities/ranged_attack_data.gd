@@ -35,6 +35,13 @@ enum ReloadStyle {
 ## Total cone in degrees. 0 = dead accurate.
 @export var spread_degrees: float = 0.0
 @export var spread_pattern: SpreadPattern = SpreadPattern.RANDOM
+## Extra random spread (total degrees) at full walking speed, scaled by how
+## fast the shooter is moving. 0 = off: standing still and walking are
+## equally accurate.
+@export var moving_spread_degrees: float = 0.0
+## charge_enabled only: fired instead of `projectile` on a perfect release
+## (a thicker tracer, a faster bolt). Empty = same projectile.
+@export var perfect_projectile: ProjectileData
 ## Spawn points relative to the aim: x = forward, y = to the right. Shots
 ## cycle through them in order (alternating dual pistols = two entries).
 @export var muzzles: Array[Vector2] = [Vector2(60, 0)]
@@ -146,7 +153,9 @@ func validate() -> PackedStringArray:
 		problems.append("'%s' shots_per_second must be above 0" % id)
 	if projectiles_per_shot < 1:
 		problems.append("'%s' projectiles_per_shot must be at least 1" % id)
-	if spread_degrees < 0.0 or semi_input_buffer < 0.0 or reload_time < 0.0:
+	if perfect_projectile != null and perfect_projectile.has_negative():
+		problems.append("'%s' perfect_projectile has negative values" % id)
+	if spread_degrees < 0.0 or moving_spread_degrees < 0.0 or semi_input_buffer < 0.0 or reload_time < 0.0:
 		problems.append("'%s' has negative spread/buffer/reload" % id)
 	if magazine_size < 0 or ammo_per_shot < 1:
 		problems.append("'%s' magazine_size must be >= 0 and ammo_per_shot >= 1" % id)

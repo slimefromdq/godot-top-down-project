@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_ba1na"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_cify8"]
+[ext_resource type="Resource" path="res://heroes/jose/data/jose_round.tres" id="3_qq6eh"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="4_4mf1d"]
+
+[sub_resource type="Resource" id="Resource_km7x6"]
+script = ExtResource("2_cify8")
+base = 22.0
+weapon_ratio = 0.55
+
+[resource]
+script = ExtResource("4_4mf1d")
+projectile = ExtResource("3_qq6eh")
+muzzles = Array[Vector2]([Vector2(52, -20), Vector2(52, 20)])
+fire_mode = 1
+shots_per_second = 3.5
+semi_input_buffer = 0.15
+magazine_size = 12
+reload_time = 2.6
+falloff_start = 900.0
+falloff_end = 1100.0
+falloff_min_multiplier = 0.8
+id = &"twin_longarms"
+display_name = "Twin Longarms"
+description = "Click to fire, alternating revolvers. 12 shared rounds; the reload is slow, so flip instead."
+ability_script = ExtResource("1_ba1na")
+cooldown = 0.0
+damage = SubResource("Resource_km7x6")
+tags = Array[StringName]([&"basic_attack"])
+feel_preset = &"shot"

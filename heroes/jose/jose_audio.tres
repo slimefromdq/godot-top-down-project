@@ -1,0 +1,113 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_e5mjc"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="2_fww5h"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="3_c5jpk"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="4_f2v0u"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/dry_fire.tres" id="5_pntqg"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/reload.tres" id="6_1ocim"]
+[ext_resource type="AudioStream" path="res://audio/sfx/dry_fire.wav" id="7_jc7od"]
+[ext_resource type="AudioStream" path="res://audio/sfx/skillshot.wav" id="8_d1g0x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/zap.tres" id="9_jbqr3"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/dash.tres" id="10_iifux"]
+[ext_resource type="AudioStream" path="res://audio/sfx/reload.wav" id="11_4d8js"]
+[ext_resource type="AudioStream" path="res://audio/sfx/kill_chime.wav" id="12_vo3fi"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/overdrive.tres" id="13_xegjb"]
+[ext_resource type="AudioStream" path="res://audio/sfx/rifle_shot.wav" id="14_khs8d"]
+[ext_resource type="AudioStream" path="res://audio/sfx/dash.wav" id="15_ahis0"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/kill_chime.tres" id="16_yybwm"]
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="17_bu16g"]
+
+[sub_resource type="Resource" id="Resource_t1h7p"]
+script = ExtResource("1_e5mjc")
+streams = Array[AudioStream]([ExtResource("7_jc7od")])
+volume_db = -10.0
+pitch_min = 1.552
+pitch_max = 1.6480000000000001
+min_interval = 0.2
+
+[sub_resource type="Resource" id="Resource_00l8e"]
+script = ExtResource("1_e5mjc")
+streams = Array[AudioStream]([ExtResource("7_jc7od")])
+volume_db = -8.0
+pitch_min = 1.261
+pitch_max = 1.3390000000000002
+min_interval = 0.2
+
+[sub_resource type="Resource" id="Resource_iy0qh"]
+script = ExtResource("1_e5mjc")
+streams = Array[AudioStream]([ExtResource("8_d1g0x")])
+volume_db = -1.0
+pitch_min = 0.776
+pitch_max = 0.8240000000000001
+
+[sub_resource type="Resource" id="Resource_3porx"]
+script = ExtResource("1_e5mjc")
+streams = Array[AudioStream]([ExtResource("11_4d8js")])
+volume_db = -6.0
+pitch_min = 1.3095
+pitch_max = 1.3905
+
+[sub_resource type="Resource" id="Resource_2nj4e"]
+script = ExtResource("1_e5mjc")
+streams = Array[AudioStream]([ExtResource("8_d1g0x")])
+volume_db = -6.0
+pitch_min = 1.552
+pitch_max = 1.6480000000000001
+
+[sub_resource type="Resource" id="Resource_31dg5"]
+script = ExtResource("1_e5mjc")
+streams = Array[AudioStream]([ExtResource("12_vo3fi")])
+volume_db = -3.0
+pitch_min = 0.776
+pitch_max = 0.8240000000000001
+min_interval = 0.05
+max_voices = 3
+
+[sub_resource type="Resource" id="Resource_uu1pk"]
+script = ExtResource("1_e5mjc")
+streams = Array[AudioStream]([ExtResource("12_vo3fi")])
+volume_db = -6.0
+pitch_min = 1.552
+pitch_max = 1.6480000000000001
+min_interval = 0.05
+max_voices = 3
+
+[sub_resource type="Resource" id="Resource_q8nka"]
+script = ExtResource("1_e5mjc")
+streams = Array[AudioStream]([ExtResource("14_khs8d")])
+volume_db = -12.0
+pitch_min = 1.1155
+pitch_max = 1.1844999999999999
+min_interval = 0.03
+max_voices = 4
+
+[sub_resource type="Resource" id="Resource_1nyeq"]
+script = ExtResource("1_e5mjc")
+streams = Array[AudioStream]([ExtResource("15_ahis0")])
+volume_db = -4.0
+pitch_min = 0.6789999999999999
+pitch_max = 0.721
+
+[resource]
+script = ExtResource("17_bu16g")
+cues = Dictionary[StringName, ExtResource("1_e5mjc")]({
+&"ability_failed": ExtResource("2_fww5h"),
+&"coin_execute": SubResource("Resource_31dg5"),
+&"coin_fire": SubResource("Resource_2nj4e"),
+&"coin_reset": SubResource("Resource_uu1pk"),
+&"death": ExtResource("4_f2v0u"),
+&"flourish_active": ExtResource("10_iifux"),
+&"flourish_reload": SubResource("Resource_3porx"),
+&"hurt": ExtResource("3_c5jpk"),
+&"last_word_charge_full": SubResource("Resource_00l8e"),
+&"last_word_fire": SubResource("Resource_iy0qh"),
+&"last_word_perfect": ExtResource("9_jbqr3"),
+&"twin_longarms_empty": ExtResource("5_pntqg"),
+&"twin_longarms_reload_end": SubResource("Resource_t1h7p"),
+&"twin_longarms_reload_start": ExtResource("6_1ocim"),
+&"weapons_free_end": SubResource("Resource_1nyeq"),
+&"weapons_free_shot": SubResource("Resource_q8nka"),
+&"weapons_free_start": ExtResource("13_xegjb")
+})
+kill_sound = ExtResource("16_yybwm")

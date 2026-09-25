@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="PackedScene" path="res://effects/wall_puff.tscn" id="1_u7pp1"]
+[ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="2_agx8e"]
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="3_sb4hs"]
+[ext_resource type="PackedScene" path="res://heroes/jose/vfx/tracer.tscn" id="4_xnthq"]
+
+[resource]
+script = ExtResource("3_sb4hs")
+speed = 2600.0
+lifetime = 0.42
+radius = 12.0
+visual_scene = ExtResource("4_xnthq")
+hit_effect = ExtResource("2_agx8e")
+expire_effect = ExtResource("1_u7pp1")

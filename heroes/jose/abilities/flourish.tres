@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://heroes/jose/abilities/flourish_ability.gd" id="1_lqm3x"]
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="2_wsrqq"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_a0sg1"]
+
+[resource]
+script = ExtResource("2_wsrqq")
+direction_mode = 1
+distance = 260.0
+speed = 1500.0
+invulnerable_duration = 0.25
+id = &"flourish"
+display_name = "Flourish"
+description = "Flip the way you're moving, briefly untouchable, and spin both revolvers full."
+ability_script = ExtResource("1_lqm3x")
+cooldown = 7.0
+tags = Array[StringName]([&"movement"])
+feel_preset = &"flip"

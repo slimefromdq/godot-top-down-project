@@ -7,7 +7,8 @@ hero.
 
 Avery (`heroes/avery/`) is the worked example throughout. Rook
 (`heroes/rook/`) was made by following exactly these steps, with nothing but
-a definition and one ability script.
+a definition and one ability script. Jose (`heroes/jose/`) is the ranged
+example: three of his five slots are pure data (see "What Jose took" below).
 
 ---
 
@@ -76,6 +77,7 @@ For each slot in the definition's `abilities` dictionary, point at an
 |---|---|---|
 | a melee swing or combo, optionally throwing a projectile per swing | `MeleeAttackData` + `MeleeAttackAbility` | none |
 | a telegraphed dash / charge, optionally leaving a ground trail | `ChargeData` + `ChargeAbility` | none |
+| a quick roll the way you're walking, with an immunity window | `ChargeData` with `direction_mode = MOVE_INPUT_OR_AIM`, `invulnerable_duration` | none |
 | a melee CC (stun, knockback, pull) | `MeleeAttackData` with `on_hit_status` | none |
 | a gun: rifle, revolver, shotgun, dual pistols (any slot) | `RangedAttackData` + `RangedAttackAbility` | none |
 | hold to charge, release to fire (any timed ability) | the **Charge** group on any `AbilityData` + `data.get_charged_value()` | none for guns |
@@ -84,6 +86,8 @@ For each slot in the definition's `abilities` dictionary, point at an
 | react when your marked target dies / your status ends | `actor.combat_hooks.status_target_died` / `status_expired` / `status_removed` | a small script |
 | a cone or aura that follows you for a while | `ZoneAbilityData` + `ZoneAbility` (zone with `follow_owner`, `face_aim`) | none |
 | custom per-target zone logic | `spawn_owned_zone()` from any ability + the zone's `target_*` signals | a small script |
+| a channel that blocks some abilities but not others | `controller.lock_abilities(self, allowed_slots, quiet_slots)` / `unlock_abilities(self)` | a small script |
+| another ability firing your gun (autofire, turrets) | `hero.get_ranged_ability().fire_extra_shot(direction, label)` | a small script |
 | something new | extend `Ability` (or `MeleeAttackAbility` / `RangedAttackAbility`) | a small script |
 
 `tools/heroes/ranged_test/` is a test-only hero that uses every row above
@@ -132,8 +136,12 @@ var dmg := data.get_charged_value(&"damage", get_stats(), get_charge_ratio())
 if was_perfect_release(): ...
 ```
 
-A `RangedAttackAbility` does this by itself, and multiplies by
-`values/perfect_damage_multiplier` on a perfect release.
+A `RangedAttackAbility` does this by itself: on a perfect release it
+multiplies by `values/perfect_damage_multiplier`, fires `perfect_projectile`
+if set (a thicker tracer), and adds a `<id>_perfect` cue. Map
+`<id>_charge_start` to `effects/feel/telegraph_line.tscn` (attached to the
+actor) for a live aim line that brightens with the charge and strobes in the
+perfect window.
 
 **Compel.** A `StatusEffect` with `compel_enabled`,
 `compel_speed_multiplier` (of the target's own speed), `compel_stop_distance`
@@ -266,6 +274,24 @@ FeelProfile, not the cue profiles.
   hero automatically.
 
 ---
+
+## What Jose took
+
+A CARRY with two revolvers. Tools → New Hero from Template → "Jose", then:
+
+| Slot | Data | Script |
+|---|---|---|
+| primary | `twin_longarms.tres`: `RangedAttackData`, SEMI, 12 rounds, 2 muzzles, FULL reload | generic `RangedAttackAbility` |
+| ability_1 | `last_word.tres`: charged, `pierce -1` projectile, `damage_full`, `perfect_damage_multiplier`, `perfect_projectile` | generic `RangedAttackAbility` |
+| movement | `flourish.tres`: `ChargeData`, MOVE_INPUT_OR_AIM, `invulnerable_duration` | `flourish_ability.gd`: reloads the gun on use |
+| cc | `coin.tres`: a one-shot `RangedAttackData` whose `on_hit_status` is the mark; `values/execute_threshold` | `coin_ability.gd`: the execute (`hit_dealt`) and the reset (`status_target_died`) |
+| ultimate | `weapons_free.tres` (`WeaponsFreeData`: a follow-owner circle zone, duration, allowed/quiet slots, `values/weapons_free_fire_rate`) | `weapons_free_ability.gd`: channel, autofire via `fire_extra_shot`, controller lock |
+
+The shared pieces Jose needed were added to the generic systems (spread while
+moving, perfect projectile, `fire_extra_shot`, dash direction mode and
+immunity window, the controller lock, the live aim line, zone outlines), so
+the next ranged hero gets them as data. `tools/heroes/jose_test` covers the
+whole kit.
 
 ## What Rook took
 

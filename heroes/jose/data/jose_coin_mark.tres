@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="PackedScene" path="res://heroes/jose/vfx/coin_marker.tscn" id="1_uw8qn"]
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="2_lcf00"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="3_vf0rx"]
+
+[resource]
+script = ExtResource("2_lcf00")
+id = &"jose_coin_mark"
+display_name = "Marked for Death"
+duration = 6.0
+stack_per_applier = true
+attached_vfx = ExtResource("1_uw8qn")
+body_tint = Color(1, 0.82, 0.25, 0.25)

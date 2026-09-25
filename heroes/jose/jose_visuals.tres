@@ -1,0 +1,211 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_ouf7a"]
+[ext_resource type="PackedScene" path="res://effects/spawn_puff.tscn" id="2_v63hb"]
+[ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="3_d0nt6"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="4_yccuv"]
+[ext_resource type="PackedScene" path="res://effects/muzzle_flash.tscn" id="5_cba34"]
+[ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="6_t1xi5"]
+[ext_resource type="PackedScene" path="res://effects/feel/telegraph_line.tscn" id="7_1ivd1"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="8_3qbtn"]
+[ext_resource type="PackedScene" path="res://effects/dash_afterimage.tscn" id="9_t0q73"]
+[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="10_vvbsa"]
+[ext_resource type="PackedScene" path="res://heroes/jose/vfx/spin.tscn" id="11_tqx27"]
+[ext_resource type="PackedScene" path="res://effects/skillshot_cast.tscn" id="12_abc64"]
+[ext_resource type="PackedScene" path="res://effects/kill_confirm.tscn" id="13_aj21p"]
+[ext_resource type="PackedScene" path="res://heroes/jose/vfx/coin_flip.tscn" id="14_lvq82"]
+[ext_resource type="PackedScene" path="res://effects/overdrive_burst.tscn" id="15_n10gr"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="16_a0vmy"]
+
+[sub_resource type="Resource" id="Resource_hb664"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("2_v63hb")
+align_to_direction = false
+
+[sub_resource type="Resource" id="Resource_7ah5v"]
+script = ExtResource("1_ouf7a")
+flash_color = Color(1, 0.25, 0.25, 0.9)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_ja5r0"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("3_d0nt6")
+align_to_direction = false
+tint = Color(0.45, 1, 0.5, 1)
+
+[sub_resource type="Resource" id="Resource_2r8wp"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("4_yccuv")
+align_to_direction = false
+screen_shake = 0.8
+
+[sub_resource type="Resource" id="Resource_wqxyo"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("3_d0nt6")
+align_to_direction = false
+
+[sub_resource type="Resource" id="Resource_cfp5o"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("5_cba34")
+scale = 1.2
+tint = Color(1, 0.9, 0.6, 1)
+
+[sub_resource type="Resource" id="Resource_pup3l"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("6_t1xi5")
+tint = Color(1, 0.82, 0.25, 1)
+
+[sub_resource type="Resource" id="Resource_naaxx"]
+script = ExtResource("1_ouf7a")
+flash_color = Color(0.6, 0.6, 0.6, 0.6)
+flash_duration = 0.06
+
+[sub_resource type="Resource" id="Resource_8ch66"]
+script = ExtResource("1_ouf7a")
+flash_color = Color(1, 1, 1, 0.3)
+flash_duration = 0.08
+
+[sub_resource type="Resource" id="Resource_rnav7"]
+script = ExtResource("1_ouf7a")
+flash_color = Color(1, 0.9, 0.5, 0.6)
+
+[sub_resource type="Resource" id="Resource_k5h7m"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("7_1ivd1")
+attach_to_actor = true
+align_to_direction = false
+
+[sub_resource type="Resource" id="Resource_5kkql"]
+script = ExtResource("1_ouf7a")
+flash_color = Color(1, 0.9, 0.4, 0.7)
+
+[sub_resource type="Resource" id="Resource_qfa0w"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("5_cba34")
+scale = 1.8
+screen_shake = 0.2
+
+[sub_resource type="Resource" id="Resource_4nk1x"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("8_3qbtn")
+align_to_direction = false
+tint = Color(1, 0.82, 0.25, 1)
+flash_color = Color(1, 1, 0.9, 1)
+flash_duration = 0.18
+screen_shake = 0.5
+
+[sub_resource type="Resource" id="Resource_0qy3y"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("6_t1xi5")
+scale = 1.5
+
+[sub_resource type="Resource" id="Resource_v61rw"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("9_t0q73")
+attach_to_actor = true
+
+[sub_resource type="Resource" id="Resource_yrny4"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("10_vvbsa")
+align_to_direction = false
+
+[sub_resource type="Resource" id="Resource_jyt8o"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("11_tqx27")
+attach_to_actor = true
+align_to_direction = false
+flash_color = Color(1, 0.85, 0.35, 0.8)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_f4gl8"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("12_abc64")
+scale = 0.7
+tint = Color(1, 0.82, 0.25, 1)
+
+[sub_resource type="Resource" id="Resource_1xltj"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("6_t1xi5")
+scale = 1.2
+tint = Color(1, 0.82, 0.25, 1)
+
+[sub_resource type="Resource" id="Resource_0qvvx"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("13_aj21p")
+align_to_direction = false
+scale = 1.5
+tint = Color(1, 0.82, 0.25, 1)
+screen_shake = 0.6
+
+[sub_resource type="Resource" id="Resource_xy4p6"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("14_lvq82")
+attach_to_actor = true
+align_to_direction = false
+flash_color = Color(1, 0.85, 0.3, 0.7)
+flash_duration = 0.15
+
+[sub_resource type="Resource" id="Resource_qdeql"]
+script = ExtResource("1_ouf7a")
+flash_color = Color(1, 0.3, 0.35, 0.6)
+flash_duration = 0.2
+
+[sub_resource type="Resource" id="Resource_yt6tn"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("15_n10gr")
+align_to_direction = false
+tint = Color(1, 0.4, 0.45, 1)
+flash_color = Color(1, 0.3, 0.35, 1)
+flash_duration = 0.3
+screen_shake = 0.45
+
+[sub_resource type="Resource" id="Resource_0aygc"]
+script = ExtResource("1_ouf7a")
+flash_color = Color(1, 0.8, 0.5, 0.25)
+flash_duration = 0.04
+
+[sub_resource type="Resource" id="Resource_0h38p"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("10_vvbsa")
+align_to_direction = false
+tint = Color(1, 0.4, 0.45, 1)
+
+[sub_resource type="Resource" id="Resource_na56i"]
+script = ExtResource("1_ouf7a")
+effect_scene = ExtResource("13_aj21p")
+align_to_direction = false
+
+[resource]
+script = ExtResource("16_a0vmy")
+body_scale = Vector2(0.8, 0.8)
+body_tint = Color(0.9, 0.2, 0.35, 0.55)
+cues = Dictionary[StringName, ExtResource("1_ouf7a")]({
+&"ability_failed": SubResource("Resource_wqxyo"),
+&"coin_execute": SubResource("Resource_0qvvx"),
+&"coin_fire": SubResource("Resource_f4gl8"),
+&"coin_hit": SubResource("Resource_1xltj"),
+&"coin_reset": SubResource("Resource_xy4p6"),
+&"death": SubResource("Resource_2r8wp"),
+&"flourish_active": SubResource("Resource_v61rw"),
+&"flourish_end": SubResource("Resource_yrny4"),
+&"flourish_reload": SubResource("Resource_jyt8o"),
+&"heal": SubResource("Resource_ja5r0"),
+&"hurt": SubResource("Resource_7ah5v"),
+&"last_word_charge_full": SubResource("Resource_5kkql"),
+&"last_word_charge_start": SubResource("Resource_k5h7m"),
+&"last_word_fire": SubResource("Resource_qfa0w"),
+&"last_word_hit": SubResource("Resource_0qy3y"),
+&"last_word_perfect": SubResource("Resource_4nk1x"),
+&"spawn": SubResource("Resource_hb664"),
+&"twin_longarms_empty": SubResource("Resource_naaxx"),
+&"twin_longarms_fire": SubResource("Resource_cfp5o"),
+&"twin_longarms_hit": SubResource("Resource_pup3l"),
+&"twin_longarms_reload_end": SubResource("Resource_rnav7"),
+&"twin_longarms_reload_start": SubResource("Resource_8ch66"),
+&"weapons_free_end": SubResource("Resource_0h38p"),
+&"weapons_free_shot": SubResource("Resource_0aygc"),
+&"weapons_free_start": SubResource("Resource_yt6tn"),
+&"weapons_free_windup": SubResource("Resource_qdeql")
+})
+kill_effect = SubResource("Resource_na56i")
+damage_number_color = Color(1, 0.85, 0.35, 1)

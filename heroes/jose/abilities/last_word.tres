@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_pqqnq"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_a8epr"]
+[ext_resource type="Resource" path="res://heroes/jose/data/jose_last_word_perfect_bolt.tres" id="3_gi0bu"]
+[ext_resource type="Resource" path="res://heroes/jose/data/jose_last_word_bolt.tres" id="4_xr0md"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="5_py0ee"]
+
+[sub_resource type="Resource" id="Resource_q4wwb"]
+script = ExtResource("2_a8epr")
+base = 50.0
+weapon_ratio = 0.8
+
+[sub_resource type="Resource" id="Resource_hjbxb"]
+script = ExtResource("2_a8epr")
+base = 160.0
+weapon_ratio = 2.0
+
+[sub_resource type="Resource" id="Resource_navue"]
+script = ExtResource("2_a8epr")
+base = 1.35
+
+[resource]
+script = ExtResource("5_py0ee")
+projectile = ExtResource("4_xr0md")
+perfect_projectile = ExtResource("3_gi0bu")
+muzzles = Array[Vector2]([Vector2(56, 0)])
+fire_mode = 1
+shots_per_second = 2.0
+id = &"last_word"
+display_name = "Last Word"
+description = "Hold to charge, release to fire a shot that pierces every enemy in a line. Release right at full charge for a perfect shot."
+ability_script = ExtResource("1_pqqnq")
+cooldown = 9.0
+damage = SubResource("Resource_q4wwb")
+tags = Array[StringName]([&"ability"])
+values = Dictionary[StringName, ExtResource("2_a8epr")]({
+&"damage_full": SubResource("Resource_hjbxb"),
+&"perfect_damage_multiplier": SubResource("Resource_navue")
+})
+charge_enabled = true
+charge_time_max = 1.1
+charge_min_to_fire = 0.3
+charge_move_speed_multiplier = 0.45
+charge_perfect_window = 0.18
+feel_preset = &"last_word"
