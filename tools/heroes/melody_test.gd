@@ -174,6 +174,9 @@ func _test_encore_rule() -> void:
 	_check("encore_triggered(ability_id, strength = 1 + 3 x 0.1)", triggered.size() == 1
 		and triggered[0][0] == &"heavy_notes" and is_equal_approx(triggered[0][1], 1.3), str(triggered))
 	_check("the next shot is normal again", not primary.is_chord_pending(), "")
+	await _seconds(1.0)
+	_check("after the Chord she can act again", not melody.ability_controller.is_busy()
+		and melody.request_slot(&"primary", melody.global_position + Vector2(400, 0)), "")
 
 	# The ultimate never consumes turns.
 	key.set_turns(3)
@@ -300,6 +303,9 @@ func _test_wind_up_key() -> void:
 	_check("...not ones farther away", not far.status_component.has_status(&"melody_wound_up"), "")
 	_check("...nor Melody (allow_self off)", not melody.status_component.has_status(&"melody_wound_up"), "")
 	_check("...and the key is spent", key.turns == 0 and _cue_count(&"wind_up_key_master_key") == 1, "")
+	await _seconds(0.5)
+	_check("after Master Key she can act again", not wind.is_casting() and not melody.ability_controller.is_busy()
+		and melody.request_slot(&"primary", Vector2(600, 4000)), "")
 	_clear()
 	await _physics_frames(2)
 
@@ -363,6 +369,9 @@ func _test_wind_up_dash() -> void:
 	# 136 right, 272 back left, 42 right again: ends ~94 px left of start.
 	_check("the path reflects: right, left, right", absf(melody.global_position.x - (-94.0)) < 20.0,
 		str(melody.global_position))
+	await _seconds(0.3)
+	_check("Pre-wound ends: she can act again (regression: stuck cast)", not dash.is_casting()
+		and not melody.ability_controller.is_busy() and melody.request_slot(&"primary", Vector2(600, 8000)), "")
 	_clear()
 	await _physics_frames(2)
 
