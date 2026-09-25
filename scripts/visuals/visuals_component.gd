@@ -213,7 +213,7 @@ func _on_damaged(amount: float, source: Node) -> void:
 		})
 
 
-func _on_healed(amount: float) -> void:
+func _on_healed(amount: float, _source: Node = null) -> void:
 	play_cue(&"heal", {"text": amount})
 
 

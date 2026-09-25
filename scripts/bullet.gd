@@ -46,9 +46,14 @@ func _on_area_entered(area: Area2D) -> void:
 		return
 	_already_hit.append(area)
 
-	var hit := HitData.create(bullet_damage, source)
+	var hit := DamageInfo.create(bullet_damage, source)
+	hit.tags = [DamageInfo.TAG_PROJECTILE]
+	hit.attack_id = get_instance_id()
+	hit.label = &"bullet"
+	hit.direction = bullet_direction
+	hit.hit_position = global_position
 	hit.knockback = bullet_direction * knockback
-	hit.status_effect = status_effect
+	hit.add_status(status_effect)
 	area.take_hit(hit)
 	_impact(hit_effect, hit_sound)
 

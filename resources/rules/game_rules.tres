@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="GameRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/rules/game_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://scripts/rules/slot_definition.gd" id="2_slot"]
+
+[sub_resource type="Resource" id="Slot_primary"]
+script = ExtResource("2_slot")
+id = &"primary"
+display_name = "Primary"
+input_action = &"hero_primary"
+hold_to_repeat = true
+
+[sub_resource type="Resource" id="Slot_ability_1"]
+script = ExtResource("2_slot")
+id = &"ability_1"
+display_name = "Ability 1"
+input_action = &"hero_ability_1"
+
+[sub_resource type="Resource" id="Slot_ability_2"]
+script = ExtResource("2_slot")
+id = &"ability_2"
+display_name = "Ability 2"
+input_action = &"hero_ability_2"
+required = false
+
+[sub_resource type="Resource" id="Slot_movement"]
+script = ExtResource("2_slot")
+id = &"movement"
+display_name = "Movement"
+input_action = &"hero_movement"
+
+[sub_resource type="Resource" id="Slot_cc"]
+script = ExtResource("2_slot")
+id = &"cc"
+display_name = "Crowd Control"
+input_action = &"hero_cc"
+
+[sub_resource type="Resource" id="Slot_ultimate"]
+script = ExtResource("2_slot")
+id = &"ultimate"
+display_name = "Ultimate"
+input_action = &"hero_ultimate"
+
+[resource]
+script = ExtResource("1_rules")
+slots = Array[ExtResource("2_slot")]([SubResource("Slot_primary"), SubResource("Slot_ability_1"), SubResource("Slot_ability_2"), SubResource("Slot_movement"), SubResource("Slot_cc"), SubResource("Slot_ultimate")])

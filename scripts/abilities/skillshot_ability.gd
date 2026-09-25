@@ -17,7 +17,8 @@ class_name SkillshotAbility
 
 
 func _activate(target_position: Vector2) -> String:
-	var origin := actor.weapon_component.muzzle.global_position
+	var origin := actor.weapon_component.muzzle.global_position if actor.weapon_component != null \
+		else actor.global_position
 	var direction := (target_position - actor.global_position).normalized()
 	if direction == Vector2.ZERO:
 		direction = actor.aim_direction

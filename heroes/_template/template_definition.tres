@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="1_def"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="2_block"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="3_scaling"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="4_ability"]
+[ext_resource type="Resource" path="res://heroes/_template/template_basic_attack.tres" id="5_primary"]
+[ext_resource type="Resource" path="res://heroes/_template/template_feel.tres" id="6_feel"]
+
+[sub_resource type="Resource" id="Stat_health"]
+script = ExtResource("3_scaling")
+base = 600.0
+growth = 60.0
+
+[sub_resource type="Resource" id="Stat_weapon"]
+script = ExtResource("3_scaling")
+base = 40.0
+growth = 4.0
+
+[sub_resource type="Resource" id="Stat_magic"]
+script = ExtResource("3_scaling")
+base = 20.0
+growth = 4.0
+
+[sub_resource type="Resource" id="Stat_armor"]
+script = ExtResource("3_scaling")
+base = 20.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Stat_magic_resist"]
+script = ExtResource("3_scaling")
+base = 20.0
+growth = 1.0
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2_block")
+health = SubResource("Stat_health")
+weapon = SubResource("Stat_weapon")
+magic = SubResource("Stat_magic")
+armor = SubResource("Stat_armor")
+magic_resist = SubResource("Stat_magic_resist")
+
+[resource]
+script = ExtResource("1_def")
+hero_id = &"template"
+display_name = "Template"
+title = "the Placeholder"
+description = "Starting point for new heroes. Copy with Project > Tools > New Hero from Template."
+stats = SubResource("Stats")
+abilities = Dictionary[StringName, ExtResource("4_ability")]({
+&"primary": ExtResource("5_primary")
+})
+feel_profile = ExtResource("6_feel")

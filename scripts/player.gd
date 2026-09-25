@@ -53,6 +53,7 @@ func _process(_delta: float) -> void:
 	mouse_global_position = get_global_mouse_position()
 	weapon_pivot.look_at(mouse_global_position)
 	aim_direction = (mouse_global_position - global_position).normalized()
+	aim_point = mouse_global_position
 
 	if Input.is_action_pressed("fire"):
 		weapon_component.try_fire()

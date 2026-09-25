@@ -16,8 +16,8 @@ class_name BuffAbility
 func _activate(_target_position: Vector2) -> String:
 	if effect == null:
 		return "No effect"
-	actor.status_component.apply(effect)
-	if refill_ammo:
+	actor.status_component.apply(effect, actor)
+	if refill_ammo and actor.weapon_component != null:
 		actor.weapon_component.refill()
 	actor.trigger_cue(ability_id, {"duration": effect.duration})
 	return ""

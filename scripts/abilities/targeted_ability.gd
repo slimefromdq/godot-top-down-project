@@ -53,9 +53,12 @@ func _activate(target_position: Vector2) -> String:
 	if _is_blocked(target.global_position):
 		return "Blocked"
 
-	var hit := HitData.create(
-		damage * actor.status_component.get_multiplier(StatusEffect.DAMAGE), actor)
-	hit.status_effect = status_effect
+	var hit := DamageInfo.create(
+		damage * actor.status_component.get_multiplier(StatusEffect.DAMAGE), actor, DamageInfo.Type.MAGIC)
+	hit.tags = [DamageInfo.TAG_ABILITY]
+	hit.label = ability_id
+	hit.direction = (target.global_position - actor.global_position).normalized()
+	hit.add_status(status_effect)
 	target.take_hit(hit)
 
 	actor.trigger_cue(ability_id, {

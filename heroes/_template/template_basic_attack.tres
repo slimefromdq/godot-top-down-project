@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="MeleeAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/melee_attack_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://heroes/_template/template_basic_attack.gd" id="2_script"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_shape"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="4_value"]
+
+[sub_resource type="Resource" id="Shape_swing"]
+script = ExtResource("3_shape")
+radius = 150.0
+arc_degrees = 110.0
+
+[sub_resource type="Resource" id="Value_damage"]
+script = ExtResource("4_value")
+base = 20.0
+weapon_ratio = 0.6
+
+[resource]
+script = ExtResource("1_data")
+id = &"template_basic_attack"
+display_name = "Basic Attack"
+description = "A plain melee swing."
+ability_script = ExtResource("2_script")
+cooldown = 0.0
+hit_shape = SubResource("Shape_swing")
+damage = SubResource("Value_damage")
+knockback = 150.0
+tags = Array[StringName]([&"basic_attack"])

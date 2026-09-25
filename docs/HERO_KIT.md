@@ -34,7 +34,7 @@ Player (Actor)
   through each ability's `input_action`. An AI can call
   `ability_controller.try_activate_id(&"phase_dash", point)` to use the same
   ability.
-- **Hits are structured.** `HitData` carries damage, source, knockback and a
+- **Hits are structured.** `DamageInfo` carries damage, type, source, tags, knockback and
   status. `HurtboxComponent.take_hit()` routes each part to the right component.
 - **Stats go through statuses.** Abilities never edit a component's fields
   directly, so an effect expiring always restores the original values.
