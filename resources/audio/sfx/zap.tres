@@ -1,11 +1,9 @@
-[gd_resource type="Resource" script_class="SoundCue" format=3]
+[gd_resource type="Resource" script_class="SoundCue" format=3 uid="uid://bx8b25v656xo6"]
 
-[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_7t7m1"]
-[ext_resource type="AudioStream" path="res://audio/sfx/zap.wav" id="2_dksyq"]
+[ext_resource type="Script" uid="uid://sop5kaj6cja5" path="res://scripts/audio/sound_cue.gd" id="1_7t7m1"]
+[ext_resource type="AudioStream" uid="uid://bfp6pl0q022bp" path="res://audio/sfx/zap.wav" id="2_dksyq"]
 
 [resource]
 script = ExtResource("1_7t7m1")
 streams = Array[AudioStream]([ExtResource("2_dksyq")])
 volume_db = -3.0
-pitch_min = 0.95
-pitch_max = 1.05

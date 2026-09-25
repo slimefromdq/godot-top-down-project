@@ -1,11 +1,9 @@
-[gd_resource type="Resource" script_class="SoundCue" format=3]
+[gd_resource type="Resource" script_class="SoundCue" format=3 uid="uid://c0bw0lp80lx6"]
 
-[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_rorhy"]
-[ext_resource type="AudioStream" path="res://audio/sfx/skillshot.wav" id="2_gibdf"]
+[ext_resource type="Script" uid="uid://sop5kaj6cja5" path="res://scripts/audio/sound_cue.gd" id="1_rorhy"]
+[ext_resource type="AudioStream" uid="uid://dfelmv6voii2o" path="res://audio/sfx/skillshot.wav" id="2_gibdf"]
 
 [resource]
 script = ExtResource("1_rorhy")
 streams = Array[AudioStream]([ExtResource("2_gibdf")])
 volume_db = -3.0
-pitch_min = 0.95
-pitch_max = 1.05

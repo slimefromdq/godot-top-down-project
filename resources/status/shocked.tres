@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="StatusEffect" format=3]
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://75k2e08evr53"]
 
 [ext_resource type="PackedScene" path="res://effects/shocked_sparks.tscn" id="1_ommum"]
-[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="2_jkqu7"]
+[ext_resource type="Script" uid="uid://bwvmji2t5cd0s" path="res://scripts/combat/status_effect.gd" id="2_jkqu7"]
+[ext_resource type="Script" uid="uid://btiag5nb71mie" path="res://scripts/stats/stat_modifier.gd" id="3_jkqu7"]
 
 [resource]
 script = ExtResource("2_jkqu7")

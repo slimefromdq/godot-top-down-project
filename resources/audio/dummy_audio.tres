@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="AudioProfile" format=3]
+[gd_resource type="Resource" script_class="AudioProfile" format=3 uid="uid://bi4b5pavxgaq8"]
 
-[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_lp3d3"]
-[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="2_ouain"]
-[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="3_075cs"]
-[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="4_vk6pr"]
+[ext_resource type="Script" uid="uid://sop5kaj6cja5" path="res://scripts/audio/sound_cue.gd" id="1_lp3d3"]
+[ext_resource type="Resource" uid="uid://dumrndh4wrn5j" path="res://resources/audio/sfx/hit.tres" id="2_ouain"]
+[ext_resource type="Resource" uid="uid://cif6xdodidv0" path="res://resources/audio/sfx/death.tres" id="3_075cs"]
+[ext_resource type="Script" uid="uid://dj3jw8r8di3gv" path="res://scripts/audio/audio_profile.gd" id="4_vk6pr"]
 
 [resource]
 script = ExtResource("4_vk6pr")

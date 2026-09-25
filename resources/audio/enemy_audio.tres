@@ -1,10 +1,10 @@
-[gd_resource type="Resource" script_class="AudioProfile" format=3]
+[gd_resource type="Resource" script_class="AudioProfile" format=3 uid="uid://blroj6xdjrr1b"]
 
-[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_pvwne"]
-[ext_resource type="Resource" path="res://resources/audio/sfx/enemy_shot.tres" id="2_co1v3"]
-[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="3_r3pmy"]
-[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="4_b5nsx"]
-[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="5_o7ms0"]
+[ext_resource type="Script" uid="uid://sop5kaj6cja5" path="res://scripts/audio/sound_cue.gd" id="1_pvwne"]
+[ext_resource type="Resource" uid="uid://ddhou0f6ul5yd" path="res://resources/audio/sfx/enemy_shot.tres" id="2_co1v3"]
+[ext_resource type="Resource" uid="uid://dumrndh4wrn5j" path="res://resources/audio/sfx/hit.tres" id="3_r3pmy"]
+[ext_resource type="Resource" uid="uid://cif6xdodidv0" path="res://resources/audio/sfx/death.tres" id="4_b5nsx"]
+[ext_resource type="Script" uid="uid://dj3jw8r8di3gv" path="res://scripts/audio/audio_profile.gd" id="5_o7ms0"]
 
 [resource]
 script = ExtResource("5_o7ms0")

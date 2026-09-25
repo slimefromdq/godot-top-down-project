@@ -1,12 +1,10 @@
-[gd_resource type="Resource" script_class="SoundCue" format=3]
+[gd_resource type="Resource" script_class="SoundCue" format=3 uid="uid://txmxqbjtdsh7"]
 
-[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_oxqcb"]
-[ext_resource type="AudioStream" path="res://audio/sfx/dry_fire.wav" id="2_2iqev"]
+[ext_resource type="Script" uid="uid://sop5kaj6cja5" path="res://scripts/audio/sound_cue.gd" id="1_oxqcb"]
+[ext_resource type="AudioStream" uid="uid://qbbme4x8shkc" path="res://audio/sfx/dry_fire.wav" id="2_2iqev"]
 
 [resource]
 script = ExtResource("1_oxqcb")
 streams = Array[AudioStream]([ExtResource("2_2iqev")])
 volume_db = -8.0
-pitch_min = 0.95
-pitch_max = 1.05
 min_interval = 0.2

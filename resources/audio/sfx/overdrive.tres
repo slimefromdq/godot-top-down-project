@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="SoundCue" format=3]
+[gd_resource type="Resource" script_class="SoundCue" format=3 uid="uid://cqvavsvvacu01"]
 
-[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_ctib4"]
-[ext_resource type="AudioStream" path="res://audio/sfx/overdrive.wav" id="2_okhes"]
+[ext_resource type="Script" uid="uid://sop5kaj6cja5" path="res://scripts/audio/sound_cue.gd" id="1_ctib4"]
+[ext_resource type="AudioStream" uid="uid://bhd7hsgbf6buo" path="res://audio/sfx/overdrive.wav" id="2_okhes"]
 
 [resource]
 script = ExtResource("1_ctib4")
