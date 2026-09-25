@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world.gd" id="1_world"]
+[ext_resource type="PackedScene" path="res://scenes/maps/dream_basin.tscn" id="2_dream_basin"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/game_over_screen.tscn" id="4_game_over_screen"]
+[ext_resource type="PackedScene" path="res://scenes/training_dummy.tscn" id="5_training_dummy"]
+[ext_resource type="PackedScene" path="res://scenes/hud/ability_bar.tscn" id="6_ability_bar"]
+[ext_resource type="Script" path="res://scripts/audio/music_request.gd" id="7_music_request"]
+[ext_resource type="Script" path="res://scripts/map/map_debug_view.gd" id="8_map_debug_view"]
+
+[node name="World" type="Node"]
+script = ExtResource("1_world")
+
+[node name="DreamBasin" parent="." instance=ExtResource("2_dream_basin")]
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+position = Vector2(-950, 4656)
+
+[node name="TrainingDummy1" parent="." instance=ExtResource("5_training_dummy")]
+position = Vector2(0, -360)
+
+[node name="TrainingDummy2" parent="." instance=ExtResource("5_training_dummy")]
+position = Vector2(-420, 216)
+
+[node name="TrainingDummy3" parent="." instance=ExtResource("5_training_dummy")]
+position = Vector2(420, 216)
+
+[node name="TrainingDummy4" parent="." instance=ExtResource("5_training_dummy")]
+position = Vector2(3600, 2280)
+
+[node name="TrainingDummy5" parent="." instance=ExtResource("5_training_dummy")]
+position = Vector2(-3600, -2280)
+
+[node name="GameOverScreen" parent="." instance=ExtResource("4_game_over_screen")]
+
+[node name="AbilityBar" parent="." node_paths=PackedStringArray("actor") instance=ExtResource("6_ability_bar")]
+actor = NodePath("../Player")
+
+[node name="LevelMusic" type="Node" parent="."]
+script = ExtResource("7_music_request")
+
+[node name="MapDebugView" type="Node" parent="."]
+script = ExtResource("8_map_debug_view")
