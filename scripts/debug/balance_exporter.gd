@@ -19,7 +19,9 @@ class_name BalanceExporter
 #   slot     ability slot, "" for stats  (primary, cc ...)
 #   ability  ability id, "" for stats    (sunblade_slash)
 #   metric   what the number is          (health, cooldown, damage,
-#                                         combo_steps/3/damage, heal_per_target ...)
+#                                         combo_steps/3/damage, heal_per_target,
+#                                         guns: magazine_size, shots_per_second,
+#                                         reload_time, burst_dps, sustained_dps ...)
 #   value    the number
 #
 # Everything is computed from the resources alone (no scene needed), so the
@@ -56,6 +58,9 @@ static func build_rows(definitions: Array[HeroDefinition], levels: Array[int] = 
 				rows.append([hero, role, level, "ability", str(slot), ability, "cooldown", data.get_cooldown(level)])
 				if data.get_range() > 0.0:
 					rows.append([hero, role, level, "ability", str(slot), ability, "range", data.get_range()])
+				var metrics := data.get_balance_metrics(level, stats[StatBlock.WEAPON], stats[StatBlock.MAGIC])
+				for metric in metrics:
+					rows.append([hero, role, level, "ability", str(slot), ability, str(metric), metrics[metric]])
 				var values := data.get_scaling_values()
 				for path in values:
 					var value: ScalingValue = values[path]

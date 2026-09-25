@@ -15,6 +15,10 @@ class_name HeroScaffold
 const TEMPLATE_DIR := "res://heroes/_template/"
 const HEROES_DIR := "res://heroes/"
 const TEMPLATE_TOKEN := "template"
+## Test-only heroes (tools/heroes/<name>/). Never part of the roster, the
+## balance export or Validate Heroes; only the F1 "Play as" list shows them,
+## and only in debug builds. See find_dev_definitions().
+const DEV_HEROES_DIR := "res://tools/heroes/"
 
 
 # Returns "" on success, or an error message.
@@ -67,12 +71,23 @@ static func _rewrite(text: String, id: String, pascal: String, display: String) 
 
 # Every HeroDefinition under heroes/, for validation and balance export.
 static func find_definitions() -> Array[HeroDefinition]:
+	return _find_definitions_in(HEROES_DIR)
+
+
+# Test heroes under tools/heroes/ (e.g. ranged_test). Debug tooling only.
+static func find_dev_definitions() -> Array[HeroDefinition]:
+	return _find_definitions_in(DEV_HEROES_DIR)
+
+
+static func _find_definitions_in(root: String) -> Array[HeroDefinition]:
 	var result: Array[HeroDefinition] = []
-	for dir in DirAccess.get_directories_at(HEROES_DIR):
-		for file in DirAccess.get_files_at(HEROES_DIR + dir):
+	if not DirAccess.dir_exists_absolute(root):
+		return result
+	for dir in DirAccess.get_directories_at(root):
+		for file in DirAccess.get_files_at(root + dir):
 			if not file.ends_with(".tres"):
 				continue
-			var path := HEROES_DIR + dir + "/" + file
+			var path := root + dir + "/" + file
 			# Cheap text check first, so we don't load every ability resource.
 			if not FileAccess.get_file_as_string(path).contains("script_class=\"HeroDefinition\""):
 				continue

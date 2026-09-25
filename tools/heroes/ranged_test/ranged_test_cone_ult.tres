@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ZoneAbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/zone_ability.gd" id="1_7b43m"]
+[ext_resource type="Script" path="res://scripts/abilities/zone_ability_data.gd" id="2_gkfg8"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_cen0v"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_cone.tres" id="4_e8oby"]
+
+[resource]
+script = ExtResource("2_gkfg8")
+zone = ExtResource("4_e8oby")
+zone_duration = 4.0
+id = &"ranged_test_cone_ult"
+display_name = "Test Cone"
+description = "A cone in front of you for 4 s that follows your aim, burns and slows."
+ability_script = ExtResource("1_7b43m")
+cooldown = 40.0
+tags = Array[StringName]([&"ability"])
+feel_preset = &"channel"

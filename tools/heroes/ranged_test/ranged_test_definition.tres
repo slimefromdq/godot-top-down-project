@@ -1,0 +1,63 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="1_aij2k"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/ranged_test_revolver.tres" id="2_ewdjo"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/ranged_test_charged_shot.tres" id="3_0oueg"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/ranged_test_wither_shot.tres" id="4_rr0w0"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/ranged_test_reload_dash.tres" id="5_hfsj5"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/ranged_test_compel_bolt.tres" id="6_at5n6"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/ranged_test_cone_ult.tres" id="7_x5xpq"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/ranged_test_feel.tres" id="8_kj483"]
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="9_y8w1b"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="10_wh6ak"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="11_jeokd"]
+
+[sub_resource type="Resource" id="Resource_88rmx"]
+script = ExtResource("10_wh6ak")
+base = 15.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_e6xra"]
+script = ExtResource("10_wh6ak")
+base = 550.0
+growth = 55.0
+
+[sub_resource type="Resource" id="Resource_2jd0o"]
+script = ExtResource("10_wh6ak")
+base = 20.0
+growth = 3.0
+
+[sub_resource type="Resource" id="Resource_p83wr"]
+script = ExtResource("10_wh6ak")
+base = 15.0
+growth = 1.0
+
+[sub_resource type="Resource" id="Resource_vlms8"]
+script = ExtResource("10_wh6ak")
+base = 40.0
+growth = 4.0
+
+[sub_resource type="Resource" id="Resource_21h6w"]
+script = ExtResource("11_jeokd")
+health = SubResource("Resource_e6xra")
+weapon = SubResource("Resource_vlms8")
+magic = SubResource("Resource_2jd0o")
+armor = SubResource("Resource_88rmx")
+magic_resist = SubResource("Resource_p83wr")
+
+[resource]
+script = ExtResource("9_y8w1b")
+hero_id = &"ranged_test"
+display_name = "Ranged Test"
+title = "the Harness"
+description = "TEST ONLY (tools/heroes). Exercises guns, hold-to-charge, compel, stat-modifier marks and owned zones."
+stats = SubResource("Resource_21h6w")
+abilities = Dictionary[StringName, ExtResource("1_aij2k")]({
+&"ability_1": ExtResource("3_0oueg"),
+&"ability_2": ExtResource("4_rr0w0"),
+&"cc": ExtResource("6_at5n6"),
+&"movement": ExtResource("5_hfsj5"),
+&"primary": ExtResource("2_ewdjo"),
+&"ultimate": ExtResource("7_x5xpq")
+})
+feel_profile = ExtResource("8_kj483")

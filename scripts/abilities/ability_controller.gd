@@ -10,7 +10,9 @@ class_name AbilityController
 #   * a press that arrives while busy is BUFFERED for a short window and fires
 #     the moment it's allowed, so mashing or holding the attack key chains a
 #     combo without frame-perfect timing;
-#   * a stun interrupts the current cast and clears the buffer.
+#   * a stun interrupts the current cast and clears the buffer;
+#   * releases (hold-to-charge) go to the charging ability, or are remembered
+#     for a buffered one so a quick tap still ends its charge.
 #
 # Abilities come from two places: Ability children placed in a scene (the
 # original rifle hero), or add_ability() calls from Hero, which builds them
@@ -26,6 +28,8 @@ var current_cast: Ability
 
 var _buffered: Ability
 var _buffer_time_left: float = 0.0
+# The buffered ability's key was already released: release it on start.
+var _buffered_released := false
 
 
 func _ready() -> void:
@@ -59,6 +63,10 @@ func try_activate(ability: Ability, target_position: Vector2) -> bool:
 	if ability == null:
 		return false
 	if current_cast != null and current_cast.is_casting():
+		# Pressing a charging ability again (a held key repeating, a double
+		# click) must not queue a second cast behind the charge.
+		if current_cast == ability and ability.is_charging():
+			return false
 		if current_cast.can_be_cancelled_by(ability):
 			current_cast.cancel_recovery()
 		else:
@@ -73,6 +81,35 @@ func try_activate_id(ability_id: StringName, target_position: Vector2) -> bool:
 
 func try_activate_slot(slot_id: StringName, target_position: Vector2) -> bool:
 	return try_activate(get_ability_for_slot(slot_id), target_position)
+
+
+# Let go of a hold-to-charge ability. Player input calls this on key release;
+# AI calls it when it wants to fire. Returns true if a charge was released.
+func release(ability: Ability, target_position: Vector2) -> bool:
+	if ability == null:
+		return false
+	if ability.is_charging():
+		return ability.release_charge(target_position)
+	if _buffered == ability:
+		_buffered_released = true
+	return false
+
+
+func release_slot(slot_id: StringName, target_position: Vector2) -> bool:
+	return release(get_ability_for_slot(slot_id), target_position)
+
+
+# Drop a charge (no cooldown spent) or a buffered press of `ability`.
+func cancel(ability: Ability) -> bool:
+	if ability == null:
+		return false
+	if _buffered == ability:
+		_buffered = null
+		return true
+	if ability.is_charging():
+		ability.cancel_charge()
+		return true
+	return false
 
 
 # Stop whatever is being cast (stun, death) and forget buffered presses.
@@ -121,12 +158,16 @@ func _physics_process(delta: float) -> void:
 		return
 	if current_cast == null or current_cast.can_be_cancelled_by(_buffered):
 		var ability := _buffered
+		var released := _buffered_released
 		_buffered = null
+		_buffered_released = false
 		if current_cast != null:
 			current_cast.cancel_recovery()
 		# Aim at where the player is aiming NOW, not where they were when
 		# they pressed early: a buffered swing should follow the mouse.
-		_start(ability, _get_actor().get(&"aim_point"))
+		var aim: Vector2 = _get_actor().get(&"aim_point")
+		if _start(ability, aim) and released and ability.is_charging():
+			ability.release_charge(aim)
 
 
 func _start(ability: Ability, target_position: Vector2) -> bool:
@@ -138,6 +179,8 @@ func _start(ability: Ability, target_position: Vector2) -> bool:
 
 func _buffer(ability: Ability) -> void:
 	# Latest press wins: if you pressed attack then dash, you meant dash.
+	if _buffered != ability:
+		_buffered_released = false
 	_buffered = ability
 	var profile: FeelProfile = _get_actor().get(&"feel_profile")
 	_buffer_time_left = profile.get_input_buffer() if profile != null \

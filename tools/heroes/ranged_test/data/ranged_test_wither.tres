@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/combat/overhead_marker.tscn" id="1_efiiu"]
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="2_gyvvm"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="3_5deq8"]
+
+[sub_resource type="Resource" id="Resource_n4hik"]
+script = ExtResource("3_5deq8")
+stat = &"health"
+percent = -0.2
+
+[resource]
+script = ExtResource("2_gyvvm")
+id = &"ranged_test_wither"
+display_name = "Withered (marked)"
+duration = 4.0
+stack_per_applier = true
+stat_modifiers = Array[ExtResource("3_5deq8")]([SubResource("Resource_n4hik")])
+attached_vfx = ExtResource("1_efiiu")
+body_tint = Color(0.6, 0.3, 0.9, 0.35)

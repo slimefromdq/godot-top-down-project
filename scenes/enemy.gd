@@ -16,6 +16,10 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if not is_instance_valid(player):
 		player = get_tree().get_first_node_in_group("player")
+		# Nobody to chase, but forced movement (knockback, compel) still
+		# plays out through the movement component.
+		velocity = movement_component.get_velocity(velocity, Vector2.ZERO, delta)
+		move_and_slide()
 		return
 
 	var offset_to_player := player.global_position - global_position

@@ -6,7 +6,8 @@ class_name Hero
 # supplies stats, abilities, feel, visuals and sound.
 #
 # A Hero never reads input. Something else drives it by writing
-# move_direction / aim_direction / aim_point and calling request_slot():
+# move_direction / aim_direction / aim_point and calling request_slot()
+# (press), release_slot() (let go of a hold-to-charge) and reload():
 # PlayerHeroInput for the local player, an AI later, or a network client.
 # That separation is what lets the same hero be played, botted or replicated.
 
@@ -74,8 +75,43 @@ func request_slot(slot_id: StringName, target_position: Vector2) -> bool:
 	return ability_controller.try_activate_slot(slot_id, target_position)
 
 
+# Let go of a slot's hold-to-charge ability (key released / AI decides to
+# fire). Harmless for abilities that don't charge.
+func release_slot(slot_id: StringName, target_position: Vector2) -> bool:
+	return ability_controller.release_slot(slot_id, target_position)
+
+
+# Cancel a slot's charge without spending its cooldown.
+func cancel_slot(slot_id: StringName) -> bool:
+	return ability_controller.cancel(get_ability(slot_id))
+
+
 func get_ability(slot_id: StringName) -> Ability:
 	return ability_controller.get_ability_for_slot(slot_id)
+
+
+# The gun in a slot, or null if that slot isn't a RangedAttackAbility. Pass
+# &"" for the first gun in any slot. Other abilities use this to interact
+# with the gun (a dash that reloads: get_ranged_ability().reload_instantly()).
+func get_ranged_ability(slot_id: StringName = &"primary") -> RangedAttackAbility:
+	if slot_id != &"":
+		return get_ability(slot_id) as RangedAttackAbility
+	for ability in ability_controller.abilities:
+		if ability is RangedAttackAbility:
+			return ability
+	return null
+
+
+# The gun the reload key acts on: the primary if it's a gun, else the first.
+func get_reload_ability() -> RangedAttackAbility:
+	var primary := get_ranged_ability(&"primary")
+	return primary if primary != null else get_ranged_ability(&"")
+
+
+# Reload request (the hero_reload key, or AI). Returns true if a reload began.
+func reload() -> bool:
+	var gun := get_reload_ability()
+	return gun != null and gun.start_reload()
 
 
 func get_level() -> int:

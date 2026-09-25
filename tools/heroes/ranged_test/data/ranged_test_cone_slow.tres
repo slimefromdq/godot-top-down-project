@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_h1yqn"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_21u2h"]
+
+[resource]
+script = ExtResource("1_h1yqn")
+id = &"ranged_test_cone_slow"
+display_name = "In the cone"
+duration = 0.35
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 0.6
+})
+body_tint = Color(0.4, 0.8, 1, 0.3)

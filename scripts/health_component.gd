@@ -173,20 +173,27 @@ func reset() -> void:
 	health_changed.emit(current_health, max_health)
 
 
-func set_max_health(value: float) -> void:
-	# MOBA convention: gaining max HP (level up, item) also gains that much
-	# current HP; losing max HP only clamps.
+# The max-HP rule (a deliberate design choice; change it here):
+#   * losing max HP (a -Health debuff) clamps current HP to the new max;
+#   * gaining max HP from a level-up, an item or a buff being APPLIED also
+#     gains that much current HP (MOBA convention);
+#   * gaining max HP because a debuff was REMOVED grants nothing: current HP
+#     stays where it is (capped at the new max). Otherwise a debuff that
+#     clamped you would, on expiry, hand back HP you had already lost, i.e.
+#     free healing. StatusEffectComponent passes heal_on_gain = false then.
+func set_max_health(value: float, heal_on_gain: bool = true) -> void:
 	var gained := value - max_health
 	max_health = value
 	if not is_dead():
-		current_health = clampf(current_health + maxf(gained, 0.0), 1.0, max_health)
+		var grant := maxf(gained, 0.0) if heal_on_gain else 0.0
+		current_health = clampf(current_health + grant, 1.0, max_health)
 	health_changed.emit(current_health, max_health)
 
 
 func _on_stats_changed() -> void:
 	var new_max := stats_component.get_health()
 	if not is_equal_approx(new_max, max_health):
-		set_max_health(new_max)
+		set_max_health(new_max, stats_component.grants_health_on_gain())
 
 
 func _report_damage(info: DamageInfo) -> void:

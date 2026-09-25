@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="GroundZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/ground_zone_data.gd" id="1_tayy7"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_cyur2"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_cone_slow.tres" id="3_xq0o3"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="4_k1ryy"]
+
+[sub_resource type="Resource" id="Resource_ks3cm"]
+script = ExtResource("2_cyur2")
+radius = 320.0
+arc_degrees = 70.0
+
+[sub_resource type="Resource" id="Resource_sqf0k"]
+script = ExtResource("4_k1ryy")
+base = 12.0
+magic_ratio = 0.2
+
+[resource]
+script = ExtResource("1_tayy7")
+shape = SubResource("Resource_ks3cm")
+duration = 4.0
+tick_interval = 0.25
+tick_damage = SubResource("Resource_sqf0k")
+status_while_inside = ExtResource("3_xq0o3")
+meter_label = &"test_cone"
+follow_owner = true
+face_aim = true
+ends_if_owner_dies = true
+color = Color(0.4, 0.8, 1, 0.25)

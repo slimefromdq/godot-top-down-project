@@ -72,9 +72,15 @@ and watch the Output panel while you play.
 | `hurt` | Took damage | source, text (amount) |
 | `heal` | Healed | text (amount) |
 | `death` | Health hit 0 | source (killer) |
-| `fire` | Weapon fired | position (muzzle), direction |
-| `reload` / `reload_done` | Reload started / finished | |
-| `dry_fire` | Tried to fire with an empty magazine | |
+| `fire` | Weapon fired (legacy WeaponComponent) | position (muzzle), direction |
+| `reload` / `reload_done` | Reload started / finished (legacy) | |
+| `dry_fire` | Tried to fire with an empty magazine (legacy) | |
+| `<id>_fire` | A RangedAttackAbility shot | position (muzzle), direction, muzzle_index, ammo, max_ammo, charge_ratio, perfect |
+| `<id>_hit` | One of its projectiles hit | position, target, damage |
+| `<id>_empty` | Tried to fire with too little ammo | |
+| `<id>_reload_start` / `_reload_round` / `_reload_end` / `_reload_cancel` | Gun reload started / one round loaded (PER_ROUND) / full / stopped early | duration (start), ammo (round) |
+| `<id>_charge_start` / `_charge_full` / `_charge_release` / `_charge_cancel` | Hold-to-charge phases | charge_ratio, perfect |
+| `<id>_zone_start` / `_zone_end` | ZoneAbility channel began / ended | zone_duration |
 | `ability_failed` | A cast was rejected | text ("No target", "Out of range", "Blocked") |
 | `<ability_id>` | Ability cast (e.g. `piercing_lance`, `phase_dash`, `overdrive`, `arc_zap`) | direction, duration, target, target_position |
 | `phase_dash_end` | Dash finished | position (landing spot) |

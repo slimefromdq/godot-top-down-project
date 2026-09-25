@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_dlptx"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_nadwt"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_slug.tres" id="3_hktlp"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="4_a2lhp"]
+
+[sub_resource type="Resource" id="Resource_7ju7g"]
+script = ExtResource("2_nadwt")
+base = 40.0
+weapon_ratio = 0.6
+
+[sub_resource type="Resource" id="Resource_iwiew"]
+script = ExtResource("2_nadwt")
+base = 120.0
+weapon_ratio = 1.4
+
+[sub_resource type="Resource" id="Resource_84grq"]
+script = ExtResource("2_nadwt")
+base = 1.25
+
+[resource]
+script = ExtResource("4_a2lhp")
+projectile = ExtResource("3_hktlp")
+fire_mode = 1
+shots_per_second = 1.0
+id = &"ranged_test_charged_shot"
+display_name = "Charged Shot"
+description = "Hold to charge (1 s), release to fire. Damage grows with charge; a release within 0.2 s of full is perfect (x1.25)."
+ability_script = ExtResource("1_dlptx")
+cooldown = 6.0
+damage = SubResource("Resource_7ju7g")
+tags = Array[StringName]([&"ability"])
+values = Dictionary[StringName, ExtResource("2_nadwt")]({
+&"damage_full": SubResource("Resource_iwiew"),
+&"perfect_damage_multiplier": SubResource("Resource_84grq")
+})
+charge_enabled = true
+charge_min_to_fire = 0.25
+charge_move_speed_multiplier = 0.5
+charge_perfect_window = 0.2
+feel_preset = &"charged"

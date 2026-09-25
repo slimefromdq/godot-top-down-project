@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_1fu3h"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_nynqu"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_bullet.tres" id="3_2li1d"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="4_s11jh"]
+
+[sub_resource type="Resource" id="Resource_oewth"]
+script = ExtResource("2_nynqu")
+base = 10.0
+weapon_ratio = 0.25
+
+[resource]
+script = ExtResource("4_s11jh")
+projectile = ExtResource("3_2li1d")
+spread_degrees = 6.0
+shots_per_second = 8.0
+magazine_size = 24
+reload_time = 1.6
+reload_per_level = -0.02
+id = &"ranged_test_rifle"
+display_name = "Test Rifle"
+description = "AUTO. Hold to fire, 24 rounds, full reload."
+ability_script = ExtResource("1_1fu3h")
+cooldown = 0.0
+damage = SubResource("Resource_oewth")
+tags = Array[StringName]([&"basic_attack"])
+feel_preset = &"shot"

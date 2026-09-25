@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://tools/heroes/ranged_test/reload_dash.gd" id="1_xmxbp"]
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="2_akj0h"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_olqwe"]
+
+[resource]
+script = ExtResource("2_akj0h")
+distance = 300.0
+speed = 1800.0
+id = &"ranged_test_reload_dash"
+display_name = "Reload Dash"
+description = "Dash; refills the gun."
+ability_script = ExtResource("1_xmxbp")
+cooldown = 7.0
+tags = Array[StringName]([&"movement"])

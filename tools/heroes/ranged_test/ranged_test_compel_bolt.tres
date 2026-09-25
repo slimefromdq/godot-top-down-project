@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_nffob"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_mqgn7"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_compel.tres" id="3_5q7cv"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_slug.tres" id="4_pyyxy"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="5_8yu4m"]
+
+[sub_resource type="Resource" id="Resource_dq8vr"]
+script = ExtResource("2_mqgn7")
+base = 15.0
+weapon_ratio = 0.2
+
+[resource]
+script = ExtResource("5_8yu4m")
+projectile = ExtResource("4_pyyxy")
+fire_mode = 1
+id = &"ranged_test_compel_bolt"
+display_name = "Compel Bolt"
+description = "The target walks toward you for 1.5 s."
+ability_script = ExtResource("1_nffob")
+cooldown = 10.0
+damage = SubResource("Resource_dq8vr")
+on_hit_status = ExtResource("3_5q7cv")
+tags = Array[StringName]([&"ability"])
+feel_preset = &"shot"

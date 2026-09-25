@@ -394,6 +394,11 @@ func _hero_tab(hero: Hero) -> Control:
 	var definitions := HeroScaffold.find_definitions()
 	for definition in definitions:
 		options.add_item(definition.display_name)
+	# Test-only heroes (tools/heroes/*) while developing; never in a roster.
+	if OS.is_debug_build():
+		for definition in HeroScaffold.find_dev_definitions():
+			definitions.append(definition)
+			options.add_item("%s (test)" % definition.display_name)
 	swap_row.add_child(options)
 	swap_row.add_child(_button("Play as", func():
 		if options.selected >= 0:
