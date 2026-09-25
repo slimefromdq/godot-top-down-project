@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="1_e5dgo"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_m02tk"]
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="3_r2oh4"]
+[ext_resource type="PackedScene" path="res://heroes/melody/vfx/chord_note.tscn" id="4_bobh0"]
+
+[sub_resource type="Resource" id="Resource_niwvg"]
+script = ExtResource("2_m02tk")
+kind = 1
+radius = 70.0
+
+[resource]
+script = ExtResource("3_r2oh4")
+speed = 700.0
+lifetime = 0.45
+radius = 14.0
+explode_on_hit = true
+explode_on_expire = true
+explosion_shape = SubResource("Resource_niwvg")
+explosion_label = &"chord"
+explosion_effect = ExtResource("1_e5dgo")
+visual_scene = ExtResource("4_bobh0")

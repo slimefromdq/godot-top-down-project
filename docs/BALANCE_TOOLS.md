@@ -48,7 +48,8 @@ values.
 
 Tracks the local player since the last reset:
 
-* Damage dealt, with DPS over a rolling 5-second window. Shields show as "Shielding done" (absorbed by shields you gave) and "Shielded" (absorbed for you; never counted as damage taken). DPS divides by the time actually spent fighting in that window, so a short burst isn't diluted.
+* Damage dealt, with DPS over a rolling 5-second window. DPS divides by the time actually spent fighting in that window, so a short burst isn't diluted.
+* Shields: "Shielding done" (damage your shields absorbed, by status) and "Shielded" (damage absorbed for you, never counted as damage taken).
 * A **breakdown by source**, using each hit's label: `blade`, `crescent`, `burn`, `fire_trail`, `searing_cut`, `dawnbreaker`, `phoenix_burst` …, with total, share and hit count.
 * **Healing received** by source (`searing_cut_heal`, `phoenix_rebirth` …) and damage taken.
 
@@ -109,6 +110,7 @@ godot --headless res://tools/heroes/ranged_infra_test.tscn
 godot --headless res://tools/heroes/support_infra_test.tscn
 godot --headless res://tools/heroes/avery_test.tscn
 godot --headless res://tools/heroes/jose_test.tscn
+godot --headless res://tools/heroes/melody_test.tscn
 godot --headless res://tools/heroes/feel_test.tscn
 godot --headless res://tools/heroes/balance_tools_test.tscn
 godot --headless res://tools/heroes/map_switch_test.tscn

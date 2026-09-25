@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_5bamq"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_j5s6o"]
+
+[resource]
+script = ExtResource("1_5bamq")
+id = &"melody_boop"
+display_name = "Booped"
+duration = 0.2
+displace_distance = 150.0
+displace_duration = 0.14

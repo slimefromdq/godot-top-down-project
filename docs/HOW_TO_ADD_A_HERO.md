@@ -301,6 +301,27 @@ FeelProfile, not the cue profiles.
 
 ---
 
+## What Melody took
+
+A support whose tuba drives everything. Built on the generic support
+systems (rhythm, shields, explosions, fades, ally targeting, formations):
+
+| Slot | Data | Script |
+|---|---|---|
+| passive | `the_key.tres`: max turns, encore threshold, unwind timings, encore bonus | `melody_key.gd` (`PassiveAbility`): turns, the encore rule, unwinding, pips, the key on her back |
+| primary | `heavy_notes.tres` (`MelodyHeavyNotesData`): AUTO, no ammo, exploding note; `chord_projectile` splits | `heavy_notes_ability.gd`: fires the Chord on an encore |
+| ability_1 | `wind_up_key.tres`: `ally_targeting`, `tether_range`, charge, a fading `on_hit_status` | `wind_up_key_ability.gd`: strength from the charge, Master Key encore |
+| movement | `wind_up_dash.tres`: charged `ChargeData` with `min_distance`, bash, boop status | `wind_up_dash_ability.gd`: the Pre-wound ricochet encore only |
+| cc | `performance.tres` (`MelodyPerformanceData`): a 4-note `RhythmPhrase`, a shield status | `performance_ability.gd`: winds the key, pulses shields |
+| ultimate | `grand_march.tres` (`MelodyGrandMarchData`): 8-note phrase, follow-trail compel, speed and shield statuses | `grand_march_ability.gd`: gathers the line, extends on perfects |
+
+The encore rule lives in one place: each ability asks the passive
+`key.consume_encore(self)` when it commits (a cast, or a charge's release)
+and gets a strength back, or -1. Encore numbers use `encore_value()`, the
+BASE of a named value times that strength, so they don't grow with Magic.
+The passive sits in the optional `passive` slot (GameRules), so its numbers
+show in F1/F2/CSV like any ability's.
+
 ## What Jose took
 
 A CARRY with two revolvers. Tools → New Hero from Template → "Jose", then:

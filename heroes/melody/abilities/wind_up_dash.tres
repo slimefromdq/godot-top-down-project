@@ -1,0 +1,51 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://heroes/melody/abilities/wind_up_dash_ability.gd" id="1_c68yx"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_jifl7"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_k1psc"]
+[ext_resource type="Resource" path="res://heroes/melody/data/melody_boop.tres" id="4_rfbyg"]
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="5_vadac"]
+
+[sub_resource type="Resource" id="Resource_yrriq"]
+script = ExtResource("2_jifl7")
+base = 20.0
+magic_ratio = 0.3
+
+[sub_resource type="Resource" id="Resource_kadqa"]
+script = ExtResource("3_k1psc")
+kind = 1
+radius = 70.0
+
+[sub_resource type="Resource" id="Resource_7e46r"]
+script = ExtResource("2_jifl7")
+base = 60.0
+magic_ratio = 0.6
+
+[sub_resource type="Resource" id="Resource_5to1s"]
+script = ExtResource("2_jifl7")
+base = 2.0
+
+[resource]
+script = ExtResource("5_vadac")
+distance = 450.0
+min_distance = 150.0
+carry_momentum = false
+id = &"wind_up_dash"
+display_name = "Wind-Up Dash"
+description = "Hold to wind, release to scoot: longer holds go further and boop harder. Encore (Pre-wound): instant, full distance, ricochets off walls and enemies."
+ability_script = ExtResource("1_c68yx")
+cooldown = 8.0
+hit_shape = SubResource("Resource_kadqa")
+damage = SubResource("Resource_yrriq")
+damage_type = 1
+on_hit_status = ExtResource("4_rfbyg")
+tags = Array[StringName]([&"movement", &"ability"])
+values = Dictionary[StringName, ExtResource("2_jifl7")]({
+&"damage_full": SubResource("Resource_7e46r"),
+&"prewound_bounces": SubResource("Resource_5to1s")
+})
+charge_enabled = true
+charge_time_max = 0.8
+charge_below_min = 1
+charge_move_speed_multiplier = 0.5
+feel_preset = &"dash"

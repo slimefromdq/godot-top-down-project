@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_gridi"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_507es"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="3_vwwy1"]
+
+[sub_resource type="Resource" id="Resource_ocevc"]
+script = ExtResource("2_507es")
+base = 30.0
+magic_ratio = 0.35
+
+[resource]
+script = ExtResource("1_gridi")
+id = &"melody_performance_shield"
+display_name = "Encore Shield"
+shield_amount = SubResource("Resource_ocevc")
+body_tint = Color(0.8, 0.95, 1, 0.25)

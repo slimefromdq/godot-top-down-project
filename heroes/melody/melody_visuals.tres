@@ -1,0 +1,256 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_6h0jp"]
+[ext_resource type="PackedScene" path="res://effects/spawn_puff.tscn" id="2_r804j"]
+[ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="3_jgyp8"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="4_gxd3q"]
+[ext_resource type="PackedScene" path="res://effects/muzzle_flash.tscn" id="5_8uwrj"]
+[ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="6_gaxmk"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="7_ldofm"]
+[ext_resource type="PackedScene" path="res://effects/feel/telegraph_line.tscn" id="8_o26mv"]
+[ext_resource type="PackedScene" path="res://effects/overdrive_burst.tscn" id="9_iy0pw"]
+[ext_resource type="PackedScene" path="res://effects/dash_afterimage.tscn" id="10_f2en2"]
+[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="11_6y77g"]
+[ext_resource type="PackedScene" path="res://effects/wall_puff.tscn" id="12_wck78"]
+[ext_resource type="PackedScene" path="res://effects/kill_confirm.tscn" id="13_ofqis"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="14_gw67x"]
+
+[sub_resource type="Resource" id="Resource_cnpuh"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("2_r804j")
+align_to_direction = false
+
+[sub_resource type="Resource" id="Resource_wfgws"]
+script = ExtResource("1_6h0jp")
+flash_color = Color(1, 0.25, 0.25, 0.9)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_77cpe"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("3_jgyp8")
+align_to_direction = false
+tint = Color(0.45, 1, 0.5, 1)
+
+[sub_resource type="Resource" id="Resource_g4h7b"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("4_gxd3q")
+align_to_direction = false
+screen_shake = 0.8
+
+[sub_resource type="Resource" id="Resource_xg4fw"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("3_jgyp8")
+align_to_direction = false
+
+[sub_resource type="Resource" id="Resource_ew4i6"]
+script = ExtResource("1_6h0jp")
+flash_color = Color(1, 0.9, 0.4, 0.5)
+flash_duration = 0.08
+
+[sub_resource type="Resource" id="Resource_5qvxs"]
+script = ExtResource("1_6h0jp")
+flash_color = Color(0.6, 0.6, 0.7, 0.4)
+flash_duration = 0.06
+
+[sub_resource type="Resource" id="Resource_dhnmu"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("5_8uwrj")
+scale = 1.3
+tint = Color(1, 0.7, 0.9, 1)
+
+[sub_resource type="Resource" id="Resource_b7455"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("6_gaxmk")
+tint = Color(1, 0.7, 0.9, 1)
+
+[sub_resource type="Resource" id="Resource_7tmkf"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("7_ldofm")
+align_to_direction = false
+tint = Color(1, 0.85, 0.35, 1)
+flash_color = Color(1, 0.9, 0.5, 0.8)
+flash_duration = 0.15
+
+[sub_resource type="Resource" id="Resource_jwbcy"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("8_o26mv")
+attach_to_actor = true
+align_to_direction = false
+
+[sub_resource type="Resource" id="Resource_r224m"]
+script = ExtResource("1_6h0jp")
+flash_color = Color(1, 0.9, 0.4, 0.6)
+
+[sub_resource type="Resource" id="Resource_1vmj3"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("7_ldofm")
+align_to_direction = false
+scale = 0.7
+tint = Color(1, 0.85, 0.35, 1)
+
+[sub_resource type="Resource" id="Resource_7wqk3"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("9_iy0pw")
+align_to_direction = false
+tint = Color(1, 0.85, 0.35, 1)
+
+[sub_resource type="Resource" id="Resource_v0ba7"]
+script = ExtResource("1_6h0jp")
+flash_color = Color(1, 0.95, 0.6, 0.9)
+flash_duration = 0.2
+
+[sub_resource type="Resource" id="Resource_xwbdw"]
+script = ExtResource("1_6h0jp")
+flash_color = Color(1, 0.3, 0.3, 0.7)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_ioekm"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("8_o26mv")
+attach_to_actor = true
+align_to_direction = false
+
+[sub_resource type="Resource" id="Resource_dnhdp"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("10_f2en2")
+attach_to_actor = true
+
+[sub_resource type="Resource" id="Resource_bdpvf"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("6_gaxmk")
+scale = 1.4
+tint = Color(1, 0.7, 0.9, 1)
+screen_shake = 0.15
+
+[sub_resource type="Resource" id="Resource_5r12j"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("11_6y77g")
+align_to_direction = false
+
+[sub_resource type="Resource" id="Resource_gf411"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("7_ldofm")
+align_to_direction = false
+tint = Color(1, 0.85, 0.35, 1)
+flash_color = Color(1, 0.9, 0.5, 0.8)
+flash_duration = 0.15
+
+[sub_resource type="Resource" id="Resource_0n2h0"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("12_wck78")
+align_to_direction = false
+scale = 1.3
+screen_shake = 0.2
+
+[sub_resource type="Resource" id="Resource_1ennm"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("7_ldofm")
+align_to_direction = false
+scale = 0.6
+tint = Color(1, 0.85, 0.35, 1)
+
+[sub_resource type="Resource" id="Resource_d11pm"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("6_gaxmk")
+align_to_direction = false
+tint = Color(0.85, 0.95, 1, 1)
+
+[sub_resource type="Resource" id="Resource_wb5eq"]
+script = ExtResource("1_6h0jp")
+flash_color = Color(0.6, 0.4, 0.3, 0.7)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_ce53d"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("7_ldofm")
+align_to_direction = false
+scale = 1.6
+tint = Color(0.75, 0.9, 1, 1)
+
+[sub_resource type="Resource" id="Resource_o5jdy"]
+script = ExtResource("1_6h0jp")
+flash_color = Color(1, 0.8, 0.5, 0.6)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_wnkfc"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("9_iy0pw")
+align_to_direction = false
+tint = Color(1, 0.7, 0.9, 1)
+screen_shake = 0.3
+
+[sub_resource type="Resource" id="Resource_aamm0"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("7_ldofm")
+align_to_direction = false
+scale = 0.6
+tint = Color(1, 0.85, 0.35, 1)
+
+[sub_resource type="Resource" id="Resource_4led6"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("6_gaxmk")
+align_to_direction = false
+tint = Color(0.85, 0.95, 1, 1)
+
+[sub_resource type="Resource" id="Resource_olg8n"]
+script = ExtResource("1_6h0jp")
+flash_color = Color(0.6, 0.4, 0.3, 0.7)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_8cjsp"]
+script = ExtResource("1_6h0jp")
+flash_color = Color(1, 0.9, 0.4, 0.8)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_8yupw"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("11_6y77g")
+align_to_direction = false
+tint = Color(1, 0.7, 0.9, 1)
+
+[sub_resource type="Resource" id="Resource_13hgn"]
+script = ExtResource("1_6h0jp")
+effect_scene = ExtResource("13_ofqis")
+align_to_direction = false
+
+[resource]
+script = ExtResource("14_gw67x")
+body_scale = Vector2(0.78, 0.78)
+body_tint = Color(1, 0.75, 0.85, 0.55)
+cues = Dictionary[StringName, ExtResource("1_6h0jp")]({
+&"ability_failed": SubResource("Resource_xg4fw"),
+&"death": SubResource("Resource_g4h7b"),
+&"grand_march_end": SubResource("Resource_8yupw"),
+&"grand_march_extend": SubResource("Resource_8cjsp"),
+&"grand_march_note_good": SubResource("Resource_4led6"),
+&"grand_march_note_miss": SubResource("Resource_olg8n"),
+&"grand_march_note_perfect": SubResource("Resource_aamm0"),
+&"grand_march_start": SubResource("Resource_wnkfc"),
+&"grand_march_windup": SubResource("Resource_o5jdy"),
+&"heal": SubResource("Resource_77cpe"),
+&"heavy_notes_encore": SubResource("Resource_7tmkf"),
+&"heavy_notes_fire": SubResource("Resource_dhnmu"),
+&"heavy_notes_hit": SubResource("Resource_b7455"),
+&"hurt": SubResource("Resource_wfgws"),
+&"performance_note_good": SubResource("Resource_d11pm"),
+&"performance_note_miss": SubResource("Resource_wb5eq"),
+&"performance_note_perfect": SubResource("Resource_1ennm"),
+&"performance_pulse": SubResource("Resource_ce53d"),
+&"spawn": SubResource("Resource_cnpuh"),
+&"the_key_turn": SubResource("Resource_ew4i6"),
+&"the_key_unwind": SubResource("Resource_5qvxs"),
+&"wind_up_dash_active": SubResource("Resource_dnhdp"),
+&"wind_up_dash_bounce": SubResource("Resource_0n2h0"),
+&"wind_up_dash_charge_start": SubResource("Resource_ioekm"),
+&"wind_up_dash_encore": SubResource("Resource_gf411"),
+&"wind_up_dash_end": SubResource("Resource_5r12j"),
+&"wind_up_dash_hit": SubResource("Resource_bdpvf"),
+&"wind_up_key_charge_full": SubResource("Resource_r224m"),
+&"wind_up_key_charge_start": SubResource("Resource_jwbcy"),
+&"wind_up_key_encore": SubResource("Resource_v0ba7"),
+&"wind_up_key_master_key": SubResource("Resource_7wqk3"),
+&"wind_up_key_tether_break": SubResource("Resource_xwbdw"),
+&"wind_up_key_wind": SubResource("Resource_1vmj3")
+})
+kill_effect = SubResource("Resource_13hgn")
+damage_number_color = Color(1, 0.7, 0.9, 1)

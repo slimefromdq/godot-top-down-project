@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3]
+
+[ext_resource type="Script" path="res://heroes/melody/abilities/wind_up_key_ability.gd" id="1_mfuy8"]
+[ext_resource type="Script" path="res://scripts/abilities/ally_targeting.gd" id="2_7maen"]
+[ext_resource type="Resource" path="res://heroes/melody/data/melody_wound_up.tres" id="3_p4hiq"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="4_s2tlm"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="5_s0o0n"]
+
+[sub_resource type="Resource" id="Resource_qo5j0"]
+script = ExtResource("2_7maen")
+cast_range = 650.0
+snap_radius = 140.0
+allow_self = false
+requires_line_of_sight = true
+
+[sub_resource type="Resource" id="Resource_rcnso"]
+script = ExtResource("5_s0o0n")
+base = 0.35
+
+[sub_resource type="Resource" id="Resource_yeuww"]
+script = ExtResource("5_s0o0n")
+base = 350.0
+
+[resource]
+script = ExtResource("4_s2tlm")
+id = &"wind_up_key"
+display_name = "Wind-Up Key"
+description = "Hold on an ally to crank their key; release to wind them up: faster moving and firing, running down over 4 s. Encore (Master Key): it jumps to every ally near them."
+ability_script = ExtResource("1_mfuy8")
+cooldown = 10.0
+on_hit_status = ExtResource("3_p4hiq")
+tags = Array[StringName]([&"ability"])
+values = Dictionary[StringName, ExtResource("5_s0o0n")]({
+&"master_key_radius": SubResource("Resource_yeuww"),
+&"min_strength": SubResource("Resource_rcnso")
+})
+ally_targeting = SubResource("Resource_qo5j0")
+tether_range = 700.0
+charge_enabled = true
+charge_min_to_fire = 0.2
+charge_move_speed_multiplier = 0.75
+feel_preset = &"crank"

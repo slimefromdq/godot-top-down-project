@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RhythmPhrase" format=3]
+
+[ext_resource type="Script" path="res://scripts/rhythm/rhythm_phrase.gd" id="1_0nubb"]
+
+[resource]
+script = ExtResource("1_0nubb")
+note_count = 8
+bpm = 120.0
+lead_in = 0.5
+ring_start_radius = 170.0
+note_pitches = Array[float]([1.0, 1.0, 1.498, 1.498, 1.682, 1.682, 1.498, 1.26])

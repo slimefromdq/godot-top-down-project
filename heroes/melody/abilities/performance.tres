@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="MelodyPerformanceData" format=3]
+
+[ext_resource type="Script" path="res://heroes/melody/abilities/performance_ability.gd" id="1_emkjl"]
+[ext_resource type="Resource" path="res://heroes/melody/data/melody_performance_phrase.tres" id="2_7uk7w"]
+[ext_resource type="Script" path="res://heroes/melody/abilities/performance_data.gd" id="3_h06gg"]
+[ext_resource type="Resource" path="res://heroes/melody/data/melody_performance_shield.tres" id="4_gd238"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="5_d7l1p"]
+
+[sub_resource type="Resource" id="Resource_jq2od"]
+script = ExtResource("5_d7l1p")
+base = 350.0
+
+[sub_resource type="Resource" id="Resource_vr2dy"]
+script = ExtResource("5_d7l1p")
+base = 1.0
+
+[sub_resource type="Resource" id="Resource_sqb62"]
+script = ExtResource("5_d7l1p")
+base = 0.5
+
+[resource]
+script = ExtResource("3_h06gg")
+phrase = ExtResource("2_7uk7w")
+shield_status = ExtResource("4_gd238")
+id = &"performance"
+display_name = "Performance"
+description = "Play four notes on the beat (E). Each hit winds her key and pulses a shield to nearby allies; perfects pulse harder and strengthen her next encore."
+ability_script = ExtResource("1_emkjl")
+cooldown = 4.0
+tags = Array[StringName]([&"ability"])
+values = Dictionary[StringName, ExtResource("5_d7l1p")]({
+&"good_shield_strength": SubResource("Resource_sqb62"),
+&"perfect_shield_strength": SubResource("Resource_vr2dy"),
+&"pulse_radius": SubResource("Resource_jq2od")
+})
+feel_preset = &"perform"
