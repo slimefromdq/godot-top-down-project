@@ -88,6 +88,14 @@ For each slot in the definition's `abilities` dictionary, point at an
 | custom per-target zone logic | `spawn_owned_zone()` from any ability + the zone's `target_*` signals | a small script |
 | a channel that blocks some abilities but not others | `controller.lock_abilities(self, allowed_slots, quiet_slots)` / `unlock_abilities(self)` | a small script |
 | another ability firing your gun (autofire, turrets) | `hero.get_ranged_ability().fire_extra_shot(direction, label)` | a small script |
+| a timing minigame (hit notes on the beat) | `RhythmPhrase` + `RhythmPerformer.find_or_create(actor).play(phrase, cue_prefix)` | a small script (react to `note_graded`) |
+| a shield (absorb) | `StatusEffect.shield_amount` | none |
+| a projectile that explodes (on hit / at range), optionally splitting | `ProjectileData` Explosion group (+ Split subgroup) | none |
+| a buff that runs down over its duration | `StatusEffect.fade_multipliers`; `apply(..., strength)` for charge-scaled buffs | none |
+| cast on an ally near the cursor, optionally tethered | `AbilityData.ally_targeting` (`AllyTargeting`) + `tether_range`; `cast_ally` in the script | none |
+| a formation / parade line behind the caster | compel status with `compel_follow_trail` (+ `compel_breakable`) | none |
+| a charged dash that goes further and hits harder | `ChargeData` with `charge_enabled`, `min_distance`, `hit_shape` + `damage` / `values/damage_full` + `on_hit_status` | none |
+| a passive with stacks on the ability bar | the optional `passive` slot + `PassiveAbility` (override `get_hud_pips`) | a small script |
 | something new | extend `Ability` (or `MeleeAttackAbility` / `RangedAttackAbility`) | a small script |
 
 `tools/heroes/ranged_test/` is a test-only hero that uses every row above
@@ -163,6 +171,24 @@ func _ready() -> void:
 		if id == &"my_mark":
 			reset_cooldown())            # also: reduce_cooldown(seconds)
 ```
+
+**Rhythm.** A `RhythmPhrase` (notes, bpm, lead-in, good/perfect windows,
+input action, note pitches) is played by the actor's `RhythmPerformer`:
+
+```gdscript
+var performer := RhythmPerformer.find_or_create(actor)
+performer.note_graded.connect(_on_note)   # (index, RhythmResults.Grade)
+performer.play(data.phrase, ability_id)   # cues <id>_note_perfect/_good/_miss
+```
+
+While it plays, the player's presses of `input_action` go to
+`press_note()` instead of the slot (AI calls `press_note()` itself). The
+ring is drawn on the actor. A stun cancels it (graded notes still count).
+
+**Shields.** `StatusEffect.shield_amount` (a ScalingValue from the
+applier's stats, times the application's strength) soaks damage after
+resistances, before health; the status ends when it's used up. The health
+bar draws it, and the meter shows "Shielding done" / "Shielded".
 
 **A zone that follows you.** `ZoneAbilityData` with `zone_duration` and a
 `GroundZoneData` zone: `shape` ARC, `follow_owner`, `face_aim`, `affects`
@@ -274,6 +300,27 @@ FeelProfile, not the cue profiles.
   hero automatically.
 
 ---
+
+## What Melody took
+
+A support whose tuba drives everything. Built on the generic support
+systems (rhythm, shields, explosions, fades, ally targeting, formations):
+
+| Slot | Data | Script |
+|---|---|---|
+| passive | `the_key.tres`: max turns, encore threshold, unwind timings, encore bonus | `melody_key.gd` (`PassiveAbility`): turns, the encore rule, unwinding, pips, the key on her back |
+| primary | `heavy_notes.tres` (`MelodyHeavyNotesData`): AUTO, no ammo, exploding note; `chord_projectile` splits | `heavy_notes_ability.gd`: fires the Chord on an encore |
+| ability_1 | `wind_up_key.tres`: `ally_targeting`, `tether_range`, charge, a fading `on_hit_status` | `wind_up_key_ability.gd`: strength from the charge, Master Key encore |
+| movement | `wind_up_dash.tres`: charged `ChargeData` with `min_distance`, bash, boop status | `wind_up_dash_ability.gd`: the Pre-wound ricochet encore only |
+| cc | `performance.tres` (`MelodyPerformanceData`): a 4-note `RhythmPhrase`, a shield status | `performance_ability.gd`: winds the key, pulses shields |
+| ultimate | `grand_march.tres` (`MelodyGrandMarchData`): 8-note phrase, follow-trail compel, speed and shield statuses | `grand_march_ability.gd`: gathers the line, extends on perfects |
+
+The encore rule lives in one place: each ability asks the passive
+`key.consume_encore(self)` when it commits (a cast, or a charge's release)
+and gets a strength back, or -1. Encore numbers use `encore_value()`, the
+BASE of a named value times that strength, so they don't grow with Magic.
+The passive sits in the optional `passive` slot (GameRules), so its numbers
+show in F1/F2/CSV like any ability's.
 
 ## What Jose took
 

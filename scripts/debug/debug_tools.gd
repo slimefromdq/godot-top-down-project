@@ -271,7 +271,13 @@ func meter_text() -> String:
 	lines.append("Healing received %d" % meter.get_total_healed())
 	for row in meter.get_healing_breakdown():
 		lines.append("  %-16s %7d  %3d%%" % [row.label, row.total, roundi(row.share * 100.0)])
+	if meter.get_total_shielding_done() > 0.0:
+		lines.append("Shielding done %d" % meter.get_total_shielding_done())
+		for row in meter.get_shielding_breakdown():
+			lines.append("  %-16s %7d  %3d%%" % [row.label, row.total, roundi(row.share * 100.0)])
 	lines.append("Damage taken %d" % meter.get_total_taken())
+	if meter.get_total_shielded() > 0.0:
+		lines.append("Shielded (absorbed) %d" % meter.get_total_shielded())
 	return "\n".join(lines)
 
 

@@ -1,0 +1,67 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="1_def"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="2_block"]
+[ext_resource type="Resource" path="res://heroes/melody/abilities/heavy_notes.tres" id="2_bvtcy"]
+[ext_resource type="Resource" path="res://heroes/melody/abilities/wind_up_key.tres" id="3_m1e2x"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="3_scaling"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="4_ability"]
+[ext_resource type="Resource" path="res://heroes/melody/abilities/wind_up_dash.tres" id="4_vh1gk"]
+[ext_resource type="Resource" path="res://heroes/melody/abilities/performance.tres" id="5_eum32"]
+[ext_resource type="Resource" path="res://heroes/melody/abilities/grand_march.tres" id="6_7tnx6"]
+[ext_resource type="Resource" path="res://heroes/melody/melody_feel.tres" id="6_feel"]
+[ext_resource type="Resource" path="res://heroes/melody/abilities/the_key.tres" id="7_jydg0"]
+[ext_resource type="Resource" path="res://heroes/melody/melody_audio.tres" id="8_wwq03"]
+[ext_resource type="Resource" path="res://heroes/melody/melody_visuals.tres" id="13_53jtc"]
+
+[sub_resource type="Resource" id="Resource_r2jyf"]
+script = ExtResource("3_scaling")
+base = 20.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_i3ivf"]
+script = ExtResource("3_scaling")
+base = 620.0
+growth = 62.0
+
+[sub_resource type="Resource" id="Resource_og122"]
+script = ExtResource("3_scaling")
+base = 52.0
+growth = 6.0
+
+[sub_resource type="Resource" id="Resource_g8w28"]
+script = ExtResource("3_scaling")
+base = 24.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_ynpi4"]
+script = ExtResource("3_scaling")
+base = 18.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_wcjd1"]
+script = ExtResource("2_block")
+health = SubResource("Resource_i3ivf")
+weapon = SubResource("Resource_ynpi4")
+magic = SubResource("Resource_og122")
+armor = SubResource("Resource_r2jyf")
+magic_resist = SubResource("Resource_g8w28")
+
+[resource]
+script = ExtResource("1_def")
+hero_id = &"melody"
+display_name = "Melody"
+title = "Living Doll"
+description = "A ball-jointed doll brought to life by passion: a marching-band girl with a huge contra tuba. Playing winds the key in her back, and the wound spring powers her encores."
+stats = SubResource("Resource_wcjd1")
+abilities = Dictionary[StringName, ExtResource("4_ability")]({
+&"ability_1": ExtResource("3_m1e2x"),
+&"cc": ExtResource("5_eum32"),
+&"movement": ExtResource("4_vh1gk"),
+&"passive": ExtResource("7_jydg0"),
+&"primary": ExtResource("2_bvtcy"),
+&"ultimate": ExtResource("6_7tnx6")
+})
+feel_profile = ExtResource("6_feel")
+visual_profile = ExtResource("13_53jtc")
+audio_profile = ExtResource("8_wwq03")

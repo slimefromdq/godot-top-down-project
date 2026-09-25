@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="MelodyGrandMarchData" format=3]
+
+[ext_resource type="Script" path="res://heroes/melody/abilities/grand_march_ability.gd" id="1_c6tr6"]
+[ext_resource type="Resource" path="res://heroes/melody/data/melody_parade.tres" id="2_hup61"]
+[ext_resource type="Resource" path="res://heroes/melody/data/melody_march_phrase.tres" id="3_gmvu5"]
+[ext_resource type="Script" path="res://heroes/melody/abilities/grand_march_data.gd" id="4_erjbi"]
+[ext_resource type="Resource" path="res://heroes/melody/data/melody_march_shield.tres" id="5_w23jx"]
+[ext_resource type="Resource" path="res://heroes/melody/data/melody_march_speed.tres" id="6_6jedu"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="7_ycqka"]
+
+[sub_resource type="Resource" id="Resource_5730w"]
+script = ExtResource("7_ycqka")
+base = 450.0
+
+[sub_resource type="Resource" id="Resource_vn700"]
+script = ExtResource("7_ycqka")
+base = 6.0
+
+[sub_resource type="Resource" id="Resource_11vo1"]
+script = ExtResource("7_ycqka")
+base = 0.75
+
+[sub_resource type="Resource" id="Resource_6qe0h"]
+script = ExtResource("7_ycqka")
+base = 1.0
+
+[sub_resource type="Resource" id="Resource_4r8sx"]
+script = ExtResource("7_ycqka")
+base = 0.5
+
+[resource]
+script = ExtResource("4_erjbi")
+march_phrase = ExtResource("3_gmvu5")
+formation_status = ExtResource("2_hup61")
+speed_status = ExtResource("6_6jedu")
+shield_status = ExtResource("5_w23jx")
+id = &"grand_march"
+display_name = "Grand March"
+description = "Nearby allies fall in line behind her and everyone marches faster. Play the eight-note march on E: perfects extend it and shield the band."
+ability_script = ExtResource("1_c6tr6")
+cooldown = 70.0
+tags = Array[StringName]([&"ability"])
+values = Dictionary[StringName, ExtResource("7_ycqka")]({
+&"gather_radius": SubResource("Resource_5730w"),
+&"good_shield_strength": SubResource("Resource_4r8sx"),
+&"march_duration": SubResource("Resource_vn700"),
+&"perfect_extension": SubResource("Resource_11vo1"),
+&"perfect_shield_strength": SubResource("Resource_6qe0h")
+})
+feel_preset = &"march"

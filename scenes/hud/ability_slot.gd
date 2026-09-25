@@ -44,6 +44,9 @@ func _draw() -> void:
 	var gun := ability as RangedAttackAbility
 	if gun != null and gun.has_magazine():
 		_draw_ammo(gun)
+	var pips := ability.get_hud_pips()
+	if pips.y > 0:
+		_draw_pips(pips.x, pips.y)
 
 	var ratio := ability.get_cooldown_ratio()
 	if ratio > 0.0:
@@ -70,6 +73,17 @@ func _draw_ammo(gun: RangedAttackAbility) -> void:
 		_draw_centered("R", Vector2(SIZE.x / 2.0, SIZE.y / 2.0 - 10), 20, Color(0.6, 0.85, 1.0))
 	var color := Color(1, 0.35, 0.3) if gun.get_ammo() == 0 else Color.WHITE
 	_draw_centered("%d/%d" % [gun.get_ammo(), gun.get_max_ammo()], Vector2(SIZE.x / 2.0, 18), 15, color)
+
+
+# A row of pips along the top: filled = current, hollow = empty.
+func _draw_pips(current: int, maximum: int) -> void:
+	var spacing := minf(18.0, (SIZE.x - 16.0) / maximum)
+	for i in maximum:
+		var at := Vector2(SIZE.x / 2.0 + (i - (maximum - 1) / 2.0) * spacing, 14.0)
+		if i < current:
+			draw_circle(at, 6.0, Color(1.0, 0.85, 0.3))
+		else:
+			draw_arc(at, 6.0, 0.0, TAU, 16, Color(1, 1, 1, 0.5), 2.0)
 
 
 # A bar just above the slot. It turns gold at full charge and flashes white

@@ -12,7 +12,10 @@ class_name Projectile
 const SCENE_PATH := "res://scenes/combat/projectile.tscn"
 
 ## Every target hit, after the hit applied (info.final_amount is set).
+## Explosions report each target they damage here too.
 signal hit_landed(info: DamageInfo, hurtbox: HurtboxComponent)
+## The projectile exploded (ProjectileData explosion) at `at`.
+signal exploded(at: Vector2)
 
 var data: ProjectileData
 var direction := Vector2.RIGHT
@@ -25,6 +28,13 @@ var damage_template: DamageInfo
 var hit_modifier: Callable
 ## Where it was fired from (for distance falloff).
 var fired_from := Vector2.ZERO
+## False for projectiles born from a split: they never split again.
+var can_split := true
+## Damage of each split projectile. < 0 = the shot's damage x
+## data.split_damage_multiplier. Firing abilities may set it per shot.
+var split_damage: float = -1.0
+
+var _exploded := false
 
 var _age: float = 0.0
 var _hits: int = 0
@@ -113,6 +123,11 @@ func _hit_targets_between(from: Vector2, to: Vector2) -> void:
 
 	for hurtbox in found:
 		_already_hit[hurtbox.get_instance_id()] = true
+		if data.explode_on_hit and data.explosion_shape != null:
+			# The blast replaces the direct hit (it catches this target too).
+			_explode(hurtbox.global_position)
+			queue_free()
+			return
 		var info := damage_template.copy()
 		info.direction = direction
 		info.hit_position = hurtbox.global_position
@@ -137,8 +152,69 @@ func _can_hit(hurtbox: HurtboxComponent) -> bool:
 
 
 func _expire() -> void:
-	_spawn_feedback(data.expire_effect, data.expire_sound, global_position)
+	if data.explode_on_expire and data.explosion_shape != null:
+		_explode(global_position)
+	elif not _exploded:
+		_spawn_feedback(data.expire_effect, data.expire_sound, global_position)
 	queue_free()
+
+
+# The blast: damage + explosion_status to enemies in explosion_shape,
+# explosion_ally_status to allies, then the optional split. Each damaged
+# target goes through hit_modifier and hit_landed like a direct hit, so
+# the firing ability's hooks and cues still see it.
+func _explode(at: Vector2) -> void:
+	if _exploded:
+		return
+	_exploded = true
+	var source: Node = damage_template.source if is_instance_valid(damage_template.source) else null
+	var amount := damage_template.amount * data.explosion_damage_multiplier
+	if data.explosion_damage != null:
+		amount = data.explosion_damage.evaluate(StatsComponent.find_on(source))
+	for hurtbox in Hitbox.query(self, at, direction, data.explosion_shape, source, Hitbox.Affects.BOTH):
+		if Hitbox.can_hit(source, hurtbox):
+			var info := damage_template.copy()
+			info.amount = amount
+			if data.explosion_label != &"":
+				info.label = data.explosion_label
+			if not info.tags.has(DamageInfo.TAG_AREA):
+				info.tags.append(DamageInfo.TAG_AREA)
+			var away := at.direction_to(hurtbox.global_position)
+			info.direction = away if away != Vector2.ZERO else direction
+			info.hit_position = hurtbox.global_position
+			info.knockback = info.direction * data.knockback
+			info.add_status(data.on_hit_status)
+			info.add_status(data.explosion_status)
+			if hit_modifier.is_valid():
+				info = hit_modifier.call(info, hurtbox, fired_from.distance_to(hurtbox.global_position))
+				if info == null:
+					continue
+			hurtbox.take_hit(info)
+			hit_landed.emit(info, hurtbox)
+		elif data.explosion_ally_status != null and hurtbox.status_component != null:
+			hurtbox.status_component.apply(data.explosion_ally_status, source, direction)
+	_spawn_feedback(data.explosion_effect, data.explosion_sound, at)
+	exploded.emit(at)
+	if can_split and data.split_on_explode and data.split_projectile != null:
+		_split(at)
+
+
+func _split(at: Vector2) -> void:
+	var count := maxi(data.split_count, 0)
+	var each := split_damage if split_damage >= 0.0 else damage_template.amount * data.split_damage_multiplier
+	for i in count:
+		var angle := 0.0 if count <= 1 else lerpf(-data.split_fan_degrees / 2.0, data.split_fan_degrees / 2.0, float(i) / (count - 1))
+		var template := damage_template.copy()
+		template.attack_id = 0    # each child is its own attack
+		template.amount = each
+		var child := Projectile.fire(self, data.split_projectile, at, direction.rotated(deg_to_rad(angle)), template)
+		child.can_split = false
+		child.hit_modifier = hit_modifier
+		# Children start inside the blast: don't let them re-hit what this
+		# projectile already hit directly.
+		child._already_hit = _already_hit.duplicate()
+		for connection in hit_landed.get_connections():
+			child.hit_landed.connect(connection.callable)
 
 
 func _spawn_feedback(effect: PackedScene, sound: SoundCue, at: Vector2) -> void:

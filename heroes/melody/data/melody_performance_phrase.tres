@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="RhythmPhrase" format=3]
+
+[ext_resource type="Script" path="res://scripts/rhythm/rhythm_phrase.gd" id="1_lyonh"]
+
+[resource]
+script = ExtResource("1_lyonh")
+lead_in = 0.375
+good_window = 0.11
+perfect_window = 0.045
+note_pitches = Array[float]([1.0, 1.335, 1.498, 2.0])

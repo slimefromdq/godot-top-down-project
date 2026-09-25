@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_8oncl"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_am5bi"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="3_yf0el"]
+
+[sub_resource type="Resource" id="Resource_iq3a1"]
+script = ExtResource("2_am5bi")
+base = 40.0
+magic_ratio = 0.3
+
+[resource]
+script = ExtResource("1_8oncl")
+id = &"melody_march_shield"
+display_name = "Band Shield"
+shield_amount = SubResource("Resource_iq3a1")
+body_tint = Color(0.8, 0.95, 1, 0.25)

@@ -14,6 +14,11 @@ class_name StatusEffect
 #   * compel             forced march toward the applier (a taunt, a charm)
 #   * stat modifiers     StatModifiers on the target's StatsComponent
 #                        (-20% Health, +30 Armor) while active
+#   * shield             absorbs damage before health; ends when depleted
+#
+# StatusEffectComponent.apply() takes an optional `strength` (0..1+) that
+# scales how far the stat multipliers move from 1.0 and the shield, e.g. a
+# buff charged to 60%, and an optional duration override.
 # So swapping Avery's CC from a stun to a knockback or a pull is just pointing
 # her ability at a different .tres.
 
@@ -47,6 +52,10 @@ enum DisplaceDirection {
 ## 1.0 means unchanged, 1.5 means +50%, 0.5 means -50%. With STACK, each
 ## stack applies the multiplier again (0.9 at 3 stacks = 0.729).
 @export var stat_multipliers: Dictionary[StringName, float] = {}
+## The multipliers fade linearly from their full value back to 1.0 over the
+## duration (a wind-up that runs down). Visuals can read the remaining
+## fraction with StatusEffectComponent.get_fade_ratio().
+@export var fade_multipliers: bool = false
 
 @export_group("Stacking")
 @export var stack_rule: StackRule = StackRule.REFRESH
@@ -94,7 +103,26 @@ enum DisplaceDirection {
 @export var compel_stop_distance: float = 80.0
 ## Ignore the target's own steering (player input or AI) while compelled.
 ## Off = the march is added on top of it, so the target can resist.
+## Movement only: compelled targets can always shoot and cast.
 @export var compel_overrides_input: bool = true
+## Formation mode: instead of walking at the applier, walk to a point on the
+## applier's recent path, compel_trail_spacing x slot pixels behind them
+## (slots in order of joining). Followers form a line that takes her turns.
+@export var compel_follow_trail: bool = false
+@export var compel_trail_spacing: float = 110.0
+## Followers can break free: by holding movement input against the
+## formation for compel_break_hold_time, by using a movement ability (if
+## compel_break_on_movement_ability), or via break_formation() (AI).
+@export var compel_breakable: bool = false
+@export var compel_break_hold_time: float = 0.4
+@export var compel_break_on_movement_ability: bool = true
+
+@export_group("Shield")
+## Damage absorbed before health, snapshotted from the APPLIER's stats when
+## applied (times the application's strength). The status ends when the
+## shield is used up. Reapplying: REFRESH/EXTEND keep the larger of the
+## remaining and the new shield; STACK adds them.
+@export var shield_amount: ScalingValue
 
 @export_group("Stat modifiers")
 ## Applied to the TARGET's StatsComponent while active (scaled by stacks),
@@ -143,6 +171,10 @@ func validate() -> PackedStringArray:
 		problems.append("status '%s' tick_damage has negative numbers" % id)
 	if compel_enabled and (compel_speed_multiplier <= 0.0 or compel_stop_distance < 0.0):
 		problems.append("status '%s' compel needs a positive speed and stop distance" % id)
+	if shield_amount != null and shield_amount.has_negative():
+		problems.append("status '%s' shield_amount has negative numbers" % id)
+	if compel_follow_trail and (compel_trail_spacing <= 0.0 or compel_break_hold_time < 0.0):
+		problems.append("status '%s' follow_trail needs a positive spacing" % id)
 	for i in stat_modifiers.size():
 		if stat_modifiers[i] == null:
 			problems.append("status '%s' stat modifier %d is empty" % [id, i + 1])

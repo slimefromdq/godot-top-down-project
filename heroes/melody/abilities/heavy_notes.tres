@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="MelodyHeavyNotesData" format=3]
+
+[ext_resource type="Script" path="res://heroes/melody/abilities/heavy_notes_ability.gd" id="1_c5d50"]
+[ext_resource type="Resource" path="res://heroes/melody/data/melody_chord.tres" id="2_lw6km"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_km45d"]
+[ext_resource type="Resource" path="res://heroes/melody/data/melody_note.tres" id="4_867q8"]
+[ext_resource type="Script" path="res://heroes/melody/abilities/heavy_notes_data.gd" id="5_sqvie"]
+
+[sub_resource type="Resource" id="Resource_o2xwy"]
+script = ExtResource("3_km45d")
+base = 26.0
+magic_ratio = 0.45
+
+[sub_resource type="Resource" id="Resource_cpvnm"]
+script = ExtResource("3_km45d")
+base = 30.0
+
+[resource]
+script = ExtResource("5_sqvie")
+chord_projectile = ExtResource("2_lw6km")
+projectile = ExtResource("4_867q8")
+muzzles = Array[Vector2]([Vector2(55, 10)])
+shots_per_second = 1.1
+id = &"heavy_notes"
+display_name = "Heavy Notes"
+description = "Slow, weighty notes that burst on the first enemy or at the end of their flight. Encore (Chord): the note splits into three."
+ability_script = ExtResource("1_c5d50")
+cooldown = 0.0
+damage = SubResource("Resource_o2xwy")
+damage_type = 1
+tags = Array[StringName]([&"basic_attack"])
+values = Dictionary[StringName, ExtResource("3_km45d")]({
+&"chord_note_damage": SubResource("Resource_cpvnm")
+})
+feel_preset = &"note"

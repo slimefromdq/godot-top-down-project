@@ -67,12 +67,16 @@ func _execute(target: Node, direction: Vector2) -> void:
 	if health == null or health.is_dead():
 		return
 	# TRUE damage skips armor; dividing by what gets through covers
-	# damage-taken multipliers. Invulnerability and revives (about_to_die)
-	# still apply: an execute is a hit, not a delete.
+	# damage-taken multipliers; shields are added on top. Invulnerability
+	# and revives (about_to_die) still apply: an execute is a hit, not a
+	# delete.
 	var through := health.mitigate(1.0, DamageInfo.Type.TRUE)
 	if through <= 0.0:
 		return
-	var info := DamageInfo.create(health.current_health / through + 1.0, actor, DamageInfo.Type.TRUE)
+	# Shields soak damage after mitigation: add them so they can't save it.
+	var status := _status_of(target)
+	var shields := status.get_shield_total() if status != null else 0.0
+	var info := DamageInfo.create((health.current_health + shields) / through + 1.0, actor, DamageInfo.Type.TRUE)
 	info.label = StringName(str(ability_id) + "_execute")
 	info.tags = [TAG_EXECUTE, DamageInfo.TAG_ABILITY]
 	info.weight = 2.0

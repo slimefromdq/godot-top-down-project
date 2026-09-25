@@ -84,6 +84,9 @@ var _perfect_release := false
 var _charge_full_announced := false
 # Zones spawned by spawn_owned_zone() during the current cast.
 var _owned_zones: Array[GroundZone] = []
+## Ally-targeted abilities (data.ally_targeting): the ally chosen at cast
+## start (its root node), for the rest of the cast.
+var cast_ally: Node2D
 
 # The .tres this ability's runtime copy came from; reset_data() restores it.
 var _source_data: AbilityData
@@ -175,6 +178,12 @@ func repeats_while_held(slot_default: bool) -> bool:
 	return slot_default
 
 
+# HUD pips (current, max) shown on this ability's slot, e.g. a passive's
+# stacks. (-1, -1) = none.
+func get_hud_pips() -> Vector2i:
+	return Vector2i(-1, -1)
+
+
 # Cooldown API for other abilities and passives (e.g. "reset on kill").
 func reset_cooldown() -> void:
 	if cooldown_remaining <= 0.0:
@@ -248,6 +257,14 @@ func start_cast(target_position: Vector2) -> bool:
 		if not _is_silent_block(blocked):
 			_fail(blocked)
 		return false
+	cast_ally = null
+	if data != null and data.ally_targeting != null:
+		var ally := find_ally_target(target_position)
+		if ally == null:
+			_fail("No ally")
+			return false
+		cast_ally = ally.owner as Node2D if ally.owner != null else ally.get_parent() as Node2D
+		target_position = ally.global_position
 	if not _pay_cost():
 		_fail("Not enough %s" % data.cost_type)
 		return false
@@ -264,7 +281,10 @@ func start_cast(target_position: Vector2) -> bool:
 		_fail(failure)
 		return false
 
-	if current_feel != null and uses_charge():
+	# A movement ability breaks the caster out of breakable formations.
+	if is_movement_ability() and actor.status_component != null:
+		actor.status_component.on_movement_ability_used()
+	if current_feel != null and _wants_charge_now():
 		# The cooldown waits for the release.
 		activated.emit()
 		_enter_phase(Phase.CHARGING)
@@ -275,6 +295,20 @@ func start_cast(target_position: Vector2) -> bool:
 		_enter_phase(Phase.WINDUP)
 		_advance(0.0)
 	return true
+
+
+# The best ally for this ability near `point` (data.ally_targeting), or null.
+# Public so the player input can highlight it and AI can check it.
+func find_ally_target(point: Vector2) -> HurtboxComponent:
+	if data == null or data.ally_targeting == null or actor == null:
+		return null
+	return data.ally_targeting.find(actor, point)
+
+
+# Whether this cast should start by charging. Defaults to the data flag;
+# override to skip the charge for one cast (a "pre-wound" instant version).
+func _wants_charge_now() -> bool:
+	return uses_charge()
 
 
 # Let go of a charging cast (Hero.release_slot). Returns true if the cast
@@ -432,6 +466,8 @@ func _physics_process(delta: float) -> void:
 			cooldown_remaining = 0.0
 			cooldown_finished.emit()
 	if phase != Phase.IDLE:
+		_check_tether()
+	if phase != Phase.IDLE:
 		_advance(delta)
 
 
@@ -466,6 +502,23 @@ func _advance(delta: float) -> void:
 			and current_feel.movement_cancel_after >= 0.0 \
 			and phase_time >= current_feel.movement_cancel_after:
 		_end_cast(false)
+
+
+# Ally casts with a tether end if the caster strays too far or the ally is
+# gone. A charge is cancelled (no cooldown); a later phase is interrupted.
+func _check_tether() -> void:
+	if data == null or data.tether_range <= 0.0 or data.ally_targeting == null:
+		return
+	var broken := not is_instance_valid(cast_ally) or StatusEffectComponent.is_actor_gone(cast_ally) \
+		or actor.global_position.distance_to(cast_ally.global_position) > data.tether_range
+	if not broken:
+		return
+	actor.trigger_cue(StringName(str(ability_id) + "_tether_break"), _cue_context())
+	if phase == Phase.CHARGING:
+		cancel_charge()
+	else:
+		interrupt()
+	_fail("Tether broken")
 
 
 func _advance_charge() -> void:

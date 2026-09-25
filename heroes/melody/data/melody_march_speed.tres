@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_f1lbc"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_o0y88"]
+
+[resource]
+script = ExtResource("1_f1lbc")
+id = &"melody_march_speed"
+display_name = "Marching"
+duration = 6.0
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 1.45
+})

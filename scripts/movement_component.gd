@@ -8,7 +8,9 @@ class_name MovementComponent
 #   1. forced move (dash, lunge, knockback/pull, launch): exact velocity
 #   2. stunned or rooted: brake to a stop, ignore input
 #   3. compelled (StatusEffect.compel_*): walk toward the applier's current
-#      position; replaces or adds to the input depending on the status
+#      position (or, in a formation, to this follower's point on the
+#      applier's trail); replaces or adds to the input depending on the
+#      status. Holding input against a breakable formation breaks free.
 #   4. normal steering, times status multipliers and action multipliers
 #
 # Every controller (player hero, enemy AI, dummy, jungle creature) steers
@@ -38,6 +40,8 @@ var _speed_zones: Array[Node] = []
 # two overlapping requests can't clear each other: the slowest one wins, and
 # each requester only removes its own.
 var _action_multipliers: Dictionary = {}    # Object -> float
+# Seconds of input held against a breakable formation.
+var _break_hold: float = 0.0
 
 
 # `carry_momentum`: leave at running speed afterwards (dashes feel fluid) or
@@ -146,8 +150,12 @@ func get_velocity(
 		var effect := status_component.get_compel_effect()
 		if effect != null:
 			compel_velocity = _compel_velocity(effect, status_component.get_compel_source(), speed)
-			if effect.compel_overrides_input:
+			if _struggles_free(effect, input_direction, compel_velocity, delta):
+				compel_velocity = Vector2.ZERO
+			elif effect.compel_overrides_input:
 				input_direction = Vector2.ZERO
+		else:
+			_break_hold = 0.0
 	if _just_finished_forced_move:
 		# Leave a dash at normal running speed instead of sliding at dash speed.
 		_just_finished_forced_move = false
@@ -181,7 +189,12 @@ func _compel_velocity(effect: StatusEffect, source: Node2D, speed: float) -> Vec
 	var body := (owner if owner != null else get_parent()) as Node2D
 	if body == null or source == null:
 		return Vector2.ZERO
-	var to_source := source.global_position - body.global_position
+	var goal := source.global_position
+	if effect.compel_follow_trail:
+		var recorder := TrailRecorder.find_on(source)
+		if recorder != null:
+			goal = recorder.get_follow_point(body, effect.compel_trail_spacing)
+	var to_source := goal - body.global_position
 	var distance := to_source.length()
 	if distance <= effect.compel_stop_distance:
 		return Vector2.ZERO
@@ -190,3 +203,27 @@ func _compel_velocity(effect: StatusEffect, source: Node2D, speed: float) -> Vec
 	var tick := 1.0 / Engine.physics_ticks_per_second
 	compel_speed = minf(compel_speed, (distance - effect.compel_stop_distance) / tick)
 	return to_source / distance * compel_speed
+
+
+# Breakable formations: holding input against the pull for
+# compel_break_hold_time breaks free (the status ends). Returns true on
+# the tick it breaks.
+func _struggles_free(effect: StatusEffect, input_direction: Vector2, pull: Vector2, delta: float) -> bool:
+	if not (effect.compel_follow_trail and effect.compel_breakable) or input_direction == Vector2.ZERO:
+		_break_hold = 0.0
+		return false
+	var formation := pull.normalized()
+	if formation == Vector2.ZERO:
+		var source := status_component.get_compel_source()
+		var body := (owner if owner != null else get_parent()) as Node2D
+		if source != null and body != null:
+			formation = body.global_position.direction_to(source.global_position)
+	if formation == Vector2.ZERO or input_direction.normalized().dot(formation) > -0.3:
+		_break_hold = 0.0
+		return false
+	_break_hold += delta
+	if _break_hold < effect.compel_break_hold_time:
+		return false
+	_break_hold = 0.0
+	status_component.break_formation()
+	return true

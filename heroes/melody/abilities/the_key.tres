@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3]
+
+[ext_resource type="Script" path="res://heroes/melody/abilities/melody_key.gd" id="1_xa4di"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="2_6t725"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_jnn50"]
+
+[sub_resource type="Resource" id="Resource_ipbuq"]
+script = ExtResource("3_jnn50")
+base = 4.0
+
+[sub_resource type="Resource" id="Resource_s8rec"]
+script = ExtResource("3_jnn50")
+base = 3.0
+
+[sub_resource type="Resource" id="Resource_aosbt"]
+script = ExtResource("3_jnn50")
+base = 5.0
+
+[sub_resource type="Resource" id="Resource_kkuki"]
+script = ExtResource("3_jnn50")
+base = 1.5
+
+[sub_resource type="Resource" id="Resource_l3uhk"]
+script = ExtResource("3_jnn50")
+base = 0.1
+
+[sub_resource type="Resource" id="Resource_qo4nl"]
+script = ExtResource("3_jnn50")
+base = 0.5
+
+[resource]
+script = ExtResource("2_6t725")
+id = &"the_key"
+display_name = "The Key"
+description = "Performing winds the key in her back. At 3+ turns, her next primary, RMB or Shift plays its encore and spends every turn. It unwinds if she stops playing."
+ability_script = ExtResource("1_xa4di")
+cooldown = 0.0
+values = Dictionary[StringName, ExtResource("3_jnn50")]({
+&"encore_cap": SubResource("Resource_qo4nl"),
+&"encore_per_perfect": SubResource("Resource_l3uhk"),
+&"encore_threshold": SubResource("Resource_s8rec"),
+&"max_turns": SubResource("Resource_ipbuq"),
+&"unwind_delay": SubResource("Resource_aosbt"),
+&"unwind_interval": SubResource("Resource_kkuki")
+})

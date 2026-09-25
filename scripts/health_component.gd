@@ -7,7 +7,9 @@ class_name HealthComponent
 #   1. ignore if already dead, invulnerable or in god mode
 #   2. resistances (Armor for physical, Magic Resist for magic, none for true)
 #   3. status multipliers (e.g. Shocked: +25% damage taken)
-#   4. if this would kill: emit about_to_die; a listener may cancel it
+#   4. shields (StatusEffect.shield_amount) soak what's left; a hit fully
+#      absorbed stops here (no damage reported, CombatEvents.damage_absorbed)
+#   5. if this would kill: emit about_to_die; a listener may cancel it
 #   5. report: damaged / damage_taken here, hit_dealt / kill on the attacker's
 #      CombatHooks, and the global CombatEvents feed
 #
@@ -110,6 +112,9 @@ func apply_damage(info: DamageInfo) -> float:
 	var root := _get_root()
 	info.target = root
 	info.final_amount = mitigate(info.amount, info.type)
+	if info.final_amount > 0.0 and status_component != null:
+		info.absorbed = status_component.absorb_damage(info.final_amount, info)
+		info.final_amount -= info.absorbed
 	if info.final_amount <= 0.0:
 		return 0.0
 	if info.source != null:

@@ -313,7 +313,10 @@ func _on_died() -> void:
 
 func _on_status_applied(effect: StatusEffect) -> void:
 	if effect.attached_vfx != null:
-		_status_vfx[effect.id] = EffectSpawner.spawn(self, effect.attached_vfx, {"align": false}, self)
+		# The status component and id let the effect read live state, e.g.
+		# status_component.get_fade_ratio(status_id) for a key unwinding.
+		_status_vfx[effect.id] = EffectSpawner.spawn(self, effect.attached_vfx, {
+			"align": false, "status_component": status_component, "status_id": effect.id}, self)
 	if effect.body_tint.a > 0.0:
 		_status_tints.append(effect)
 		_refresh_tint()

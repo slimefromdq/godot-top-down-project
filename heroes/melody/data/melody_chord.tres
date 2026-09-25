@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="1_m7lgi"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_ewd2f"]
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="3_o2tuo"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hit.wav" id="4_fkvg1"]
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="5_gv570"]
+[ext_resource type="Resource" path="res://heroes/melody/data/melody_chord_note.tres" id="6_kmmna"]
+[ext_resource type="PackedScene" path="res://heroes/melody/vfx/note.tscn" id="7_2l2b4"]
+
+[sub_resource type="Resource" id="Resource_jly83"]
+script = ExtResource("2_ewd2f")
+kind = 1
+radius = 110.0
+
+[sub_resource type="Resource" id="Resource_0ocbw"]
+script = ExtResource("3_o2tuo")
+streams = Array[AudioStream]([ExtResource("4_fkvg1")])
+volume_db = -8.0
+pitch_min = 0.5335
+pitch_max = 0.5665000000000001
+max_voices = 4
+
+[resource]
+script = ExtResource("5_gv570")
+speed = 650.0
+lifetime = 1.2
+radius = 20.0
+explode_on_hit = true
+explode_on_expire = true
+explosion_shape = SubResource("Resource_jly83")
+explosion_effect = ExtResource("1_m7lgi")
+explosion_sound = SubResource("Resource_0ocbw")
+split_on_explode = true
+split_projectile = ExtResource("6_kmmna")
+split_fan_degrees = 50.0
+visual_scene = ExtResource("7_2l2b4")
