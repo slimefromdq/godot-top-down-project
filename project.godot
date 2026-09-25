@@ -29,6 +29,10 @@ window/size/mode=3
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/hero_tools/plugin.cfg")
+
 [input]
 
 move_up={
@@ -139,7 +143,3 @@ debug_next_map={
 [rendering]
 
 rendering_device/driver.windows="d3d12"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/hero_tools/plugin.cfg")
