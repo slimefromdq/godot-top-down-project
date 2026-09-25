@@ -5,11 +5,8 @@
 [ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="3_x"]
 [ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="4_x"]
 [ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="5_x"]
-[ext_resource type="Resource" path="res://resources/audio/sfx/dash.tres" id="6_x"]
-[ext_resource type="Resource" path="res://resources/audio/sfx/skillshot.tres" id="7_x"]
-[ext_resource type="Resource" path="res://resources/audio/sfx/zap.tres" id="8_x"]
-[ext_resource type="Resource" path="res://resources/audio/sfx/overdrive.tres" id="9_x"]
-[ext_resource type="Resource" path="res://resources/audio/sfx/kill_chime.tres" id="10_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/overdrive.tres" id="6_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/kill_chime.tres" id="7_x"]
 
 [resource]
 script = ExtResource("1_x")
@@ -17,11 +14,6 @@ cues = Dictionary[StringName, ExtResource("2_x")]({
 &"ability_failed": ExtResource("3_x"),
 &"hurt": ExtResource("4_x"),
 &"death": ExtResource("5_x"),
-&"sunblade_slash_active": ExtResource("6_x"),
-&"sunblade_slash_hit": ExtResource("4_x"),
-&"searing_cut_active": ExtResource("7_x"),
-&"solar_charge_active": ExtResource("6_x"),
-&"dawnbreaker_hit": ExtResource("8_x"),
-&"phoenix_rebirth": ExtResource("9_x")
+&"phoenix_rebirth": ExtResource("6_x")
 })
-kill_sound = ExtResource("10_x")
+kill_sound = ExtResource("7_x")

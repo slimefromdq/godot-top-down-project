@@ -46,6 +46,53 @@ class_name AttackFeel
 ## 1 = a normal hit, 2+ = a finisher. Never read by gameplay.
 @export_range(0.0, 3.0, 0.05) var weight: float = 1.0
 
+@export_subgroup("Anticipation")
+## Pixels the body leans back (away from the aim) during the windup.
+@export var windup_lean: float = 10.0
+## Squash during the windup (0.1 = 10% wider, 10% shorter).
+@export_range(0.0, 0.5, 0.01) var windup_squash: float = 0.06
+## Brightness the body builds toward during the windup. Alpha = strength.
+@export var windup_glow: Color = Color(1.0, 0.85, 0.5, 0.3)
+## Pixels the body snaps forward when the swing releases.
+@export var release_snap: float = 14.0
+
+@export_subgroup("Hitstop")
+## Freeze on hit, in seconds, before the damage bonus (FeelProfile). Only the
+## animations of the attacker and target freeze; the game never pauses.
+@export_range(0.0, 0.2, 0.005) var hitstop: float = 0.045
+## Freeze the attacker too (melee), or only the target (projectiles).
+@export var hitstop_attacker: bool = true
+
+@export_subgroup("Camera")
+## Trauma added on hit (0-1). Only when the local player is involved.
+## Shake grows with trauma squared, so below ~0.15 it's barely visible.
+@export_range(0.0, 1.0, 0.01) var shake_on_hit: float = 0.22
+## Trauma added when the swing releases, hit or miss. Keep 0 for light swings.
+@export_range(0.0, 1.0, 0.01) var shake_on_swing: float = 0.0
+## Pixels the camera leans in the swing direction on release.
+@export var camera_nudge: float = 8.0
+
+@export_subgroup("Hit flash")
+@export var flash_color: Color = Color(1, 1, 1, 0.9)
+@export_range(0.0, 0.5, 0.01) var flash_time: float = 0.08
+
+@export_subgroup("Trail")
+@export var trail_color: Color = Color(1.0, 0.85, 0.45, 0.9)
+## Thickness multiplier for the slash trail band.
+@export_range(0.2, 3.0, 0.05) var trail_width: float = 1.0
+## Fire particles thrown off the blade tip during the swing. 0 = none.
+@export_range(0, 128) var trail_particles: int = 18
+
+@export_subgroup("Audio")
+## Swing whoosh. Empty = the FeelProfile default.
+@export var swing_sound: SoundCue
+## Impact on hit. Empty = the FeelProfile default.
+@export var impact_sound: SoundCue
+## Fire layer on swing and hit. Empty = the FeelProfile default.
+@export var fire_sound: SoundCue
+## Heavier attacks sound deeper: < 1 lowers the pitch.
+@export_range(0.5, 2.0, 0.01) var pitch_scale: float = 1.0
+
 
 func get_total_time() -> float:
 	return windup + active + recovery

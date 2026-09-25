@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" path="res://scripts/feel/feel_profile.gd" id="1_profile"]
 [ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="2_feel"]
+[ext_resource type="PackedScene" path="res://effects/feel/slash_trail.tscn" id="3_trail"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/feel/swing_light.tres" id="4_swing"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/feel/impact_light.tres" id="5_impact"]
 
 [sub_resource type="Resource" id="Feel_light"]
 script = ExtResource("2_feel")
@@ -43,3 +46,6 @@ presets = Dictionary[StringName, ExtResource("2_feel")]({
 &"light": SubResource("Feel_light")
 })
 fallback = SubResource("Feel_light")
+slash_trail_scene = ExtResource("3_trail")
+swing_sound = ExtResource("4_swing")
+impact_sound = ExtResource("5_impact")

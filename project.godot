@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 AudioManager="*res://scripts/audio/audio_manager.gd"
 CombatEvents="*res://scripts/combat/combat_events.gd"
 MapSwitcher="*res://scripts/rules/map_switcher.gd"
+GameFeel="*res://scripts/feel/game_feel.gd"
 
 [display]
 

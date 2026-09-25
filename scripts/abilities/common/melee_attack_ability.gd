@@ -118,6 +118,7 @@ func _make_hit(hurtbox: HurtboxComponent) -> DamageInfo:
 	info.knockback = cast_direction * _step.knockback
 	info.direction = cast_direction
 	info.weight = current_feel.weight if current_feel != null else 1.0
+	info.feel = current_feel
 	info.add_status(data.on_hit_status)
 	info.add_status(_step.on_hit_status)
 	return _build_hit(info, hurtbox)

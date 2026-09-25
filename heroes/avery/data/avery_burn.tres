@@ -17,4 +17,4 @@ tick_damage = SubResource("Sub_1")
 tick_interval = 0.5
 tick_damage_type = 1
 tick_label = &"burn"
-body_tint = Color(1, 0.45, 0.1, 0.3)
+body_tint = Color(1, 0.5, 0.15, 0.6)

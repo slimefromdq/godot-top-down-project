@@ -37,7 +37,10 @@ func _ready() -> void:
 # SFX
 # ---------------------------------------------------------------------------
 
-func play_sfx(cue: SoundCue, position: Vector2 = Vector2.ZERO) -> void:
+# `pitch_scale` multiplies the cue's own random pitch (game feel uses it to
+# make heavy hits deeper); `volume_offset_db` is added to its volume.
+func play_sfx(cue: SoundCue, position: Vector2 = Vector2.ZERO, pitch_scale: float = 1.0,
+		volume_offset_db: float = 0.0) -> void:
 	if cue == null:
 		return
 	var stream := cue.pick_stream()
@@ -62,8 +65,8 @@ func play_sfx(cue: SoundCue, position: Vector2 = Vector2.ZERO) -> void:
 	else:
 		player = AudioStreamPlayer.new()
 	player.stream = stream
-	player.volume_db = cue.volume_db
-	player.pitch_scale = randf_range(cue.pitch_min, cue.pitch_max)
+	player.volume_db = cue.volume_db + volume_offset_db
+	player.pitch_scale = randf_range(cue.pitch_min, cue.pitch_max) * pitch_scale
 	player.bus = cue.bus
 	player.finished.connect(player.queue_free)
 	add_child(player)

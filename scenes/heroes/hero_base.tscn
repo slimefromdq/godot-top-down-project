@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://scripts/combat/hitbox.gd" id="11_hitbox"]
 [ext_resource type="Script" uid="uid://dmrfv1kntx1v6" path="res://scripts/hurtbox.gd" id="12_hurtbox"]
 [ext_resource type="PackedScene" uid="uid://cyyaiv1fa5ptb" path="res://scenes/health_bar.tscn" id="13_bar"]
+[ext_resource type="Script" path="res://scripts/feel/feel_component.gd" id="14_feel"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
 radius = 50.0
@@ -68,6 +69,9 @@ script = ExtResource("6_abil")
 
 [node name="AudioComponent" type="Node" parent="Components"]
 script = ExtResource("8_audio")
+
+[node name="FeelComponent" type="Node" parent="Components"]
+script = ExtResource("14_feel")
 
 [node name="Hitbox" type="Node2D" parent="."]
 script = ExtResource("11_hitbox")
