@@ -13,7 +13,7 @@
 import math
 from collections import deque
 
-from layout import HX, HY, LEDGE_X, SCREEN_W, build
+from layout import HX, HY, SCREEN_W, Y, build
 
 BODY = 66      # half-size of the 129x127 actor collision box, plus a hair
 CELL = 25
@@ -155,7 +155,7 @@ def main():
     for t in m["teleporters"]:
         pts += [(t["name"] + " a", t["a"]), (t["name"] + " b", t["b"])]
     for mk in m["markers"]:
-        if mk["kind"] in ("spawn", "bell_gate", "bell_wild", "sleepwalker"):
+        if mk["kind"] == "spawn":
             pts.append((mk["kind"], (mk["x"], mk["y"])))
     for name, p in pts:
         d = min(dist_to_poly(p, o["pts"]) for o in m["full"] + m["low"])
@@ -164,8 +164,8 @@ def main():
             ok = False
     print("  checked", len(pts), "points")
 
-    print("== Sleepwalker circuit clear of collision ==")
-    circ = next(mk for mk in m["markers"] if mk["kind"] == "sleepwalker_circuit")
+    print("== Cradle arena ring clear of collision ==")
+    circ = next(mk for mk in m["markers"] if mk["kind"] == "arena_ring")
     bad = 0
     for i in range(180):
         a = 2 * math.pi * i / 180
@@ -187,8 +187,10 @@ def main():
         "Ruins A": (-2300, 1300), "Ruins B": (2300, -1300),
         "Cloister A": (-2000, 3650), "Orchard A": (3000, 3400),
         "Driftfield A": (2000, 1200), "Plaza A": (-500, 2600),
+        "Hollow A": (-4560, 820),
     }
-    seen, cell_of = flood(m, grid, (-700, 3880))
+    probes = {k: (x, Y(y)) for k, (x, y) in probes.items()}
+    seen, cell_of = flood(m, grid, probes["A spawn"])
     for name, p in probes.items():
         r, c = cell_of(*p)
         reach = seen[r][c]
@@ -211,7 +213,7 @@ def main():
 
     print("== Spawn door exposure (longest clear ray from a door, outside base) ==")
     for team, sign in (("A", 1), ("B", -1)):
-        for name, door in (("north", (0, 3300)), ("west", (-1400, 3650)), ("east", (1400, 3650))):
+        for name, door in (("north", (0, Y(3300))), ("west", (-1400, Y(3650))), ("east", (1400, Y(3650)))):
             d = (door[0] * sign, door[1] * sign)
             best, best_a = 0, 0
             for i in range(144):

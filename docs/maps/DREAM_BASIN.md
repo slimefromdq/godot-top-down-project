@@ -1,66 +1,131 @@
-# Dream Basin: blockout
+# Dream Basin
 
-![blockout](dream_basin_blockout.svg)
+A test map for movement and fighting.
 
-- **Size:** 5 × 7.5 screens = 9600 × 8100 px (one screen = the 1920 × 1080 viewport at zoom 1).
-- **Symmetry:** exact 180° rotation about the map centre. Team A (Dawn, mint) spawns at the bottom and Team B (Dusk, coral) at the top.
-- **Source of truth:** `tools/dream_basin/layout.py`. Run `render_svg.py` to redraw this image and `check.py` to validate it.
+![in-game overview](dream_basin_ingame_overview.png)
 
-Walk speed is 650 px/s and the actor body is about 128 px, so crossing one screen horizontally takes about 3 s. A straight run from spawn to spawn takes about 12 s.
+- **Size:** 5 × 9 screens = 9600 × 9720 px. One screen is the 1920 × 1080 viewport at zoom 1.
+- **Symmetry:** exact 180° rotation about the centre. Team A (Dawn, mint) spawns at the bottom, Team B (Dusk, coral) at the top.
+- **Travel time:** walking at 650 px/s, spawn to spawn in a straight line takes about 15 s.
+- **Play it:** `scenes/dream_basin_world.tscn` is the main scene.
+  - **M** toggles the whole-map overview.
+  - In overview, **right-click** moves the player to that spot.
+
+Blockout with legend: [dream_basin_blockout.svg](dream_basin_blockout.svg)
 
 ## Regions
 
 | Region | Where | Role |
 |---|---|---|
-| **The Cradle** | Basin centre, low ground | The main arena and the Sleepwalker's home. It has a clear oval circuit (600 px wide, verified collision-free) around a ring of broken pillars. |
-| **Lullaby Ruins** | Basin corner (A: lower-left, B: upper-right) | A collapsed chapel with three doors and rooms. **CQC.** It holds the Dream Rift teleporter and an updraft pad up to the Tangle. |
-| **Driftfield** | Basin corner (A: lower-right, B: upper-left) | An open field of rocks and tall grass under the Ridge. Mid-range fights. |
-| **The Wilds** | Both flanks, high ground | Each Wild has three thirds (below). One-way ledges separate them from the basin. |
-| ↳ **The Tangle** | The Wild third nearest your own base on the left | A hedge maze. Hedges block shots. **CQC.** Your wild bell is here. |
-| ↳ **The Glade** | Middle of each Wild | A mid-range meadow. Your spawn teleporter exits here. |
-| ↳ **Stilt Ridge** | The Wild third nearest your own base on the right | Open high ground, the sniper perch. The enemy's wild bell is here. |
-| **Dawn / Dusk Plaza** | In front of each base | The staging area. A sundial landmark blocks the view into the spawn door. |
-| **Cloister** | Base outskirts on the Tangle side | A tight walled tunnel (**CQC**) that opens into a colonnade and then the Tangle stairwell. |
-| **Orchard** | Base outskirts on the Ridge side | Open scattered trees leading to the Ridge stairwell. |
+| **The Cradle** | Basin centre, low ground | The main arena. An open oval ring (600 px wide, collision-free) circles a broken pillar ring. It is kept clear for whatever the objective becomes. |
+| **Lullaby Ruins** | Basin corner (A: lower-left, B: upper-right) | Collapsed chapel with three doors. **Close-quarters.** Holds the Dream Rift, plus an updraft pad up to the Tangle. |
+| **Driftfield** | The other two basin corners | Open field under the Ridge. Mid-range. |
+| **The Tangle** | Wild third nearest your base (left side for A) | Hedge maze. Hedges block shots. **Close-quarters.** |
+| **The Hollow** | Pocket on the outer wall between Tangle and Glade | Hidden exit of your one-way spawn teleporter. |
+| **The Glade** | Middle of each Wild | Mid-range meadow. |
+| **Stilt Ridge** | The other end of each Wild | Open high ground. Sniper perch behind a row of low rocks. |
+| **Dawn / Dusk Plaza** | In front of each base | Staging area. The sundial and broken walls block every diagonal into the spawn door. |
+| **Cloister** | Base outskirts, Tangle side | Walled tunnel (**close-quarters**) that opens into a colonnade. |
+| **Orchard** | Base outskirts, Ridge side | Open scattered trees. |
 
-## Sight lines (all verified clear by `check.py`)
+## Sight lanes
 
-| Lane | Length | Counterplay |
-|---|---|---|
-| Moon Aisle: Ruins A east door → Cradle centre → Ruins B | 2.25 screens | Pillar ring off-axis. Step out of the diagonal. |
-| Ridge Line ×2: Ridge perch → across the lower Driftfield into the Cradle | 1.95 screens | Stairwell and flank approach, below. |
-| Wild Rail ×2: along the inside lip of each Wild, Ridge → Glade | 1.74 screens | The Tangle hedges stop it; the Glade trees break it. |
+All lanes are verified clear by `check.py`.
 
-No lane reaches a spawn door. The longest clear ray out of any spawn door is 1.8 screens, and it runs along a shallow angle through the Orchard.
+| Lane | Length |
+|---|---|
+| Moon Aisle (diagonal through the Cradle) | 2.5 screens |
+| Ridge Line ×2 (perch → Driftfield → Cradle) | 2.0 screens |
+| Wild Rail ×2 (along the cliff lip, Ridge → Glade) | 2.1 screens |
 
-## Close quarters
-The Lullaby Ruins (×2), the Tangle (×2) and the Cloister tunnel (×2).
+No lane reaches a spawn door. The longest clear ray out of any spawn door is about 2 screens, at a shallow angle.
 
-## Chokes and alternatives
-- **Cradle Steps** (640 px gap between two rock masses) is the direct route from the plaza to the Cradle. The alternatives are the Ruins (slower, CQC) and the Driftfield gate (open, covered by the Ridge).
-- **Stairwells into the Wilds** (350–400 px, railed): the alternatives are the jump pads (committal, visible arc) or the spawn teleporter.
-- **Ruins doors:** the alternatives are the Dream Rift, or dropping in from the Tangle.
+## How the systems work
 
-## Every strong position has a counter
-- **Stilt Ridge perch:**
-  - The basin stairwell comes up right beside it. That route is fast but exposed.
-  - A tree line along the outer wall lets a flanker approach from the Glade.
-  - The enemy's spawn teleporter drops them in the Glade behind the Ridge.
-  - The sniper can drop to the basin for free, but has to walk back to a stairwell.
-- **Tangle:** you can drop off its cliff into the Ruins courtyard, and the Ruins Updraft brings you back up.
+### Collision layers
 
-## Rotation paths (left ↔ right for one team)
-1. **Across the Cradle:** fastest, and exposed to the Moon Aisle and both Ridges.
-2. **Back road:** behind your own choke (Ruins south door → plaza → Driftfield gate), with speed strips on both ends. Safe, but longer.
-3. **Spawn → Dawn/Dusk Door:** a one-way teleporter from spawn to the left Glade. It's a comeback route and flanks the enemy Ridge.
-4. **Dream Rift:** a two-way teleporter between the two Ruins. It's a cross-map flank that lands you in enemy territory.
+| Layer | Name | Blocks characters | Blocks shots | Used by |
+|---|---|---|---|---|
+| 1 | World | yes | yes | Walls, rocks, trees, hedges, map boundary |
+| 6 | Low Cover | yes | no | Low walls, crates, low rocks |
+| 7 | Ledges | only when climbing | no | Cliff edges |
 
-## Mobility objects
-- **Jump pads (4):**
-  - Glade Spring: basin → Glade.
-  - Ruins Updraft: Ruins courtyard → Tangle.
-  - Each has a rotated copy.
-- **Teleporters:**
-  - Dream Rift: a two-way pair.
-  - Dawn Door and Dusk Door: one-way, from spawn out to the Glade.
-- **Speed strips (Lamplight Road):** four strips on the back road beside each plaza. They boost movement along their axis in both directions.
+- **Characters** (`actor.tscn`) mask layers 1, 6 and 7. The player also masks layer 2, so it collides with other characters.
+- **Projectiles** only mask layer 1 plus hurtboxes, so they fly over low cover and ledges.
+- **Arc Zap** checks line of sight against layer 1 only, which matches the projectiles.
+- The bit values are named in `scripts/map/map_layers.gd`.
+
+### One-way ledges
+
+Scene: `scenes/map/ledge.tscn`. Script: `scripts/map/ledge.gd`.
+
+- **Shape:** a thin strip on layer 7 with Godot's `one_way_collision` turned on.
+- **Why it's one-way:** a one-way shape only stops bodies moving along its local +Y axis.
+- **How it's placed:** the ledge is rotated so its local +Y points from low ground toward high ground.
+  - Walking toward the high ground is blocked.
+  - Walking toward the low ground passes through.
+- **Forced moves obey it too:** dashes and knockback go through the same `move_and_slide`. So Melody's pull can drag someone *off* a cliff, but it can't drag them *up* one.
+- **Stairwells** are just gaps left between ledges. `stairwell.tscn` only draws the steps.
+- **To add one:** drop a Ledge scene into the map, set `length`, and rotate it so the chevrons point at the low ground.
+
+### Jump pads
+
+Scene: `scenes/map/jump_pad.tscn`. Script: `scripts/map/jump_pad.gd`.
+
+- **Trigger:** an `Area2D` that notices a character stepping on and calls `Actor.launch(landing, air_time, arc_height)`.
+- **The flight** (`launch()` is in `scripts/actor.gd`):
+  1. A timed forced move carries the body in a straight line (the same mechanism as the dash).
+  2. During the flight, layers 6 and 7 are removed from the character's collision mask. That's what lets a pad carry you up a cliff or over low cover. Walls still stop you.
+  3. The arc is visual only: the `Visuals` node lifts and grows, and a shadow stays on the ground.
+- **Landing:** the pad lands you exactly on its landing ring with no slide. The mask bits are then restored.
+- **No abilities mid-air:** `Ability.try_activate` refuses while airborne, so a dash can't replace the arc. Shooting still works.
+- **To add one:** drop the scene and set `landing_offset`, which is in the pad's local space. The landing ring and dotted flight path are always drawn, so everyone can read where the pad goes.
+
+### Teleporters
+
+Scene: `scenes/map/teleporter.tscn`. Script: `scripts/map/teleporter.gd`.
+
+- **Setup:** place two and set each one's `partner` to the other.
+- **`mode`:**
+  - `TWO_WAY` on both ends of a normal pair.
+  - `SEND_ONLY` + `RECEIVE_ONLY` for a one-way link.
+- **Using it:**
+  1. Stand on a sending pad for `channel_time` seconds. Stepping off cancels.
+  2. While you channel, the destination pad flashes collapsing rings. That's the exit telegraph, so defenders see arrivals coming.
+  3. After a teleport, **both** ends rest for `cooldown` seconds. Someone who has just arrived is ignored until they step off, so there's no ping-pong.
+- **Current tuning:**
+  - **Dream Rift** (Ruins ↔ Ruins): 0.75 s channel, 4 s shared cooldown. Only one player crosses at a time, so the exit can be held.
+  - **Dawn / Dusk Door** (spawn → Hollow, one-way): 0.35 s channel, no cooldown, so a whole team can use it.
+
+### Speed strips
+
+Scene: `scenes/map/speed_strip.tscn`. Script: `scripts/map/speed_strip.gd`.
+
+- **Registration:** on enter, the strip registers itself with the character's `MovementComponent` (`add_speed_zone`).
+- **The boost:** each frame, the component calls `boost_velocity()` on the target velocity. That multiplies only the part of your movement along the strip's axis, in either direction. Acceleration scales by the same multiplier.
+- **Other zones:** any node with `boost_velocity()` and `multiplier` works. For example, a mud patch with a multiplier below 1 would slow people down.
+
+### Cover, bushes and the debug view
+
+- **Cover** (`CoverBody`, `scripts/map/cover_body.gd`): a `StaticBody2D` whose `CollisionPolygon2D` child is its shape.
+  - Edit the polygon in the editor and the drawing follows.
+  - `height` FULL or LOW picks the layer and the look.
+  - `scenes/map/cover_block.tscn` is a blank block you can drop in.
+- **Bushes** (`bush.tscn`): block nothing. They draw over characters and fade while the player is inside.
+- **Debug view** (`MapDebugView`, `scripts/map/map_debug_view.gd`):
+  - Detaches the player's camera and tweens it to fit `GameMap.bounds`.
+  - Shows the `map_overview` group: region names and sight lanes.
+
+## Where the layout comes from
+
+`tools/dream_basin/layout.py` is the source of truth. You hand-author one half, and it is rotated to make the other half.
+
+| File | What it does |
+|---|---|
+| `check.py` | Validates the layout: lanes are clear, pads have standable landings, 128 px bodies can reach everything, one-way cliffs only open via stairs or pads, spawn door exposure. |
+| `render_svg.py` | Redraws the blockout image. |
+| `export_godot.py` | Writes `scenes/maps/dream_basin.tscn` and `scenes/dream_basin_world.tscn`. **Re-exporting overwrites hand edits to the map scene.** |
+| `smoke_test.tscn` | Runs the real player through ledges, pads, teleporters, strips and projectile layers. Run it with `godot --headless res://tools/dream_basin/smoke_test.tscn`. |
+| `screenshots.tscn` | Renders review shots. Needs a display. |
+
+To make the map bigger or smaller, change `SY` (vertical stretch) in `layout.py`. It moves positions, not sizes.

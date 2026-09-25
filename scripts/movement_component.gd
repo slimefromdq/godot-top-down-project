@@ -14,6 +14,9 @@ var _just_finished_forced_move := false
 # Knockback is added once to the next velocity and then decays naturally
 # through acceleration/friction.
 var _pending_impulse := Vector2.ZERO
+# Speed strips (or any node with boost_velocity(v) -> Vector2 and a
+# `multiplier`) currently under the body.
+var _speed_zones: Array[Node] = []
 
 
 func _physics_process(delta: float) -> void:
@@ -28,12 +31,27 @@ func start_forced_move(velocity: Vector2, duration: float) -> void:
 	_forced_time_left = duration
 
 
+# End a forced move early without the usual "leave at running speed" carry.
+func stop_forced_move() -> void:
+	_forced_time_left = 0.0
+	_just_finished_forced_move = false
+
+
 func is_forced_moving() -> bool:
 	return _forced_time_left > 0.0
 
 
 func apply_knockback(impulse: Vector2) -> void:
 	_pending_impulse += impulse
+
+
+func add_speed_zone(zone: Node) -> void:
+	if zone not in _speed_zones:
+		_speed_zones.append(zone)
+
+
+func remove_speed_zone(zone: Node) -> void:
+	_speed_zones.erase(zone)
 
 
 func get_move_speed() -> float:
@@ -59,11 +77,16 @@ func get_velocity(
 	_pending_impulse = Vector2.ZERO
 
 	var target_velocity := input_direction * speed
+	var accel := acceleration
+	for zone in _speed_zones:
+		if is_instance_valid(zone):
+			target_velocity = zone.boost_velocity(target_velocity)
+			accel *= zone.multiplier
 
 	if input_direction != Vector2.ZERO:
 		return current_velocity.move_toward(
 			target_velocity,
-			acceleration * delta
+			accel * delta
 		)
 
 	return current_velocity.move_toward(

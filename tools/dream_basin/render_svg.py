@@ -72,9 +72,9 @@ def render(m):
         o.append(line((-HX, y), (HX, y), stroke="#000", stroke_opacity="0.08", stroke_dasharray="4 6"))
         y += SCREEN_H
 
-    # sleepwalker circuit
+    # arena ring
     for mk in m["markers"]:
-        if mk["kind"] == "sleepwalker_circuit":
+        if mk["kind"] == "arena_ring":
             cx, cy = P(mk["x"], mk["y"])
             o.append(f'<ellipse cx="{cx}" cy="{cy}" rx="{mk["rx"] * S}" ry="{mk["ry"] * S}" '
                      f'fill="none" stroke="#a79be6" stroke-opacity="0.35" '
@@ -215,12 +215,10 @@ def _legend(x0):
         ("tp", "", "Teleporter (arrow = one-way)"),
         ("strip", "", "Speed strip (both directions)"),
         ("lane", "", "Long sight lane"),
-        ("ring", "", "Sleepwalker circuit (kept clear)"),
-        ("bellg", "", "Gate bell site (reserved)"),
-        ("bellw", "", "Wild bell site (reserved)"),
+        ("ring", "", "Cradle ring (kept open)"),
     ]
     o = [f'<text x="{x}" y="70" font-size="30" font-weight="700" fill="#111">DREAM BASIN</text>',
-         f'<text x="{x}" y="100" font-size="15" fill="#555">5 x 7.5 screens (9600 x 8100 px)</text>',
+         f'<text x="{x}" y="100" font-size="15" fill="#555">5 x 9 screens (9600 x 9720 px)</text>',
          f'<text x="{x}" y="120" font-size="15" fill="#555">1 grid cell = 1 screen (1920 x 1080)</text>',
          f'<text x="{x}" y="140" font-size="15" fill="#555">180-degree rotational symmetry</text>']
     y = 180

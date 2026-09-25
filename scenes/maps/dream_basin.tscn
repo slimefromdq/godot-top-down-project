@@ -1,0 +1,2847 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/map/game_map.gd" id="1_game_map"]
+[ext_resource type="Script" path="res://scripts/map/floor_grid.gd" id="2_floor_grid"]
+[ext_resource type="Script" path="res://scripts/map/cover_body.gd" id="3_cover_body"]
+[ext_resource type="PackedScene" path="res://scenes/map/ledge.tscn" id="4_ledge"]
+[ext_resource type="PackedScene" path="res://scenes/map/stairwell.tscn" id="5_stairwell"]
+[ext_resource type="PackedScene" path="res://scenes/map/jump_pad.tscn" id="6_jump_pad"]
+[ext_resource type="PackedScene" path="res://scenes/map/teleporter.tscn" id="7_teleporter"]
+[ext_resource type="PackedScene" path="res://scenes/map/speed_strip.tscn" id="8_speed_strip"]
+[ext_resource type="PackedScene" path="res://scenes/map/bush.tscn" id="9_bush"]
+
+[node name="DreamBasin" type="Node2D"]
+script = ExtResource("1_game_map")
+bounds = Rect2(-4800, -4860, 9600, 9720)
+
+[node name="Floor" type="Node2D" parent="."]
+z_index = -20
+
+[node name="Void" type="Polygon2D" parent="Floor"]
+color = Color(0.122, 0.122, 0.141, 1.0)
+polygon = PackedVector2Array(-5400, -5460, 5400, -5460, 5400, 5460, -5400, 5460)
+
+[node name="BasinA_1" type="Polygon2D" parent="Floor"]
+color = Color(0.796, 0.769, 0.910, 1.0)
+polygon = PackedVector2Array(-2750, 0, 2750, 0, 2750, 2820, -2750, 2820)
+
+[node name="Wild_1" type="Polygon2D" parent="Floor"]
+color = Color(0.851, 0.925, 0.776, 1.0)
+polygon = PackedVector2Array(-4800, -3240, -2750, -3240, -2750, 3240, -4800, 3240)
+
+[node name="OutskirtsA_1" type="Polygon2D" parent="Floor"]
+color = Color(0.812, 0.902, 0.847, 1.0)
+polygon = PackedVector2Array(-4800, 3240, 4800, 3240, 4800, 4860, -4800, 4860)
+
+[node name="OutskirtsA_2" type="Polygon2D" parent="Floor"]
+color = Color(0.812, 0.902, 0.847, 1.0)
+polygon = PackedVector2Array(-2750, 2820, 2750, 2820, 2750, 3240, -2750, 3240)
+
+[node name="PlazaA_1" type="Polygon2D" parent="Floor"]
+color = Color(0.722, 0.875, 0.792, 1.0)
+polygon = PackedVector2Array(-1600, 2904, 1600, 2904, 1600, 3960, -1600, 3960)
+
+[node name="BaseA_1" type="Polygon2D" parent="Floor"]
+color = Color(0.624, 0.827, 0.725, 1.0)
+polygon = PackedVector2Array(-1400, 3960, 1400, 3960, 1400, 4860, -1400, 4860)
+
+[node name="RuinsA_1" type="Polygon2D" parent="Floor"]
+color = Color(0.812, 0.773, 0.694, 1.0)
+polygon = PackedVector2Array(-2750, 1320, -1500, 1320, -1500, 2820, -2750, 2820)
+
+[node name="BasinB_1" type="Polygon2D" parent="Floor"]
+color = Color(0.796, 0.769, 0.910, 1.0)
+polygon = PackedVector2Array(2750, -0, -2750, -0, -2750, -2820, 2750, -2820)
+
+[node name="Wild_2" type="Polygon2D" parent="Floor"]
+color = Color(0.851, 0.925, 0.776, 1.0)
+polygon = PackedVector2Array(4800, 3240, 2750, 3240, 2750, -3240, 4800, -3240)
+
+[node name="OutskirtsB_1" type="Polygon2D" parent="Floor"]
+color = Color(0.937, 0.847, 0.804, 1.0)
+polygon = PackedVector2Array(4800, -3240, -4800, -3240, -4800, -4860, 4800, -4860)
+
+[node name="OutskirtsB_2" type="Polygon2D" parent="Floor"]
+color = Color(0.937, 0.847, 0.804, 1.0)
+polygon = PackedVector2Array(2750, -2820, -2750, -2820, -2750, -3240, 2750, -3240)
+
+[node name="PlazaB_1" type="Polygon2D" parent="Floor"]
+color = Color(0.925, 0.773, 0.710, 1.0)
+polygon = PackedVector2Array(1600, -2904, -1600, -2904, -1600, -3960, 1600, -3960)
+
+[node name="BaseB_1" type="Polygon2D" parent="Floor"]
+color = Color(0.890, 0.667, 0.584, 1.0)
+polygon = PackedVector2Array(1400, -3960, -1400, -3960, -1400, -4860, 1400, -4860)
+
+[node name="RuinsB_1" type="Polygon2D" parent="Floor"]
+color = Color(0.812, 0.773, 0.694, 1.0)
+polygon = PackedVector2Array(2750, -1320, 1500, -1320, 1500, -2820, 2750, -2820)
+
+[node name="Grid" type="Node2D" parent="Floor"]
+script = ExtResource("2_floor_grid")
+bounds = Rect2(-4800, -4860, 9600, 9720)
+
+[node name="Stairwells" type="Node2D" parent="."]
+z_index = -14
+
+[node name="Stairwell1" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(-2590, -1230)
+rotation = 3.141593
+width = 350
+depth = 320
+
+[node name="Stairwell2" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(-3700, 3432)
+rotation = -1.570796
+width = 400
+depth = 320
+
+[node name="Stairwell3" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(-3700, -3432)
+rotation = 1.570796
+width = 400
+depth = 320
+
+[node name="Stairwell4" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(2590, 1230)
+rotation = 0.000000
+width = 350
+depth = 320
+
+[node name="Stairwell5" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(3700, -3432)
+rotation = 1.570796
+width = 400
+depth = 320
+
+[node name="Stairwell6" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(3700, 3432)
+rotation = -1.570796
+width = 400
+depth = 320
+
+[node name="Ledges" type="Node2D" parent="."]
+z_index = -12
+
+[node name="Ledge1" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(-2750, -3240)
+rotation = 1.570796
+length = 1800
+
+[node name="Ledge2" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(-2750, -1020)
+rotation = 1.570796
+length = 4260
+
+[node name="Ledge3" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(-3900, 3240)
+rotation = 3.141593
+length = 900
+
+[node name="Ledge4" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(-2750, 3240)
+rotation = 3.141593
+length = 750
+
+[node name="Ledge5" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(-4800, -3240)
+rotation = 0.000000
+length = 900
+
+[node name="Ledge6" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(-3500, -3240)
+rotation = 0.000000
+length = 750
+
+[node name="Ledge7" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(2750, 3240)
+rotation = -1.570796
+length = 1800
+
+[node name="Ledge8" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(2750, 1020)
+rotation = -1.570796
+length = 4260
+
+[node name="Ledge9" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(3900, -3240)
+rotation = 0.000000
+length = 900
+
+[node name="Ledge10" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(2750, -3240)
+rotation = 0.000000
+length = 750
+
+[node name="Ledge11" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(4800, 3240)
+rotation = 3.141593
+length = 900
+
+[node name="Ledge12" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(3500, 3240)
+rotation = 3.141593
+length = 750
+
+[node name="Mobility" type="Node2D" parent="."]
+
+[node name="SpeedStrips" type="Node2D" parent="Mobility"]
+
+[node name="LamplightRoad1" parent="Mobility/SpeedStrips" instance=ExtResource("8_speed_strip")]
+position = Vector2(-2150, 3072)
+size = Vector2(900, 170)
+
+[node name="LamplightRoad2" parent="Mobility/SpeedStrips" instance=ExtResource("8_speed_strip")]
+position = Vector2(2150, 3120)
+size = Vector2(900, 170)
+
+[node name="LamplightRoad3" parent="Mobility/SpeedStrips" instance=ExtResource("8_speed_strip")]
+position = Vector2(2150, -3072)
+size = Vector2(900, 170)
+
+[node name="LamplightRoad4" parent="Mobility/SpeedStrips" instance=ExtResource("8_speed_strip")]
+position = Vector2(-2150, -3120)
+size = Vector2(900, 170)
+
+[node name="JumpPads" type="Node2D" parent="Mobility"]
+
+[node name="GladeSpringA" parent="Mobility/JumpPads" instance=ExtResource("6_jump_pad")]
+position = Vector2(-2530, 360)
+landing_offset = Vector2(-920, 0)
+
+[node name="RuinsUpdraftA" parent="Mobility/JumpPads" instance=ExtResource("6_jump_pad")]
+position = Vector2(-2250, 2100)
+landing_offset = Vector2(-900, -60)
+
+[node name="GladeSpringB" parent="Mobility/JumpPads" instance=ExtResource("6_jump_pad")]
+position = Vector2(2530, -360)
+landing_offset = Vector2(920, 0)
+
+[node name="RuinsUpdraftB" parent="Mobility/JumpPads" instance=ExtResource("6_jump_pad")]
+position = Vector2(2250, -2100)
+landing_offset = Vector2(900, 60)
+
+[node name="Teleporters" type="Node2D" parent="Mobility"]
+
+[node name="DreamRift_A" parent="Mobility/Teleporters" node_paths=PackedStringArray("partner") instance=ExtResource("7_teleporter")]
+position = Vector2(-1680, 2604)
+partner = NodePath("../DreamRift_B")
+mode = 0
+channel_time = 0.75
+cooldown = 4.0
+
+[node name="DreamRift_B" parent="Mobility/Teleporters" node_paths=PackedStringArray("partner") instance=ExtResource("7_teleporter")]
+position = Vector2(1680, -2604)
+partner = NodePath("../DreamRift_A")
+mode = 0
+channel_time = 0.75
+cooldown = 4.0
+
+[node name="DawnDoor_Entrance" parent="Mobility/Teleporters" node_paths=PackedStringArray("partner") instance=ExtResource("7_teleporter")]
+position = Vector2(-1000, 4440)
+partner = NodePath("../DawnDoor_Exit")
+mode = 1
+channel_time = 0.35
+cooldown = 0.0
+
+[node name="DawnDoor_Exit" parent="Mobility/Teleporters" node_paths=PackedStringArray("partner") instance=ExtResource("7_teleporter")]
+position = Vector2(-4560, 984)
+partner = NodePath("../DawnDoor_Entrance")
+mode = 2
+channel_time = 0.35
+cooldown = 0.0
+
+[node name="DuskDoor_Entrance" parent="Mobility/Teleporters" node_paths=PackedStringArray("partner") instance=ExtResource("7_teleporter")]
+position = Vector2(1000, -4440)
+partner = NodePath("../DuskDoor_Exit")
+mode = 1
+channel_time = 0.35
+cooldown = 0.0
+
+[node name="DuskDoor_Exit" parent="Mobility/Teleporters" node_paths=PackedStringArray("partner") instance=ExtResource("7_teleporter")]
+position = Vector2(4560, -984)
+partner = NodePath("../DuskDoor_Entrance")
+mode = 2
+channel_time = 0.35
+cooldown = 0.0
+
+[node name="Cover" type="Node2D" parent="."]
+
+[node name="Hedges" type="Node2D" parent="Cover"]
+
+[node name="Hedge1" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-4525, 2736)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge1"]
+polygon = PackedVector2Array(-335, 60, 335, 60, 335, -60, -335, -60)
+
+[node name="Hedge2" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-4250, 2496)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge2"]
+polygon = PackedVector2Array(60, 300, 60, -300, -60, -300, -60, 300)
+
+[node name="Hedge3" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-3420, 3000)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge3"]
+polygon = PackedVector2Array(60, 300, 60, -300, -60, -300, -60, 300)
+
+[node name="Hedge4" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-3220, 2760)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge4"]
+polygon = PackedVector2Array(-260, 60, 260, 60, 260, -60, -260, -60)
+
+[node name="Hedge5" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-3650, 2280)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge5"]
+polygon = PackedVector2Array(-360, 60, 360, 60, 360, -60, -360, -60)
+
+[node name="Hedge6" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-4135, 1776)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge6"]
+polygon = PackedVector2Array(-475, 60, 475, 60, 475, -60, -475, -60)
+
+[node name="Hedge7" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-3720, 1560)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge7"]
+polygon = PackedVector2Array(60, 276, 60, -276, -60, -276, -60, 276)
+
+[node name="Hedge8" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-3300, 1626)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge8"]
+polygon = PackedVector2Array(60, 306, 60, -306, -60, -306, -60, 306)
+
+[node name="Hedge9" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-3125, 1380)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge9"]
+polygon = PackedVector2Array(-235, 60, 235, 60, 235, -60, -235, -60)
+
+[node name="Hedge10" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-4300, 1008)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge10"]
+polygon = PackedVector2Array(60, 348, 60, -348, -60, -348, -60, 348)
+
+[node name="Hedge11" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-3725, 984)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge11"]
+polygon = PackedVector2Array(-285, 60, 285, 60, 285, -60, -285, -60)
+
+[node name="Trees" type="Node2D" parent="Cover"]
+
+[node name="Tree1" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4520, 2226)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree1"]
+polygon = PackedVector2Array(107, -8, 67, 70, 18, 100, -42, 89, -113, 29, -92, -25, -74, -100, 20, -85, 110, -70)
+
+[node name="Tree2" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-3023, 2214)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree2"]
+polygon = PackedVector2Array(125, 5, 72, 70, 40, 106, -52, 123, -111, 39, -110, -38, -63, -82, 11, -129, 89, -93)
+
+[node name="Tree3" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4044, 3022)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree3"]
+polygon = PackedVector2Array(96, -7, 73, 79, 17, 81, -38, 78, -81, 23, -82, -26, -57, -73, 23, -93, 48, -62)
+
+[node name="Tree4" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-2999, 3001)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree4"]
+polygon = PackedVector2Array(91, -14, 74, 69, 18, 71, -53, 74, -85, 36, -92, -31, -46, -59, 24, -76, 68, -70)
+
+[node name="Tree5" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4058, 1501)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree5"]
+polygon = PackedVector2Array(83, 12, 67, 58, 8, 76, -58, 84, -112, 26, -80, -24, -30, -81, 16, -87, 106, -64)
+
+[node name="Hedge12" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(-4675, 1512)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge12"]
+polygon = PackedVector2Array(-185, 60, 185, 60, 185, -60, -185, -60)
+
+[node name="Tree6" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4447, 427)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree6"]
+polygon = PackedVector2Array(140, -24, 93, 82, 38, 138, -82, 100, -111, 32, -125, -28, -53, -100, 29, -118, 70, -81)
+
+[node name="Rocks" type="Node2D" parent="Cover"]
+
+[node name="Rock1" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-3344, -189)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock1"]
+polygon = PackedVector2Array(133, 26, 176, 88, 33, 109, -92, 108, -151, 32, -141, -48, -102, -127, 43, -140, 102, -49)
+
+[node name="Tree7" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4147, -499)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree7"]
+polygon = PackedVector2Array(133, 16, 58, 63, 13, 103, -50, 76, -101, 44, -110, -32, -61, -75, 24, -110, 94, -85)
+
+[node name="Tree8" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-3192, 676)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree8"]
+polygon = PackedVector2Array(112, 5, 99, 67, 24, 104, -51, 105, -109, 48, -114, -53, -71, -108, 21, -84, 89, -85)
+
+[node name="Rock2" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-3243, -2214)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock2"]
+polygon = PackedVector2Array(167, -20, 103, 162, 5, 210, -57, 178, -149, 81, -145, -66, -78, -173, 43, -222, 111, -150)
+
+[node name="Tree9" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4503, -1138)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree9"]
+polygon = PackedVector2Array(125, -3, 83, 46, 3, 110, -34, 88, -96, 20, -119, -24, -65, -89, 25, -101, 78, -46)
+
+[node name="Tree10" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4301, -1619)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree10"]
+polygon = PackedVector2Array(91, -5, 105, 67, 17, 111, -50, 83, -103, 27, -100, -50, -39, -94, 5, -88, 72, -52)
+
+[node name="Tree11" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4552, -2041)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree11"]
+polygon = PackedVector2Array(83, 5, 76, 53, 12, 113, -49, 67, -73, 31, -99, -24, -55, -67, 26, -102, 78, -76)
+
+[node name="Tree12" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4248, -2519)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree12"]
+polygon = PackedVector2Array(110, -19, 84, 54, 12, 117, -52, 90, -89, 50, -117, -37, -58, -102, 12, -87, 99, -65)
+
+[node name="Tree13" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4498, -2947)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree13"]
+polygon = PackedVector2Array(104, 4, 58, 72, 20, 85, -32, 81, -95, 55, -100, -50, -55, -77, 21, -85, 78, -84)
+
+[node name="Pillars" type="Node2D" parent="Cover"]
+
+[node name="Pillar1" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(817, 258)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar1"]
+polygon = PackedVector2Array(108, -1, 87, 76, 5, 105, -83, 71, -101, -8, -75, -57, -6, -102, 66, -83)
+
+[node name="Pillar2" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(264, 973)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar2"]
+polygon = PackedVector2Array(103, -3, 61, 75, 6, 104, -71, 68, -100, 1, -84, -68, 14, -108, 72, -69)
+
+[node name="Pillar3" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(-179, 1003)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar3"]
+polygon = PackedVector2Array(97, 10, 59, 74, 4, 106, -66, 71, -109, 9, -53, -83, -11, -106, 79, -81)
+
+[node name="Pillar4" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(-840, 146)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar4"]
+polygon = PackedVector2Array(96, -6, 59, 78, 14, 103, -59, 74, -106, 12, -67, -86, -13, -112, 77, -64)
+
+[node name="Rock3" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-1292, 2016)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock3"]
+polygon = PackedVector2Array(105, -9, 75, 74, 8, 112, -57, 84, -96, 48, -87, -38, -68, -91, 13, -107, 107, -73)
+
+[node name="Rock4" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(1298, 2335)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock4"]
+polygon = PackedVector2Array(125, 21, 87, 58, 37, 145, -70, 94, -110, 49, -103, -52, -66, -97, 2, -118, 97, -100)
+
+[node name="Walls" type="Node2D" parent="Cover"]
+
+[node name="Ruin1" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-2550, 1320)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin1"]
+polygon = PackedVector2Array(-240, 40, 240, 40, 240, -40, -240, -40)
+
+[node name="Ruin2" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1775, 1320)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin2"]
+polygon = PackedVector2Array(-315, 40, 315, 40, 315, -40, -315, -40)
+
+[node name="Ruin3" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1500, 1530)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin3"]
+polygon = PackedVector2Array(-40, -250, -40, 250, 40, 250, 40, -250)
+
+[node name="Ruin4" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1500, 2460)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin4"]
+polygon = PackedVector2Array(-40, -400, -40, 400, 40, 400, 40, -400)
+
+[node name="Ruin5" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-2500, 2820)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin5"]
+polygon = PackedVector2Array(-290, 40, 290, 40, 290, -40, -290, -40)
+
+[node name="Ruin6" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1725, 2820)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin6"]
+polygon = PackedVector2Array(-265, 40, 265, 40, 265, -40, -265, -40)
+
+[node name="Ruin7" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-2600, 1800)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin7"]
+polygon = PackedVector2Array(-190, 40, 190, 40, 190, -40, -190, -40)
+
+[node name="Ruin8" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-2000, 1800)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin8"]
+polygon = PackedVector2Array(-190, 40, 190, 40, 190, -40, -190, -40)
+
+[node name="Ruin9" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1950, 2370)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin9"]
+polygon = PackedVector2Array(-40, -190, -40, 190, 40, 190, 40, -190)
+
+[node name="Ruin10" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1825, 2220)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin10"]
+polygon = PackedVector2Array(-165, 40, 165, 40, 165, -40, -165, -40)
+
+[node name="Pillar5" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(-2000, 1558)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar5"]
+polygon = PackedVector2Array(69, -4, 41, 63, -12, 70, -61, 35, -63, -38, -5, -71, 32, -55)
+
+[node name="Pillar6" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(-1754, 1559)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar6"]
+polygon = PackedVector2Array(72, 1, 44, 54, -18, 62, -60, 33, -61, -34, -16, -63, 40, -52)
+
+[node name="Rock5" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(1903, 902)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock5"]
+polygon = PackedVector2Array(115, -12, 108, 77, 14, 100, -88, 112, -131, 21, -117, -26, -53, -80, 39, -133, 113, -59)
+
+[node name="Rock6" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(2340, 536)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock6"]
+polygon = PackedVector2Array(114, -8, 85, 58, 12, 112, -61, 79, -97, 23, -99, -29, -67, -95, 20, -101, 92, -39)
+
+[node name="Rock7" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(1892, 1738)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock7"]
+polygon = PackedVector2Array(183, -1, 141, 90, 22, 158, -100, 124, -151, 42, -179, -69, -78, -117, 11, -147, 152, -79)
+
+[node name="Rock8" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(2465, 2160)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock8"]
+polygon = PackedVector2Array(119, 15, 80, 63, 24, 90, -59, 77, -109, 36, -119, -30, -74, -85, 31, -104, 105, -62)
+
+[node name="Rock9" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(1245, 2578)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock9"]
+polygon = PackedVector2Array(98, 3, 95, 50, 44, 82, -64, 66, -129, 26, -80, -9, -66, -86, 26, -94, 77, -37)
+
+[node name="Cliffrock1" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-988, 2749)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.361, 0.337, 0.314, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Cliffrock1"]
+polygon = PackedVector2Array(622, -18, 536, 82, 270, 122, -60, 137, -218, 126, -517, 94, -589, -22, -583, -65, -337, -105, -60, -133, 375, -127, 559, -89)
+
+[node name="Cliffrock2" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(970, 2756)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.361, 0.337, 0.314, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Cliffrock2"]
+polygon = PackedVector2Array(596, -4, 531, 87, 338, 114, 70, 121, -271, 121, -543, 80, -570, 12, -602, -61, -327, -123, -31, -149, 286, -122, 522, -77)
+
+[node name="Cliffrock3" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(2335, 2792)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.361, 0.337, 0.314, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Cliffrock3"]
+polygon = PackedVector2Array(232, -9, 204, 61, 24, 92, -130, 86, -205, 51, -216, -33, -100, -93, 21, -78, 170, -76)
+
+[node name="Landmarks" type="Node2D" parent="Cover"]
+
+[node name="Sundial1" type="StaticBody2D" parent="Cover/Landmarks"]
+position = Vector2(-2, 3484)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.831, 0.678, 0.310, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Sundial1"]
+polygon = PackedVector2Array(187, 29, 160, 105, 109, 144, -5, 179, -88, 168, -166, 66, -180, 24, -143, -112, -104, -152, -23, -190, 77, -175, 175, -85)
+
+[node name="Ruin11" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-775, 3408)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin11"]
+polygon = PackedVector2Array(-231, -139, 180, 200, 231, 139, -180, -200)
+
+[node name="Ruin12" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(775, 3408)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin12"]
+polygon = PackedVector2Array(-180, 200, 231, -139, 180, -200, -231, 139)
+
+[node name="Basewall1" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1600, 3630)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.561, 0.416, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall1"]
+polygon = PackedVector2Array(-40, -370, -40, 370, 40, 370, 40, -370)
+
+[node name="Basewall2" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1600, 3630)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.561, 0.416, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall2"]
+polygon = PackedVector2Array(-40, -370, -40, 370, 40, 370, 40, -370)
+
+[node name="Basewall3" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-850, 3960)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.561, 0.416, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall3"]
+polygon = PackedVector2Array(-590, 40, 590, 40, 590, -40, -590, -40)
+
+[node name="Basewall4" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(850, 3960)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.561, 0.416, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall4"]
+polygon = PackedVector2Array(-590, 40, 590, 40, 590, -40, -590, -40)
+
+[node name="Basewall5" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1400, 4080)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.561, 0.416, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall5"]
+polygon = PackedVector2Array(-40, -160, -40, 160, 40, 160, 40, -160)
+
+[node name="Basewall6" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1400, 4710)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.561, 0.416, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall6"]
+polygon = PackedVector2Array(-40, -190, -40, 190, 40, 190, 40, -190)
+
+[node name="Basewall7" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1400, 4080)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.561, 0.416, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall7"]
+polygon = PackedVector2Array(-40, -160, -40, 160, 40, 160, 40, -160)
+
+[node name="Basewall8" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1400, 4710)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.561, 0.416, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall8"]
+polygon = PackedVector2Array(-40, -190, -40, 190, 40, 190, 40, -190)
+
+[node name="Statue1" type="StaticBody2D" parent="Cover/Landmarks"]
+position = Vector2(1, 4372)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.831, 0.678, 0.310, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Statue1"]
+polygon = PackedVector2Array(140, 19, 110, 73, 77, 114, -16, 128, -57, 127, -112, 82, -141, 5, -112, -89, -74, -120, 5, -144, 64, -126, 117, -70)
+
+[node name="Statue2" type="StaticBody2D" parent="Cover/Landmarks"]
+position = Vector2(-1081, 4169)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.831, 0.678, 0.310, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Statue2"]
+polygon = PackedVector2Array(83, 6, 57, 64, 7, 81, -52, 55, -85, -0, -66, -57, -3, -85, 58, -65)
+
+[node name="Statue3" type="StaticBody2D" parent="Cover/Landmarks"]
+position = Vector2(1080, 4165)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.831, 0.678, 0.310, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Statue3"]
+polygon = PackedVector2Array(88, 6, 72, 50, -9, 77, -68, 54, -88, 9, -62, -57, 5, -86, 62, -53)
+
+[node name="Cloister1" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1675, 4164)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.416, 0.353, 0.282, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Cloister1"]
+polygon = PackedVector2Array(315, -40, -315, -40, -315, 40, 315, 40)
+
+[node name="Cloister2" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-2225, 4596)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.416, 0.353, 0.282, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Cloister2"]
+polygon = PackedVector2Array(865, -40, -865, -40, -865, 40, 865, 40)
+
+[node name="Cloister3" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-2225, 4752)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.416, 0.353, 0.282, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Cloister3"]
+polygon = PackedVector2Array(-825, -108, 825, -108, 825, 108, -825, 108)
+
+[node name="Pillar7" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(-2402, 4167)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar7"]
+polygon = PackedVector2Array(64, 7, 34, 50, -12, 58, -53, 23, -55, -28, -24, -64, 46, -44)
+
+[node name="Pillar8" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(-2650, 4167)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar8"]
+polygon = PackedVector2Array(61, 4, 32, 53, -12, 61, -52, 30, -56, -28, -10, -66, 37, -53)
+
+[node name="Pillar9" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(-2899, 4165)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar9"]
+polygon = PackedVector2Array(65, -1, 38, 52, -25, 61, -53, 32, -58, -27, -5, -67, 38, -50)
+
+[node name="Tree14" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4399, 3962)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree14"]
+polygon = PackedVector2Array(152, -4, 113, 102, 4, 156, -49, 111, -126, 45, -137, -80, -68, -116, 10, -151, 101, -64)
+
+[node name="Tree15" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-3304, 3778)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree15"]
+polygon = PackedVector2Array(124, -18, 61, 59, 18, 92, -71, 98, -95, 47, -84, -29, -48, -82, 24, -122, 70, -44)
+
+[node name="Rock10" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-3404, 4376)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock10"]
+polygon = PackedVector2Array(96, -4, 77, 73, 17, 98, -74, 99, -77, 41, -116, -57, -46, -72, 50, -122, 74, -56)
+
+[node name="Rock11" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-2253, 3543)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock11"]
+polygon = PackedVector2Array(107, 12, 88, 50, 15, 140, -83, 98, -125, 36, -115, -46, -55, -80, 46, -137, 121, -73)
+
+[node name="Tree16" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(2047, 3872)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree16"]
+polygon = PackedVector2Array(91, -7, 75, 76, 21, 116, -41, 102, -80, 32, -108, -40, -38, -114, 12, -93, 67, -71)
+
+[node name="Tree17" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(2452, 4254)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree17"]
+polygon = PackedVector2Array(115, -11, 105, 89, 13, 119, -66, 85, -108, 30, -129, -50, -50, -103, 23, -78, 97, -82)
+
+[node name="Tree18" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(3100, 3663)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree18"]
+polygon = PackedVector2Array(128, -3, 120, 84, 13, 134, -69, 121, -124, 31, -117, -28, -44, -121, 17, -132, 76, -86)
+
+[node name="Tree19" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(3695, 4200)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree19"]
+polygon = PackedVector2Array(87, -13, 71, 53, 7, 82, -44, 83, -80, 20, -87, -27, -41, -64, 17, -82, 70, -50)
+
+[node name="Tree20" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4350, 3726)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree20"]
+polygon = PackedVector2Array(114, 13, 115, 70, 26, 120, -33, 83, -128, 17, -110, -26, -52, -90, 3, -110, 65, -77)
+
+[node name="Tree21" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(2895, 4626)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree21"]
+polygon = PackedVector2Array(86, 6, 64, 56, 13, 82, -48, 79, -85, 47, -87, -27, -35, -98, 27, -88, 66, -57)
+
+[node name="Tree22" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4204, 4618)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree22"]
+polygon = PackedVector2Array(94, 4, 74, 66, 13, 94, -34, 74, -76, 25, -92, -37, -62, -87, 8, -88, 74, -50)
+
+[node name="Hedge13" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(4525, -2736)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge13"]
+polygon = PackedVector2Array(335, -60, -335, -60, -335, 60, 335, 60)
+
+[node name="Hedge14" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(4250, -2496)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge14"]
+polygon = PackedVector2Array(-60, -300, -60, 300, 60, 300, 60, -300)
+
+[node name="Hedge15" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(3420, -3000)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge15"]
+polygon = PackedVector2Array(-60, -300, -60, 300, 60, 300, 60, -300)
+
+[node name="Hedge16" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(3220, -2760)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge16"]
+polygon = PackedVector2Array(260, -60, -260, -60, -260, 60, 260, 60)
+
+[node name="Hedge17" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(3650, -2280)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge17"]
+polygon = PackedVector2Array(360, -60, -360, -60, -360, 60, 360, 60)
+
+[node name="Hedge18" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(4135, -1776)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge18"]
+polygon = PackedVector2Array(475, -60, -475, -60, -475, 60, 475, 60)
+
+[node name="Hedge19" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(3720, -1560)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge19"]
+polygon = PackedVector2Array(-60, -276, -60, 276, 60, 276, 60, -276)
+
+[node name="Hedge20" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(3300, -1626)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge20"]
+polygon = PackedVector2Array(-60, -306, -60, 306, 60, 306, 60, -306)
+
+[node name="Hedge21" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(3125, -1380)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge21"]
+polygon = PackedVector2Array(235, -60, -235, -60, -235, 60, 235, 60)
+
+[node name="Hedge22" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(4300, -1008)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge22"]
+polygon = PackedVector2Array(-60, -348, -60, 348, 60, 348, 60, -348)
+
+[node name="Hedge23" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(3725, -984)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge23"]
+polygon = PackedVector2Array(285, -60, -285, -60, -285, 60, 285, 60)
+
+[node name="Tree23" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4520, -2226)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree23"]
+polygon = PackedVector2Array(-107, 8, -67, -70, -18, -100, 42, -89, 113, -29, 92, 25, 74, 100, -20, 85, -110, 70)
+
+[node name="Tree24" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(3023, -2214)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree24"]
+polygon = PackedVector2Array(-125, -5, -72, -70, -40, -106, 52, -123, 111, -39, 110, 38, 63, 82, -11, 129, -89, 93)
+
+[node name="Tree25" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4044, -3022)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree25"]
+polygon = PackedVector2Array(-96, 7, -73, -79, -17, -81, 38, -78, 81, -23, 82, 26, 57, 73, -23, 93, -48, 62)
+
+[node name="Tree26" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(2999, -3001)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree26"]
+polygon = PackedVector2Array(-91, 14, -74, -69, -18, -71, 53, -74, 85, -36, 92, 31, 46, 59, -24, 76, -68, 70)
+
+[node name="Tree27" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4058, -1501)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree27"]
+polygon = PackedVector2Array(-83, -12, -67, -58, -8, -76, 58, -84, 112, -26, 80, 24, 30, 81, -16, 87, -106, 64)
+
+[node name="Hedge24" type="StaticBody2D" parent="Cover/Hedges"]
+position = Vector2(4675, -1512)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.184, 0.353, 0.165, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Hedges/Hedge24"]
+polygon = PackedVector2Array(185, -60, -185, -60, -185, 60, 185, 60)
+
+[node name="Tree28" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4447, -427)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree28"]
+polygon = PackedVector2Array(-140, 24, -93, -82, -38, -138, 82, -100, 111, -32, 125, 28, 53, 100, -29, 118, -70, 81)
+
+[node name="Rock12" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(3344, 189)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock12"]
+polygon = PackedVector2Array(-133, -26, -176, -88, -33, -109, 92, -108, 151, -32, 141, 48, 102, 127, -43, 140, -102, 49)
+
+[node name="Tree29" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4147, 499)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree29"]
+polygon = PackedVector2Array(-133, -16, -58, -63, -13, -103, 50, -76, 101, -44, 110, 32, 61, 75, -24, 110, -94, 85)
+
+[node name="Tree30" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(3192, -676)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree30"]
+polygon = PackedVector2Array(-112, -5, -99, -67, -24, -104, 51, -105, 109, -48, 114, 53, 71, 108, -21, 84, -89, 85)
+
+[node name="Rock13" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(3243, 2214)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock13"]
+polygon = PackedVector2Array(-167, 20, -103, -162, -5, -210, 57, -178, 149, -81, 145, 66, 78, 173, -43, 222, -111, 150)
+
+[node name="Tree31" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4503, 1138)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree31"]
+polygon = PackedVector2Array(-125, 3, -83, -46, -3, -110, 34, -88, 96, -20, 119, 24, 65, 89, -25, 101, -78, 46)
+
+[node name="Tree32" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4301, 1619)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree32"]
+polygon = PackedVector2Array(-91, 5, -105, -67, -17, -111, 50, -83, 103, -27, 100, 50, 39, 94, -5, 88, -72, 52)
+
+[node name="Tree33" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4552, 2041)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree33"]
+polygon = PackedVector2Array(-83, -5, -76, -53, -12, -113, 49, -67, 73, -31, 99, 24, 55, 67, -26, 102, -78, 76)
+
+[node name="Tree34" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4248, 2519)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree34"]
+polygon = PackedVector2Array(-110, 19, -84, -54, -12, -117, 52, -90, 89, -50, 117, 37, 58, 102, -12, 87, -99, 65)
+
+[node name="Tree35" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4498, 2947)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree35"]
+polygon = PackedVector2Array(-104, -4, -58, -72, -20, -85, 32, -81, 95, -55, 100, 50, 55, 77, -21, 85, -78, 84)
+
+[node name="Pillar10" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(-817, -258)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar10"]
+polygon = PackedVector2Array(-108, 1, -87, -76, -5, -105, 83, -71, 101, 8, 75, 57, 6, 102, -66, 83)
+
+[node name="Pillar11" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(-264, -973)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar11"]
+polygon = PackedVector2Array(-103, 3, -61, -75, -6, -104, 71, -68, 100, -1, 84, 68, -14, 108, -72, 69)
+
+[node name="Pillar12" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(179, -1003)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar12"]
+polygon = PackedVector2Array(-97, -10, -59, -74, -4, -106, 66, -71, 109, -9, 53, 83, 11, 106, -79, 81)
+
+[node name="Pillar13" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(840, -146)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar13"]
+polygon = PackedVector2Array(-96, 6, -59, -78, -14, -103, 59, -74, 106, -12, 67, 86, 13, 112, -77, 64)
+
+[node name="Rock14" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(1292, -2016)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock14"]
+polygon = PackedVector2Array(-105, 9, -75, -74, -8, -112, 57, -84, 96, -48, 87, 38, 68, 91, -13, 107, -107, 73)
+
+[node name="Rock15" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-1298, -2335)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock15"]
+polygon = PackedVector2Array(-125, -21, -87, -58, -37, -145, 70, -94, 110, -49, 103, 52, 66, 97, -2, 118, -97, 100)
+
+[node name="Ruin13" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(2550, -1320)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin13"]
+polygon = PackedVector2Array(240, -40, -240, -40, -240, 40, 240, 40)
+
+[node name="Ruin14" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1775, -1320)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin14"]
+polygon = PackedVector2Array(315, -40, -315, -40, -315, 40, 315, 40)
+
+[node name="Ruin15" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1500, -1530)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin15"]
+polygon = PackedVector2Array(40, 250, 40, -250, -40, -250, -40, 250)
+
+[node name="Ruin16" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1500, -2460)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin16"]
+polygon = PackedVector2Array(40, 400, 40, -400, -40, -400, -40, 400)
+
+[node name="Ruin17" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(2500, -2820)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin17"]
+polygon = PackedVector2Array(290, -40, -290, -40, -290, 40, 290, 40)
+
+[node name="Ruin18" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1725, -2820)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin18"]
+polygon = PackedVector2Array(265, -40, -265, -40, -265, 40, 265, 40)
+
+[node name="Ruin19" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(2600, -1800)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin19"]
+polygon = PackedVector2Array(190, -40, -190, -40, -190, 40, 190, 40)
+
+[node name="Ruin20" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(2000, -1800)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin20"]
+polygon = PackedVector2Array(190, -40, -190, -40, -190, 40, 190, 40)
+
+[node name="Ruin21" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1950, -2370)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin21"]
+polygon = PackedVector2Array(40, 190, 40, -190, -40, -190, -40, 190)
+
+[node name="Ruin22" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1825, -2220)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin22"]
+polygon = PackedVector2Array(165, -40, -165, -40, -165, 40, 165, 40)
+
+[node name="Pillar14" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(2000, -1558)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar14"]
+polygon = PackedVector2Array(-69, 4, -41, -63, 12, -70, 61, -35, 63, 38, 5, 71, -32, 55)
+
+[node name="Pillar15" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(1754, -1559)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar15"]
+polygon = PackedVector2Array(-72, -1, -44, -54, 18, -62, 60, -33, 61, 34, 16, 63, -40, 52)
+
+[node name="Rock16" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-1903, -902)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock16"]
+polygon = PackedVector2Array(-115, 12, -108, -77, -14, -100, 88, -112, 131, -21, 117, 26, 53, 80, -39, 133, -113, 59)
+
+[node name="Rock17" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-2340, -536)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock17"]
+polygon = PackedVector2Array(-114, 8, -85, -58, -12, -112, 61, -79, 97, -23, 99, 29, 67, 95, -20, 101, -92, 39)
+
+[node name="Rock18" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-1892, -1738)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock18"]
+polygon = PackedVector2Array(-183, 1, -141, -90, -22, -158, 100, -124, 151, -42, 179, 69, 78, 117, -11, 147, -152, 79)
+
+[node name="Rock19" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-2465, -2160)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock19"]
+polygon = PackedVector2Array(-119, -15, -80, -63, -24, -90, 59, -77, 109, -36, 119, 30, 74, 85, -31, 104, -105, 62)
+
+[node name="Rock20" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-1245, -2578)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock20"]
+polygon = PackedVector2Array(-98, -3, -95, -50, -44, -82, 64, -66, 129, -26, 80, 9, 66, 86, -26, 94, -77, 37)
+
+[node name="Cliffrock4" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(988, -2749)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.361, 0.337, 0.314, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Cliffrock4"]
+polygon = PackedVector2Array(-622, 18, -536, -82, -270, -122, 60, -137, 218, -126, 517, -94, 589, 22, 583, 65, 337, 105, 60, 133, -375, 127, -559, 89)
+
+[node name="Cliffrock5" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-970, -2756)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.361, 0.337, 0.314, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Cliffrock5"]
+polygon = PackedVector2Array(-596, 4, -531, -87, -338, -114, -70, -121, 271, -121, 543, -80, 570, -12, 602, 61, 327, 123, 31, 149, -286, 122, -522, 77)
+
+[node name="Cliffrock6" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(-2335, -2792)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.361, 0.337, 0.314, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Cliffrock6"]
+polygon = PackedVector2Array(-232, 9, -204, -61, -24, -92, 130, -86, 205, -51, 216, 33, 100, 93, -21, 78, -170, 76)
+
+[node name="Sundial2" type="StaticBody2D" parent="Cover/Landmarks"]
+position = Vector2(2, -3484)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.561, 0.639, 0.831, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Sundial2"]
+polygon = PackedVector2Array(-187, -29, -160, -105, -109, -144, 5, -179, 88, -168, 166, -66, 180, -24, 143, 112, 104, 152, 23, 190, -77, 175, -175, 85)
+
+[node name="Ruin23" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(775, -3408)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin23"]
+polygon = PackedVector2Array(231, 139, -180, -200, -231, -139, 180, 200)
+
+[node name="Ruin24" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-775, -3408)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.416, 0.333, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Ruin24"]
+polygon = PackedVector2Array(180, -200, -231, 139, -180, 200, 231, -139)
+
+[node name="Basewall9" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1600, -3630)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.753, 0.353, 0.235, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall9"]
+polygon = PackedVector2Array(40, 370, 40, -370, -40, -370, -40, 370)
+
+[node name="Basewall10" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1600, -3630)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.753, 0.353, 0.235, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall10"]
+polygon = PackedVector2Array(40, 370, 40, -370, -40, -370, -40, 370)
+
+[node name="Basewall11" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(850, -3960)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.753, 0.353, 0.235, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall11"]
+polygon = PackedVector2Array(590, -40, -590, -40, -590, 40, 590, 40)
+
+[node name="Basewall12" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-850, -3960)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.753, 0.353, 0.235, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall12"]
+polygon = PackedVector2Array(590, -40, -590, -40, -590, 40, 590, 40)
+
+[node name="Basewall13" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1400, -4080)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.753, 0.353, 0.235, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall13"]
+polygon = PackedVector2Array(40, 160, 40, -160, -40, -160, -40, 160)
+
+[node name="Basewall14" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1400, -4710)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.753, 0.353, 0.235, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall14"]
+polygon = PackedVector2Array(40, 190, 40, -190, -40, -190, -40, 190)
+
+[node name="Basewall15" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1400, -4080)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.753, 0.353, 0.235, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall15"]
+polygon = PackedVector2Array(40, 160, 40, -160, -40, -160, -40, 160)
+
+[node name="Basewall16" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(-1400, -4710)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.753, 0.353, 0.235, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Basewall16"]
+polygon = PackedVector2Array(40, 190, 40, -190, -40, -190, -40, 190)
+
+[node name="Statue4" type="StaticBody2D" parent="Cover/Landmarks"]
+position = Vector2(-1, -4372)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.561, 0.639, 0.831, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Statue4"]
+polygon = PackedVector2Array(-140, -19, -110, -73, -77, -114, 16, -128, 57, -127, 112, -82, 141, -5, 112, 89, 74, 120, -5, 144, -64, 126, -117, 70)
+
+[node name="Statue5" type="StaticBody2D" parent="Cover/Landmarks"]
+position = Vector2(1081, -4169)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.561, 0.639, 0.831, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Statue5"]
+polygon = PackedVector2Array(-83, -6, -57, -64, -7, -81, 52, -55, 85, 0, 66, 57, 3, 85, -58, 65)
+
+[node name="Statue6" type="StaticBody2D" parent="Cover/Landmarks"]
+position = Vector2(-1080, -4165)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.561, 0.639, 0.831, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Statue6"]
+polygon = PackedVector2Array(-88, -6, -72, -50, 9, -77, 68, -54, 88, -9, 62, 57, -5, 86, -62, 53)
+
+[node name="Cloister4" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(1675, -4164)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.416, 0.353, 0.282, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Cloister4"]
+polygon = PackedVector2Array(-315, 40, 315, 40, 315, -40, -315, -40)
+
+[node name="Cloister5" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(2225, -4596)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.416, 0.353, 0.282, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Cloister5"]
+polygon = PackedVector2Array(-865, 40, 865, 40, 865, -40, -865, -40)
+
+[node name="Cloister6" type="StaticBody2D" parent="Cover/Walls"]
+position = Vector2(2225, -4752)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.416, 0.353, 0.282, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Walls/Cloister6"]
+polygon = PackedVector2Array(825, 108, -825, 108, -825, -108, 825, -108)
+
+[node name="Pillar16" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(2402, -4167)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar16"]
+polygon = PackedVector2Array(-64, -7, -34, -50, 12, -58, 53, -23, 55, 28, 24, 64, -46, 44)
+
+[node name="Pillar17" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(2650, -4167)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar17"]
+polygon = PackedVector2Array(-61, -4, -32, -53, 12, -61, 52, -30, 56, 28, 10, 66, -37, 53)
+
+[node name="Pillar18" type="StaticBody2D" parent="Cover/Pillars"]
+position = Vector2(2899, -4165)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.553, 0.522, 0.659, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar18"]
+polygon = PackedVector2Array(-65, 1, -38, -52, 25, -61, 53, -32, 58, 27, 5, 67, -38, 50)
+
+[node name="Tree36" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(4399, -3962)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree36"]
+polygon = PackedVector2Array(-152, 4, -113, -102, -4, -156, 49, -111, 126, -45, 137, 80, 68, 116, -10, 151, -101, 64)
+
+[node name="Tree37" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(3304, -3778)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree37"]
+polygon = PackedVector2Array(-124, 18, -61, -59, -18, -92, 71, -98, 95, -47, 84, 29, 48, 82, -24, 122, -70, 44)
+
+[node name="Rock21" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(3404, -4376)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock21"]
+polygon = PackedVector2Array(-96, 4, -77, -73, -17, -98, 74, -99, 77, -41, 116, 57, 46, 72, -50, 122, -74, 56)
+
+[node name="Rock22" type="StaticBody2D" parent="Cover/Rocks"]
+position = Vector2(2253, -3543)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.478, 0.451, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock22"]
+polygon = PackedVector2Array(-107, -12, -88, -50, -15, -140, 83, -98, 125, -36, 115, 46, 55, 80, -46, 137, -121, 73)
+
+[node name="Tree38" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-2047, -3872)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree38"]
+polygon = PackedVector2Array(-91, 7, -75, -76, -21, -116, 41, -102, 80, -32, 108, 40, 38, 114, -12, 93, -67, 71)
+
+[node name="Tree39" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-2452, -4254)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree39"]
+polygon = PackedVector2Array(-115, 11, -105, -89, -13, -119, 66, -85, 108, -30, 129, 50, 50, 103, -23, 78, -97, 82)
+
+[node name="Tree40" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-3100, -3663)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree40"]
+polygon = PackedVector2Array(-128, 3, -120, -84, -13, -134, 69, -121, 124, -31, 117, 28, 44, 121, -17, 132, -76, 86)
+
+[node name="Tree41" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-3695, -4200)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree41"]
+polygon = PackedVector2Array(-87, 13, -71, -53, -7, -82, 44, -83, 80, -20, 87, 27, 41, 64, -17, 82, -70, 50)
+
+[node name="Tree42" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4350, -3726)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree42"]
+polygon = PackedVector2Array(-114, -13, -115, -70, -26, -120, 33, -83, 128, -17, 110, 26, 52, 90, -3, 110, -65, 77)
+
+[node name="Tree43" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-2895, -4626)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree43"]
+polygon = PackedVector2Array(-86, -6, -64, -56, -13, -82, 48, -79, 85, -47, 87, 27, 35, 98, -27, 88, -66, 57)
+
+[node name="Tree44" type="StaticBody2D" parent="Cover/Trees"]
+position = Vector2(-4204, -4618)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.247, 0.420, 0.208, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree44"]
+polygon = PackedVector2Array(-94, -4, -74, -66, -13, -94, 34, -74, 76, -25, 92, 37, 62, 87, -8, 88, -74, 50)
+
+[node name="LowCover" type="Node2D" parent="Cover"]
+
+[node name="Lowwall1" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2550, -1464)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.639, 0.616, 0.565, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall1"]
+polygon = PackedVector2Array(-205, 25, 205, 25, 205, -25, -205, -25)
+
+[node name="Lowwall2" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2550, -996)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.639, 0.616, 0.565, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall2"]
+polygon = PackedVector2Array(-205, 25, 205, 25, 205, -25, -205, -25)
+
+[node name="Lowrock1" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-3848, 99)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock1"]
+polygon = PackedVector2Array(202, -7, 98, 40, 5, 69, -74, 74, -142, 23, -170, -26, -115, -62, 48, -69, 147, -43)
+
+[node name="Lowrock2" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2999, -603)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock2"]
+polygon = PackedVector2Array(47, 13, 48, 80, 20, 144, -27, 87, -56, 40, -65, -59, -20, -116, 17, -141, 36, -49)
+
+[node name="Lowrock3" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2881, -2942)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock3"]
+polygon = PackedVector2Array(44, -18, 47, 98, 14, 114, -24, 149, -53, 76, -40, -45, -25, -120, 10, -173, 28, -81)
+
+[node name="Lowrock4" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2879, -2461)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock4"]
+polygon = PackedVector2Array(45, -18, 51, 101, 10, 157, -21, 135, -54, 33, -56, -82, -23, -91, 11, -113, 37, -121)
+
+[node name="Lowrock5" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2882, -1981)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock5"]
+polygon = PackedVector2Array(59, 5, 35, 94, 10, 170, -26, 97, -52, 45, -60, -59, -24, -120, 21, -143, 37, -90)
+
+[node name="Lowrock6" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2880, -1679)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock6"]
+polygon = PackedVector2Array(56, 1, 44, 124, 2, 133, -33, 106, -40, 46, -42, -43, -32, -125, 16, -156, 28, -86)
+
+[node name="Lowrock7" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-3647, -2701)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock7"]
+polygon = PackedVector2Array(157, -3, 116, 43, 24, 69, -59, 66, -120, 30, -199, -22, -89, -63, 60, -81, 110, -39)
+
+[node name="Lowrock8" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(550, 449)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock8"]
+polygon = PackedVector2Array(112, 85, 71, 81, -15, 42, -84, -4, -108, -58, -90, -79, -38, -70, 55, -32, 98, 34)
+
+[node name="Lowrock9" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-616, 563)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock9"]
+polygon = PackedVector2Array(107, -63, 123, -37, 31, 46, -25, 53, -74, 60, -122, 55, -91, -2, 3, -49, 49, -63)
+
+[node name="Lowwall3" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-875, 2334)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.639, 0.616, 0.565, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall3"]
+polygon = PackedVector2Array(-304, -34, 295, 83, 304, 34, -295, -83)
+
+[node name="Lowwall4" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(875, 2334)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.639, 0.616, 0.565, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall4"]
+polygon = PackedVector2Array(-295, 83, 304, -34, 295, -83, -304, 34)
+
+[node name="Lowrock10" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-7, 2137)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock10"]
+polygon = PackedVector2Array(165, -10, 98, 42, 30, 55, -88, 52, -171, 22, -122, -23, -80, -54, 39, -51, 131, -33)
+
+[node name="Crate1" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2552, 1560)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate1"]
+polygon = PackedVector2Array(127, -7, 121, 47, 11, 68, -58, 42, -119, 12, -94, -18, -81, -57, 6, -48, 87, -38)
+
+[node name="Crate2" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2443, 2576)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate2"]
+polygon = PackedVector2Array(81, 4, 53, 41, 20, 80, -35, 67, -65, 18, -74, -11, -37, -65, 12, -84, 44, -49)
+
+[node name="Crate3" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-1810, 2388)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate3"]
+polygon = PackedVector2Array(-50, -60, 50, -60, 50, 60, -50, 60)
+
+[node name="Lowrock11" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2151, 1380)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock11"]
+polygon = PackedVector2Array(166, 67, 82, 67, -16, 62, -75, 8, -126, -32, -120, -65, -62, -77, 22, -54, 129, 24)
+
+[node name="Lowrock12" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(1652, 2279)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock12"]
+polygon = PackedVector2Array(135, -48, 121, 1, 22, 49, -41, 49, -135, 55, -98, 18, -84, -23, 16, -49, 66, -53)
+
+[node name="Crate4" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2450, 492)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate4"]
+polygon = PackedVector2Array(-70, -72, 70, -72, 70, 72, -70, 72)
+
+[node name="Crate5" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2580, 576)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate5"]
+polygon = PackedVector2Array(-60, -72, 60, -72, 60, 72, -60, 72)
+
+[node name="Crate6" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-1795, 4386)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate6"]
+polygon = PackedVector2Array(-55, -54, 55, -54, 55, 54, -55, 54)
+
+[node name="Lowrock13" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(3443, 3479)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock13"]
+polygon = PackedVector2Array(142, 1, 129, 46, 21, 44, -51, 48, -153, 12, -146, -21, -94, -48, 37, -47, 113, -36)
+
+[node name="Lowwall5" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2550, 1464)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.639, 0.616, 0.565, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall5"]
+polygon = PackedVector2Array(205, -25, -205, -25, -205, 25, 205, 25)
+
+[node name="Lowwall6" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2550, 996)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.639, 0.616, 0.565, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall6"]
+polygon = PackedVector2Array(205, -25, -205, -25, -205, 25, 205, 25)
+
+[node name="Lowrock14" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(3848, -99)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock14"]
+polygon = PackedVector2Array(-202, 7, -98, -40, -5, -69, 74, -74, 142, -23, 170, 26, 115, 62, -48, 69, -147, 43)
+
+[node name="Lowrock15" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2999, 603)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock15"]
+polygon = PackedVector2Array(-47, -13, -48, -80, -20, -144, 27, -87, 56, -40, 65, 59, 20, 116, -17, 141, -36, 49)
+
+[node name="Lowrock16" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2881, 2942)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock16"]
+polygon = PackedVector2Array(-44, 18, -47, -98, -14, -114, 24, -149, 53, -76, 40, 45, 25, 120, -10, 173, -28, 81)
+
+[node name="Lowrock17" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2879, 2461)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock17"]
+polygon = PackedVector2Array(-45, 18, -51, -101, -10, -157, 21, -135, 54, -33, 56, 82, 23, 91, -11, 113, -37, 121)
+
+[node name="Lowrock18" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2882, 1981)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock18"]
+polygon = PackedVector2Array(-59, -5, -35, -94, -10, -170, 26, -97, 52, -45, 60, 59, 24, 120, -21, 143, -37, 90)
+
+[node name="Lowrock19" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2880, 1679)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock19"]
+polygon = PackedVector2Array(-56, -1, -44, -124, -2, -133, 33, -106, 40, -46, 42, 43, 32, 125, -16, 156, -28, 86)
+
+[node name="Lowrock20" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(3647, 2701)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock20"]
+polygon = PackedVector2Array(-157, 3, -116, -43, -24, -69, 59, -66, 120, -30, 199, 22, 89, 63, -60, 81, -110, 39)
+
+[node name="Lowrock21" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-550, -449)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock21"]
+polygon = PackedVector2Array(-112, -85, -71, -81, 15, -42, 84, 4, 108, 58, 90, 79, 38, 70, -55, 32, -98, -34)
+
+[node name="Lowrock22" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(616, -563)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock22"]
+polygon = PackedVector2Array(-107, 63, -123, 37, -31, -46, 25, -53, 74, -60, 122, -55, 91, 2, -3, 49, -49, 63)
+
+[node name="Lowwall7" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(875, -2334)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.639, 0.616, 0.565, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall7"]
+polygon = PackedVector2Array(304, 34, -295, -83, -304, -34, 295, 83)
+
+[node name="Lowwall8" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-875, -2334)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.639, 0.616, 0.565, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall8"]
+polygon = PackedVector2Array(295, -83, -304, 34, -295, 83, 304, -34)
+
+[node name="Lowrock23" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(7, -2137)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock23"]
+polygon = PackedVector2Array(-165, 10, -98, -42, -30, -55, 88, -52, 171, -22, 122, 23, 80, 54, -39, 51, -131, 33)
+
+[node name="Crate7" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2552, -1560)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate7"]
+polygon = PackedVector2Array(-127, 7, -121, -47, -11, -68, 58, -42, 119, -12, 94, 18, 81, 57, -6, 48, -87, 38)
+
+[node name="Crate8" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2443, -2576)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate8"]
+polygon = PackedVector2Array(-81, -4, -53, -41, -20, -80, 35, -67, 65, -18, 74, 11, 37, 65, -12, 84, -44, 49)
+
+[node name="Crate9" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(1810, -2388)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate9"]
+polygon = PackedVector2Array(50, 60, -50, 60, -50, -60, 50, -60)
+
+[node name="Lowrock24" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2151, -1380)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock24"]
+polygon = PackedVector2Array(-166, -67, -82, -67, 16, -62, 75, -8, 126, 32, 120, 65, 62, 77, -22, 54, -129, -24)
+
+[node name="Lowrock25" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-1652, -2279)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock25"]
+polygon = PackedVector2Array(-135, 48, -121, -1, -22, -49, 41, -49, 135, -55, 98, -18, 84, 23, -16, 49, -66, 53)
+
+[node name="Crate10" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2450, -492)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate10"]
+polygon = PackedVector2Array(70, 72, -70, 72, -70, -72, 70, -72)
+
+[node name="Crate11" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2580, -576)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate11"]
+polygon = PackedVector2Array(60, 72, -60, 72, -60, -72, 60, -72)
+
+[node name="Crate12" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(1795, -4386)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.788, 0.651, 0.420, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate12"]
+polygon = PackedVector2Array(55, 54, -55, 54, -55, -54, 55, -54)
+
+[node name="Lowrock26" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-3443, -3479)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.722, 0.698, 0.651, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock26"]
+polygon = PackedVector2Array(-142, -1, -129, -46, -21, -44, 51, -48, 153, -12, 146, 21, 94, 48, -37, 47, -113, 36)
+
+[node name="Boundary" type="Node2D" parent="Cover"]
+
+[node name="Boundary1" type="StaticBody2D" parent="Cover/Boundary"]
+position = Vector2(0, -5060)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.169, 0.169, 0.188, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Boundary/Boundary1"]
+polygon = PackedVector2Array(-5200, -200, 5200, -200, 5200, 200, -5200, 200)
+
+[node name="Boundary2" type="StaticBody2D" parent="Cover/Boundary"]
+position = Vector2(0, 5060)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.169, 0.169, 0.188, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Boundary/Boundary2"]
+polygon = PackedVector2Array(-5200, -200, 5200, -200, 5200, 200, -5200, 200)
+
+[node name="Boundary3" type="StaticBody2D" parent="Cover/Boundary"]
+position = Vector2(-5000, 0)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.169, 0.169, 0.188, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Boundary/Boundary3"]
+polygon = PackedVector2Array(-200, -4860, 200, -4860, 200, 4860, -200, 4860)
+
+[node name="Boundary4" type="StaticBody2D" parent="Cover/Boundary"]
+position = Vector2(5000, 0)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.169, 0.169, 0.188, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Boundary/Boundary4"]
+polygon = PackedVector2Array(-200, -4860, 200, -4860, 200, 4860, -200, 4860)
+
+[node name="Bushes" type="Node2D" parent="."]
+
+[node name="Bush1" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-3700, 2580)
+radius = 120
+
+[node name="Bush2" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-4550, 1500)
+radius = 120
+
+[node name="Bush3" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-3050, 1620)
+radius = 120
+
+[node name="Bush4" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-4000, 2040)
+radius = 120
+
+[node name="Bush5" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-3500, 1260)
+radius = 120
+
+[node name="Bush6" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-4600, 1140)
+radius = 120
+
+[node name="Bush7" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-3150, 2580)
+radius = 120
+
+[node name="Bush8" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-4450, 672)
+radius = 120
+
+[node name="Bush9" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-4600, -180)
+radius = 140
+
+[node name="Bush10" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-3600, 540)
+radius = 110
+
+[node name="Bush11" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-3050, 180)
+radius = 100
+
+[node name="Bush12" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-4100, -1320)
+radius = 120
+
+[node name="Bush13" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-4000, -2280)
+radius = 120
+
+[node name="Bush14" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-4150, -2880)
+radius = 120
+
+[node name="Bush15" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-3700, -1740)
+radius = 120
+
+[node name="Bush16" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(250, 744)
+radius = 110
+
+[node name="Bush17" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-1000, 180)
+radius = 100
+
+[node name="Bush18" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-850, 2580)
+radius = 100
+
+[node name="Bush19" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(850, 2580)
+radius = 100
+
+[node name="Bush20" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-2600, 2220)
+radius = 100
+
+[node name="Bush21" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(2000, 1200)
+radius = 120
+
+[node name="Bush22" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(1300, 1800)
+radius = 120
+
+[node name="Bush23" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(2550, 1560)
+radius = 120
+
+[node name="Bush24" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(1750, 2700)
+radius = 120
+
+[node name="Bush25" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-1300, 3720)
+radius = 110
+
+[node name="Bush26" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(1300, 3720)
+radius = 110
+
+[node name="Bush27" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-4600, 3540)
+radius = 110
+
+[node name="Bush28" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-3500, 4440)
+radius = 110
+
+[node name="Bush29" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-2750, 3720)
+radius = 100
+
+[node name="Bush30" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-1900, 3780)
+radius = 90
+
+[node name="Bush31" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(2250, 3540)
+radius = 110
+
+[node name="Bush32" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(3400, 4020)
+radius = 110
+
+[node name="Bush33" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(4000, 3600)
+radius = 110
+
+[node name="Bush34" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(2000, 4440)
+radius = 110
+
+[node name="Bush35" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(3700, -2580)
+radius = 120
+
+[node name="Bush36" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(4550, -1500)
+radius = 120
+
+[node name="Bush37" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(3050, -1620)
+radius = 120
+
+[node name="Bush38" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(4000, -2040)
+radius = 120
+
+[node name="Bush39" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(3500, -1260)
+radius = 120
+
+[node name="Bush40" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(4600, -1140)
+radius = 120
+
+[node name="Bush41" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(3150, -2580)
+radius = 120
+
+[node name="Bush42" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(4450, -672)
+radius = 120
+
+[node name="Bush43" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(4600, 180)
+radius = 140
+
+[node name="Bush44" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(3600, -540)
+radius = 110
+
+[node name="Bush45" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(3050, -180)
+radius = 100
+
+[node name="Bush46" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(4100, 1320)
+radius = 120
+
+[node name="Bush47" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(4000, 2280)
+radius = 120
+
+[node name="Bush48" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(4150, 2880)
+radius = 120
+
+[node name="Bush49" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(3700, 1740)
+radius = 120
+
+[node name="Bush50" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-250, -744)
+radius = 110
+
+[node name="Bush51" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(1000, -180)
+radius = 100
+
+[node name="Bush52" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(850, -2580)
+radius = 100
+
+[node name="Bush53" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-850, -2580)
+radius = 100
+
+[node name="Bush54" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(2600, -2220)
+radius = 100
+
+[node name="Bush55" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-2000, -1200)
+radius = 120
+
+[node name="Bush56" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-1300, -1800)
+radius = 120
+
+[node name="Bush57" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-2550, -1560)
+radius = 120
+
+[node name="Bush58" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-1750, -2700)
+radius = 120
+
+[node name="Bush59" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(1300, -3720)
+radius = 110
+
+[node name="Bush60" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-1300, -3720)
+radius = 110
+
+[node name="Bush61" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(4600, -3540)
+radius = 110
+
+[node name="Bush62" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(3500, -4440)
+radius = 110
+
+[node name="Bush63" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(2750, -3720)
+radius = 100
+
+[node name="Bush64" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(1900, -3780)
+radius = 90
+
+[node name="Bush65" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-2250, -3540)
+radius = 110
+
+[node name="Bush66" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-3400, -4020)
+radius = 110
+
+[node name="Bush67" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-4000, -3600)
+radius = 110
+
+[node name="Bush68" parent="Bushes" instance=ExtResource("9_bush")]
+position = Vector2(-2000, -4440)
+radius = 110
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="TeamA_1" type="Marker2D" parent="SpawnPoints" groups=["spawn_a"]]
+position = Vector2(-950, 4656)
+
+[node name="TeamA_2" type="Marker2D" parent="SpawnPoints" groups=["spawn_a"]]
+position = Vector2(-700, 4656)
+
+[node name="TeamA_3" type="Marker2D" parent="SpawnPoints" groups=["spawn_a"]]
+position = Vector2(-450, 4656)
+
+[node name="TeamA_4" type="Marker2D" parent="SpawnPoints" groups=["spawn_a"]]
+position = Vector2(450, 4656)
+
+[node name="TeamA_5" type="Marker2D" parent="SpawnPoints" groups=["spawn_a"]]
+position = Vector2(700, 4656)
+
+[node name="TeamA_6" type="Marker2D" parent="SpawnPoints" groups=["spawn_a"]]
+position = Vector2(950, 4656)
+
+[node name="TeamB_1" type="Marker2D" parent="SpawnPoints" groups=["spawn_b"]]
+position = Vector2(950, -4656)
+
+[node name="TeamB_2" type="Marker2D" parent="SpawnPoints" groups=["spawn_b"]]
+position = Vector2(700, -4656)
+
+[node name="TeamB_3" type="Marker2D" parent="SpawnPoints" groups=["spawn_b"]]
+position = Vector2(450, -4656)
+
+[node name="TeamB_4" type="Marker2D" parent="SpawnPoints" groups=["spawn_b"]]
+position = Vector2(-450, -4656)
+
+[node name="TeamB_5" type="Marker2D" parent="SpawnPoints" groups=["spawn_b"]]
+position = Vector2(-700, -4656)
+
+[node name="TeamB_6" type="Marker2D" parent="SpawnPoints" groups=["spawn_b"]]
+position = Vector2(-950, -4656)
+
+[node name="Overview" type="Node2D" parent="." groups=["map_overview"]]
+visible = false
+z_index = 100
+
+[node name="Lane1" type="Line2D" parent="Overview"]
+points = PackedVector2Array(-1450, 1920, 1450, -1920)
+width = 28.0
+default_color = Color(0.863, 0.149, 0.149, 0.7)
+
+[node name="Lane2" type="Line2D" parent="Overview"]
+points = PackedVector2Array(3150, 2460, -500, 1500)
+width = 28.0
+default_color = Color(0.863, 0.149, 0.149, 0.7)
+
+[node name="Lane3" type="Line2D" parent="Overview"]
+points = PackedVector2Array(3000, 3060, 3000, -960)
+width = 28.0
+default_color = Color(0.863, 0.149, 0.149, 0.7)
+
+[node name="Lane4" type="Line2D" parent="Overview"]
+points = PackedVector2Array(-3150, -2460, 500, -1500)
+width = 28.0
+default_color = Color(0.863, 0.149, 0.149, 0.7)
+
+[node name="Lane5" type="Line2D" parent="Overview"]
+points = PackedVector2Array(-3000, -3060, -3000, 960)
+width = 28.0
+default_color = Color(0.863, 0.149, 0.149, 0.7)
+
+[node name="Label1" type="Label" parent="Overview"]
+offset_left = -4457
+offset_top = 1778
+offset_right = -3043
+offset_bottom = 2182
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "THE TANGLE"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 50
+theme_override_font_sizes/font_size = 202
+
+[node name="Label2" type="Label" parent="Overview"]
+offset_left = -4301
+offset_top = -175
+offset_right = -3199
+offset_bottom = 175
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "THE GLADE"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 43
+theme_override_font_sizes/font_size = 175
+
+[node name="Label3" type="Label" parent="Overview"]
+offset_left = -4528
+offset_top = -2122
+offset_right = -2972
+offset_bottom = -1718
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "STILT RIDGE"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 50
+theme_override_font_sizes/font_size = 202
+
+[node name="Label4" type="Label" parent="Overview"]
+offset_left = -802
+offset_top = 191
+offset_right = 802
+offset_bottom = 649
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "THE CRADLE"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 57
+theme_override_font_sizes/font_size = 229
+
+[node name="Label5" type="Label" parent="Overview"]
+offset_left = -2732
+offset_top = 1552
+offset_right = -1568
+offset_bottom = 1808
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "LULLABY RUINS"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 32
+theme_override_font_sizes/font_size = 128
+
+[node name="Label6" type="Label" parent="Overview"]
+offset_left = 1338
+offset_top = 1805
+offset_right = 2562
+offset_bottom = 2155
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "DRIFTFIELD"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 43
+theme_override_font_sizes/font_size = 175
+
+[node name="Label7" type="Label" parent="Overview"]
+offset_left = -567
+offset_top = 3618
+offset_right = 567
+offset_bottom = 3942
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "DAWN PLAZA"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 40
+theme_override_font_sizes/font_size = 162
+
+[node name="Label8" type="Label" parent="Overview"]
+offset_left = -363
+offset_top = 4592
+offset_right = 363
+offset_bottom = 4888
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "A SPAWN"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 37
+theme_override_font_sizes/font_size = 148
+
+[node name="Label9" type="Label" parent="Overview"]
+offset_left = -4354
+offset_top = 3978
+offset_right = -3446
+offset_bottom = 4302
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "CLOISTER"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 40
+theme_override_font_sizes/font_size = 162
+
+[node name="Label10" type="Label" parent="Overview"]
+offset_left = 2871
+offset_top = 4145
+offset_right = 3729
+offset_bottom = 4495
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "ORCHARD"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 43
+theme_override_font_sizes/font_size = 175
+
+[node name="Label11" type="Label" parent="Overview"]
+offset_left = 3043
+offset_top = -2182
+offset_right = 4457
+offset_bottom = -1778
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "THE TANGLE"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 50
+theme_override_font_sizes/font_size = 202
+
+[node name="Label12" type="Label" parent="Overview"]
+offset_left = 3199
+offset_top = -175
+offset_right = 4301
+offset_bottom = 175
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "THE GLADE"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 43
+theme_override_font_sizes/font_size = 175
+
+[node name="Label13" type="Label" parent="Overview"]
+offset_left = 2972
+offset_top = 1718
+offset_right = 4528
+offset_bottom = 2122
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "STILT RIDGE"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 50
+theme_override_font_sizes/font_size = 202
+
+[node name="Label14" type="Label" parent="Overview"]
+offset_left = 1568
+offset_top = -1808
+offset_right = 2732
+offset_bottom = -1552
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "LULLABY RUINS"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 32
+theme_override_font_sizes/font_size = 128
+
+[node name="Label15" type="Label" parent="Overview"]
+offset_left = -2562
+offset_top = -2155
+offset_right = -1338
+offset_bottom = -1805
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "DRIFTFIELD"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 43
+theme_override_font_sizes/font_size = 175
+
+[node name="Label16" type="Label" parent="Overview"]
+offset_left = -567
+offset_top = -3942
+offset_right = 567
+offset_bottom = -3618
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "DUSK PLAZA"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 40
+theme_override_font_sizes/font_size = 162
+
+[node name="Label17" type="Label" parent="Overview"]
+offset_left = -363
+offset_top = -4888
+offset_right = 363
+offset_bottom = -4592
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "B SPAWN"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 37
+theme_override_font_sizes/font_size = 148
+
+[node name="Label18" type="Label" parent="Overview"]
+offset_left = 3446
+offset_top = -4302
+offset_right = 4354
+offset_bottom = -3978
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "CLOISTER"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 40
+theme_override_font_sizes/font_size = 162
+
+[node name="Label19" type="Label" parent="Overview"]
+offset_left = -3729
+offset_top = -4495
+offset_right = -2871
+offset_bottom = -4145
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "ORCHARD"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 43
+theme_override_font_sizes/font_size = 175
+
+[node name="Label20" type="Label" parent="Overview"]
+offset_left = -5292
+offset_top = -5390
+offset_right = 5292
+offset_bottom = -4850
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "OVERVIEW  -  M to return, right-click to move the player"
+theme_override_colors/font_color = Color(1.000, 1.000, 1.000, 1.0)
+theme_override_colors/font_outline_color = Color(0.067, 0.067, 0.067, 1.0)
+theme_override_constants/outline_size = 67
+theme_override_font_sizes/font_size = 270

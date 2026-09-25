@@ -53,6 +53,9 @@ func try_activate(target_position: Vector2) -> bool:
 		return false
 	if actor.health_component.is_dead():
 		return false
+	# Mid-air, a dash or pull would replace the launch arc. Shooting still works.
+	if actor.is_airborne():
+		return false
 
 	var failure := _activate(target_position)
 	if failure != "":

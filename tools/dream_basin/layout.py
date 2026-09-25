@@ -9,14 +9,20 @@ Only the "authored half" is written by hand:
   * the bottom band (A base, A plaza, A outskirts).
 Everything is then rotated 180 degrees about the origin to make the B side,
 so the map is exactly rotationally symmetric.
+
+Authored numbers are in "authored space". Every helper multiplies POSITIONS
+by SY (vertical stretch) but never sizes, so rocks stay round and walls keep
+their thickness when the map is made taller. Change SY to resize the map.
 """
 
 import math
 import random
 
 SCREEN_W, SCREEN_H = 1920, 1080
-MAP_W, MAP_H = 9600, 8100          # 5 x 7.5 screens
-HX, HY = MAP_W // 2, MAP_H // 2    # half extents
+SY = 1.2                           # vertical stretch: 7.5 -> 9 screens tall
+AUTH_HY = 4050                     # authored half-height (before SY)
+MAP_W, MAP_H = 9600, round(2 * AUTH_HY * SY)   # 5 x 9 screens
+HX, HY = MAP_W // 2, MAP_H // 2    # half extents (real pixels)
 
 LEDGE_X = 2750      # |x| where the Wilds' cliff edge sits
 WILD_Y = 2700       # |y| where the Wilds end (north/south cliffs)
@@ -43,6 +49,7 @@ L = {
 
 def rock(x, y, r, seed, n=9, jitter=0.28, stretch=(1.0, 1.0), rot=0.0):
     """Irregular convex-ish blob, so clusters never look like a grid."""
+    y = Y(y)
     rng = random.Random(seed)
     pts = []
     for i in range(n):
@@ -54,12 +61,18 @@ def rock(x, y, r, seed, n=9, jitter=0.28, stretch=(1.0, 1.0), rot=0.0):
     return pts
 
 
+def Y(y):
+    return y * SY
+
+
 def rect(x0, y0, x1, y1):
+    y0, y1 = Y(y0), Y(y1)
     return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
 
 
 def seg(ax, ay, bx, by, t):
     """Thick line segment as a rectangle polygon (walls, hedges)."""
+    ay, by = Y(ay), Y(by)
     dx, dy = bx - ax, by - ay
     ln = math.hypot(dx, dy)
     nx, ny = -dy / ln * t / 2, dx / ln * t / 2
@@ -89,27 +102,40 @@ def lowwall(ax, ay, bx, by, t=50, kind="lowwall", team=None):
 
 
 def bush(x, y, r=110):
-    L["bushes"].append({"x": x, "y": y, "r": r})
+    L["bushes"].append({"x": x, "y": Y(y), "r": r})
 
 
 def ledge(ax, ay, bx, by, drop):
-    L["ledges"].append({"a": (ax, ay), "b": (bx, by), "drop": drop})
+    L["ledges"].append({"a": (ax, Y(ay)), "b": (bx, Y(by)), "drop": drop})
 
 
 def stair(x, y, w, d, up):
-    L["stairs"].append({"x": x, "y": y, "w": w, "d": d, "up": up})
+    L["stairs"].append({"x": x, "y": Y(y), "w": w, "d": d, "up": up})
 
 
 def jump_pad(x, y, tx, ty, name):
-    L["jump_pads"].append({"x": x, "y": y, "tx": tx, "ty": ty, "name": name})
+    L["jump_pads"].append({"x": x, "y": Y(y), "tx": tx, "ty": Y(ty), "name": name})
 
 
 def marker(x, y, kind, label="", team=None):
-    L["markers"].append({"x": x, "y": y, "kind": kind, "label": label, "team": team})
+    L["markers"].append({"x": x, "y": Y(y), "kind": kind, "label": label, "team": team})
 
 
 def label(x, y, text, size=150):
-    L["labels"].append({"x": x, "y": y, "text": text, "size": size})
+    L["labels"].append({"x": x, "y": Y(y), "text": text, "size": size})
+
+
+def teleporter(a, b, two_way, name):
+    L["teleporters"].append({"a": (a[0], Y(a[1])), "b": (b[0], Y(b[1])),
+                             "two_way": two_way, "name": name})
+
+
+def speed_strip(x, y, w, h, direction=(1, 0)):
+    L["speed_strips"].append({"x": x, "y": Y(y), "w": w, "h": h, "dir": direction})
+
+
+def lane(a, b, text):
+    L["lanes"].append({"a": (a[0], Y(a[1])), "b": (b[0], Y(b[1])), "label": text})
 
 
 # ==========================================================================
@@ -118,17 +144,19 @@ def label(x, y, text, size=150):
 L["regions"] += [
     {"pts": rect(-LEDGE_X, 0, LEDGE_X, BASIN_Y), "kind": "basin", "team": "A"},
     {"pts": rect(-HX, -WILD_Y, -LEDGE_X, WILD_Y), "kind": "wild", "team": None},
-    {"pts": rect(-HX, WILD_Y, HX, HY), "kind": "outskirts", "team": "A"},
+    {"pts": rect(-HX, WILD_Y, HX, AUTH_HY), "kind": "outskirts", "team": "A"},
     {"pts": rect(-LEDGE_X, BASIN_Y, LEDGE_X, WILD_Y), "kind": "outskirts", "team": "A"},
     {"pts": rect(-1600, 2420, 1600, 3300), "kind": "plaza", "team": "A"},
-    {"pts": rect(-1400, 3300, 1400, HY), "kind": "base", "team": "A"},
+    {"pts": rect(-1400, 3300, 1400, AUTH_HY), "kind": "base", "team": "A"},
     {"pts": rect(-LEDGE_X, 1100, -1500, BASIN_Y), "kind": "ruins", "team": "A"},
 ]
 
 # ==========================================================================
 # LEFT WILD (authored whole; rotation makes the right Wild)
 #   south third  = THE TANGLE   (overgrown hedge maze, CQC)
-#   middle third = THE GLADE    (mid-range meadow, wild bells)
+#   middle third = THE GLADE    (mid-range meadow)
+#   THE HOLLOW   = secluded hedge pocket on the outer wall between Tangle and
+#                  Glade: where your one-way spawn teleporter drops you.
 #   north third  = STILT RIDGE  (open high ground, sniper perch)
 # ==========================================================================
 
@@ -161,7 +189,7 @@ hedge(-4550, 1480, -3720, 1480)
 hedge(-3720, 1480, -3720, 1120)
 hedge(-3300, 1560, -3300, 1150)
 hedge(-3300, 1150, -2950, 1150)
-hedge(-4300, 1080, -4300, 780)
+hedge(-4300, 1080, -4300, 600)   # the Hollow's inner wall
 hedge(-3950, 820, -3500, 820)
 full(rock(-4520, 1850, 110, 11), "tree")
 full(rock(-3020, 1850, 120, 12), "tree")
@@ -171,7 +199,13 @@ full(rock(-4050, 1250, 105, 15), "tree")
 for (bx, by) in [(-3700, 2150), (-4550, 1250), (-3050, 1350), (-4000, 1700),
                  (-3500, 1050), (-4600, 950), (-3150, 2150)]:
     bush(bx, by, 120)
-marker(-3550, 1010, "bell_wild", "A wild bell", "A")
+
+# --- The Hollow: pocket at x -4750..-4360, y 560..1080 ---------------------
+# Enclosed by the outer map wall, the Tangle hedge below, the inner hedge and
+# a bush screen at its mouth. Arrivals are hidden from the Glade, but the exit
+# telegraph still shows to anyone who looks in.
+hedge(-4800, 1260, -4550, 1260)
+bush(-4450, 560, 120)
 
 # --- The Glade (y -750..750) --------------------------------------------
 full(rock(-4450, 350, 140, 21), "tree")
@@ -197,7 +231,6 @@ for i, (tx, ty) in enumerate([(-4500, -950), (-4300, -1350), (-4550, -1700),
 for (bx, by) in [(-4100, -1100), (-4000, -1900), (-4150, -2400), (-3700, -1450)]:
     bush(bx, by, 120)
 low(rock(-3650, -2250, 110, 47, stretch=(1.6, 0.7)), "lowrock")
-marker(-3600, -1250, "bell_wild", "B wild bell", "B")
 
 # Jump pads onto the left Wild (both fire from the A half of the basin).
 jump_pad(-2530, 300, -3450, 300, "Glade Spring")         # basin -> glade
@@ -206,9 +239,10 @@ jump_pad(-2250, 1750, -3150, 1700, "Ruins Updraft")     # ruins courtyard -> Tan
 # ==========================================================================
 # LOWER BASIN (y >= 0): THE CRADLE, the A-side LULLABY RUINS, the DRIFTFIELD
 # ==========================================================================
-marker(0, 0, "sleepwalker", "Sleepwalker start")
-L["markers"].append({"x": 0, "y": 0, "kind": "sleepwalker_circuit",
-                     "rx": 1600, "ry": 1300, "width": 600, "label": "", "team": None})
+# The Cradle's open ring: a wide oval kept free of collision so the future
+# objective (whatever it becomes) has room to move, and fights can circle.
+L["markers"].append({"x": 0, "y": 0, "kind": "arena_ring",
+                     "rx": 1600, "ry": Y(1300), "width": 600, "label": "", "team": None})
 
 # Broken pillar ring inside the circuit. Angles avoid the Moon Aisle diagonal.
 for i, deg in enumerate([15, 72, 102, 172]):
@@ -251,8 +285,7 @@ low(rock(-2550, 1300, 90, 82, stretch=(1.5, 0.7)), "crate")
 low(rock(-2450, 2150, 80, 83), "crate")
 low(rect(-1860, 1940, -1760, 2040), "crate")
 bush(-2600, 1850, 100)
-L["teleporters"].append({"a": (-1680, 2170), "b": (1680, -2170), "two_way": True,
-                         "name": "Dream Rift"})
+teleporter((-1680, 2170), (1680, -2170), True, "Dream Rift")
 
 # --- Driftfield (A): open field under the A Ridge, x 1100..2750 ----------
 for i, (x, y, r) in enumerate([(1900, 750, 130), (2350, 450, 110), (1900, 1450, 150),
@@ -281,24 +314,22 @@ wall(-950, 2720, -600, 2960, kind="ruin", team="A")
 wall(600, 2960, 950, 2720, kind="ruin", team="A")
 bush(-1300, 3100, 110)
 bush(1300, 3100, 110)
-marker(-1250, 2620, "bell_gate", "A gate bell", "A")
-marker(1250, 2620, "bell_gate", "A gate bell", "A")
 
 # Plaza side walls with gates to the back road at y 2450..2750
 wall(-1600, 2750, -1600, 3300, kind="basewall", team="A")
 wall(1600, 2750, 1600, 3300, kind="basewall", team="A")
 
 # Lamplight Road speed strips (bidirectional), both sides of the plaza.
-L["speed_strips"].append({"x": -2150, "y": 2560, "w": 900, "h": 170, "dir": (1, 0)})
-L["speed_strips"].append({"x": 2150, "y": 2600, "w": 900, "h": 170, "dir": (1, 0)})
+speed_strip(-2150, 2560, 900, 170)
+speed_strip(2150, 2600, 900, 170)
 
 # --- A base / spawn room: three exits + one-way comeback teleporter -------
 wall(-1400, 3300, -300, 3300, kind="basewall", team="A")
 wall(300, 3300, 1400, 3300, kind="basewall", team="A")
 wall(-1400, 3300, -1400, 3500, kind="basewall", team="A")
-wall(-1400, 3800, -1400, HY, kind="basewall", team="A")
+wall(-1400, 3800, -1400, AUTH_HY, kind="basewall", team="A")
 wall(1400, 3300, 1400, 3500, kind="basewall", team="A")
-wall(1400, 3800, 1400, HY, kind="basewall", team="A")
+wall(1400, 3800, 1400, AUTH_HY, kind="basewall", team="A")
 # Dawn Statue: breaks every straight line between the three spawn doors, so
 # no one outside can see through the spawn room.
 full(rock(0, 3640, 140, 104, n=12, jitter=0.05), "statue", "A")
@@ -306,15 +337,14 @@ for x in (-1080, 1080):
     full(rock(x, 3470, 85, 105 + (x > 0), n=8, jitter=0.08), "statue", "A")
 for x in (-950, -700, -450, 450, 700, 950):
     marker(x, 3880, "spawn", "", "A")
-L["teleporters"].append({"a": (-1000, 3700), "b": (-4050, 380), "two_way": False,
-                         "name": "Dawn Door"})
+teleporter((-1000, 3700), (-4560, 820), False, "Dawn Door")
 
 # --- Cloister (west outskirts): spawn W door -> tight tunnel -> colonnade ---
 # East half is a solid-walled tunnel (~320 px clear: pure CQC). West half is
 # an open colonnade: pillars you can shoot and slip between.
 wall(-1400, 3470, -1950, 3470, kind="cloister", team="A")
 wall(-1400, 3830, -3050, 3830, kind="cloister", team="A")
-full(rect(-3050, 3870, -1400, HY), "cloister", "A")   # solid fill behind
+full(rect(-3050, 3870, -1400, AUTH_HY), "cloister", "A")   # solid fill behind
 # Side door out of the tunnel to the back road (x -2250..-1950 is the gap).
 for i, x in enumerate([-2400, -2650, -2900]):
     full(rock(x, 3470, 65, 110 + i, n=7, jitter=0.08), "pillar", "A")
@@ -341,11 +371,9 @@ low(rock(3450, 2900, 100, 130, stretch=(1.6, 0.6)), "lowrock")
 # ==========================================================================
 # SIGHT LANES (validated by check.py: must be clear of full cover)
 # ==========================================================================
-L["lanes"] += [
-    {"a": (-1450, 1600), "b": (1450, -1600), "label": "Moon Aisle"},
-    {"a": (3150, 2050), "b": (-500, 1250), "label": "Ridge Line (A)"},
-    {"a": (3000, 2550), "b": (3000, -800), "label": "Wild Rail (A)"},
-]
+lane((-1450, 1600), (1450, -1600), "Moon Aisle")
+lane((3150, 2050), (-500, 1250), "Ridge Line (A)")
+lane((3000, 2550), (3000, -800), "Wild Rail (A)")
 
 # Region labels (authored half only; rotated copies get B names below)
 label(-3750, 1650, "THE TANGLE", 150)
@@ -394,10 +422,10 @@ def build():
     for s in L["speed_strips"]:
         out["speed_strips"].append({**s, "x": -s["x"], "y": -s["y"]})
     for m in L["markers"]:
-        if m["kind"] in ("sleepwalker", "sleepwalker_circuit"):
+        if m["kind"] == "arena_ring":
             continue
         out["markers"].append({**m, "x": -m["x"], "y": -m["y"], "team": _swap(m["team"]),
-                               "label": m["label"].replace("A ", "#").replace("B ", "A ").replace("#", "B ")})
+                               "label": m["label"]})
     for ln in L["lanes"]:
         if ln["label"] in ("Moon Aisle",):
             continue
