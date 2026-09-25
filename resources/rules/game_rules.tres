@@ -41,7 +41,14 @@ id = &"ultimate"
 display_name = "Ultimate"
 input_action = &"hero_ultimate"
 
+[sub_resource type="Resource" id="Slot_passive"]
+script = ExtResource("2_slot")
+id = &"passive"
+display_name = "Passive"
+input_action = &""
+required = false
+
 [resource]
 script = ExtResource("1_rules")
-slots = Array[ExtResource("2_slot")]([SubResource("Slot_primary"), SubResource("Slot_ability_1"), SubResource("Slot_ability_2"), SubResource("Slot_movement"), SubResource("Slot_cc"), SubResource("Slot_ultimate")])
+slots = Array[ExtResource("2_slot")]([SubResource("Slot_primary"), SubResource("Slot_ability_1"), SubResource("Slot_ability_2"), SubResource("Slot_movement"), SubResource("Slot_cc"), SubResource("Slot_ultimate"), SubResource("Slot_passive")])
 test_maps = PackedStringArray("res://scenes/dream_basin_world.tscn", "res://scenes/training_grounds_world.tscn")

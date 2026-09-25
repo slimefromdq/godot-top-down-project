@@ -24,12 +24,17 @@ var tracked: Node
 var _dealt: Array[Dictionary] = []     # {t, amount, label, target}
 var _taken: Array[Dictionary] = []     # {t, amount, label}
 var _healed: Array[Dictionary] = []    # {t, amount, label}
+# Shields: damage soaked by shields on the tracked actor ("shielded"), and
+# damage soaked by shields the tracked actor gave out (by status id).
+var _shielded: Array[Dictionary] = []   # {t, amount, label}
+var _shielding: Array[Dictionary] = []  # {t, amount, label}
 var _started_at: float = 0.0
 
 
 func _ready() -> void:
 	CombatEvents.damage_dealt.connect(_on_damage)
 	CombatEvents.heal_done.connect(_on_heal)
+	CombatEvents.damage_absorbed.connect(_on_absorbed)
 	reset()
 
 
@@ -37,6 +42,8 @@ func reset() -> void:
 	_dealt.clear()
 	_taken.clear()
 	_healed.clear()
+	_shielded.clear()
+	_shielding.clear()
 	_started_at = _now()
 	changed.emit()
 
@@ -57,6 +64,20 @@ func get_total_taken() -> float:
 
 func get_total_healed() -> float:
 	return _sum(_healed)
+
+
+# Damage shields soaked for the tracked actor (never counted as taken).
+func get_total_shielded() -> float:
+	return _sum(_shielded)
+
+
+# Damage the tracked actor's shields soaked, on anyone (a support's output).
+func get_total_shielding_done() -> float:
+	return _sum(_shielding)
+
+
+func get_shielding_breakdown() -> Array[Dictionary]:
+	return _breakdown(_shielding)
 
 
 func get_elapsed() -> float:
@@ -95,6 +116,18 @@ func _on_damage(info: DamageInfo) -> void:
 		changed.emit()
 	elif info.target == me:
 		_taken.append({"t": _now(), "amount": info.final_amount, "label": _label(info.label)})
+		changed.emit()
+
+
+func _on_absorbed(amount: float, shield_source: Node, target: Node, status_id: StringName, _info: DamageInfo) -> void:
+	var me := get_tracked()
+	if me == null or amount <= 0.0:
+		return
+	if target == me:
+		_shielded.append({"t": _now(), "amount": amount, "label": &"shielded"})
+		changed.emit()
+	if shield_source == me:
+		_shielding.append({"t": _now(), "amount": amount, "label": _label(status_id)})
 		changed.emit()
 
 

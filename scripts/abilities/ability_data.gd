@@ -65,6 +65,15 @@ enum ChargeBelowMin {
 ## Any extra named numbers the ability script reads.
 @export var values: Dictionary[StringName, ScalingValue] = {}
 
+@export_group("Targeting")
+## Ally-targeted: the cast needs an ally near the aim point (see
+## AllyTargeting). Empty = aim at a point as usual.
+@export var ally_targeting: AllyTargeting
+## While casting (charging included), the caster must stay within this many
+## pixels of the targeted ally or the cast is cancelled (no cooldown if it
+## was still charging). 0 = no tether.
+@export var tether_range: float = 0.0
+
 @export_group("Charge")
 ## Hold to charge, release to fire. The cast waits in a CHARGING phase until
 ## the hero releases the slot (Hero.release_slot), then runs as usual.
@@ -177,6 +186,8 @@ func validate() -> PackedStringArray:
 			problems.append("'%s' has negative charge settings" % id)
 		elif charge_min_to_fire > charge_time_max:
 			problems.append("'%s' charge_min_to_fire is longer than charge_time_max" % id)
+	if tether_range < 0.0 or (ally_targeting != null and ally_targeting.has_negative()):
+		problems.append("'%s' has negative targeting/tether values" % id)
 	if on_hit_status != null:
 		for problem in on_hit_status.validate():
 			problems.append("'%s' on_hit_status: %s" % [id, problem])

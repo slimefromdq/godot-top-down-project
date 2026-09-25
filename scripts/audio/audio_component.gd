@@ -62,7 +62,9 @@ func play_sound(sound: SoundCue, context: Dictionary = {}) -> void:
 		return
 	var root := _get_root()
 	var fallback: Vector2 = root.global_position if root is Node2D else Vector2.ZERO
-	AudioManager.play_sfx(sound, context.get("position", fallback))
+	# context.pitch (e.g. a rhythm note's place in its melody) multiplies
+	# the cue's own random pitch.
+	AudioManager.play_sfx(sound, context.get("position", fallback), context.get("pitch", 1.0))
 
 
 func _on_died() -> void:

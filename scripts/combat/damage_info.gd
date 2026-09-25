@@ -52,6 +52,8 @@ var feel: AttackFeel = null
 # --- Result (filled in by HealthComponent) --------------------------------
 ## Damage actually removed from health, after resistances and multipliers.
 var final_amount: float = 0.0
+## Damage a shield soaked up before health (not included in final_amount).
+var absorbed: float = 0.0
 ## True if this hit dealt the killing blow.
 var killed: bool = false
 ## The node that took the hit (the target's root).

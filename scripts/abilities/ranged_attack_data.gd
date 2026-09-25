@@ -142,11 +142,9 @@ func validate() -> PackedStringArray:
 	var problems := super()
 	if projectile == null:
 		problems.append("'%s' has no projectile" % id)
-	elif projectile.has_negative():
-		problems.append("'%s' projectile has negative values" % id)
-	elif projectile.on_hit_status != null:
-		for problem in projectile.on_hit_status.validate():
-			problems.append("'%s' projectile: %s" % [id, problem])
+	else:
+		for problem in projectile.validate():
+			problems.append("'%s' %s" % [id, problem])
 	if damage == null:
 		problems.append("'%s' has no damage" % id)
 	if shots_per_second <= 0.0:

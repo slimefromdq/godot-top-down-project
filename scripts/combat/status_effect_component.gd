@@ -19,12 +19,16 @@ signal status_applied(effect: StatusEffect)
 signal status_removed(effect: StatusEffect)
 ## A stun landed. AbilityController listens to interrupt the current cast.
 signal stunned(effect: StatusEffect)
+## The total shield on this actor changed (health bars draw it).
+signal shield_changed(total: float)
 
 ## Why a status ended (the `reason` of CombatHooks.status_removed).
 const REASON_EXPIRED := &"expired"
 const REASON_REMOVED := &"removed"         ## remove()/remove_from()/clear(): a cleanse, a zone exit
 const REASON_TARGET_DIED := &"target_died"
 const REASON_APPLIER_DIED := &"applier_died"
+const REASON_SHIELD_BROKEN := &"shield_broken"   ## its shield was used up
+const REASON_BROKEN_FREE := &"broken_free"       ## a follower broke out of a formation
 
 ## Optional. Needed for displacement (knockback / pull) and compel.
 @export var movement_component: MovementComponent
@@ -69,11 +73,20 @@ class Entry:
 	var tick_timer: float = 0.0
 	# StatModifier.source_id for this application's modifiers ("" = none).
 	var modifier_source: StringName = &""
+	# Duration the fade runs over (time_left / full_duration = fade ratio).
+	var full_duration: float = 0.0
+	# How strongly this application applies (multipliers and shield).
+	var strength: float = 1.0
+	var shield_remaining: float = 0.0
 
 
 # `source` is who applied it (for DoT kill credit and snapshotting their
 # stats); `direction` is the hit direction (for ALONG_HIT displacement).
-func apply(effect: StatusEffect, source: Node = null, direction: Vector2 = Vector2.ZERO) -> void:
+# `strength` scales the stat multipliers' distance from 1.0 and the shield
+# (a half-charged buff = 0.5). `duration_override` >= 0 replaces the
+# resource's duration for this application.
+func apply(effect: StatusEffect, source: Node = null, direction: Vector2 = Vector2.ZERO,
+		strength: float = 1.0, duration_override: float = -1.0) -> void:
 	if effect == null:
 		return
 	var key := _key_for(effect, source)
@@ -81,11 +94,15 @@ func apply(effect: StatusEffect, source: Node = null, direction: Vector2 = Vecto
 	var is_new := entry == null
 	var first_of_id := is_new and not has_status(effect.id)
 	var previous_source = null    # untyped: may have been freed
+	var duration := duration_override if duration_override >= 0.0 else effect.duration
+	var shield := effect.shield_amount.evaluate(StatsComponent.find_on(source)) * strength \
+		if effect.shield_amount != null else 0.0
 	if is_new:
 		entry = Entry.new()
 		entry.key = key
 		entry.effect = effect
-		entry.time_left = effect.duration
+		entry.time_left = duration
+		entry.shield_remaining = shield
 		_active[key] = entry
 	else:
 		previous_source = entry.source
@@ -93,14 +110,25 @@ func apply(effect: StatusEffect, source: Node = null, direction: Vector2 = Vecto
 			StatusEffect.StackRule.IGNORE_IF_ACTIVE:
 				return
 			StatusEffect.StackRule.REFRESH:
-				entry.time_left = effect.duration
+				entry.time_left = duration
+				entry.shield_remaining = maxf(entry.shield_remaining, shield)
 			StatusEffect.StackRule.EXTEND:
-				entry.time_left += effect.duration
+				entry.time_left += duration
 				if effect.max_duration > 0.0:
 					entry.time_left = minf(entry.time_left, effect.max_duration)
+				entry.shield_remaining = maxf(entry.shield_remaining, shield)
 			StatusEffect.StackRule.STACK:
 				entry.stacks = mini(entry.stacks + 1, effect.max_stacks)
-				entry.time_left = effect.duration
+				entry.time_left = duration
+				entry.shield_remaining += shield
+	entry.full_duration = maxf(entry.time_left, 0.0001)
+	entry.strength = strength
+	if effect.shield_amount != null:
+		shield_changed.emit(get_shield_total())
+	if effect.compel_enabled and effect.compel_follow_trail and (is_new or previous_source != source):
+		if is_instance_valid(previous_source):
+			TrailRecorder.leave(previous_source, _get_root())
+		TrailRecorder.join(source, _get_root())
 
 	entry.source = source
 	if effect.tick_damage != null:
@@ -182,11 +210,89 @@ func get_active_effects() -> Array[StatusEffect]:
 	return result
 
 
+# Product of every active multiplier for `stat`. Each application's
+# distance from 1.0 is scaled by its strength and, with fade_multipliers,
+# by how much of its duration is left.
 func get_multiplier(stat: StringName) -> float:
 	var result := 1.0
 	for entry in _active.values():
-		result *= pow(entry.effect.stat_multipliers.get(stat, 1.0), entry.stacks)
+		var full: float = entry.effect.stat_multipliers.get(stat, 1.0)
+		if full == 1.0:
+			continue
+		var scale: float = entry.strength
+		if entry.effect.fade_multipliers:
+			scale *= _fade_of(entry)
+		result *= pow(1.0 + (full - 1.0) * scale, entry.stacks)
 	return result
+
+
+# Fraction of the status's duration left (1 = just applied, 0 = ending);
+# the largest among its applications. 0 if not active. A fading status's
+# multipliers are at this fraction of their full strength.
+func get_fade_ratio(effect_id: StringName) -> float:
+	var result := 0.0
+	for entry in _entries_of(effect_id):
+		result = maxf(result, _fade_of(entry))
+	return result
+
+
+func _fade_of(entry: Entry) -> float:
+	return clampf(entry.time_left / entry.full_duration, 0.0, 1.0) if entry.full_duration > 0.0 else 0.0
+
+
+# --- Shields -----------------------------------------------------------------
+
+func get_shield_total() -> float:
+	var total := 0.0
+	for entry in _active.values():
+		total += entry.shield_remaining
+	return total
+
+
+# Soak up to `amount` damage with active shields, soonest-expiring first.
+# Returns what was absorbed. Depleted shields end their status. Every bit
+# absorbed is reported to CombatEvents.damage_absorbed (meters credit the
+# shield's applier). HealthComponent calls this; nothing else should.
+func absorb_damage(amount: float, info: DamageInfo = null) -> float:
+	var shielded: Array = _active.values().filter(func(e): return e.shield_remaining > 0.0)
+	if shielded.is_empty() or amount <= 0.0:
+		return 0.0
+	shielded.sort_custom(func(a, b): return a.time_left < b.time_left)
+	var absorbed := 0.0
+	for entry in shielded:
+		var take := minf(entry.shield_remaining, amount - absorbed)
+		entry.shield_remaining -= take
+		absorbed += take
+		CombatEvents.damage_absorbed.emit(take, entry.source if is_instance_valid(entry.source) else null,
+			_get_root(), entry.effect.id, info)
+		if entry.shield_remaining <= 0.0:
+			_end(entry, REASON_SHIELD_BROKEN)
+		if absorbed >= amount:
+			break
+	shield_changed.emit(get_shield_total())
+	return absorbed
+
+
+# --- Formations ----------------------------------------------------------------
+
+# Break out of every breakable formation (follow-trail compel). The AI's
+# "struggle free" call; the player does it with opposing input.
+func break_formation() -> bool:
+	var broke := false
+	for entry in _active.values():
+		if entry.effect.compel_enabled and entry.effect.compel_follow_trail and entry.effect.compel_breakable:
+			_end(entry, REASON_BROKEN_FREE)
+			broke = true
+	return broke
+
+
+# Ability calls this when a movement ability starts on this actor.
+func on_movement_ability_used() -> void:
+	for entry in _active.values():
+		var effect: StatusEffect = entry.effect
+		if effect.compel_enabled and effect.compel_follow_trail and effect.compel_breakable \
+				and effect.compel_break_on_movement_ability:
+			_end(entry, REASON_BROKEN_FREE)
 
 
 func is_stunned() -> bool:
@@ -256,6 +362,10 @@ func _end(entry: Entry, reason: StringName) -> void:
 	if _active.get(entry.key) != entry:
 		return
 	_active.erase(entry.key)
+	if entry.effect.compel_enabled and entry.effect.compel_follow_trail and is_instance_valid(entry.source):
+		TrailRecorder.leave(entry.source, _get_root())
+	if entry.shield_remaining > 0.0 or reason == REASON_SHIELD_BROKEN:
+		shield_changed.emit(get_shield_total())
 	if entry.modifier_source != &"" and stats_component != null:
 		# Removing a modifier never grants current HP (see HealthComponent).
 		stats_component.remove_modifiers_from(entry.modifier_source, false)

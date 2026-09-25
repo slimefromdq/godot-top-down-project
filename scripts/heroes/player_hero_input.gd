@@ -13,12 +13,15 @@ class_name PlayerHeroInput
 # hold_to_repeat slot's melee chain, an AUTO gun in any slot); the
 # controller's buffer turns that into a smooth combo chain. Releases go to
 # hero.release_slot() for hold-to-charge abilities, and hero_reload
-# (R by default) calls hero.reload().
+# (R by default) calls hero.reload(). While a RhythmPhrase is playing, its
+# input action plays notes (RhythmPerformer.press_note) instead.
 
 const RELOAD_ACTION := &"hero_reload"
 
 var hero: Hero
 var _held: Dictionary = {}    # slot id -> true while held
+# The ally highlighted as the target of a ready ally-targeted ability.
+var _highlighted: VisualsComponent
 
 
 func _ready() -> void:
@@ -48,9 +51,40 @@ func _physics_process(_delta: float) -> void:
 # at high frame rates.
 func _process(_delta: float) -> void:
 	_update_aim()
+	_update_ally_highlight()
+
+
+# Presentation for the local player only: tint the ally a ready
+# ally-targeted ability would pick right now (AllyTargeting).
+func _update_ally_highlight() -> void:
+	var candidate: VisualsComponent = null
+	for ability in hero.ability_controller.abilities:
+		if ability.data == null or ability.data.ally_targeting == null:
+			continue
+		if not ability.is_ready() or ability.is_casting():
+			continue
+		var ally := ability.find_ally_target(hero.aim_point)
+		if ally != null:
+			candidate = VisualsComponent.find_on(ally.owner if ally.owner != null else ally.get_parent())
+			break
+	if candidate == _highlighted:
+		return
+	if is_instance_valid(_highlighted):
+		_highlighted.set_highlighted(false)
+	_highlighted = candidate
+	if _highlighted != null:
+		_highlighted.set_highlighted(true)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# A running rhythm phrase owns its key: presses play notes, not slots.
+	var performer := RhythmPerformer.find_on(hero)
+	if performer != null and performer.is_playing():
+		var action := performer.get_input_action()
+		if action != &"" and InputMap.has_action(action) and event.is_action_pressed(action):
+			performer.press_note()
+			get_viewport().set_input_as_handled()
+			return
 	if InputMap.has_action(RELOAD_ACTION) and event.is_action_pressed(RELOAD_ACTION):
 		hero.reload()
 		get_viewport().set_input_as_handled()

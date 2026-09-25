@@ -88,6 +88,14 @@ For each slot in the definition's `abilities` dictionary, point at an
 | custom per-target zone logic | `spawn_owned_zone()` from any ability + the zone's `target_*` signals | a small script |
 | a channel that blocks some abilities but not others | `controller.lock_abilities(self, allowed_slots, quiet_slots)` / `unlock_abilities(self)` | a small script |
 | another ability firing your gun (autofire, turrets) | `hero.get_ranged_ability().fire_extra_shot(direction, label)` | a small script |
+| a timing minigame (hit notes on the beat) | `RhythmPhrase` + `RhythmPerformer.find_or_create(actor).play(phrase, cue_prefix)` | a small script (react to `note_graded`) |
+| a shield (absorb) | `StatusEffect.shield_amount` | none |
+| a projectile that explodes (on hit / at range), optionally splitting | `ProjectileData` Explosion group (+ Split subgroup) | none |
+| a buff that runs down over its duration | `StatusEffect.fade_multipliers`; `apply(..., strength)` for charge-scaled buffs | none |
+| cast on an ally near the cursor, optionally tethered | `AbilityData.ally_targeting` (`AllyTargeting`) + `tether_range`; `cast_ally` in the script | none |
+| a formation / parade line behind the caster | compel status with `compel_follow_trail` (+ `compel_breakable`) | none |
+| a charged dash that goes further and hits harder | `ChargeData` with `charge_enabled`, `min_distance`, `hit_shape` + `damage` / `values/damage_full` + `on_hit_status` | none |
+| a passive with stacks on the ability bar | the optional `passive` slot + `PassiveAbility` (override `get_hud_pips`) | a small script |
 | something new | extend `Ability` (or `MeleeAttackAbility` / `RangedAttackAbility`) | a small script |
 
 `tools/heroes/ranged_test/` is a test-only hero that uses every row above
@@ -163,6 +171,24 @@ func _ready() -> void:
 		if id == &"my_mark":
 			reset_cooldown())            # also: reduce_cooldown(seconds)
 ```
+
+**Rhythm.** A `RhythmPhrase` (notes, bpm, lead-in, good/perfect windows,
+input action, note pitches) is played by the actor's `RhythmPerformer`:
+
+```gdscript
+var performer := RhythmPerformer.find_or_create(actor)
+performer.note_graded.connect(_on_note)   # (index, RhythmResults.Grade)
+performer.play(data.phrase, ability_id)   # cues <id>_note_perfect/_good/_miss
+```
+
+While it plays, the player's presses of `input_action` go to
+`press_note()` instead of the slot (AI calls `press_note()` itself). The
+ring is drawn on the actor. A stun cancels it (graded notes still count).
+
+**Shields.** `StatusEffect.shield_amount` (a ScalingValue from the
+applier's stats, times the application's strength) soaks damage after
+resistances, before health; the status ends when it's used up. The health
+bar draws it, and the meter shows "Shielding done" / "Shielded".
 
 **A zone that follows you.** `ZoneAbilityData` with `zone_duration` and a
 `GroundZoneData` zone: `shape` ARC, `follow_owner`, `face_aim`, `affects`

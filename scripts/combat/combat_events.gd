@@ -11,3 +11,6 @@ signal damage_dealt(info: DamageInfo)
 signal heal_done(amount: float, source: Node, target: Node, label: StringName)
 signal actor_died(victim: Node, info: DamageInfo)
 signal death_prevented(victim: Node, event: DeathEvent)
+## A shield soaked damage. `shield_source` applied the shield; `info` is the
+## hit (may be null).
+signal damage_absorbed(amount: float, shield_source: Node, target: Node, status_id: StringName, info: DamageInfo)

@@ -269,9 +269,7 @@ func _fire_shot(aim: Vector2, extra: bool, label: StringName) -> void:
 	var perfect := was_perfect_release() and not extra
 	var base_damage := _base_damage() if extra else _shot_damage()
 	var damage := base_damage * _damage_multiplier(perfect)
-	var projectile_data := ranged.projectile
-	if perfect and ranged.perfect_projectile != null:
-		projectile_data = ranged.perfect_projectile
+	var projectile_data := _get_shot_projectile(perfect, extra)
 	var weight := current_feel.weight if current_feel != null and not extra else 1.0
 	for i in count:
 		var direction := aim.rotated(deg_to_rad(_spread_angle(i, count)))
@@ -286,6 +284,7 @@ func _fire_shot(aim: Vector2, extra: bool, label: StringName) -> void:
 		var projectile := Projectile.fire(actor, projectile_data, origin, direction, template)
 		projectile.hit_modifier = _modify_hit
 		projectile.hit_landed.connect(_on_projectile_hit)
+		_on_projectile_fired(projectile, extra)
 
 	if has_magazine() and not extra:
 		_ammo = maxi(_ammo - ranged.ammo_per_shot, 0)
@@ -364,6 +363,22 @@ func _on_projectile_hit(info: DamageInfo, hurtbox: HurtboxComponent) -> void:
 		"damage": info.final_amount,
 	})
 	_on_target_hit(info, hurtbox)
+
+
+# Which ProjectileData this shot flies as. Override for per-shot variants
+# (an empowered next shot). Default: perfect_projectile on a perfect
+# release, else projectile.
+func _get_shot_projectile(perfect: bool, _extra: bool) -> ProjectileData:
+	var ranged := get_ranged_data()
+	if perfect and ranged.perfect_projectile != null:
+		return ranged.perfect_projectile
+	return ranged.projectile
+
+
+# Override to adjust a projectile right after it's fired (e.g. set its
+# split_damage). Called once per projectile.
+func _on_projectile_fired(_projectile: Projectile, _extra: bool) -> void:
+	pass
 
 
 # Override to change a hit before it lands (or return null to skip it).
