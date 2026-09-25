@@ -8,9 +8,14 @@ class_name PlayerHeroInput
 # Keys come from GameRules.slots, so rebinding is a data change.
 #
 # Presses are read in _unhandled_input, so a click on a debug-panel button
-# doesn't also swing the sword. Held keys (hold_to_repeat slots) keep
-# requesting every tick while held; the controller's buffer turns that into a
-# smooth combo chain.
+# doesn't also swing the sword. Held keys keep requesting every tick while
+# held when the ability wants that (Ability.repeats_while_held: a
+# hold_to_repeat slot's melee chain, an AUTO gun in any slot); the
+# controller's buffer turns that into a smooth combo chain. Releases go to
+# hero.release_slot() for hold-to-charge abilities, and hero_reload
+# (R by default) calls hero.reload().
+
+const RELOAD_ACTION := &"hero_reload"
 
 var hero: Hero
 var _held: Dictionary = {}    # slot id -> true while held
@@ -24,8 +29,16 @@ func _physics_process(_delta: float) -> void:
 	hero.move_direction = Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
 	_update_aim()
 	for slot in GameRules.current().slots:
-		if slot.hold_to_repeat and _held.get(slot.id, false):
-			if Input.is_action_pressed(slot.input_action):
+		var ability := hero.get_ability(slot.id)
+		if ability == null or slot.input_action == &"" or not InputMap.has_action(slot.input_action):
+			continue
+		var pressed := Input.is_action_pressed(slot.input_action)
+		# A release can be missed (focus loss, the press was buffered and
+		# started after the key came up): a charge never outlives its key.
+		if ability.is_charging() and not pressed:
+			hero.release_slot(slot.id, hero.aim_point)
+		if _held.get(slot.id, false) and ability.repeats_while_held(slot.hold_to_repeat):
+			if pressed:
 				hero.request_slot(slot.id, hero.aim_point)
 			else:
 				_held.erase(slot.id)
@@ -38,6 +51,10 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if InputMap.has_action(RELOAD_ACTION) and event.is_action_pressed(RELOAD_ACTION):
+		hero.reload()
+		get_viewport().set_input_as_handled()
+		return
 	for slot in GameRules.current().slots:
 		if slot.input_action == &"" or not InputMap.has_action(slot.input_action):
 			continue
@@ -49,6 +66,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		if event.is_action_released(slot.input_action):
 			_held.erase(slot.id)
+			_update_aim()
+			hero.release_slot(slot.id, hero.aim_point)
 
 
 func _update_aim() -> void:

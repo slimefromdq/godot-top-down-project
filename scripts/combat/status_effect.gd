@@ -11,6 +11,9 @@ class_name StatusEffect
 #   * crowd control      stun / root / silence flags
 #   * displacement       knockback or pull, applied once when the status lands
 #   * damage over time   burn, poison: a ScalingValue ticked every interval
+#   * compel             forced march toward the applier (a taunt, a charm)
+#   * stat modifiers     StatModifiers on the target's StatsComponent
+#                        (-20% Health, +30 Armor) while active
 # So swapping Avery's CC from a stun to a knockback or a pull is just pointing
 # her ability at a different .tres.
 
@@ -51,6 +54,14 @@ enum DisplaceDirection {
 @export_range(1, 99) var max_stacks: int = 1
 ## EXTEND only. 0 = no cap.
 @export var max_duration: float = 0.0
+## Each applier gets its own copy (own timer, stacks, modifiers and death
+## notification) instead of sharing one. Use it for marks and anything whose
+## applier must be told what happened. Off = one shared copy per target, and
+## the latest applier owns it.
+@export var stack_per_applier: bool = false
+## End the status early when whoever applied it dies or is removed. Compel
+## always behaves this way.
+@export var ends_if_applier_dies: bool = false
 
 @export_group("Crowd control")
 ## No moving, no casting, and interrupts the current cast.
@@ -71,6 +82,27 @@ enum DisplaceDirection {
 ## drag the target through them.
 @export var pull_stop_distance: float = 80.0
 
+@export_group("Compel")
+## Forced march: the target walks toward the applier's CURRENT position every
+## physics tick (a taunt, a charm). Stuns and roots still stop it, and a
+## displacement (knockback) plays out first, then the march resumes. Ends
+## early if the applier dies. Casting is still allowed unless `silences`.
+@export var compel_enabled: bool = false
+## Fraction of the TARGET's current move speed used for the march.
+@export var compel_speed_multiplier: float = 1.0
+## Stops walking this close to the applier.
+@export var compel_stop_distance: float = 80.0
+## Ignore the target's own steering (player input or AI) while compelled.
+## Off = the march is added on top of it, so the target can resist.
+@export var compel_overrides_input: bool = true
+
+@export_group("Stat modifiers")
+## Applied to the TARGET's StatsComponent while active (scaled by stacks),
+## removed exactly when the status ends. Max HP changes follow
+## HealthComponent's rule (losing max HP clamps; the removal of a debuff
+## never grants current HP).
+@export var stat_modifiers: Array[StatModifier] = []
+
 @export_group("Damage over time")
 ## Damage per tick, evaluated from the APPLIER's stats when applied (snapshot).
 ## Leave empty for no DoT.
@@ -82,6 +114,8 @@ enum DisplaceDirection {
 
 @export_group("Presentation")
 ## Scene attached to the affected actor for as long as the effect lasts.
+## Overhead marks use this too: give the scene its own upward offset (see
+## scenes/combat/overhead_marker.tscn).
 @export var attached_vfx: PackedScene
 ## Tint blended over the actor's body while active. Alpha controls strength.
 @export var body_tint: Color = Color(1, 1, 1, 0)
@@ -90,4 +124,28 @@ enum DisplaceDirection {
 
 
 func is_crowd_control() -> bool:
-	return stuns or roots or silences or displace_distance > 0.0
+	return stuns or roots or silences or displace_distance > 0.0 or compel_enabled
+
+
+func ends_with_applier() -> bool:
+	return ends_if_applier_dies or compel_enabled
+
+
+# Problems a designer should fix. Empty = fine.
+func validate() -> PackedStringArray:
+	var problems := PackedStringArray()
+	if id == &"":
+		problems.append("status has no id")
+	if duration < 0.0 or max_duration < 0.0 or displace_distance < 0.0 or displace_duration < 0.0 \
+			or pull_stop_distance < 0.0 or tick_interval < 0.0:
+		problems.append("status '%s' has negative timings/distances" % id)
+	if tick_damage != null and tick_damage.has_negative():
+		problems.append("status '%s' tick_damage has negative numbers" % id)
+	if compel_enabled and (compel_speed_multiplier <= 0.0 or compel_stop_distance < 0.0):
+		problems.append("status '%s' compel needs a positive speed and stop distance" % id)
+	for i in stat_modifiers.size():
+		if stat_modifiers[i] == null:
+			problems.append("status '%s' stat modifier %d is empty" % [id, i + 1])
+		elif not StatBlock.ALL.has(stat_modifiers[i].stat):
+			problems.append("status '%s' stat modifier %d has unknown stat '%s'" % [id, i + 1, stat_modifiers[i].stat])
+	return problems

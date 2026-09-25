@@ -11,10 +11,20 @@ class_name Projectile
 
 const SCENE_PATH := "res://scenes/combat/projectile.tscn"
 
+## Every target hit, after the hit applied (info.final_amount is set).
+signal hit_landed(info: DamageInfo, hurtbox: HurtboxComponent)
+
 var data: ProjectileData
 var direction := Vector2.RIGHT
 # The template every hit is copied from (amount, type, tags, label, source).
 var damage_template: DamageInfo
+## Optional. Callable(info: DamageInfo, hurtbox: HurtboxComponent,
+## travelled: float) -> DamageInfo, run on each hit's copy before it lands.
+## Return null to skip that target. RangedAttackAbility uses it for damage
+## falloff by distance and its _build_hit hook.
+var hit_modifier: Callable
+## Where it was fired from (for distance falloff).
+var fired_from := Vector2.ZERO
 
 var _age: float = 0.0
 var _hits: int = 0
@@ -38,6 +48,7 @@ static func fire(context: Node, projectile_data: ProjectileData, origin: Vector2
 		template.tags.append(DamageInfo.TAG_PROJECTILE)
 	context.get_tree().current_scene.add_child(projectile)
 	projectile.global_position = origin
+	projectile.fired_from = origin
 	projectile.rotation = projectile.direction.angle()
 	return projectile
 
@@ -107,7 +118,12 @@ func _hit_targets_between(from: Vector2, to: Vector2) -> void:
 		info.hit_position = hurtbox.global_position
 		info.knockback = direction * data.knockback
 		info.add_status(data.on_hit_status)
+		if hit_modifier.is_valid():
+			info = hit_modifier.call(info, hurtbox, fired_from.distance_to(hurtbox.global_position))
+			if info == null:
+				continue
 		hurtbox.take_hit(info)
+		hit_landed.emit(info, hurtbox)
 		_spawn_feedback(data.hit_effect, data.hit_sound, hurtbox.global_position)
 		_hits += 1
 		if data.pierce >= 0 and _hits > data.pierce:

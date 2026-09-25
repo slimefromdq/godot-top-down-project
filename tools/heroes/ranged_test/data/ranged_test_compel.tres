@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_pvno4"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_tfajn"]
+
+[resource]
+script = ExtResource("1_pvno4")
+id = &"ranged_test_compel"
+display_name = "Compelled"
+duration = 1.5
+compel_enabled = true
+compel_speed_multiplier = 0.8
+compel_stop_distance = 90.0
+body_tint = Color(1, 0.4, 0.8, 0.45)

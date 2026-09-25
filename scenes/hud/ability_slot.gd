@@ -2,9 +2,13 @@ extends Control
 class_name AbilitySlot
 
 # One ability button on the HUD: icon (or name), key prompt, cooldown shade
-# and a red flash when a cast fails.
+# and a red flash when a cast fails. Guns (RangedAttackAbility with a
+# magazine) add an ammo count and a reload sweep; any ability that is
+# charging shows a charge bar above the slot, flashing in its perfect window.
 
 const SIZE := Vector2(96, 96)
+const CHARGE_BAR_HEIGHT := 8.0
+const CHARGE_BAR_GAP := 6.0
 
 var ability: Ability
 var _fail_flash: float = 0.0
@@ -37,6 +41,10 @@ func _draw() -> void:
 	else:
 		_draw_centered(ability.display_name, center + Vector2(0, 6), 13, Color.WHITE)
 
+	var gun := ability as RangedAttackAbility
+	if gun != null and gun.has_magazine():
+		_draw_ammo(gun)
+
 	var ratio := ability.get_cooldown_ratio()
 	if ratio > 0.0:
 		# Dark shade that drains downward as the ability comes back.
@@ -48,6 +56,33 @@ func _draw() -> void:
 	draw_rect(rect, border, false, 3.0 + 3.0 * (_fail_flash + _ready_pulse))
 
 	_draw_centered(_key_text(), Vector2(center.x, SIZE.y - 8), 14, Color(1, 0.9, 0.5))
+
+	if ability.is_charging():
+		_draw_charge()
+
+
+# Reload: a bright sweep filling up from the bottom, like the cooldown shade
+# in reverse. Ammo: "current/max" in the top corner, red when empty.
+func _draw_ammo(gun: RangedAttackAbility) -> void:
+	if gun.is_reloading():
+		var fill := SIZE.y * gun.get_reload_ratio()
+		draw_rect(Rect2(0, SIZE.y - fill, SIZE.x, fill), Color(0.5, 0.8, 1.0, 0.25))
+		_draw_centered("R", Vector2(SIZE.x / 2.0, SIZE.y / 2.0 - 10), 20, Color(0.6, 0.85, 1.0))
+	var color := Color(1, 0.35, 0.3) if gun.get_ammo() == 0 else Color.WHITE
+	_draw_centered("%d/%d" % [gun.get_ammo(), gun.get_max_ammo()], Vector2(SIZE.x / 2.0, 18), 15, color)
+
+
+# A bar just above the slot. It turns gold at full charge and flashes white
+# while a release would be perfect.
+func _draw_charge() -> void:
+	var y := -CHARGE_BAR_GAP - CHARGE_BAR_HEIGHT
+	var ratio := ability.get_charge_ratio()
+	draw_rect(Rect2(0, y, SIZE.x, CHARGE_BAR_HEIGHT), Color(0, 0, 0, 0.7))
+	var color := Color(0.5, 0.8, 1.0) if ratio < 1.0 else Color(1.0, 0.8, 0.3)
+	if ability.is_in_perfect_window():
+		color = Color.WHITE if int(Time.get_ticks_msec() / 60) % 2 == 0 else Color(1.0, 0.95, 0.5)
+		draw_rect(Rect2(-3, y - 3, SIZE.x + 6, CHARGE_BAR_HEIGHT + 6), Color(1, 1, 1, 0.8), false, 2.0)
+	draw_rect(Rect2(0, y, SIZE.x * ratio, CHARGE_BAR_HEIGHT), color)
 
 
 func _draw_centered(text: String, baseline_center: Vector2, font_size: int, color: Color) -> void:

@@ -4,6 +4,14 @@
 > `scenes/world.tscn`). Heroes are now built from data: see
 > [HOW_TO_ADD_A_HERO.md](HOW_TO_ADD_A_HERO.md) (Avery is the worked example)
 > and [BALANCE_TOOLS.md](BALANCE_TOOLS.md).
+>
+> **`WeaponComponent` is legacy and superseded for heroes.** A hero's gun is
+> a `RangedAttackData` + `RangedAttackAbility` in any slot: it goes through
+> the ability controller, feel presets, `DamageInfo` labels, the HUD, the
+> debug panel and the balance CSV like every other ability, and adds SEMI/AUTO
+> fire, muzzles, spread, falloff and FULL/PER_ROUND reloads. Keep
+> `WeaponComponent` only for the old rifle player and `scenes/enemy.tscn`
+> until they're rebuilt; don't extend it.
 
 The first hero covers one of each common ability archetype, so later heroes
 and enemies can be assembled from the same parts.

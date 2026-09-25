@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="FeelProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="1_wbyom"]
+[ext_resource type="Script" path="res://scripts/feel/feel_profile.gd" id="2_dcewb"]
+
+[sub_resource type="Resource" id="Resource_d4ugd"]
+script = ExtResource("1_wbyom")
+move_multiplier = 0.45
+lunge_distance = 0.0
+movement_cancel_after = 0.08
+ability_cancel_after = 0.08
+lock_aim = false
+hitstop = 0.0
+shake_on_hit = 0.05
+
+[sub_resource type="Resource" id="Resource_3ytka"]
+script = ExtResource("1_wbyom")
+windup = 0.0
+active = 0.02
+recovery = 0.06
+move_multiplier = 0.85
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+weight = 0.4
+hitstop = 0.0
+shake_on_hit = 0.05
+
+[sub_resource type="Resource" id="Resource_q8qlp"]
+script = ExtResource("1_wbyom")
+windup = 0.05
+active = 0.02
+move_multiplier = 0.6
+lunge_distance = 0.0
+movement_cancel_after = 0.1
+lock_aim = false
+weight = 1.4
+hitstop = 0.0
+shake_on_hit = 0.05
+
+[sub_resource type="Resource" id="Resource_trka1"]
+script = ExtResource("1_wbyom")
+windup = 0.15
+active = 0.0
+move_multiplier = 0.7
+lunge_distance = 0.0
+movement_cancel_after = 0.1
+lock_aim = false
+hitstop = 0.0
+shake_on_hit = 0.05
+
+[resource]
+script = ExtResource("2_dcewb")
+presets = Dictionary[StringName, ExtResource("1_wbyom")]({
+&"channel": SubResource("Resource_trka1"),
+&"charged": SubResource("Resource_q8qlp"),
+&"light": SubResource("Resource_d4ugd"),
+&"shot": SubResource("Resource_3ytka")
+})
+fallback = SubResource("Resource_d4ugd")

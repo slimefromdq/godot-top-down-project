@@ -24,6 +24,11 @@ class_name Hitbox
 ## Emitted for every target an attack connects with, after the hit applies.
 signal hit_landed(info: DamageInfo, hurtbox: HurtboxComponent)
 
+## Who an area effect touches (GroundZoneData.affects). ENEMIES follows
+## can_hit(); ALLIES are the source's teammates INCLUDING the source itself;
+## BOTH is either.
+enum Affects { ENEMIES, ALLIES, BOTH }
+
 ## Draw active shapes in-game, for tuning reach and width.
 @export var debug_draw: bool = false
 
@@ -130,7 +135,7 @@ func find_targets(shape: HitShape, direction: Vector2) -> Array[HurtboxComponent
 # `source` is allowed to hit inside `shape`, placed at `origin` facing
 # `direction`. `context` is any node in the world (for physics access).
 static func query(context: Node2D, origin: Vector2, direction: Vector2, shape: HitShape,
-		source: Node) -> Array[HurtboxComponent]:
+		source: Node, affects: Affects = Affects.ENEMIES) -> Array[HurtboxComponent]:
 	if direction == Vector2.ZERO:
 		direction = Vector2.RIGHT
 	origin += direction * shape.forward_offset
@@ -155,7 +160,7 @@ static func query(context: Node2D, origin: Vector2, direction: Vector2, shape: H
 	var results: Array[HurtboxComponent] = []
 	for hit in context.get_world_2d().direct_space_state.intersect_shape(params, 64):
 		var hurtbox := hit.collider as HurtboxComponent
-		if hurtbox == null or not can_hit(source, hurtbox):
+		if hurtbox == null or not affects_target(source, hurtbox, affects):
 			continue
 		if shape.kind == HitShape.Kind.ARC and not _inside_arc(hurtbox, origin, direction, shape):
 			continue
@@ -174,6 +179,26 @@ static func can_hit(source: Node, hurtbox: HurtboxComponent) -> bool:
 		return false
 	var team = source.get(&"team")
 	return team == null or team == &"" or hurtbox.get_team() != team
+
+
+static func affects_target(source: Node, hurtbox: HurtboxComponent, affects: Affects) -> bool:
+	match affects:
+		Affects.ALLIES:
+			return is_ally(source, hurtbox)
+		Affects.BOTH:
+			return can_hit(source, hurtbox) or is_ally(source, hurtbox)
+	return can_hit(source, hurtbox)
+
+
+# Same team as `source`, or `source` itself. A neutral (team-less) source
+# has no allies but itself.
+static func is_ally(source: Node, hurtbox: HurtboxComponent) -> bool:
+	if not hurtbox.is_valid_target() or source == null or not is_instance_valid(source):
+		return false
+	if hurtbox.owner == source or hurtbox.get_parent() == source:
+		return true
+	var team = source.get(&"team")
+	return team != null and team != &"" and hurtbox.get_team() == team
 
 
 # The target counts if any part of its body (approximated as a circle)

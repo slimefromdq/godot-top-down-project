@@ -19,7 +19,10 @@ values.
   * Raise the level cap (up to 20) for playtests.
   * Toggle god mode and cooldowns off.
   * Full heal, or take a lethal hit to test the revive.
-  * "Play as" swaps the player to any hero.
+  * "Play as" swaps the player to any hero. In debug builds the list also
+    offers test-only heroes from `tools/heroes/*/`, marked "(test)"
+    (e.g. Ranged Test). They never appear in the roster, the CSV or
+    Validate Heroes.
   * Edit the base stats live. "Reset stats + feel" restores them.
 * **Abilities**: every number of every ability (combo steps, hit shapes, projectiles, statuses, trail zones, named values). Changes apply on the next cast. **Reset** restores the ability from its .tres.
 * **Dummies**
@@ -70,7 +73,7 @@ The file is tidy (long) format, with one row per hero × level × metric, at lev
 | source | `stat`, `derived` (effective HP) or `ability` |
 | slot | `ability_1` (empty for stats) |
 | ability | `searing_cut` (empty for stats) |
-| metric | `health`, `cooldown`, `range`, `damage`, `heal_per_target`, `combo_steps/3/damage`, `values/lifesteal` … |
+| metric | `health`, `cooldown`, `range`, `damage`, `heal_per_target`, `combo_steps/3/damage`, `values/lifesteal` …; guns add `shots_per_second`, `magazine_size`, `reload_time` (empty to full), `damage_per_shot`, `burst_dps` and `sustained_dps` (with reloads) |
 | value | `63.3` |
 
 ```r
@@ -93,7 +96,8 @@ A HeroDefinition shows problems in a read-only **Validation** line at the
 bottom of its inspector. It checks for:
 * missing required slots, and slots GameRules doesn't know;
 * abilities with no data or no script;
-* negative stats, values, timings or shapes.
+* negative stats, values, timings or shapes;
+* guns (no projectile, zero fire rate, ammo per shot above the magazine, bad falloff range), charge settings (min above max), statuses (compel speed, unknown modifier stats) and zones.
 
 Problems are also printed when you save a definition or ability, and by **Tools → Validate Heroes**. Heroes log a warning when they spawn with problems.
 
@@ -101,6 +105,7 @@ Problems are also printed when you save a definition or ability, and by **Tools 
 
 ```
 godot --headless res://tools/heroes/infrastructure_test.tscn
+godot --headless res://tools/heroes/ranged_infra_test.tscn
 godot --headless res://tools/heroes/avery_test.tscn
 godot --headless res://tools/heroes/feel_test.tscn
 godot --headless res://tools/heroes/balance_tools_test.tscn

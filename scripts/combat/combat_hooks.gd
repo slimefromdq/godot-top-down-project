@@ -13,6 +13,15 @@ class_name CombatHooks
 #   about_to_die(event)       cancellable; see DeathEvent
 #   heal_done(amount, target, label)  this actor healed someone (incl. itself)
 #
+# Status notifications, on the APPLIER (whoever applied the status):
+#   status_target_died(status_id, target, info)  a target carrying this actor's
+#       status died, killed by anyone (info = the killing blow). Fires before
+#       the status is removed. "Reset my cooldown when my mark dies" lives here.
+#   status_expired(status_id, target)            it ran its full duration
+#   status_removed(status_id, target, reason)    it ended for ANY reason:
+#       &"expired", &"removed" (cleanse, zone exit, another applier took
+#       over a shared status), &"target_died", &"applier_died"
+#
 # Why a separate node instead of signals on HealthComponent? A hit involves two
 # actors. "Avery heals when SHE hits" is an event on the attacker, but the
 # damage is processed on the victim. HealthComponent (victim side) reports into
@@ -25,6 +34,9 @@ signal death(info: DamageInfo)
 signal level_up(level: int)
 signal about_to_die(event: DeathEvent)
 signal heal_done(amount: float, target: Node, label: StringName)
+signal status_target_died(status_id: StringName, target: Node, info: DamageInfo)
+signal status_expired(status_id: StringName, target: Node)
+signal status_removed(status_id: StringName, target: Node, reason: StringName)
 
 const META_KEY := &"combat_hooks"
 

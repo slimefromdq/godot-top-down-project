@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_o0cki"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_nm2en"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_wither.tres" id="3_0wa3s"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_bullet.tres" id="4_0ah2j"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="5_hxuw6"]
+
+[sub_resource type="Resource" id="Resource_hbyuu"]
+script = ExtResource("2_nm2en")
+base = 20.0
+weapon_ratio = 0.2
+
+[resource]
+script = ExtResource("5_hxuw6")
+projectile = ExtResource("4_0ah2j")
+fire_mode = 1
+id = &"ranged_test_wither_shot"
+display_name = "Wither Shot"
+description = "Marks the target: -20% max Health for 4 s. Refunds its cooldown if the marked target dies."
+ability_script = ExtResource("1_o0cki")
+cooldown = 8.0
+damage = SubResource("Resource_hbyuu")
+on_hit_status = ExtResource("3_0wa3s")
+tags = Array[StringName]([&"ability"])
+feel_preset = &"shot"

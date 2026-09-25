@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_66yrw"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_2cfpg"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_bullet.tres" id="3_lhnp7"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="4_t2pjg"]
+
+[sub_resource type="Resource" id="Resource_xx68q"]
+script = ExtResource("2_2cfpg")
+base = 30.0
+weapon_ratio = 0.5
+
+[resource]
+script = ExtResource("4_t2pjg")
+projectile = ExtResource("3_lhnp7")
+muzzles = Array[Vector2]([Vector2(50, -14), Vector2(50, 14)])
+fire_mode = 1
+shots_per_second = 3.0
+magazine_size = 6
+reload_time = 0.4
+reload_style = 1
+falloff_start = 500.0
+falloff_end = 800.0
+falloff_min_multiplier = 0.6
+id = &"ranged_test_revolver"
+display_name = "Test Revolver"
+description = "SEMI. 6 rounds, reloads one round at a time (firing interrupts), alternates two muzzles."
+ability_script = ExtResource("1_66yrw")
+cooldown = 0.0
+damage = SubResource("Resource_xx68q")
+tags = Array[StringName]([&"basic_attack"])
+feel_preset = &"shot"

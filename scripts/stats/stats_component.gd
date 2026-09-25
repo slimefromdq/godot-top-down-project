@@ -14,6 +14,8 @@ signal level_changed(level: int)
 @export_range(1, 20) var level: int = 1
 
 var _modifiers: Array[StatModifier] = []
+# See grants_health_on_gain(). Only meaningful during a stats_changed emit.
+var _grant_health_on_gain := true
 
 
 func _ready() -> void:
@@ -65,22 +67,46 @@ func set_level(new_level: int) -> void:
 
 
 # Item hook. Items (later) add a batch of modifiers tagged with their id and
-# remove them all by that id when sold.
-func add_modifier(modifier: StatModifier) -> void:
+# remove them all by that id when sold. Statuses use the same path.
+#
+# `grant_health_on_gain`: whether a max-HP increase caused by this change
+# also raises current HP (HealthComponent asks grants_health_on_gain() while
+# handling stats_changed). Status removal passes false.
+func add_modifier(modifier: StatModifier, grant_health_on_gain: bool = true) -> void:
 	_modifiers.append(modifier)
-	stats_changed.emit()
+	_emit_changed(grant_health_on_gain)
 
 
-func remove_modifier(modifier: StatModifier) -> void:
+# Several at once, with a single stats_changed.
+func add_modifiers(modifiers: Array[StatModifier], grant_health_on_gain: bool = true) -> void:
+	if modifiers.is_empty():
+		return
+	_modifiers.append_array(modifiers)
+	_emit_changed(grant_health_on_gain)
+
+
+func remove_modifier(modifier: StatModifier, grant_health_on_gain: bool = true) -> void:
 	_modifiers.erase(modifier)
-	stats_changed.emit()
+	_emit_changed(grant_health_on_gain)
 
 
-func remove_modifiers_from(source_id: StringName) -> void:
+func remove_modifiers_from(source_id: StringName, grant_health_on_gain: bool = true) -> void:
 	var before := _modifiers.size()
 	_modifiers = _modifiers.filter(func(m: StatModifier): return m.source_id != source_id)
 	if _modifiers.size() != before:
-		stats_changed.emit()
+		_emit_changed(grant_health_on_gain)
+
+
+# True unless the change being announced right now asked not to grant
+# current HP for a max-HP gain.
+func grants_health_on_gain() -> bool:
+	return _grant_health_on_gain
+
+
+func _emit_changed(grant_health_on_gain: bool) -> void:
+	_grant_health_on_gain = grant_health_on_gain
+	stats_changed.emit()
+	_grant_health_on_gain = true
 
 
 func get_modifiers() -> Array[StatModifier]:

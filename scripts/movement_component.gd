@@ -7,7 +7,12 @@ class_name MovementComponent
 # Priority each tick:
 #   1. forced move (dash, lunge, knockback/pull, launch): exact velocity
 #   2. stunned or rooted: brake to a stop, ignore input
-#   3. normal steering, times status multipliers and action multipliers
+#   3. compelled (StatusEffect.compel_*): walk toward the applier's current
+#      position; replaces or adds to the input depending on the status
+#   4. normal steering, times status multipliers and action multipliers
+#
+# Every controller (player hero, enemy AI, dummy, jungle creature) steers
+# through get_velocity(), so they all obey 1-3 without knowing about them.
 
 @export var move_speed: float = 300.0
 @export var acceleration: float = 1200.0
@@ -136,6 +141,13 @@ func get_velocity(
 		input_direction = Vector2.ZERO
 
 	var speed := get_move_speed()
+	var compel_velocity := Vector2.ZERO
+	if can_walk() and status_component != null:
+		var effect := status_component.get_compel_effect()
+		if effect != null:
+			compel_velocity = _compel_velocity(effect, status_component.get_compel_source(), speed)
+			if effect.compel_overrides_input:
+				input_direction = Vector2.ZERO
 	if _just_finished_forced_move:
 		# Leave a dash at normal running speed instead of sliding at dash speed.
 		_just_finished_forced_move = false
@@ -144,14 +156,14 @@ func get_velocity(
 	current_velocity += _pending_impulse
 	_pending_impulse = Vector2.ZERO
 
-	var target_velocity := input_direction * speed
+	var target_velocity := input_direction * speed + compel_velocity
 	var accel := acceleration
 	for zone in _speed_zones:
 		if is_instance_valid(zone):
 			target_velocity = zone.boost_velocity(target_velocity)
 			accel *= zone.multiplier
 
-	if input_direction != Vector2.ZERO:
+	if input_direction != Vector2.ZERO or compel_velocity != Vector2.ZERO:
 		# Faster than we want to go (e.g. a swing just slowed us): brake with
 		# friction rather than acceleration so the slow bites immediately.
 		var rate := accel if current_velocity.length() <= target_velocity.length() else maxf(accel, friction)
@@ -161,3 +173,20 @@ func get_velocity(
 		Vector2.ZERO,
 		friction * delta
 	)
+
+
+# Walk toward `source` at a fraction of our own speed; nothing inside the
+# stop distance. Re-aimed every tick, so a moving source is followed.
+func _compel_velocity(effect: StatusEffect, source: Node2D, speed: float) -> Vector2:
+	var body := (owner if owner != null else get_parent()) as Node2D
+	if body == null or source == null:
+		return Vector2.ZERO
+	var to_source := source.global_position - body.global_position
+	var distance := to_source.length()
+	if distance <= effect.compel_stop_distance:
+		return Vector2.ZERO
+	var compel_speed := speed * effect.compel_speed_multiplier
+	# Don't overshoot the stop distance in one tick.
+	var tick := 1.0 / Engine.physics_ticks_per_second
+	compel_speed = minf(compel_speed, (distance - effect.compel_stop_distance) / tick)
+	return to_source / distance * compel_speed

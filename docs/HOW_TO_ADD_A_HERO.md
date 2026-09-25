@@ -29,7 +29,7 @@ heroes/<name>/
 | `AbilityData` (+ subclasses) | cooldown, cost, hit shape, damage/heal `ScalingValue`s, statuses, feel preset, **which script runs it** | `abilities/*.tres` |
 | `ScalingValue` | `base + per_level·(lvl−1) + weapon_ratio·Weapon + magic_ratio·Magic` | every damage/heal number |
 | `FeelProfile` / `AttackFeel` | windup / active / recovery, lunge, slow, cancel windows, hitstop, shake, trail, sounds | `avery_feel.tres` |
-| `StatusEffect` | slow, stun, root, silence, knockback/pull, burn; stacking rules | `data/avery_stun.tres`, `data/avery_burn.tres` |
+| `StatusEffect` | slow, stun, root, silence, knockback/pull, burn, compel, stat modifiers; stacking rules | `data/avery_stun.tres`, `data/avery_burn.tres` |
 | `ProjectileData`, `GroundZoneData` | projectile flight / ground fire | `data/sun_crescent.tres`, `data/fire_trail.tres` |
 
 Slots come from `resources/rules/game_rules.tres`: `primary` (LMB),
@@ -77,7 +77,97 @@ For each slot in the definition's `abilities` dictionary, point at an
 | a melee swing or combo, optionally throwing a projectile per swing | `MeleeAttackData` + `MeleeAttackAbility` | none |
 | a telegraphed dash / charge, optionally leaving a ground trail | `ChargeData` + `ChargeAbility` | none |
 | a melee CC (stun, knockback, pull) | `MeleeAttackData` with `on_hit_status` | none |
-| something new | extend `Ability` (or `MeleeAttackAbility`) | a small script |
+| a gun: rifle, revolver, shotgun, dual pistols (any slot) | `RangedAttackData` + `RangedAttackAbility` | none |
+| hold to charge, release to fire (any timed ability) | the **Charge** group on any `AbilityData` + `data.get_charged_value()` | none for guns |
+| a taunt / charm (target walks toward you) | `StatusEffect` with `compel_enabled` | none |
+| a debuff or buff that changes stats (-20% Health, +30 Armor) | `StatusEffect.stat_modifiers` | none |
+| react when your marked target dies / your status ends | `actor.combat_hooks.status_target_died` / `status_expired` / `status_removed` | a small script |
+| a cone or aura that follows you for a while | `ZoneAbilityData` + `ZoneAbility` (zone with `follow_owner`, `face_aim`) | none |
+| custom per-target zone logic | `spawn_owned_zone()` from any ability + the zone's `target_*` signals | a small script |
+| something new | extend `Ability` (or `MeleeAttackAbility` / `RangedAttackAbility`) | a small script |
+
+`tools/heroes/ranged_test/` is a test-only hero that uses every row above
+(pick it with **F1 → Play as → Ranged Test (test)**). Short recipes follow.
+
+**A gun.** `RangedAttackData`: `projectile` (a `ProjectileData`), `damage`
+(per projectile), `fire_mode` AUTO (hold) or SEMI (click; early clicks within
+`semi_input_buffer` still fire), `shots_per_second` (scaled by the FIRE_RATE
+status multiplier), `projectiles_per_shot` + `spread_degrees` +
+`spread_pattern` (RANDOM or EVEN fan), `muzzles` (offsets cycled per shot),
+`magazine_size` (0 = infinite), `ammo_per_shot`, `reload_time` /
+`reload_per_level`, `reload_style` FULL or PER_ROUND (one round per
+`reload_time`, firing interrupts), `auto_reload_when_empty`, and
+`falloff_start` / `falloff_end` / `falloff_min_multiplier`. R (`hero_reload`)
+reloads the primary gun (or the first gun). Give the gun a short feel preset
+(windup 0, small recovery, `ability_cancel_after` 0): each shot is a cast.
+
+```
+revolver.tres  fire_mode SEMI, shots_per_second 3, magazine_size 6,
+               reload_style PER_ROUND, reload_time 0.4,
+               muzzles [(50, -14), (50, 14)]      # alternating barrels
+```
+
+Other abilities reach the gun through the hero:
+
+```gdscript
+func _on_active_start() -> void:          # a dash that reloads on use
+	super()
+	var gun: RangedAttackAbility = (actor as Hero).get_ranged_ability()
+	if gun != null:
+		gun.reload_instantly()
+```
+
+**Hold to charge.** Tick `charge_enabled` in the ability's Charge group:
+`charge_time_max`, `charge_min_to_fire` (+ `charge_below_min`: CANCEL or
+FIRE_MINIMUM), `charge_auto_release_at_max`, `charge_move_speed_multiplier`,
+`charge_can_cancel` (another key cancels, no cooldown spent),
+`charge_perfect_window`. The cast waits in CHARGING until the key is released
+(`hero.release_slot()`; AI calls the same). Charged numbers are value pairs:
+
+```
+values/damage_full = 120 + 1.4 W     # "damage" is the main damage field
+```
+```gdscript
+var dmg := data.get_charged_value(&"damage", get_stats(), get_charge_ratio())
+if was_perfect_release(): ...
+```
+
+A `RangedAttackAbility` does this by itself, and multiplies by
+`values/perfect_damage_multiplier` on a perfect release.
+
+**Compel.** A `StatusEffect` with `compel_enabled`,
+`compel_speed_multiplier` (of the target's own speed), `compel_stop_distance`
+and `compel_overrides_input`. The target walks to the applier's current
+position every tick. Stuns and roots stop it, knockbacks play out first, and
+it ends if the applier dies. Put it on any `on_hit_status`.
+
+**Stat modifiers + notifications (a mark).** A `StatusEffect` with
+`stat_modifiers = [StatModifier(health, percent -0.2)]`,
+`stack_per_applier = true` (each applier's copy is separate) and
+`attached_vfx = scenes/combat/overhead_marker.tscn` (the overhead marker).
+Losing max HP clamps current HP; the debuff ending never hands HP back. The
+applier hears about it:
+
+```gdscript
+func _ready() -> void:
+	super()
+	actor.combat_hooks.status_target_died.connect(func(id, _target, _info):
+		if id == &"my_mark":
+			reset_cooldown())            # also: reduce_cooldown(seconds)
+```
+
+**A zone that follows you.** `ZoneAbilityData` with `zone_duration` and a
+`GroundZoneData` zone: `shape` ARC, `follow_owner`, `face_aim`, `affects`
+(ENEMIES / ALLIES / BOTH; damage only ever hits enemies),
+`status_while_inside` (applied on entry and every tick, removed on exit),
+`ends_if_owner_dies`, `max_duration`. The zone is owned by the cast: a stun
+ends it unless `outlives_cast`. For custom per-target logic, spawn it from
+any ability and listen:
+
+```gdscript
+var zone := spawn_owned_zone(data.zone)   # ends with this cast
+zone.target_entered.connect(_on_enter)    # also target_ticked, target_exited
+```
 
 **Avery**, slot by slot:
 
@@ -120,8 +210,18 @@ Hooks available to ability scripts:
   class handles the attack slow, lunge, cancel windows, buffering and stuns.
 * **Melee** (from `MeleeAttackAbility`): `_build_hit(info, hurtbox)` to change
   a hit before it lands, `_on_target_hit(info, hurtbox)` after.
+* **Ranged** (from `RangedAttackAbility`): the same two hooks per projectile
+  hit, plus `_shot_damage()`, the signals `ammo_changed`, `reload_started`,
+  `reload_finished`, `reload_cancelled`, and the calls `get_ammo()`,
+  `start_reload()`, `cancel_reload()`, `reload_instantly()`, `add_ammo(n)`.
+* **Charge** (any ability with `charge_enabled`): `_on_charge_start()`,
+  `_on_charge_released(ratio, perfect)`; `get_charge_ratio()`,
+  `was_perfect_release()`, `is_in_perfect_window()`.
+* **Cooldowns**: `reset_cooldown()`, `reduce_cooldown(seconds)`.
 * **Hero-wide events**: `actor.combat_hooks` → `hit_dealt`, `damage_taken`,
-  `kill`, `death`, `level_up`, `about_to_die` (cancellable), `heal_done`.
+  `kill`, `death`, `level_up`, `about_to_die` (cancellable), `heal_done`,
+  and for statuses this hero applied: `status_target_died`,
+  `status_expired`, `status_removed(id, target, reason)`.
   Passives live here. Avery's heal-on-hit filters `hit_dealt` to its own
   attack id; her revive calls `event.cancel(hp)` on `about_to_die`.
 
@@ -150,7 +250,9 @@ safe to push hard. Point each ability's `feel_preset` at a preset name.
 `visual_profile` / `audio_profile` on the definition map cue names to
 effects and sounds (see `docs/VISUALS_AND_AUDIO.md`). Abilities emit
 `<id>_windup`, `<id>_active`, `<id>_recovery`, `<id>_hit` and a few
-ability-specific cues. Swing whoosh, impact and fire layers come from the
+ability-specific cues: guns add `<id>_fire`, `<id>_empty`,
+`<id>_reload_start` / `_reload_end`; charges add `<id>_charge_start` /
+`_charge_full` / `_charge_release` (full list in VISUALS_AND_AUDIO.md). Swing whoosh, impact and fire layers come from the
 FeelProfile, not the cue profiles.
 
 ### 7. Test it
