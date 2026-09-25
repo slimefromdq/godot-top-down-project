@@ -12,10 +12,18 @@ class_name AbilityBar
 
 
 func _ready() -> void:
+	add_to_group(&"player_listeners")
 	if actor == null:
 		actor = get_tree().get_first_node_in_group(&"player") as Actor
 	if actor == null:
 		return
+	actor.ability_controller.abilities_changed.connect(_rebuild)
+	_rebuild()
+
+
+# The debug panel can swap the player for another hero.
+func on_player_replaced(new_actor: Actor) -> void:
+	actor = new_actor
 	actor.ability_controller.abilities_changed.connect(_rebuild)
 	_rebuild()
 

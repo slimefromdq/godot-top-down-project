@@ -4,12 +4,16 @@ extends EditorPlugin
 # Editor helpers for hero work, under Project > Tools:
 #   * New Hero from Template...   copies heroes/_template to heroes/<name>/
 #   * Validate Heroes             checks every HeroDefinition, prints problems
+#   * Export Balance CSV          tidy CSV of every hero at levels 1/5/10/15/20
+#                                 -> res://balance/balance_export.csv
 #
 # Definitions are also validated automatically every time one is saved, so a
 # missing slot or a negative number shows up in the Output panel right away.
 
 const MENU_NEW := "New Hero from Template..."
 const MENU_VALIDATE := "Validate Heroes"
+const MENU_EXPORT := "Export Balance CSV"
+const EXPORT_PATH := "res://balance/balance_export.csv"
 
 var _dialog: ConfirmationDialog
 var _name_edit: LineEdit
@@ -18,12 +22,14 @@ var _name_edit: LineEdit
 func _enter_tree() -> void:
 	add_tool_menu_item(MENU_NEW, _open_new_hero_dialog)
 	add_tool_menu_item(MENU_VALIDATE, validate_all)
+	add_tool_menu_item(MENU_EXPORT, export_balance)
 	resource_saved.connect(_on_resource_saved)
 
 
 func _exit_tree() -> void:
 	remove_tool_menu_item(MENU_NEW)
 	remove_tool_menu_item(MENU_VALIDATE)
+	remove_tool_menu_item(MENU_EXPORT)
 	if resource_saved.is_connected(_on_resource_saved):
 		resource_saved.disconnect(_on_resource_saved)
 	if _dialog != null:
@@ -36,6 +42,17 @@ func validate_all() -> void:
 	for definition in definitions:
 		bad += 1 if _report(definition) else 0
 	print("Validate Heroes: %d checked, %d with problems." % [definitions.size(), bad])
+
+
+func export_balance() -> void:
+	# Validate first: exporting broken data just hides the problem.
+	validate_all()
+	var error := BalanceExporter.export_all(EXPORT_PATH)
+	if error != "":
+		push_error("Balance export: " + error)
+		return
+	EditorInterface.get_resource_filesystem().scan()
+	print("Balance export written to %s" % ProjectSettings.globalize_path(EXPORT_PATH))
 
 
 func _on_resource_saved(resource: Resource) -> void:

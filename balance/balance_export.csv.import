@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://drni1ujdbr1h2"
+
+[deps]
+
+files=["res://balance/balance_export.role.translation", "res://balance/balance_export.level.translation", "res://balance/balance_export.source.translation", "res://balance/balance_export.slot.translation", "res://balance/balance_export.ability.translation", "res://balance/balance_export.metric.translation", "res://balance/balance_export.value.translation"]
+
+source_file="res://balance/balance_export.csv"
+dest_files=["res://balance/balance_export.role.translation", "res://balance/balance_export.level.translation", "res://balance/balance_export.source.translation", "res://balance/balance_export.slot.translation", "res://balance/balance_export.ability.translation", "res://balance/balance_export.metric.translation", "res://balance/balance_export.value.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

@@ -44,7 +44,7 @@ func evaluate_at(level: int, weapon: float, magic: float) -> float:
 func describe() -> String:
 	var parts: Array[String] = ["%s" % _fmt(base)]
 	if per_level != 0.0:
-		parts.append("%+s/lvl" % _fmt(per_level))
+		parts.append("%s%s/lvl" % ["+" if per_level > 0.0 else "", _fmt(per_level)])
 	if weapon_ratio != 0.0:
 		parts.append("%+d%% W" % roundi(weapon_ratio * 100.0))
 	if magic_ratio != 0.0:

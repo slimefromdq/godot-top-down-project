@@ -1,5 +1,10 @@
 # Hero Kit: Abilities
 
+> This page describes the original rifle hero (`scenes/player.tscn`,
+> `scenes/world.tscn`). Heroes are now built from data: see
+> [HOW_TO_ADD_A_HERO.md](HOW_TO_ADD_A_HERO.md) (Avery is the worked example)
+> and [BALANCE_TOOLS.md](BALANCE_TOOLS.md).
+
 The first hero covers one of each common ability archetype, so later heroes
 and enemies can be assembled from the same parts.
 

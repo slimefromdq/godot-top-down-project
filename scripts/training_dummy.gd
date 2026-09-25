@@ -65,6 +65,8 @@ var aim_direction := Vector2.DOWN
 var anchor := Vector2.ZERO
 
 var _time_since_damage: float = 0.0
+# Damage since the dummy last reset to full health.
+var _total_taken: float = 0.0
 var _attack_timer: float = 0.0
 var _team_before_fighting: StringName = &""
 var _damage_log: Array[Vector2] = []    # (time, amount) pairs
@@ -162,12 +164,13 @@ func _process(delta: float) -> void:
 	if _time_since_damage >= reset_delay and not health_component.is_dead() \
 			and health_component.current_health < health_component.max_health:
 		health_component.reset()
+		_total_taken = 0.0
 
 	_damage_log = _damage_log.filter(func(entry): return _time - entry.x <= dps_window)
 	var total := 0.0
 	for entry in _damage_log:
 		total += entry.y
-	dps_label.text = "DPS %d" % roundi(total / dps_window)
+	dps_label.text = "DPS %d   total %d" % [roundi(total / dps_window), roundi(_total_taken)]
 
 
 func trigger_cue(cue: StringName, context: Dictionary = {}) -> void:
@@ -177,6 +180,7 @@ func trigger_cue(cue: StringName, context: Dictionary = {}) -> void:
 
 func _on_damaged(amount: float, _source: Node) -> void:
 	_time_since_damage = 0.0
+	_total_taken += amount
 	_damage_log.append(Vector2(_time, amount))
 
 
