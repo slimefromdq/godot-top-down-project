@@ -76,9 +76,10 @@ func _on_active_tick(delta: float) -> void:
 			"position": actor.global_position, "normal": _pending_normal, "direction": _leg_direction})
 		_start_leg()
 		return
-	# Out of distance or bounces: the dash is over.
+	# Out of distance or bounces: the dash is over. End ACTIVE now by
+	# shortening it to the time already spent (it was INF while the legs
+	# ran), so _advance moves on to recovery this tick.
 	_end_bash()
-	phase_time = current_feel.active    # let _advance move on to recovery
 	current_feel.active = phase_time
 
 
