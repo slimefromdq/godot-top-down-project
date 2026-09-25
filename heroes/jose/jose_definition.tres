@@ -1,0 +1,67 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="1_def"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="2_block"]
+[ext_resource type="Resource" path="res://heroes/jose/abilities/twin_longarms.tres" id="2_nhu02"]
+[ext_resource type="Resource" path="res://heroes/jose/abilities/last_word.tres" id="3_mgaln"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="3_scaling"]
+[ext_resource type="Resource" path="res://heroes/jose/abilities/flourish.tres" id="4_0yvsj"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="4_ability"]
+[ext_resource type="Resource" path="res://heroes/jose/abilities/coin.tres" id="5_4usqw"]
+[ext_resource type="Resource" path="res://heroes/jose/jose_feel.tres" id="6_feel"]
+[ext_resource type="Resource" path="res://heroes/jose/abilities/weapons_free.tres" id="6_xaeys"]
+[ext_resource type="Resource" path="res://heroes/jose/jose_audio.tres" id="7_ctq7w"]
+[ext_resource type="Resource" path="res://heroes/jose/jose_visuals.tres" id="12_4unpa"]
+
+[sub_resource type="Resource" id="Resource_p2qp7"]
+script = ExtResource("3_scaling")
+base = 16.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_yubw8"]
+script = ExtResource("3_scaling")
+base = 540.0
+growth = 52.0
+
+[sub_resource type="Resource" id="Resource_2s40a"]
+script = ExtResource("3_scaling")
+base = 10.0
+growth = 1.0
+
+[sub_resource type="Resource" id="Resource_6nlop"]
+script = ExtResource("3_scaling")
+base = 16.0
+growth = 1.0
+
+[sub_resource type="Resource" id="Resource_bwdcs"]
+script = ExtResource("3_scaling")
+base = 44.0
+growth = 6.0
+
+[sub_resource type="Resource" id="Resource_sjg0i"]
+script = ExtResource("2_block")
+health = SubResource("Resource_yubw8")
+weapon = SubResource("Resource_bwdcs")
+magic = SubResource("Resource_2s40a")
+armor = SubResource("Resource_p2qp7")
+magic_resist = SubResource("Resource_6nlop")
+
+[resource]
+script = ExtResource("1_def")
+hero_id = &"jose"
+display_name = "Jose"
+title = "Smiling Assassin"
+role = 1
+description = "A feared, famous assassin who found freedom in the work. Twin revolvers, a coin that marks for death, and a flip that reloads. Rewards aim, timing and target selection."
+stats = SubResource("Resource_sjg0i")
+move_speed = 560.0
+abilities = Dictionary[StringName, ExtResource("4_ability")]({
+&"ability_1": ExtResource("3_mgaln"),
+&"cc": ExtResource("5_4usqw"),
+&"movement": ExtResource("4_0yvsj"),
+&"primary": ExtResource("2_nhu02"),
+&"ultimate": ExtResource("6_xaeys")
+})
+feel_profile = ExtResource("6_feel")
+visual_profile = ExtResource("12_4unpa")
+audio_profile = ExtResource("7_ctq7w")

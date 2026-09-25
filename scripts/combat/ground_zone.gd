@@ -222,5 +222,10 @@ func _draw() -> void:
 			for i in 17:
 				points.append(origin + direction.rotated(lerpf(-half, half, i / 16.0)) * shape.radius)
 			draw_colored_polygon(points, color)
+			if data.outline_color.a > 0.0:
+				points.append(origin)
+				draw_polyline(points, data.outline_color, data.outline_width, true)
 		_:
 			draw_circle(origin, shape.radius, color)
+			if data.outline_color.a > 0.0:
+				draw_arc(origin, shape.radius, 0.0, TAU, 64, data.outline_color, data.outline_width, true)

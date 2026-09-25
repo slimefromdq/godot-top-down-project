@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="GroundZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/ground_zone_data.gd" id="1_emobo"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_laxag"]
+
+[sub_resource type="Resource" id="Resource_rcqlw"]
+script = ExtResource("2_laxag")
+kind = 1
+radius = 520.0
+
+[resource]
+script = ExtResource("1_emobo")
+shape = SubResource("Resource_rcqlw")
+duration = 5.0
+tick_interval = 0.1
+meter_label = &"weapons_free"
+follow_owner = true
+ends_if_owner_dies = true
+outlives_cast = true
+color = Color(0.9, 0.2, 0.35, 0.12)
+outline_color = Color(1, 0.35, 0.45, 0.85)
+outline_width = 5.0

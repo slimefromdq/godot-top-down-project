@@ -224,6 +224,10 @@ func get_block_reason() -> String:
 	# Mid-air, a dash or pull would replace the launch arc.
 	if actor.is_airborne():
 		return "Airborne"
+	if controller != null:
+		var locked := controller.get_lock_reason(self)
+		if locked != "":
+			return locked
 	var status := actor.status_component
 	if status != null:
 		if status.is_stunned():
@@ -380,7 +384,7 @@ func _activate(_target_position: Vector2) -> String:
 # Reasons that fail quietly (no red flash, no "ability_failed" cue). Waiting
 # states aren't mistakes. Subclasses add their own (Reloading ...).
 func _is_silent_block(reason: String) -> bool:
-	return reason in ["Cooldown", "Dead", "Airborne"]
+	return reason in ["Cooldown", "Dead", "Airborne", "Suppressed"]
 
 
 func _spend_cooldown() -> void:
@@ -494,7 +498,12 @@ func _enter_phase(new_phase: Phase) -> void:
 			_perfect_release = false
 			_charge_full_announced = false
 			actor.movement_component.set_action_multiplier(self, data.charge_move_speed_multiplier)
-			actor.trigger_cue(StringName(str(ability_id) + "_charge_start"), _cue_context())
+			# The ability itself rides along so a live effect (the aim line,
+			# effects/feel/telegraph_line) can follow the charge.
+			var context := _cue_context()
+			context["charge_ability"] = self
+			context["range"] = data.get_range()
+			actor.trigger_cue(StringName(str(ability_id) + "_charge_start"), context)
 			_on_charge_start()
 		Phase.WINDUP:
 			actor.movement_component.set_action_multiplier(self, current_feel.move_multiplier)

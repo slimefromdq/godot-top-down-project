@@ -47,6 +47,9 @@ class_name GroundZoneData
 ## Scene instanced as the zone's look. Empty = a simple drawn shape.
 @export var visual_scene: PackedScene
 @export var color: Color = Color(1.0, 0.45, 0.1, 0.35)
+## Edge line, so the danger radius reads at a glance. Alpha 0 = no outline.
+@export var outline_color: Color = Color(1, 1, 1, 0)
+@export var outline_width: float = 4.0
 
 
 func has_negative() -> bool:

@@ -17,6 +17,8 @@ class_name ChargeAbility
 
 var _last_trail_point := Vector2.ZERO
 var _dashing := false
+# MOVE_INPUT_OR_AIM: the direction chosen when the cast started.
+var _move_direction := Vector2.ZERO
 
 
 func get_charge_data() -> ChargeData:
@@ -38,15 +40,28 @@ func _get_cast_feel() -> AttackFeel:
 
 
 func _activate(_target_position: Vector2) -> String:
-	if get_charge_data() == null:
+	var charge := get_charge_data()
+	if charge == null:
 		return "No charge data"
+	_move_direction = Vector2.ZERO
+	if charge.direction_mode == ChargeData.DirectionMode.MOVE_INPUT_OR_AIM:
+		_move_direction = actor.move_direction.normalized() if actor.move_direction != Vector2.ZERO \
+			else cast_direction
+		cast_direction = _move_direction
 	return ""
+
+
+# The dash direction: the aim (which may follow the mouse during the
+# telegraph), or the walking direction fixed at cast start.
+func get_dash_direction() -> Vector2:
+	return _move_direction if _move_direction != Vector2.ZERO else cast_direction
 
 
 func _cue_context() -> Dictionary:
 	var context := super()
 	var charge := get_charge_data()
-	context["target_position"] = actor.global_position + cast_direction * charge.distance
+	context["target_position"] = actor.global_position + get_dash_direction() * charge.distance
+	context["direction"] = get_dash_direction()
 	context["distance"] = charge.distance
 	return context
 
@@ -54,8 +69,10 @@ func _cue_context() -> Dictionary:
 func _on_active_start() -> void:
 	var charge := get_charge_data()
 	_dashing = true
-	actor.movement_component.displace(cast_direction, charge.distance, charge.get_dash_time(), charge.carry_momentum)
-	if charge.invulnerable_while_dashing:
+	actor.movement_component.displace(get_dash_direction(), charge.distance, charge.get_dash_time(), charge.carry_momentum)
+	if charge.invulnerable_duration > 0.0:
+		actor.health_component.set_invulnerable_for(charge.invulnerable_duration)
+	elif charge.invulnerable_while_dashing:
 		actor.health_component.set_invulnerable_for(charge.get_dash_time())
 	_last_trail_point = actor.global_position
 	_drop_trail(_last_trail_point)
@@ -76,7 +93,7 @@ func _on_active_tick(_delta: float) -> void:
 
 func _on_active_end() -> void:
 	if _dashing and is_instance_valid(actor):
-		actor.trigger_cue(StringName(str(ability_id) + "_end"), {"direction": cast_direction})
+		actor.trigger_cue(StringName(str(ability_id) + "_end"), {"direction": get_dash_direction()})
 
 
 func _on_recovery_start() -> void:
@@ -93,4 +110,4 @@ func _on_cast_end(interrupted: bool) -> void:
 func _drop_trail(point: Vector2) -> void:
 	var charge := get_charge_data()
 	if charge.trail_zone != null:
-		GroundZone.spawn(actor, charge.trail_zone, point, cast_direction, actor)
+		GroundZone.spawn(actor, charge.trail_zone, point, get_dash_direction(), actor)

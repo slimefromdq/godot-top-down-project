@@ -8,12 +8,22 @@ class_name ChargeData
 # Timing: the windup (the telegraph) and recovery come from the feel preset
 # like any other ability; the dash itself lasts distance / speed.
 
+## Which way the dash goes.
+enum DirectionMode {
+	AIM,                ## Toward the aim (a telegraphed charge).
+	MOVE_INPUT_OR_AIM,  ## The way the hero is walking; the aim if standing still (a roll).
+}
+
 @export_group("Charge")
+@export var direction_mode: DirectionMode = DirectionMode.AIM
 @export var distance: float = 400.0
 ## Pixels per second while charging.
 @export var speed: float = 1600.0
 ## Take no damage while dashing (not during the telegraph).
 @export var invulnerable_while_dashing: bool = false
+## Seconds of immunity from the moment the dash starts. Above 0 it replaces
+## invulnerable_while_dashing's window (which is the dash's own length).
+@export var invulnerable_duration: float = 0.0
 ## Keep running speed after the dash (fluid) instead of stopping dead.
 @export var carry_momentum: bool = true
 
@@ -37,6 +47,8 @@ func get_scaling_values() -> Dictionary:
 
 func validate() -> PackedStringArray:
 	var problems := super()
+	if invulnerable_duration < 0.0:
+		problems.append("'%s' invulnerable_duration is negative" % id)
 	if distance <= 0.0 or speed <= 0.0:
 		problems.append("'%s' distance and speed must be above 0" % id)
 	if trail_zone != null:

@@ -12,7 +12,11 @@ class_name AbilityController
 #     combo without frame-perfect timing;
 #   * a stun interrupts the current cast and clears the buffer;
 #   * releases (hold-to-charge) go to the charging ability, or are remembered
-#     for a buffered one so a quick tap still ends its charge.
+#     for a buffered one so a quick tap still ends its charge;
+#   * a channel can LOCK the other abilities (lock_abilities): only the slots
+#     it allows may start until it unlocks. The lock isn't a cast, so an
+#     allowed ability (a dash during a channelled ultimate) runs normally
+#     while the channel keeps going.
 #
 # Abilities come from two places: Ability children placed in a scene (the
 # original rifle hero), or add_ability() calls from Hero, which builds them
@@ -30,6 +34,13 @@ var _buffered: Ability
 var _buffer_time_left: float = 0.0
 # The buffered ability's key was already released: release it on start.
 var _buffered_released := false
+# requester Ability -> Lock
+var _locks: Dictionary = {}
+
+
+class Lock:
+	var allowed_slots: Array[StringName] = []
+	var quiet_slots: Array[StringName] = []
 
 
 func _ready() -> void:
@@ -110,6 +121,41 @@ func cancel(ability: Ability) -> bool:
 		ability.cancel_charge()
 		return true
 	return false
+
+
+# While locked, every ability except `requester` and the `allowed_slots`
+# is refused: "Channeling" (a red flash), or silently for `quiet_slots`
+# (e.g. a primary whose job the channel has taken over). One lock per
+# requester; unlock_abilities() removes it.
+func lock_abilities(requester: Ability, allowed_slots: Array[StringName] = [],
+		quiet_slots: Array[StringName] = []) -> void:
+	var lock := Lock.new()
+	lock.allowed_slots = allowed_slots.duplicate()
+	lock.quiet_slots = quiet_slots.duplicate()
+	_locks[requester] = lock
+	if _buffered != null and get_lock_reason(_buffered) != "":
+		_buffered = null
+
+
+func unlock_abilities(requester: Ability) -> void:
+	_locks.erase(requester)
+
+
+func is_locked() -> bool:
+	return not _locks.is_empty()
+
+
+# Why a lock refuses `ability` ("" = it may start). Ability.get_block_reason
+# asks this, so AI and player presses are refused the same way.
+func get_lock_reason(ability: Ability) -> String:
+	for requester in _locks:
+		if ability == requester:
+			continue
+		var lock: Lock = _locks[requester]
+		if ability.slot_id != &"" and lock.allowed_slots.has(ability.slot_id):
+			continue
+		return "Suppressed" if lock.quiet_slots.has(ability.slot_id) else "Channeling"
+	return ""
 
 
 # Stop whatever is being cast (stun, death) and forget buffered presses.

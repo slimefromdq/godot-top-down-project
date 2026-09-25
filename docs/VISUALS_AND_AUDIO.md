@@ -75,12 +75,15 @@ and watch the Output panel while you play.
 | `fire` | Weapon fired (legacy WeaponComponent) | position (muzzle), direction |
 | `reload` / `reload_done` | Reload started / finished (legacy) | |
 | `dry_fire` | Tried to fire with an empty magazine (legacy) | |
-| `<id>_fire` | A RangedAttackAbility shot | position (muzzle), direction, muzzle_index, ammo, max_ammo, charge_ratio, perfect |
+| `<id>_fire` | A RangedAttackAbility shot | position (muzzle), direction, muzzle_index, ammo, max_ammo, charge_ratio, perfect, extra (fired by another ability via fire_extra_shot) |
+| `<id>_perfect` | A perfect charged release fired | same as `<id>_fire` |
 | `<id>_hit` | One of its projectiles hit | position, target, damage |
 | `<id>_empty` | Tried to fire with too little ammo | |
 | `<id>_reload_start` / `_reload_round` / `_reload_end` / `_reload_cancel` | Gun reload started / one round loaded (PER_ROUND) / full / stopped early | duration (start), ammo (round) |
 | `<id>_charge_start` / `_charge_full` / `_charge_release` / `_charge_cancel` | Hold-to-charge phases | charge_ratio, perfect |
 | `<id>_zone_start` / `_zone_end` | ZoneAbility channel began / ended | zone_duration |
+| `<id>_charge_start` (live aim line) | Map to `effects/feel/telegraph_line.tscn`, attached: it follows the charging ability | charge_ability, range |
+| Jose: `flourish_reload`, `coin_execute`, `coin_reset`, `weapons_free_start` / `_shot` / `_end` | Flip reload; execute (at the victim); coin back in hand; ultimate channel | target, target_position, interrupted (end) |
 | `ability_failed` | A cast was rejected | text ("No target", "Out of range", "Blocked") |
 | `<ability_id>` | Ability cast (e.g. `piercing_lance`, `phase_dash`, `overdrive`, `arc_zap`) | direction, duration, target, target_position |
 | `phase_dash_end` | Dash finished | position (landing spot) |

@@ -107,6 +107,7 @@ Problems are also printed when you save a definition or ability, and by **Tools 
 godot --headless res://tools/heroes/infrastructure_test.tscn
 godot --headless res://tools/heroes/ranged_infra_test.tscn
 godot --headless res://tools/heroes/avery_test.tscn
+godot --headless res://tools/heroes/jose_test.tscn
 godot --headless res://tools/heroes/feel_test.tscn
 godot --headless res://tools/heroes/balance_tools_test.tscn
 godot --headless res://tools/heroes/map_switch_test.tscn

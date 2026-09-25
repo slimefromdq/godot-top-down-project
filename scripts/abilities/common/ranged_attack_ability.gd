@@ -19,7 +19,9 @@ class_name RangedAttackAbility
 #
 # Cues (on top of the base <id>_windup/_active/_recovery):
 #   <id>_fire          each shot; context.position is the muzzle,
-#                      context.muzzle_index / .ammo / .max_ammo
+#                      context.muzzle_index / .ammo / .max_ammo / .perfect /
+#                      .extra (fire_extra_shot)
+#   <id>_perfect       a perfect charged release fired (same context)
 #   <id>_hit           each projectile hit
 #   <id>_empty         tried to fire with too little ammo (dry click)
 #   <id>_reload_start  context.duration = seconds to full
@@ -231,10 +233,30 @@ func _start_shot_interval() -> void:
 
 
 func _on_active_start() -> void:
-	_fire()
+	var aim := cast_direction if cast_direction != Vector2.ZERO else actor.aim_direction
+	_fire_shot(aim, false, &"")
+	var ranged := get_ranged_data()
+	if has_magazine() and _ammo < ranged.ammo_per_shot and ranged.auto_reload_when_empty:
+		start_reload()
 
 
-func _fire() -> void:
+# Fire one shot outside the normal cast: no ammo, no fire interval, no cast
+# phases, no charge (base damage). It still uses the gun's projectile,
+# damage, muzzle cycle, status multipliers, hit hooks and <id>_fire cue
+# (context.extra = true), so another ability can borrow the gun (an
+# autofire ultimate, a turret). `label` overrides the damage-meter label.
+# Returns false if the gun can't fire at all (dead, no projectile).
+func fire_extra_shot(direction: Vector2, label: StringName = &"") -> bool:
+	var ranged := get_ranged_data()
+	if ranged == null or ranged.projectile == null or actor == null or actor.health_component.is_dead():
+		return false
+	if direction == Vector2.ZERO:
+		direction = actor.aim_direction
+	_fire_shot(direction.normalized(), true, label)
+	return true
+
+
+func _fire_shot(aim: Vector2, extra: bool, label: StringName) -> void:
 	var ranged := get_ranged_data()
 	var muzzle := Vector2.ZERO
 	var muzzle_index := 0
@@ -242,50 +264,66 @@ func _fire() -> void:
 		muzzle_index = _muzzle_index % ranged.muzzles.size()
 		muzzle = ranged.muzzles[muzzle_index]
 		_muzzle_index = (muzzle_index + 1) % ranged.muzzles.size()
-	var aim := cast_direction if cast_direction != Vector2.ZERO else actor.aim_direction
 	var origin := actor.global_position + muzzle.rotated(aim.angle())
 	var count := maxi(ranged.projectiles_per_shot, 1)
-	var damage := _shot_damage() * _damage_multiplier()
+	var perfect := was_perfect_release() and not extra
+	var base_damage := _base_damage() if extra else _shot_damage()
+	var damage := base_damage * _damage_multiplier(perfect)
+	var projectile_data := ranged.projectile
+	if perfect and ranged.perfect_projectile != null:
+		projectile_data = ranged.perfect_projectile
+	var weight := current_feel.weight if current_feel != null and not extra else 1.0
 	for i in count:
 		var direction := aim.rotated(deg_to_rad(_spread_angle(i, count)))
 		var template := DamageInfo.create(damage, actor, ranged.damage_type)
 		template.tags = ranged.tags.duplicate()
-		if was_perfect_release():
+		if perfect:
 			template.tags.append(&"perfect")
-		template.label = ranged.get_label()
-		template.weight = current_feel.weight if current_feel != null else 1.0
-		template.feel = current_feel
+		template.label = label if label != &"" else ranged.get_label()
+		template.weight = weight
+		template.feel = current_feel if not extra else null
 		template.add_status(ranged.on_hit_status)
-		var projectile := Projectile.fire(actor, ranged.projectile, origin, direction, template)
+		var projectile := Projectile.fire(actor, projectile_data, origin, direction, template)
 		projectile.hit_modifier = _modify_hit
 		projectile.hit_landed.connect(_on_projectile_hit)
 
-	if has_magazine():
+	if has_magazine() and not extra:
 		_ammo = maxi(_ammo - ranged.ammo_per_shot, 0)
 		ammo_changed.emit(_ammo, get_max_ammo())
-	actor.trigger_cue(StringName(str(ability_id) + "_fire"), {
+	var context := {
 		"position": origin,
 		"direction": aim,
 		"ability": ability_id,
 		"muzzle_index": muzzle_index,
 		"ammo": _ammo,
 		"max_ammo": get_max_ammo(),
-		"charge_ratio": get_charge_ratio(),
-		"perfect": was_perfect_release(),
-	})
-	if has_magazine() and _ammo < ranged.ammo_per_shot and ranged.auto_reload_when_empty:
-		start_reload()
+		"charge_ratio": get_charge_ratio() if not extra else 0.0,
+		"perfect": perfect,
+		"extra": extra,
+	}
+	actor.trigger_cue(StringName(str(ability_id) + "_fire"), context)
+	if perfect:
+		actor.trigger_cue(StringName(str(ability_id) + "_perfect"), context.duplicate())
 
 
-# Degrees off the aim for projectile i of `count`.
+# Degrees off the aim for projectile i of `count`. Spread while moving is an
+# extra random offset scaled by the shooter's speed.
 func _spread_angle(i: int, count: int) -> float:
 	var ranged := get_ranged_data()
+	var angle := 0.0
 	var spread := ranged.spread_degrees
-	if spread <= 0.0:
-		return 0.0
-	if ranged.spread_pattern == RangedAttackData.SpreadPattern.EVEN:
-		return 0.0 if count <= 1 else lerpf(-spread / 2.0, spread / 2.0, float(i) / (count - 1))
-	return rng.randf_range(-spread / 2.0, spread / 2.0)
+	if spread > 0.0:
+		if ranged.spread_pattern == RangedAttackData.SpreadPattern.EVEN:
+			angle = 0.0 if count <= 1 else lerpf(-spread / 2.0, spread / 2.0, float(i) / (count - 1))
+		else:
+			angle = rng.randf_range(-spread / 2.0, spread / 2.0)
+	if ranged.moving_spread_degrees > 0.0:
+		var top_speed := actor.movement_component.move_speed
+		var moving := clampf(actor.velocity.length() / top_speed, 0.0, 1.0) if top_speed > 0.0 else 0.0
+		var extra := ranged.moving_spread_degrees * moving
+		if extra > 0.0:
+			angle += rng.randf_range(-extra / 2.0, extra / 2.0)
+	return angle
 
 
 # Damage of one projectile before status/perfect multipliers. With a charge,
@@ -293,13 +331,17 @@ func _spread_angle(i: int, count: int) -> float:
 func _shot_damage() -> float:
 	if uses_charge():
 		return data.get_charged_value(&"damage", get_stats(), get_charge_ratio())
+	return _base_damage()
+
+
+func _base_damage() -> float:
 	return data.damage.evaluate(get_stats()) if data.damage != null else 0.0
 
 
-func _damage_multiplier() -> float:
+func _damage_multiplier(perfect: bool) -> float:
 	var result := StatusEffectComponent.multiplier_of(actor.status_component, StatusEffect.DAMAGE)
 	# Optional named value: a perfect release multiplies the damage.
-	if was_perfect_release() and data.values.has(&"perfect_damage_multiplier"):
+	if perfect and data.values.has(&"perfect_damage_multiplier"):
 		result *= data.get_value(&"perfect_damage_multiplier", get_stats())
 	return result
 
