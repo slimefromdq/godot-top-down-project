@@ -1,0 +1,85 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world.gd" id="1_world"]
+[ext_resource type="PackedScene" path="res://scenes/maps/training_grounds.tscn" id="2_map"]
+[ext_resource type="PackedScene" path="res://heroes/avery/avery.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/game_over_screen.tscn" id="4_game_over"]
+[ext_resource type="PackedScene" path="res://scenes/training_dummy.tscn" id="5_dummy"]
+[ext_resource type="PackedScene" path="res://scenes/hud/ability_bar.tscn" id="6_bar"]
+[ext_resource type="PackedScene" path="res://scenes/hud/minimap.tscn" id="7_minimap"]
+[ext_resource type="Script" path="res://scripts/map/map_debug_view.gd" id="8_debug_view"]
+
+[node name="World" type="Node"]
+script = ExtResource("1_world")
+
+[node name="TrainingGrounds" parent="." instance=ExtResource("2_map")]
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+position = Vector2(0, 250)
+team = &"a"
+player_controlled = true
+
+[node name="Dummies" type="Node2D" parent="."]
+
+[node name="Plain" parent="Dummies" instance=ExtResource("5_dummy")]
+position = Vector2(-380, -300)
+can_die = false
+max_health = 2000.0
+
+[node name="Armored" parent="Dummies" instance=ExtResource("5_dummy")]
+position = Vector2(0, -300)
+can_die = false
+max_health = 2000.0
+armor = 100.0
+
+[node name="Warded" parent="Dummies" instance=ExtResource("5_dummy")]
+position = Vector2(380, -300)
+can_die = false
+max_health = 2000.0
+magic_resist = 100.0
+
+[node name="Pack1" parent="Dummies" instance=ExtResource("5_dummy")]
+position = Vector2(-1150, -950)
+max_health = 600.0
+respawn_delay = 3.0
+
+[node name="Pack2" parent="Dummies" instance=ExtResource("5_dummy")]
+position = Vector2(-1030, -950)
+max_health = 600.0
+respawn_delay = 3.0
+
+[node name="Pack3" parent="Dummies" instance=ExtResource("5_dummy")]
+position = Vector2(-1090, -850)
+max_health = 600.0
+respawn_delay = 3.0
+
+[node name="Pack4" parent="Dummies" instance=ExtResource("5_dummy")]
+position = Vector2(-1210, -850)
+max_health = 600.0
+respawn_delay = 3.0
+
+[node name="Pack5" parent="Dummies" instance=ExtResource("5_dummy")]
+position = Vector2(-970, -850)
+max_health = 600.0
+respawn_delay = 3.0
+
+[node name="Fighter" parent="Dummies" instance=ExtResource("5_dummy")]
+position = Vector2(1050, -850)
+can_die = false
+max_health = 3000.0
+fight_back = true
+level = 5
+
+[node name="Killable" parent="Dummies" instance=ExtResource("5_dummy")]
+position = Vector2(1050, 650)
+max_health = 800.0
+
+[node name="GameOverScreen" parent="." instance=ExtResource("4_game_over")]
+
+[node name="AbilityBar" parent="." node_paths=PackedStringArray("actor") instance=ExtResource("6_bar")]
+actor = NodePath("../Player")
+
+[node name="Minimap" parent="." instance=ExtResource("7_minimap")]
+
+[node name="MapDebugView" type="Node" parent="."]
+script = ExtResource("8_debug_view")

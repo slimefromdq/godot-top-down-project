@@ -1,0 +1,151 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/map/game_map.gd" id="1_map"]
+[ext_resource type="Script" path="res://scripts/map/floor_grid.gd" id="2_grid"]
+[ext_resource type="Script" path="res://scripts/map/cover_body.gd" id="3_cover"]
+
+[node name="TrainingGrounds" type="Node2D"]
+script = ExtResource("1_map")
+bounds = Rect2(-1800, -1300, 3600, 2600)
+
+[node name="Floor" type="Node2D" parent="."]
+z_index = -20
+
+[node name="Void" type="Polygon2D" parent="Floor"]
+color = Color(0.122, 0.122, 0.141, 1)
+polygon = PackedVector2Array(-2200, -1700, 2200, -1700, 2200, 1700, -2200, 1700)
+
+[node name="Sand" type="Polygon2D" parent="Floor"]
+color = Color(0.87, 0.82, 0.7, 1)
+polygon = PackedVector2Array(-1800, -1300, 1800, -1300, 1800, 1300, -1800, 1300)
+
+[node name="Grid" type="Node2D" parent="Floor"]
+script = ExtResource("2_grid")
+bounds = Rect2(-1800, -1300, 3600, 2600)
+
+[node name="Cover" type="Node2D" parent="."]
+
+[node name="WallNorth" type="StaticBody2D" parent="Cover"]
+position = Vector2(0, -1400)
+script = ExtResource("3_cover")
+height = 0
+fill_color = Color(0.169, 0.169, 0.188, 1)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/WallNorth"]
+polygon = PackedVector2Array(-2000, -100, 2000, -100, 2000, 100, -2000, 100)
+
+[node name="WallSouth" type="StaticBody2D" parent="Cover"]
+position = Vector2(0, 1400)
+script = ExtResource("3_cover")
+height = 0
+fill_color = Color(0.169, 0.169, 0.188, 1)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/WallSouth"]
+polygon = PackedVector2Array(-2000, -100, 2000, -100, 2000, 100, -2000, 100)
+
+[node name="WallWest" type="StaticBody2D" parent="Cover"]
+position = Vector2(-1900, 0)
+script = ExtResource("3_cover")
+height = 0
+fill_color = Color(0.169, 0.169, 0.188, 1)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/WallWest"]
+polygon = PackedVector2Array(-100, -1300, 100, -1300, 100, 1300, -100, 1300)
+
+[node name="WallEast" type="StaticBody2D" parent="Cover"]
+position = Vector2(1900, 0)
+script = ExtResource("3_cover")
+height = 0
+fill_color = Color(0.169, 0.169, 0.188, 1)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/WallEast"]
+polygon = PackedVector2Array(-100, -1300, 100, -1300, 100, 1300, -100, 1300)
+
+[node name="PillarWest" type="StaticBody2D" parent="Cover"]
+position = Vector2(-1100, 350)
+script = ExtResource("3_cover")
+height = 0
+fill_color = Color(0.42, 0.4, 0.38, 1)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/PillarWest"]
+polygon = PackedVector2Array(-70, -70, 70, -70, 70, 70, -70, 70)
+
+[node name="PillarEast" type="StaticBody2D" parent="Cover"]
+position = Vector2(1100, 350)
+script = ExtResource("3_cover")
+height = 0
+fill_color = Color(0.42, 0.4, 0.38, 1)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/PillarEast"]
+polygon = PackedVector2Array(-70, -70, 70, -70, 70, 70, -70, 70)
+
+[node name="LowWallWest" type="StaticBody2D" parent="Cover"]
+position = Vector2(-600, 650)
+script = ExtResource("3_cover")
+height = 1
+fill_color = Color(0.64, 0.62, 0.57, 1)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowWallWest"]
+polygon = PackedVector2Array(-180, -22, 180, -22, 180, 22, -180, 22)
+
+[node name="LowWallEast" type="StaticBody2D" parent="Cover"]
+position = Vector2(600, 650)
+script = ExtResource("3_cover")
+height = 1
+fill_color = Color(0.64, 0.62, 0.57, 1)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowWallEast"]
+polygon = PackedVector2Array(-180, -22, 180, -22, 180, 22, -180, 22)
+
+[node name="Signs" type="Node2D" parent="."]
+z_index = -10
+
+[node name="Resist" type="Label" parent="Signs"]
+offset_left = -300
+offset_top = -520
+offset_right = 300
+offset_bottom = -480
+theme_override_colors/font_color = Color(0.3, 0.26, 0.2, 0.85)
+theme_override_font_sizes/font_size = 26
+text = "RESISTANCES  -  plain / 100 armor / 100 magic resist"
+horizontal_alignment = 1
+
+[node name="Pack" type="Label" parent="Signs"]
+offset_left = -1350
+offset_top = -1180
+offset_right = -750
+offset_bottom = -1140
+theme_override_colors/font_color = Color(0.3, 0.26, 0.2, 0.85)
+theme_override_font_sizes/font_size = 26
+text = "PACK  -  Searing Cut falloff, crescent pierce"
+horizontal_alignment = 1
+
+[node name="Fighter" type="Label" parent="Signs"]
+offset_left = 750
+offset_top = -1180
+offset_right = 1350
+offset_bottom = -1140
+theme_override_colors/font_color = Color(0.3, 0.26, 0.2, 0.85)
+theme_override_font_sizes/font_size = 26
+text = "FIGHTS BACK  -  test the revive"
+horizontal_alignment = 1
+
+[node name="Killable" type="Label" parent="Signs"]
+offset_left = 750
+offset_top = 820
+offset_right = 1350
+offset_bottom = 860
+theme_override_colors/font_color = Color(0.3, 0.26, 0.2, 0.85)
+theme_override_font_sizes/font_size = 26
+text = "KILLABLE  -  death + respawn"
+horizontal_alignment = 1
+
+[node name="Cover" type="Label" parent="Signs"]
+offset_left = -300
+offset_top = 720
+offset_right = 300
+offset_bottom = 760
+theme_override_colors/font_color = Color(0.3, 0.26, 0.2, 0.85)
+theme_override_font_sizes/font_size = 26
+text = "Low cover (crescents fly over)  |  pillars block"
+horizontal_alignment = 1

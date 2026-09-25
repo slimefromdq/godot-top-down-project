@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="MeleeAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/melee_attack_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/abilities/common/melee_attack_ability.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="4_x"]
+[ext_resource type="Resource" path="res://heroes/avery/data/avery_stun.tres" id="5_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("3_x")
+kind = 0
+radius = 150.0
+arc_degrees = 100.0
+
+[sub_resource type="Resource" id="Sub_2"]
+script = ExtResource("4_x")
+base = 25.0
+weapon_ratio = 0.5
+magic_ratio = 0.3
+
+[resource]
+script = ExtResource("1_x")
+id = &"dawnbreaker"
+display_name = "Dawnbreaker"
+description = "An upward flaming slash that stuns. Swap on_hit_status for avery_cc_knockback or avery_cc_pull to change the CC."
+ability_script = ExtResource("2_x")
+cooldown = 11.0
+cooldown_per_level = -0.3
+hit_shape = SubResource("Sub_1")
+damage = SubResource("Sub_2")
+damage_type = 0
+on_hit_status = ExtResource("5_x")
+tags = Array[StringName]([&"ability", &"cc"])
+meter_label = &"dawnbreaker"
+feel_preset = &"heavy"

@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="GroundZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/ground_zone_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("2_x")
+kind = 1
+radius = 50.0
+
+[sub_resource type="Resource" id="Sub_2"]
+script = ExtResource("3_x")
+base = 5.0
+magic_ratio = 0.12
+
+[resource]
+script = ExtResource("1_x")
+shape = SubResource("Sub_1")
+duration = 1.5
+tick_interval = 0.5
+tick_damage = SubResource("Sub_2")
+damage_type = 1
+meter_label = &"fire_trail"
+color = Color(1, 0.45, 0.1, 0.35)

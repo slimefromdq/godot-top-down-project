@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("2_x")
+base = 4.0
+magic_ratio = 0.08
+
+[resource]
+script = ExtResource("1_x")
+id = &"avery_burn"
+display_name = "Burn"
+duration = 1.5
+tick_damage = SubResource("Sub_1")
+tick_interval = 0.5
+tick_damage_type = 1
+tick_label = &"burn"
+body_tint = Color(1, 0.45, 0.1, 0.3)

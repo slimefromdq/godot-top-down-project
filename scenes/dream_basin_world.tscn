@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/maps/dream_basin.tscn" id="2_dream_basin"]
-[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://heroes/avery/avery.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://scenes/game_over_screen.tscn" id="4_game_over_screen"]
 [ext_resource type="PackedScene" path="res://scenes/training_dummy.tscn" id="5_training_dummy"]
 [ext_resource type="PackedScene" path="res://scenes/hud/ability_bar.tscn" id="6_ability_bar"]
@@ -17,6 +17,8 @@ script = ExtResource("1_world")
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
 position = Vector2(-950, 4656)
+team = &"a"
+player_controlled = true
 
 [node name="TrainingDummy1" parent="." instance=ExtResource("5_training_dummy")]
 position = Vector2(0, -360)

@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="FeelProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/feel/feel_profile.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="2_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("2_x")
+windup = 0.09
+active = 0.07
+recovery = 0.2
+move_multiplier = 0.45
+lunge_distance = 26.0
+lunge_duration = 0.08
+movement_cancel_after = 0.0
+ability_cancel_after = 0.07
+weight = 1.0
+
+[sub_resource type="Resource" id="Sub_2"]
+script = ExtResource("2_x")
+windup = 0.2
+active = 0.09
+recovery = 0.28
+move_multiplier = 0.3
+lunge_distance = 40.0
+lunge_duration = 0.1
+movement_cancel_after = 0.0
+ability_cancel_after = 0.14
+weight = 1.5
+
+[sub_resource type="Resource" id="Sub_3"]
+script = ExtResource("2_x")
+windup = 0.28
+active = 0.11
+recovery = 0.36
+move_multiplier = 0.2
+lunge_distance = 60.0
+lunge_duration = 0.12
+movement_cancel_after = 0.1
+ability_cancel_after = 0.2
+weight = 2.2
+
+[sub_resource type="Resource" id="Sub_4"]
+script = ExtResource("2_x")
+windup = 0.22
+active = 0.0
+recovery = 0.15
+move_multiplier = 0.15
+lunge_distance = 0.0
+lunge_duration = 0.08
+movement_cancel_after = 0.0
+ability_cancel_after = 0.05
+weight = 1.2
+
+[resource]
+script = ExtResource("1_x")
+presets = Dictionary[StringName, ExtResource("2_x")]({
+&"light": SubResource("Sub_1"),
+&"heavy": SubResource("Sub_2"),
+&"finisher": SubResource("Sub_3"),
+&"charge": SubResource("Sub_4")
+})
