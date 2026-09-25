@@ -30,6 +30,7 @@ var _time: float = 0.0
 
 
 func _ready() -> void:
+	add_to_group(&"minimap_units")
 	health_component.damaged.connect(_on_damaged)
 	health_component.died.connect(_on_died)
 

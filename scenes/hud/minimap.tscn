@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/hud/minimap.gd" id="1_minimap"]
+
+[node name="Minimap" type="CanvasLayer"]
+script = ExtResource("1_minimap")

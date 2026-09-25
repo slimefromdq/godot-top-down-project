@@ -81,12 +81,49 @@ def seg(ax, ay, bx, by, t):
             (bx + ex - nx, by + ey - ny), (ax - ex - nx, ay - ey - ny)]
 
 
+# Natural pieces are drawn a bit smaller than authored, so they are easy to run
+# around. One knob per kind instead of editing every radius.
+SHRINK = {"tree": 0.72, "rock": 0.75, "lowrock": 0.8}
+BUSH_SHRINK = 0.72
+
+
+def _shrink(pts, kind):
+    k = SHRINK.get(kind, 1.0)
+    if k == 1.0:
+        return pts
+    cx = sum(p[0] for p in pts) / len(pts)
+    cy = sum(p[1] for p in pts) / len(pts)
+    return [(cx + (x - cx) * k, cy + (y - cy) * k) for x, y in pts]
+
+
 def full(pts, kind, team=None):
-    L["full"].append({"pts": pts, "kind": kind, "team": team})
+    L["full"].append({"pts": _shrink(pts, kind), "kind": kind, "team": team})
 
 
 def low(pts, kind, team=None):
-    L["low"].append({"pts": pts, "kind": kind, "team": team})
+    L["low"].append({"pts": _shrink(pts, kind), "kind": kind, "team": team})
+
+
+def poly(pts):
+    """Polygon from authored points (y stretched)."""
+    return [(x, Y(y)) for x, y in pts]
+
+
+def circle(x, y, r, n=20):
+    return [(x + r * math.cos(2 * math.pi * i / n), Y(y) + r * math.sin(2 * math.pi * i / n))
+            for i in range(n)]
+
+
+def fountain(x, y, rim=170, team=None):
+    """Round basin (low cover: shoot across the water) with a statue in the
+    middle (full cover). Easy to circle, and a readable landmark."""
+    low(circle(x, y, rim), "fountain", team)
+    full(circle(x, y, 55, 10), "statue", team)
+
+
+def building(x0, y0, x1, y1, team=None):
+    """Small ruined building footprint (full cover)."""
+    full(rect(x0, y0, x1, y1), "building", team)
 
 
 def wall(ax, ay, bx, by, t=80, kind="wall", team=None):
@@ -102,7 +139,7 @@ def lowwall(ax, ay, bx, by, t=50, kind="lowwall", team=None):
 
 
 def bush(x, y, r=110):
-    L["bushes"].append({"x": x, "y": Y(y), "r": r})
+    L["bushes"].append({"x": x, "y": Y(y), "r": r * BUSH_SHRINK})
 
 
 def ledge(ax, ay, bx, by, drop):
@@ -148,7 +185,8 @@ L["regions"] += [
     {"pts": rect(-LEDGE_X, BASIN_Y, LEDGE_X, WILD_Y), "kind": "outskirts", "team": "A"},
     {"pts": rect(-1600, 2420, 1600, 3300), "kind": "plaza", "team": "A"},
     {"pts": rect(-1400, 3300, 1400, AUTH_HY), "kind": "base", "team": "A"},
-    {"pts": rect(-LEDGE_X, 1100, -1500, BASIN_Y), "kind": "ruins", "team": "A"},
+    {"pts": poly([(-LEDGE_X, 850), (-1750, 850), (-1350, 1350), (-1350, BASIN_Y),
+                  (-LEDGE_X, BASIN_Y)]), "kind": "ruins", "team": "A"},
 ]
 
 # ==========================================================================
@@ -178,37 +216,33 @@ stair(-3700, -WILD_Y - 160, 400, 320, (0, 1))      # B outskirts -> Ridge
 lowwall(-LEDGE_X + 20, -1220, -LEDGE_X + 380, -1220)
 lowwall(-LEDGE_X + 20, -830, -LEDGE_X + 380, -830)
 
-# --- The Tangle (y 750..2650) -------------------------------------------
-# Hedges are full cover: they block shots, so snipers can't see in.
-hedge(-4800, 2280, -4250, 2280)
-hedge(-4250, 2280, -4250, 1880)
-hedge(-3420, 2700, -3420, 2300)
-hedge(-3420, 2300, -3020, 2300)
-hedge(-3950, 1900, -3350, 1900)
-hedge(-4550, 1480, -3720, 1480)
-hedge(-3720, 1480, -3720, 1120)
-hedge(-3300, 1560, -3300, 1150)
-hedge(-3300, 1150, -2950, 1150)
-hedge(-4300, 1080, -4300, 600)   # the Hollow's inner wall
-hedge(-3950, 820, -3500, 820)
-full(rock(-4520, 1850, 110, 11), "tree")
-full(rock(-3020, 1850, 120, 12), "tree")
-full(rock(-4050, 2520, 100, 13), "tree")
-full(rock(-3000, 2500, 90, 14), "tree")
-full(rock(-4050, 1250, 105, 15), "tree")
-for (bx, by) in [(-3700, 2150), (-4550, 1250), (-3050, 1350), (-4000, 1700),
-                 (-3500, 1050), (-4600, 950), (-3150, 2150)]:
+# --- The Tangle (y 900..2700): a walled hedge garden ---------------------
+# Protection comes from the perimeter hedges (they block shots, so you have to
+# come in to fight whoever is inside), not from tight corridors. The inside is
+# a few loose rooms around a fountain, with 450+ px lanes between hedges.
+hedge(-4800, 900, -3900, 900)      # north wall (also the Hollow's floor)
+hedge(-3350, 900, -2950, 900)      # gap -3900..-3350 = main north entrance
+hedge(-3420, 2700, -3420, 2350)    # screens the south stair from the east
+hedge(-4400, 1250, -4400, 1650)    # west room divider
+hedge(-3100, 1200, -3100, 1500)    # east screen (drop-off side)
+hedge(-4300, 2250, -3850, 2250)    # south-west room
+fountain(-3750, 1750)
+full(rock(-4550, 2050, 100, 11), "tree")
+full(rock(-3450, 1300, 100, 12), "tree")
+full(rock(-3000, 2450, 90, 14), "tree")
+full(rock(-4600, 1150, 90, 15), "tree")
+for (bx, by) in [(-3650, 2300), (-4550, 1500), (-3000, 1850), (-4100, 1300), (-3350, 2050)]:
     bush(bx, by, 120)
 
-# --- The Hollow: pocket at x -4750..-4360, y 560..1080 ---------------------
-# Enclosed by the outer map wall, the Tangle hedge below, the inner hedge and
-# a bush screen at its mouth. Arrivals are hidden from the Glade, but the exit
-# telegraph still shows to anyone who looks in.
-hedge(-4800, 1260, -4550, 1260)
-bush(-4450, 560, 120)
+# --- The Hollow: pocket at x -4800..-4300, y 520..900 --------------------
+# Tangle hedge below, inner hedge to the east, outer map wall to the west, a
+# tree and bush screen its mouth. Arrivals are hidden from the Glade, but the
+# exit telegraph still shows to anyone who looks in.
+hedge(-4300, 900, -4300, 560)
+full(rock(-4600, 330, 100, 16), "tree")
+bush(-4200, 420, 120)
 
 # --- The Glade (y -750..750) --------------------------------------------
-full(rock(-4450, 350, 140, 21), "tree")
 full(rock(-3350, -150, 150, 22, stretch=(1.2, 0.9)), "rock")
 full(rock(-4150, -420, 120, 23), "tree")
 full(rock(-3200, 560, 110, 24), "tree")
@@ -222,8 +256,8 @@ bush(-3050, 150, 100)
 # Crenellated low rocks along the lip: shoot between them, can't walk through.
 for i, y in enumerate([-2450, -2050, -1650, -1400]):
     low(rock(-2880, y, 95, 31 + i, stretch=(0.6, 1.6)), "lowrock")
-# Sniper nest: a boulder to hide behind while reloading.
-full(rock(-3250, -1850, 150, 36, stretch=(1.0, 1.3)), "rock")
+# Sniper nest: a stilt hut to hide behind while reloading.
+building(-3380, -1950, -3140, -1760)
 # Back path of trees along the outer wall = the flank that counters the nest.
 for i, (tx, ty) in enumerate([(-4500, -950), (-4300, -1350), (-4550, -1700),
                               (-4250, -2100), (-4500, -2450)]):
@@ -234,7 +268,7 @@ low(rock(-3650, -2250, 110, 47, stretch=(1.6, 0.7)), "lowrock")
 
 # Jump pads onto the left Wild (both fire from the A half of the basin).
 jump_pad(-2530, 300, -3450, 300, "Glade Spring")         # basin -> glade
-jump_pad(-2250, 1750, -3150, 1700, "Ruins Updraft")     # ruins courtyard -> Tangle
+jump_pad(-2400, 1950, -3250, 1850, "Ruins Updraft")     # ruins courtyard -> Tangle
 
 # ==========================================================================
 # LOWER BASIN (y >= 0): THE CRADLE, the A-side LULLABY RUINS, the DRIFTFIELD
@@ -256,41 +290,44 @@ bush(250, 620, 110)
 bush(-1000, 150, 100)
 
 # --- Cradle Steps: the terraces between circuit and plaza choke ---------
-lowwall(-1150, 1900, -600, 1990)
+lowwall(-1050, 1950, -600, 2010)
 lowwall(600, 1990, 1150, 1900)
 low(rock(0, 1780, 90, 72, stretch=(1.8, 0.7)), "lowrock")
-full(rock(-1300, 1680, 120, 73), "rock")
 full(rock(1300, 1950, 130, 74), "rock")
 bush(-850, 2150, 100)
 bush(850, 2150, 100)
 
-# --- Lullaby Ruins (A): x -2750..-1500, y 1100..2350 ---------------------
-# A collapsed chapel. Doors: north (basin), east (Cradle), south (back road),
-# west is the Tangle cliff (drop-in only).
+# --- Lullaby Ruins (A): x -2750..-1350, y 850..2350, NE corner collapsed ----
+# A roofless chapel. Four ways in: north door, the collapsed north-east breach
+# (faces the Cradle), east door, south door; plus dropping in off the Tangle
+# cliff. Inside is roomy: a pillar colonnade, an open courtyard with the
+# updraft, and a side chapel holding the Dream Rift.
 RW = "ruin"
-wall(-2750, 1100, -2350, 1100, kind=RW)        # north wall, door -2350..-2050
-wall(-2050, 1100, -1500, 1100, kind=RW)
-wall(-1500, 1100, -1500, 1450, kind=RW)        # east wall, door 1450..1750
-wall(-1500, 1750, -1500, 2350, kind=RW)
-wall(-2750, 2350, -2250, 2350, kind=RW)        # south wall, door -2250..-1950
-wall(-1950, 2350, -1500, 2350, kind=RW)
-# Interior: nave (north), side chapel (south-east), open courtyard (south-west)
-wall(-2750, 1500, -2450, 1500, kind=RW)
-wall(-2150, 1500, -1850, 1500, kind=RW)        # gaps = doorways
-wall(-1950, 1850, -1950, 2100, kind=RW)
-wall(-1950, 1850, -1700, 1850, kind=RW)
-full(rock(-2000, 1300, 70, 80, n=7, jitter=0.1), "pillar")
-full(rock(-1750, 1300, 70, 81, n=7, jitter=0.1), "pillar")
-low(rock(-2550, 1300, 90, 82, stretch=(1.5, 0.7)), "crate")
-low(rock(-2450, 2150, 80, 83), "crate")
-low(rect(-1860, 1940, -1760, 2040), "crate")
-bush(-2600, 1850, 100)
-teleporter((-1680, 2170), (1680, -2170), True, "Dream Rift")
+wall(-2750, 850, -2350, 850, kind=RW)          # north wall, door -2350..-1950
+wall(-1950, 850, -1750, 850, kind=RW)
+wall(-1750, 850, -1660, 960, kind=RW)          # collapsed NE corner: breach
+wall(-1440, 1240, -1350, 1350, kind=RW)
+wall(-1350, 1350, -1350, 1750, kind=RW)        # east wall, door 1750..2100
+wall(-1350, 2100, -1350, 2350, kind=RW)
+wall(-2750, 2350, -2250, 2350, kind=RW)        # south wall, door -2250..-1850
+wall(-1850, 2350, -1350, 2350, kind=RW)
+# Colonnade across the nave: cover without corridors.
+for i, x in enumerate([-2500, -2200, -1900]):
+    full(rock(x, 1250, 55, 80 + i, n=8, jitter=0.08), "pillar")
+# Side chapel (south-east) around the Dream Rift.
+wall(-1850, 1850, -1600, 1850, kind=RW)
+wall(-1850, 1850, -1850, 2050, kind=RW)
+low(rect(-2200, 1580, -1980, 1660), "crate")   # altar: shoot over it
+low(rock(-2550, 2150, 70, 83), "crate")
+full(rock(-2000, 2150, 60, 84, n=7, jitter=0.1), "pillar")
+bush(-2600, 1550, 100)
+teleporter((-1580, 2150), (1580, -2150), True, "Dream Rift")
 
 # --- Driftfield (A): open field under the A Ridge, x 1100..2750 ----------
-for i, (x, y, r) in enumerate([(1900, 750, 130), (2350, 450, 110), (1900, 1450, 150),
-                               (2450, 1800, 120), (1250, 2150, 100)]):
+for i, (x, y, r) in enumerate([(1900, 750, 130), (2350, 450, 110), (1250, 2150, 100)]):
     full(rock(x, y, r, 90 + i, stretch=(1.2, 0.9)), "rock")
+fountain(1900, 1450)                    # the Driftfield's landmark
+building(2250, 1480, 2480, 1650)        # ruined gatehouse under the Ridge
 low(rock(2150, 1150, 100, 96, stretch=(1.6, 0.6), rot=0.4), "lowrock")
 low(rock(1650, 1900, 90, 97, stretch=(1.5, 0.6), rot=-0.3), "lowrock")
 low(rect(2380, 350, 2520, 470), "crate")
@@ -302,7 +339,7 @@ for (bx, by) in [(2000, 1000), (1300, 1500), (2550, 1300), (1750, 2250)]:
 # BOTTOM BAND: A base, Dawn Plaza, Cloister (west), Orchard (east)
 # ==========================================================================
 # Plaza north edge: two rock masses leave the Cradle Steps choke (x -320..320).
-full(rock(-980, 2290, 640, 100, n=12, jitter=0.12, stretch=(1.0, 0.22)), "cliffrock")
+full(rock(-840, 2290, 500, 100, n=12, jitter=0.12, stretch=(1.0, 0.28)), "cliffrock")
 full(rock(980, 2290, 640, 101, n=12, jitter=0.12, stretch=(1.0, 0.22)), "cliffrock")
 # Driftfield/back-road gate (east) and Ruins south door (west) are the other
 # two ways out of the plaza. Rocks between them keep those routes distinct.
@@ -314,6 +351,10 @@ wall(-950, 2720, -600, 2960, kind="ruin", team="A")
 wall(600, 2960, 950, 2720, kind="ruin", team="A")
 bush(-1300, 3100, 110)
 bush(1300, 3100, 110)
+# Gate lanterns by the plaza's side gates (they also cut the long diagonal
+# from the Ruins' south door into the spawn door).
+for x in (-1250, 1250):
+    full(circle(x, 2680, 60, 8), "statue", "A")
 
 # Plaza side walls with gates to the back road at y 2450..2750
 wall(-1600, 2750, -1600, 3300, kind="basewall", team="A")
@@ -337,7 +378,7 @@ for x in (-1080, 1080):
     full(rock(x, 3470, 85, 105 + (x > 0), n=8, jitter=0.08), "statue", "A")
 for x in (-950, -700, -450, 450, 700, 950):
     marker(x, 3880, "spawn", "", "A")
-teleporter((-1000, 3700), (-4560, 820), False, "Dawn Door")
+teleporter((-1000, 3700), (-4580, 700), False, "Dawn Door")
 
 # --- Cloister (west outskirts): spawn W door -> tight tunnel -> colonnade ---
 # East half is a solid-walled tunnel (~320 px clear: pure CQC). West half is
@@ -360,7 +401,7 @@ bush(-2750, 3100, 100)
 bush(-1900, 3150, 90)
 
 # --- Orchard (east outskirts): open, scattered trees ---------------------
-for i, (x, y, r) in enumerate([(2050, 3220, 110), (2450, 3550, 120), (3100, 3050, 130),
+for i, (x, y, r) in enumerate([(2050, 3150, 110), (2450, 3550, 120), (3100, 3050, 130),
                                (3700, 3500, 110), (4350, 3100, 120), (2900, 3850, 100),
                                (4200, 3850, 100)]):
     full(rock(x, y, r, 120 + i), "tree")
@@ -371,16 +412,16 @@ low(rock(3450, 2900, 100, 130, stretch=(1.6, 0.6)), "lowrock")
 # ==========================================================================
 # SIGHT LANES (validated by check.py: must be clear of full cover)
 # ==========================================================================
-lane((-1450, 1600), (1450, -1600), "Moon Aisle")
+lane((-1550, 1100), (1550, -1100), "Moon Aisle")
 lane((3150, 2050), (-500, 1250), "Ridge Line (A)")
 lane((3000, 2550), (3000, -800), "Wild Rail (A)")
 
 # Region labels (authored half only; rotated copies get B names below)
-label(-3750, 1650, "THE TANGLE", 150)
+label(-3750, 1450, "THE TANGLE", 150)
 label(-3750, 0, "THE GLADE", 130)
 label(-3750, -1600, "STILT RIDGE", 150)
 label(0, 350, "THE CRADLE", 170)
-label(-2150, 1400, "LULLABY RUINS", 95)
+label(-2050, 1450, "LULLABY RUINS", 110)
 label(1950, 1650, "DRIFTFIELD", 130)
 label(0, 3150, "DAWN PLAZA", 120)
 label(0, 3950, "A SPAWN", 110)

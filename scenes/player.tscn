@@ -17,6 +17,7 @@
 [node name="Player" unique_id=84994044 groups=["player"] instance=ExtResource("1_actor")]
 collision_mask = 99
 script = ExtResource("2_player")
+team = &"a"
 
 [node name="Visuals" parent="." index="1" unique_id=95643105]
 profile = ExtResource("5_visuals")
@@ -77,16 +78,16 @@ collision_layer = 4
 
 [node name="HealthBar" parent="." unique_id=321437189 node_paths=PackedStringArray("health_component") instance=ExtResource("3_health")]
 offset_left = -31.0
-offset_top = -98.0
+offset_top = -86.0
 offset_right = 29.0
-offset_bottom = -71.0
+offset_bottom = -59.0
 health_component = NodePath("../Components/HealthComponent")
 
 [node name="AmmoLabel" parent="." unique_id=1461201986 node_paths=PackedStringArray("weapon_component") instance=ExtResource("4_ammo")]
 offset_left = 41.0
-offset_top = -96.0
+offset_top = -84.0
 offset_right = 81.0
-offset_bottom = -73.0
+offset_bottom = -61.0
 weapon_component = NodePath("../WeaponPivot/WeaponComponent")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1414159496]

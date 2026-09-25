@@ -5,12 +5,10 @@ extends Node
 
 const SHOTS := {
 	"overview": [],
+	"tangle_a": [Vector2(-3900, 2250)],
+	"ruins_a": [Vector2(-2050, 1950)],
+	"driftfield_a": [Vector2(2000, 1600)],
 	"spawn_a": [Vector2(0, 4000)],
-	"cradle": [Vector2(-700, 700)],
-	"ruins_a": [Vector2(-2050, 2250)],
-	"glade_pad": [Vector2(-2900, 350)],
-	"hollow": [Vector2(-4100, 850)],
-	"ridge_r": [Vector2(3500, 2100)],
 }
 
 var world: Node

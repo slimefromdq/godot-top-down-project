@@ -6,7 +6,7 @@ A test map for movement and fighting.
 
 - **Size:** 5 × 9 screens = 9600 × 9720 px. One screen is the 1920 × 1080 viewport at zoom 1.
 - **Symmetry:** exact 180° rotation about the centre. Team A (Dawn, mint) spawns at the bottom, Team B (Dusk, coral) at the top.
-- **Travel time:** walking at 650 px/s, spawn to spawn in a straight line takes about 15 s.
+- **Travel time:** walking at 540 px/s, spawn to spawn in a straight line takes about 18 s.
 - **Play it:** `scenes/dream_basin_world.tscn` is the main scene.
   - **M** toggles the whole-map overview.
   - In overview, **right-click** moves the player to that spot.
@@ -18,12 +18,12 @@ Blockout with legend: [dream_basin_blockout.svg](dream_basin_blockout.svg)
 | Region | Where | Role |
 |---|---|---|
 | **The Cradle** | Basin centre, low ground | The main arena. An open oval ring (600 px wide, collision-free) circles a broken pillar ring. It is kept clear for whatever the objective becomes. |
-| **Lullaby Ruins** | Basin corner (A: lower-left, B: upper-right) | Collapsed chapel with three doors. **Close-quarters.** Holds the Dream Rift, plus an updraft pad up to the Tangle. |
-| **Driftfield** | The other two basin corners | Open field under the Ridge. Mid-range. |
-| **The Tangle** | Wild third nearest your base (left side for A) | Hedge maze. Hedges block shots. **Close-quarters.** |
+| **Lullaby Ruins** | Basin corner (A: lower-left, B: upper-right) | Roofless chapel (1400 × 1800 px). Four ways in: north door, a collapsed corner facing the Cradle, east door, south door, plus dropping in from the Tangle. The inside is roomy: a pillar colonnade, a courtyard with the updraft, and a side chapel with the Dream Rift. **Enclosed.** |
+| **Driftfield** | The other two basin corners | Open field under the Ridge, with a fountain and a ruined gatehouse. Mid-range. |
+| **The Tangle** | Wild third nearest your base (left side for A) | Walled hedge garden. Its perimeter hedges block shots, so you have to come inside to fight. Inside are loose rooms around a fountain, with lanes of 450 px or more. **Enclosed.** |
 | **The Hollow** | Pocket on the outer wall between Tangle and Glade | Hidden exit of your one-way spawn teleporter. |
 | **The Glade** | Middle of each Wild | Mid-range meadow. |
-| **Stilt Ridge** | The other end of each Wild | Open high ground. Sniper perch behind a row of low rocks. |
+| **Stilt Ridge** | The other end of each Wild | Open high ground. The sniper perch is a stilt hut behind a row of low rocks. |
 | **Dawn / Dusk Plaza** | In front of each base | Staging area. The sundial and broken walls block every diagonal into the spawn door. |
 | **Cloister** | Base outskirts, Tangle side | Walled tunnel (**close-quarters**) that opens into a colonnade. |
 | **Orchard** | Base outskirts, Ridge side | Open scattered trees. |
@@ -39,6 +39,38 @@ All lanes are verified clear by `check.py`.
 | Wild Rail ×2 (along the cliff lip, Ridge → Glade) | 2.1 screens |
 
 No lane reaches a spawn door. The longest clear ray out of any spawn door is about 2 screens, at a shallow angle.
+
+## Movement and body
+
+The shared values live in `scenes/actor.tscn`, in the MovementComponent node.
+
+| | Before | Now |
+|---|---|---|
+| Top speed | 650 px/s | 540 px/s |
+| Acceleration | 1600 (0.4 s to full speed) | 2600 (about 0.2 s) |
+| Friction | 1400 (about 150 px slide) | 2800 (about 50 px slide) |
+| Collision body | 129 × 127 box | Circle, radius 50 |
+
+Momentum still exists. Knockback, dash carry and speed strips all go through the same acceleration and friction, but you stop where you meant to.
+
+**Why the circle matters:** a round body glides around corners instead of catching on them. On top of that, `wall_min_slide_angle = 0` makes you slide along walls even when pushing almost straight into them.
+
+**Visual size:** the player's sprite is drawn at 0.8× (`body_scale` in `player_visuals.tres`).
+
+**Knock-on for enemies:** enemies inherit the higher friction, so knockback pushes them a shorter distance than before.
+
+## Minimap
+
+`scenes/hud/minimap.tscn` sits in the bottom-right corner. It builds itself from whatever `GameMap` is loaded, so it needs no per-map setup.
+
+- **Static layer**, drawn once from the map's own nodes: floors, cover, ledges, jump pads, teleporters, speed strips.
+- **Dynamic layer**, redrawn every frame:
+  - A white arrow for you.
+  - A rectangle showing what the camera currently sees.
+  - Dots for every node in the `minimap_units` group. Actors and training dummies join that group automatically.
+- **Dot colours** compare each unit's `team` with yours: same team = ally (teal), other team = enemy (red), no team = neutral (grey).
+  - `Actor` now has a `team` export: the player is `a`, the enemy is `b`.
+- **Objectives:** add any node to the `minimap_objectives` group and it appears as a diamond. It's gold if it has no owner, and coloured by team if it has a `team` property.
 
 ## How the systems work
 
@@ -106,6 +138,11 @@ Scene: `scenes/map/speed_strip.tscn`. Script: `scripts/map/speed_strip.gd`.
 - **Other zones:** any node with `boost_velocity()` and `multiplier` works. For example, a mud patch with a multiplier below 1 would slow people down.
 
 ### Cover, bushes and the debug view
+
+Natural pieces are drawn smaller than authored, controlled by `SHRINK` in `layout.py`: trees 0.72×, rocks 0.75×, bushes 0.72×. Some rocks were reflavoured:
+- **Fountains:** low-cover basin (you can shoot across the water) with a full-cover statue in the middle.
+- **Buildings:** small full-cover footprints. The Driftfield gatehouse and the Stilt Ridge hut are buildings.
+
 
 - **Cover** (`CoverBody`, `scripts/map/cover_body.gd`): a `StaticBody2D` whose `CollisionPolygon2D` child is its shape.
   - Edit the polygon in the editor and the drawing follows.

@@ -85,6 +85,7 @@ align_to_direction = false
 
 [resource]
 script = ExtResource("13_w1ukg")
+body_scale = Vector2(0.8, 0.8)
 body_tint = Color(0.45, 0.85, 1, 0.25)
 cues = Dictionary[StringName, ExtResource("1_ydo8y")]({
 &"ability_failed": SubResource("Resource_m02gu"),

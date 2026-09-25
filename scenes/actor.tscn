@@ -14,20 +14,20 @@
 [ext_resource type="Script" path="res://scripts/abilities/ability_controller.gd" id="12_abil"]
 [ext_resource type="Script" path="res://scripts/audio/audio_component.gd" id="13_audio"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_7yr4s"]
-size = Vector2(129, 127)
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 50.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_o6v1h"]
-radius = 61.008198
+radius = 54.0
 
 [node name="Actor" type="CharacterBody2D" unique_id=84994044]
 collision_layer = 2
 collision_mask = 97
+wall_min_slide_angle = 0.0
 script = ExtResource("1_actor")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1608910991]
-position = Vector2(-0.5, 0.5)
-shape = SubResource("RectangleShape2D_7yr4s")
+shape = SubResource("CircleShape2D_body")
 
 [node name="Visuals" type="Node2D" parent="." unique_id=95643105]
 script = ExtResource("10_vis")
@@ -45,9 +45,9 @@ status_component = NodePath("../StatusComponent")
 
 [node name="MovementComponent" type="Node" parent="Components" unique_id=586301046 node_paths=PackedStringArray("status_component")]
 script = ExtResource("4_7pl6r")
-move_speed = 650.0
-acceleration = 1600.0
-friction = 1400.0
+move_speed = 540.0
+acceleration = 2600.0
+friction = 2800.0
 status_component = NodePath("../StatusComponent")
 
 [node name="AbilityController" type="Node" parent="Components" unique_id=1338266210]
@@ -62,8 +62,8 @@ script = ExtResource("13_audio")
 [node name="WeaponPivot" type="Node2D" parent="." unique_id=1051153276]
 
 [node name="WeaponComponent" type="Node2D" parent="WeaponPivot" unique_id=426544236 node_paths=PackedStringArray("status_component")]
-position = Vector2(70, 0)
-scale = Vector2(0.4, 0.4)
+position = Vector2(58, 0)
+scale = Vector2(0.36, 0.36)
 script = ExtResource("5_x5gf8")
 fire_rate = 3.0
 projectile_speed = 1500.0

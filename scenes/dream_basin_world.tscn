@@ -6,8 +6,9 @@
 [ext_resource type="PackedScene" path="res://scenes/game_over_screen.tscn" id="4_game_over_screen"]
 [ext_resource type="PackedScene" path="res://scenes/training_dummy.tscn" id="5_training_dummy"]
 [ext_resource type="PackedScene" path="res://scenes/hud/ability_bar.tscn" id="6_ability_bar"]
-[ext_resource type="Script" path="res://scripts/audio/music_request.gd" id="7_music_request"]
-[ext_resource type="Script" path="res://scripts/map/map_debug_view.gd" id="8_map_debug_view"]
+[ext_resource type="PackedScene" path="res://scenes/hud/minimap.tscn" id="7_minimap"]
+[ext_resource type="Script" path="res://scripts/audio/music_request.gd" id="8_music_request"]
+[ext_resource type="Script" path="res://scripts/map/map_debug_view.gd" id="9_map_debug_view"]
 
 [node name="World" type="Node"]
 script = ExtResource("1_world")
@@ -37,8 +38,10 @@ position = Vector2(-3600, -2280)
 [node name="AbilityBar" parent="." node_paths=PackedStringArray("actor") instance=ExtResource("6_ability_bar")]
 actor = NodePath("../Player")
 
+[node name="Minimap" parent="." instance=ExtResource("7_minimap")]
+
 [node name="LevelMusic" type="Node" parent="."]
-script = ExtResource("7_music_request")
+script = ExtResource("8_music_request")
 
 [node name="MapDebugView" type="Node" parent="."]
-script = ExtResource("8_map_debug_view")
+script = ExtResource("9_map_debug_view")

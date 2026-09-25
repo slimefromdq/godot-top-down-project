@@ -29,6 +29,10 @@ signal landed
 
 @onready var visuals: VisualsComponent = $Visuals
 
+## Team id (e.g. &"a", &"b"). Empty = neutral. Read by the minimap now, and
+## meant for friendly-fire rules later.
+@export var team: StringName = &""
+
 # Where the actor is aiming and trying to move. Control scripts (player input
 # or enemy AI) write these; abilities and visuals read them.
 var aim_direction := Vector2.RIGHT
@@ -42,6 +46,7 @@ var _mask_before_launch: int = 0
 
 
 func _ready() -> void:
+	add_to_group(&"minimap_units")
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	health_component.died.connect(_on_died)
 	weapon_component.fired.connect(_on_weapon_fired)

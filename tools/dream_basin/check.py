@@ -15,7 +15,7 @@ from collections import deque
 
 from layout import HX, HY, SCREEN_W, Y, build
 
-BODY = 66      # half-size of the 129x127 actor collision box, plus a hair
+BODY = 52      # actor collision circle radius (50) plus a hair
 CELL = 25
 
 
@@ -177,17 +177,17 @@ def main():
     print(f"  {bad} blocked samples")
     ok &= bad == 0
 
-    print("== Reachability (128px body, one-way ledges) ==")
+    print("== Reachability (100px body, one-way ledges) ==")
     grid = build_grid(m)
     probes = {
         "A spawn": (-700, 3880), "B spawn": (700, -3880), "Cradle": (0, 0),
-        "A Tangle": (-3700, 1700), "B Tangle": (3700, -1700),
+        "A Tangle": (-4000, 2000), "B Tangle": (4000, -2000),
         "Glade L": (-3650, -350), "Glade R": (3650, 350),
         "Ridge L": (-3600, -2000), "Ridge R": (3600, 2000),
-        "Ruins A": (-2300, 1300), "Ruins B": (2300, -1300),
+        "Ruins A": (-2400, 1700), "Ruins B": (2400, -1700),
         "Cloister A": (-2000, 3650), "Orchard A": (3000, 3400),
         "Driftfield A": (2000, 1200), "Plaza A": (-500, 2600),
-        "Hollow A": (-4560, 820),
+        "Hollow A": (-4580, 700),
     }
     probes = {k: (x, Y(y)) for k, (x, y) in probes.items()}
     seen, cell_of = flood(m, grid, probes["A spawn"])
