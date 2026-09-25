@@ -1,18 +1,18 @@
 [gd_scene format=3 uid="uid://6k211e174sio"]
 
-[ext_resource type="PackedScene" uid="uid://b4n7r2kx9qm5w" path="res://scenes/actor.tscn" id="1_actor"]
+[ext_resource type="PackedScene" uid="uid://b4n7r2kyaqm5w" path="res://scenes/actor.tscn" id="1_actor"]
 [ext_resource type="Script" uid="uid://drkkfs3v6wr5y" path="res://scripts/player.gd" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://cyyaiv1fa5ptb" path="res://scenes/health_bar.tscn" id="3_health"]
 [ext_resource type="PackedScene" uid="uid://cu7jdhqryuynq" path="res://scenes/ammo_label.tscn" id="4_ammo"]
-[ext_resource type="Resource" path="res://resources/visuals/player_visuals.tres" id="5_visuals"]
+[ext_resource type="Resource" uid="uid://b1i1bn4o2ycno" path="res://resources/visuals/player_visuals.tres" id="5_visuals"]
 [ext_resource type="Resource" path="res://resources/audio/player_audio.tres" id="6_audio"]
-[ext_resource type="Script" path="res://scripts/abilities/skillshot_ability.gd" id="7_skillshot"]
-[ext_resource type="Script" path="res://scripts/abilities/dash_ability.gd" id="8_dash"]
-[ext_resource type="Script" path="res://scripts/abilities/buff_ability.gd" id="9_buff"]
-[ext_resource type="Script" path="res://scripts/abilities/targeted_ability.gd" id="10_target"]
+[ext_resource type="Script" uid="uid://u5u0cochttxy" path="res://scripts/abilities/skillshot_ability.gd" id="7_skillshot"]
+[ext_resource type="Script" uid="uid://cvsqhynqmf74k" path="res://scripts/abilities/dash_ability.gd" id="8_dash"]
+[ext_resource type="Script" uid="uid://bdmx7uidw6d0m" path="res://scripts/abilities/buff_ability.gd" id="9_buff"]
+[ext_resource type="Script" uid="uid://h6sule5f7j5b" path="res://scripts/abilities/targeted_ability.gd" id="10_target"]
 [ext_resource type="Resource" path="res://resources/status/overdrive.tres" id="11_overdrive"]
 [ext_resource type="Resource" path="res://resources/status/shocked.tres" id="12_shocked"]
-[ext_resource type="Script" path="res://scripts/visuals/camera_shake.gd" id="13_camera"]
+[ext_resource type="Script" uid="uid://bbffcqik08htq" path="res://scripts/visuals/camera_shake.gd" id="13_camera"]
 
 [node name="Player" unique_id=84994044 groups=["player"] instance=ExtResource("1_actor")]
 collision_mask = 99
@@ -21,19 +21,15 @@ script = ExtResource("2_player")
 [node name="Visuals" parent="." index="1" unique_id=95643105]
 profile = ExtResource("5_visuals")
 
-[node name="SkillshotAbility" type="Node" parent="Components/AbilityController" index="0" unique_id=1270445301]
+[node name="SkillshotAbility" type="Node" parent="Components/AbilityController" parent_id_path=PackedInt32Array(1338266210) index="0" unique_id=1270445301]
 script = ExtResource("7_skillshot")
-damage = 60.0
-speed = 1400.0
-pierce = 3
-knockback = 700.0
 ability_id = &"piercing_lance"
 display_name = "Piercing Lance"
 description = "Skillshot. Fires a slow, heavy lance that pierces up to 3 enemies and knocks them back."
 input_action = &"ability_skillshot"
 cooldown = 6.0
 
-[node name="DashAbility" type="Node" parent="Components/AbilityController" index="1" unique_id=1872310644]
+[node name="DashAbility" type="Node" parent="Components/AbilityController" parent_id_path=PackedInt32Array(1338266210) index="1" unique_id=1872310644]
 script = ExtResource("8_dash")
 ability_id = &"phase_dash"
 display_name = "Phase Dash"
@@ -41,7 +37,7 @@ description = "Movement. Dash in your movement direction (or toward the cursor) 
 input_action = &"ability_dash"
 cooldown = 4.0
 
-[node name="BuffAbility" type="Node" parent="Components/AbilityController" index="2" unique_id=331862957]
+[node name="BuffAbility" type="Node" parent="Components/AbilityController" parent_id_path=PackedInt32Array(1338266210) index="2" unique_id=331862957]
 script = ExtResource("9_buff")
 effect = ExtResource("11_overdrive")
 ability_id = &"overdrive"
@@ -50,7 +46,7 @@ description = "Buff. Refills your magazine; +75% fire rate and +25% move speed f
 input_action = &"ability_buff"
 cooldown = 12.0
 
-[node name="TargetedAbility" type="Node" parent="Components/AbilityController" index="3" unique_id=1692075586]
+[node name="TargetedAbility" type="Node" parent="Components/AbilityController" parent_id_path=PackedInt32Array(1338266210) index="3" unique_id=1692075586]
 script = ExtResource("10_target")
 status_effect = ExtResource("12_shocked")
 ability_id = &"arc_zap"
@@ -59,7 +55,7 @@ description = "Click-cast. Instantly zaps the enemy under your cursor: damage, t
 input_action = &"ability_target"
 cooldown = 8.0
 
-[node name="AudioComponent" parent="Components" index="4" unique_id=1907751327]
+[node name="AudioComponent" parent="Components" parent_id_path=PackedInt32Array(1665519693) index="4" unique_id=1907751327]
 profile = ExtResource("6_audio")
 
 [node name="WeaponComponent" parent="WeaponPivot" parent_id_path=PackedInt32Array(1051153276) index="0" unique_id=426544236]
@@ -75,19 +71,19 @@ spread_degrees = 3.5
 [node name="Hurtbox" parent="." index="4" unique_id=394146905]
 collision_layer = 4
 
-[node name="HealthBar" parent="." unique_id=321437189 node_paths=PackedStringArray("health_component") instance=ExtResource("3_health")]
+[node name="HealthBar" parent="." index="5" unique_id=321437189 node_paths=PackedStringArray("health_component") instance=ExtResource("3_health")]
 offset_left = -31.0
 offset_top = -98.0
 offset_right = 29.0
 offset_bottom = -71.0
 health_component = NodePath("../Components/HealthComponent")
 
-[node name="AmmoLabel" parent="." unique_id=1461201986 node_paths=PackedStringArray("weapon_component") instance=ExtResource("4_ammo")]
+[node name="AmmoLabel" parent="." index="6" unique_id=1461201986 node_paths=PackedStringArray("weapon_component") instance=ExtResource("4_ammo")]
 offset_left = 41.0
 offset_top = -96.0
 offset_right = 81.0
 offset_bottom = -73.0
 weapon_component = NodePath("../WeaponPivot/WeaponComponent")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1414159496]
+[node name="Camera2D" type="Camera2D" parent="." index="7" unique_id=1414159496]
 script = ExtResource("13_camera")
