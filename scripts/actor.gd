@@ -15,7 +15,9 @@ signal landed
 
 @onready var movement_component: MovementComponent = $Components/MovementComponent
 
-@onready var weapon_component: WeaponComponent = $WeaponPivot/WeaponComponent
+# Optional: heroes like Avery have no gun. Anything that uses the weapon must
+# check for null.
+@onready var weapon_component: WeaponComponent = get_node_or_null(^"WeaponPivot/WeaponComponent")
 
 @onready var health_component: HealthComponent = $Components/HealthComponent
 
@@ -23,11 +25,16 @@ signal landed
 
 @onready var ability_controller: AbilityController = $Components/AbilityController
 
-@onready var weapon_pivot: Node2D = $WeaponPivot
+@onready var weapon_pivot: Node2D = get_node_or_null(^"WeaponPivot")
 
 @onready var hurtbox: HurtboxComponent = $Hurtbox
 
 @onready var visuals: VisualsComponent = $Visuals
+
+# Optional components (heroes and dummies have them, the old rifle player and
+# enemy don't).
+@onready var stats_component: StatsComponent = get_node_or_null(^"Components/StatsComponent")
+@onready var combat_hooks: CombatHooks = get_node_or_null(^"Components/CombatHooks")
 
 ## Team id (e.g. &"a", &"b"). Empty = neutral. Read by the minimap now, and
 ## meant for friendly-fire rules later.
@@ -37,6 +44,9 @@ signal landed
 # or enemy AI) write these; abilities and visuals read them.
 var aim_direction := Vector2.RIGHT
 var move_direction := Vector2.ZERO
+# The world point being aimed at (the cursor for a player). Buffered casts use
+# it so they follow the latest aim.
+var aim_point := Vector2.ZERO
 
 # Airborne state for launches (jump pads, knock-ups). See launch().
 var _airborne := false
@@ -49,10 +59,11 @@ func _ready() -> void:
 	add_to_group(&"minimap_units")
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	health_component.died.connect(_on_died)
-	weapon_component.fired.connect(_on_weapon_fired)
-	weapon_component.reload_started.connect(trigger_cue.bind(&"reload"))
-	weapon_component.reload_finished.connect(trigger_cue.bind(&"reload_done"))
-	weapon_component.dry_fired.connect(trigger_cue.bind(&"dry_fire"))
+	if weapon_component != null:
+		weapon_component.fired.connect(_on_weapon_fired)
+		weapon_component.reload_started.connect(trigger_cue.bind(&"reload"))
+		weapon_component.reload_finished.connect(trigger_cue.bind(&"reload_done"))
+		weapon_component.dry_fired.connect(trigger_cue.bind(&"dry_fire"))
 
 
 # Context keys every listener can rely on: position, direction, source.
@@ -137,7 +148,8 @@ func _on_died() -> void:
 	set_process(false)
 	hurtbox.set_deferred("monitorable", false)
 	collision_layer = 0
-	weapon_pivot.hide()
+	if weapon_pivot != null:
+		weapon_pivot.hide()
 
 	var linger := visuals.get_death_duration()
 	if linger > 0.0:

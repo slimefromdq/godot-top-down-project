@@ -10,6 +10,9 @@
 [ext_resource type="Resource" path="res://resources/audio/dummy_audio.tres" id="8_audioprofile"]
 [ext_resource type="Script" uid="uid://dmrfv1kntx1v6" path="res://scripts/hurtbox.gd" id="9_hurtbox"]
 [ext_resource type="PackedScene" uid="uid://cyyaiv1fa5ptb" path="res://scenes/health_bar.tscn" id="10_bar"]
+[ext_resource type="Script" uid="uid://cb1i42pvlsmvf" path="res://scripts/movement_component.gd" id="11_move"]
+[ext_resource type="Script" path="res://scripts/stats/stats_component.gd" id="12_stats"]
+[ext_resource type="Script" path="res://scripts/combat/combat_hooks.gd" id="13_hooks"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(80, 110)
@@ -17,9 +20,10 @@ size = Vector2(80, 110)
 [sub_resource type="CircleShape2D" id="CircleShape2D_hurt"]
 radius = 55.0
 
-[node name="TrainingDummy" type="StaticBody2D"]
+[node name="TrainingDummy" type="CharacterBody2D"]
 collision_layer = 2
-collision_mask = 0
+collision_mask = 97
+motion_mode = 1
 script = ExtResource("1_dummy")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -35,24 +39,41 @@ texture = ExtResource("2_icon")
 
 [node name="Components" type="Node" parent="."]
 
-[node name="HealthComponent" type="Node" parent="Components" node_paths=PackedStringArray("status_component")]
+[node name="StatsComponent" type="Node" parent="Components"]
+script = ExtResource("12_stats")
+
+[node name="CombatHooks" type="Node" parent="Components"]
+script = ExtResource("13_hooks")
+
+[node name="HealthComponent" type="Node" parent="Components" node_paths=PackedStringArray("status_component", "stats_component")]
 script = ExtResource("5_health")
 max_health = 300.0
 status_component = NodePath("../StatusComponent")
+stats_component = NodePath("../StatsComponent")
 
-[node name="StatusComponent" type="Node" parent="Components"]
+[node name="MovementComponent" type="Node" parent="Components" node_paths=PackedStringArray("status_component")]
+script = ExtResource("11_move")
+move_speed = 220.0
+acceleration = 1400.0
+friction = 1800.0
+status_component = NodePath("../StatusComponent")
+
+[node name="StatusComponent" type="Node" parent="Components" node_paths=PackedStringArray("movement_component", "health_component")]
 script = ExtResource("6_status")
+movement_component = NodePath("../MovementComponent")
+health_component = NodePath("../HealthComponent")
 
 [node name="AudioComponent" type="Node" parent="Components"]
 script = ExtResource("7_audio")
 profile = ExtResource("8_audioprofile")
 
-[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("health_component", "status_component")]
+[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("health_component", "status_component", "movement_component")]
 collision_layer = 16
 collision_mask = 0
 script = ExtResource("9_hurtbox")
 health_component = NodePath("../Components/HealthComponent")
 status_component = NodePath("../Components/StatusComponent")
+movement_component = NodePath("../Components/MovementComponent")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 shape = SubResource("CircleShape2D_hurt")

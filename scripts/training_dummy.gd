@@ -1,12 +1,15 @@
-extends StaticBody2D
+extends CharacterBody2D
 class_name TrainingDummy
 
-# A stationary target for testing damage, abilities and visuals. It isn't an
-# Actor: it shows that VisualsComponent and AudioComponent work on any node
-# that has a HealthComponent (and, optionally, a cue_triggered signal).
+# A target for testing damage, abilities and game feel. It isn't an Actor: it
+# shows that VisualsComponent, AudioComponent, StatsComponent and the damage
+# pipeline work on any node with a HealthComponent.
 #
-# It regenerates after a short break in damage, reports DPS, and can either
-# die and respawn (to preview death and kill effects) or be unkillable.
+# It's a moving body (not a static one) so knockback and pulls visibly shove
+# it; it then walks back to where it was placed. It regenerates after a short
+# break in damage, reports DPS, and can either die and respawn (to preview
+# death and kill effects) or be unkillable (it cancels its own death through
+# the same about_to_die hook a revive uses).
 
 signal cue_triggered(cue: StringName, context: Dictionary)
 
@@ -17,22 +20,88 @@ signal cue_triggered(cue: StringName, context: Dictionary)
 @export var reset_delay: float = 3.0
 ## Window used for the DPS readout.
 @export var dps_window: float = 3.0
+## Team id. Empty = neutral (anyone can hit it).
+@export var team: StringName = &""
+
+@export_group("Stats")
+@export var max_health: float = 300.0
+@export var armor: float = 0.0
+@export var magic_resist: float = 0.0
+## Only matters for dummies that fight back (their attacks scale with it).
+@export_range(1, 20) var level: int = 1
+
+@export_group("Anchor")
+## Walks back to its spawn point after being displaced.
+@export var return_to_anchor: bool = true
+## Within this distance of the anchor it stands still.
+@export var anchor_tolerance: float = 6.0
+## Slows down over this distance as it arrives (no overshoot wobble).
+@export var anchor_slowdown_distance: float = 60.0
 
 @onready var health_component: HealthComponent = $Components/HealthComponent
 @onready var status_component: StatusEffectComponent = $Components/StatusComponent
+@onready var movement_component: MovementComponent = $Components/MovementComponent
+@onready var stats_component: StatsComponent = $Components/StatsComponent
 @onready var visuals: VisualsComponent = $Visuals
 @onready var hurtbox: HurtboxComponent = $Hurtbox
 @onready var dps_label: Label = $DpsLabel
+
+var aim_direction := Vector2.DOWN
+var anchor := Vector2.ZERO
 
 var _time_since_damage: float = 0.0
 var _damage_log: Array[Vector2] = []    # (time, amount) pairs
 var _time: float = 0.0
 
 
+# Build the stat block from the exported numbers before the health component
+# reads it (see Hero._enter_tree for why this happens in _enter_tree).
+func _enter_tree() -> void:
+	var stats := get_node(^"Components/StatsComponent") as StatsComponent
+	if stats.stat_block == null:
+		stats.stat_block = make_stat_block()
+	stats.level = level
+
+
 func _ready() -> void:
 	add_to_group(&"minimap_units")
+	add_to_group(&"training_dummies")
+	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
+	anchor = global_position
 	health_component.damaged.connect(_on_damaged)
+	health_component.about_to_die.connect(_on_about_to_die)
 	health_component.died.connect(_on_died)
+
+
+# Live reconfiguration (debug panel): new HP / resistances / level.
+func configure(new_max_health: float, new_armor: float, new_magic_resist: float, new_level: int) -> void:
+	max_health = new_max_health
+	armor = new_armor
+	magic_resist = new_magic_resist
+	level = new_level
+	stats_component.stat_block = make_stat_block()
+	stats_component.level = level
+	stats_component.stats_changed.emit()
+	health_component.reset()
+
+
+func make_stat_block() -> StatBlock:
+	var block := StatBlock.new()
+	block.health = StatScaling.make(max_health)
+	block.armor = StatScaling.make(armor)
+	block.magic_resist = StatScaling.make(magic_resist)
+	block.weapon = StatScaling.make(0.0)
+	block.magic = StatScaling.make(0.0)
+	return block
+
+
+func _physics_process(delta: float) -> void:
+	var to_anchor := anchor - global_position
+	var steer := Vector2.ZERO
+	if return_to_anchor and to_anchor.length() > anchor_tolerance:
+		steer = to_anchor.normalized() * clampf(to_anchor.length() / anchor_slowdown_distance, 0.0, 1.0)
+	velocity = movement_component.get_velocity(velocity, steer, delta)
+	move_and_slide()
 
 
 func _process(delta: float) -> void:
@@ -57,18 +126,22 @@ func trigger_cue(cue: StringName, context: Dictionary = {}) -> void:
 func _on_damaged(amount: float, _source: Node) -> void:
 	_time_since_damage = 0.0
 	_damage_log.append(Vector2(_time, amount))
-	if not can_die and health_component.current_health <= 1.0:
-		health_component.current_health = 1.0
+
+
+func _on_about_to_die(event: DeathEvent) -> void:
+	if not can_die:
+		event.cancel(1.0, self)
 
 
 func _on_died() -> void:
-	if not can_die:
-		return
 	status_component.clear()
 	visuals.hide()
 	hurtbox.set_deferred("monitorable", false)
 	collision_layer = 0
 	await get_tree().create_timer(respawn_delay, false).timeout
+	if not is_inside_tree():
+		return
+	global_position = anchor
 	health_component.reset()
 	collision_layer = 2
 	hurtbox.set_deferred("monitorable", true)

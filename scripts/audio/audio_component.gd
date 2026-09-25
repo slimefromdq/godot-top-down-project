@@ -37,7 +37,7 @@ func _ready() -> void:
 		root.cue_triggered.connect(play_cue)
 	if health_component != null:
 		health_component.damaged.connect(func(_amount, _source): play_cue(&"hurt"))
-		health_component.healed.connect(func(_amount): play_cue(&"heal"))
+		health_component.healed.connect(func(_amount, _source): play_cue(&"heal"))
 		health_component.died.connect(_on_died)
 	if status_component != null:
 		status_component.status_applied.connect(_on_status_applied)

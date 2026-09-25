@@ -1,0 +1,91 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/heroes/hero.gd" id="1_hero"]
+[ext_resource type="Texture2D" uid="uid://dq0q0s6shlr2p" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Script" path="res://scripts/visuals/visuals_component.gd" id="3_vis"]
+[ext_resource type="Script" uid="uid://be63uic2wcldj" path="res://scripts/health_component.gd" id="4_health"]
+[ext_resource type="Script" uid="uid://cb1i42pvlsmvf" path="res://scripts/movement_component.gd" id="5_move"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_controller.gd" id="6_abil"]
+[ext_resource type="Script" path="res://scripts/combat/status_effect_component.gd" id="7_status"]
+[ext_resource type="Script" path="res://scripts/audio/audio_component.gd" id="8_audio"]
+[ext_resource type="Script" path="res://scripts/stats/stats_component.gd" id="9_stats"]
+[ext_resource type="Script" path="res://scripts/combat/combat_hooks.gd" id="10_hooks"]
+[ext_resource type="Script" path="res://scripts/combat/hitbox.gd" id="11_hitbox"]
+[ext_resource type="Script" uid="uid://dmrfv1kntx1v6" path="res://scripts/hurtbox.gd" id="12_hurtbox"]
+[ext_resource type="PackedScene" uid="uid://cyyaiv1fa5ptb" path="res://scenes/health_bar.tscn" id="13_bar"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 50.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hurt"]
+radius = 54.0
+
+[node name="Hero" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 97
+motion_mode = 1
+wall_min_slide_angle = 0.0
+script = ExtResource("1_hero")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="Visuals" type="Node2D" parent="."]
+script = ExtResource("3_vis")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Visuals"]
+
+[node name="Sprite2D" type="Sprite2D" parent="Visuals"]
+texture = ExtResource("2_icon")
+
+[node name="Components" type="Node" parent="."]
+
+[node name="StatsComponent" type="Node" parent="Components"]
+script = ExtResource("9_stats")
+
+[node name="CombatHooks" type="Node" parent="Components"]
+script = ExtResource("10_hooks")
+
+[node name="HealthComponent" type="Node" parent="Components" node_paths=PackedStringArray("status_component", "stats_component")]
+script = ExtResource("4_health")
+status_component = NodePath("../StatusComponent")
+stats_component = NodePath("../StatsComponent")
+
+[node name="MovementComponent" type="Node" parent="Components" node_paths=PackedStringArray("status_component")]
+script = ExtResource("5_move")
+move_speed = 540.0
+acceleration = 2600.0
+friction = 2800.0
+status_component = NodePath("../StatusComponent")
+
+[node name="StatusComponent" type="Node" parent="Components" node_paths=PackedStringArray("movement_component", "health_component")]
+script = ExtResource("7_status")
+movement_component = NodePath("../MovementComponent")
+health_component = NodePath("../HealthComponent")
+
+[node name="AbilityController" type="Node" parent="Components"]
+script = ExtResource("6_abil")
+
+[node name="AudioComponent" type="Node" parent="Components"]
+script = ExtResource("8_audio")
+
+[node name="Hitbox" type="Node2D" parent="."]
+script = ExtResource("11_hitbox")
+
+[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("health_component", "status_component", "movement_component")]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("12_hurtbox")
+health_component = NodePath("../Components/HealthComponent")
+status_component = NodePath("../Components/StatusComponent")
+movement_component = NodePath("../Components/MovementComponent")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("CircleShape2D_hurt")
+
+[node name="HealthBar" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("13_bar")]
+offset_left = -40.0
+offset_top = -86.0
+offset_right = 40.0
+offset_bottom = -72.0
+health_component = NodePath("../Components/HealthComponent")
