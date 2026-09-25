@@ -45,6 +45,9 @@ var hit_position: Vector2 = Vector2.ZERO
 ## Attack "weight" for game feel (0 = light jab, 1 = normal, 2+ = finisher).
 ## Cosmetic systems (hitstop, shake) scale with it; gameplay never reads it.
 var weight: float = 1.0
+## The feel preset of the swing that produced this hit, for hitstop / shake /
+## sound. Cosmetic only: never read by gameplay, never sent over a network.
+var feel: AttackFeel = null
 
 # --- Result (filled in by HealthComponent) --------------------------------
 ## Damage actually removed from health, after resistances and multipliers.
@@ -97,6 +100,7 @@ func copy() -> DamageInfo:
 	info.direction = direction
 	info.hit_position = hit_position
 	info.weight = weight
+	info.feel = feel
 	return info
 
 

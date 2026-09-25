@@ -1,7 +1,0 @@
-[gd_scene format=3]
-
-[ext_resource type="Script" path="res://scripts/feel/slash_arc_effect.gd" id="1_fx"]
-
-[node name="SlashArc" type="Node2D"]
-z_index = 4
-script = ExtResource("1_fx")

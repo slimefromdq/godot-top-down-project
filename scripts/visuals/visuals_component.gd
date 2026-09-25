@@ -37,6 +37,15 @@ var _is_highlighted := false
 var _status_vfx: Dictionary = {}    # status id -> Node
 var _status_tints: Array[StatusEffect] = []
 
+# Hitstop (see freeze()). All cosmetic: the body keeps moving underneath.
+var _freeze_left: float = 0.0
+var _freeze_anchor := Vector2.ZERO    # global point the sprite holds
+var _freeze_tremble: float = 0.0
+var _catch_up_time: float = 0.06
+var _catch_up_left: float = 0.0
+var _hold_offset := Vector2.ZERO      # current offset from the body
+var _rest_position := Vector2.ZERO
+
 
 # Look up the VisualsComponent that belongs to any node (actor, dummy, ...).
 static func find_on(node: Node) -> VisualsComponent:
@@ -71,7 +80,8 @@ func _ready() -> void:
 	play_cue.call_deferred(&"spawn")
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	_update_freeze(delta)
 	if body == null or _is_dead:
 		return
 	var root := _get_root()
@@ -116,7 +126,7 @@ func play_definition(definition: VisualCue, context: Dictionary = {}) -> void:
 
 
 func flash(color: Color, duration: float) -> void:
-	if body == null:
+	if body == null or (GameFeel.settings != null and not GameFeel.settings.flash_enabled):
 		return
 	if _flash_tween != null:
 		_flash_tween.kill()
@@ -127,10 +137,78 @@ func flash(color: Color, duration: float) -> void:
 		_flash_tween.tween_method(
 			func(v: float): _body_material.set_shader_parameter(&"flash_amount", v),
 			color.a, 0.0, duration)
+		# Flashed during hitstop: hold full white until the freeze ends, then
+		# fade (the classic "white frame on impact").
+		if is_frozen():
+			_flash_tween.set_speed_scale(0.0)
 	else:
 		# Custom material on the body: fall back to modulate.
 		body.self_modulate = color
 		_flash_tween.tween_property(body, "self_modulate", Color.WHITE, duration)
+
+
+# HITSTOP. Freeze this sprite for `duration` seconds: animations stop and
+# the sprite holds the spot where it was hit (with an optional shiver), then
+# eases back onto its body over `catch_up` seconds.
+#
+# Only the picture freezes. The physics body underneath keeps moving (e.g.
+# already flying from knockback), which is why the sprite has to catch up
+# afterwards. Nothing in the simulation waits for this.
+func freeze(duration: float, tremble: float = 0.0, catch_up: float = 0.06) -> void:
+	if duration <= 0.0 or not is_inside_tree():
+		return
+	if _freeze_left <= 0.0 and _catch_up_left <= 0.0:
+		_rest_position = position
+		_freeze_anchor = global_position
+	elif _freeze_left <= 0.0:
+		# Hit again while catching up: hold where the sprite is now.
+		_freeze_anchor = global_position
+	_freeze_left = maxf(_freeze_left, duration)
+	_freeze_tremble = tremble
+	_catch_up_time = catch_up
+	_catch_up_left = 0.0
+	_set_animation_paused(true)
+
+
+func is_frozen() -> bool:
+	return _freeze_left > 0.0
+
+
+# 0 while frozen, 1 otherwise. Cosmetic effects multiply their own delta by
+# this so trails and poses freeze together with the sprite.
+func get_time_scale() -> float:
+	return 0.0 if is_frozen() else 1.0
+
+
+func _update_freeze(delta: float) -> void:
+	if _freeze_left <= 0.0 and _catch_up_left <= 0.0:
+		return
+	var parent_2d := get_parent() as Node2D
+	if parent_2d == null:
+		return
+	if _freeze_left > 0.0:
+		_freeze_left -= delta
+		var jitter := Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _freeze_tremble
+		# Offset that keeps the sprite at the anchor while the body moves on.
+		_hold_offset = parent_2d.to_local(_freeze_anchor) - _rest_position + jitter
+		if _freeze_left <= 0.0:
+			_set_animation_paused(false)
+			_hold_offset -= jitter
+			_catch_up_left = _catch_up_time
+	else:
+		_catch_up_left -= delta
+		var k := clampf(_catch_up_left / maxf(_catch_up_time, 0.001), 0.0, 1.0)
+		_hold_offset *= k if _catch_up_left > 0.0 else 0.0
+	position = _rest_position + _hold_offset
+
+
+func _set_animation_paused(paused: bool) -> void:
+	if body is AnimatedSprite2D:
+		body.speed_scale = 0.0 if paused else 1.0
+	if _animation_player != null:
+		_animation_player.speed_scale = 0.0 if paused else 1.0
+	if _flash_tween != null and _flash_tween.is_valid():
+		_flash_tween.set_speed_scale(0.0 if paused else 1.0)
 
 
 # Plays a one-off animation, then returns to idle/move. Checks the body's

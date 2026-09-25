@@ -5,14 +5,13 @@
 [ext_resource type="PackedScene" path="res://effects/spawn_puff.tscn" id="3_x"]
 [ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="4_x"]
 [ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="5_x"]
-[ext_resource type="PackedScene" path="res://effects/feel/slash_arc.tscn" id="6_x"]
-[ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="7_x"]
-[ext_resource type="PackedScene" path="res://effects/feel/telegraph_line.tscn" id="8_x"]
-[ext_resource type="PackedScene" path="res://effects/dash_afterimage.tscn" id="9_x"]
-[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="10_x"]
-[ext_resource type="PackedScene" path="res://effects/overdrive_burst.tscn" id="11_x"]
-[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="12_x"]
-[ext_resource type="PackedScene" path="res://effects/kill_confirm.tscn" id="13_x"]
+[ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="6_x"]
+[ext_resource type="PackedScene" path="res://effects/feel/telegraph_line.tscn" id="7_x"]
+[ext_resource type="PackedScene" path="res://effects/dash_afterimage.tscn" id="8_x"]
+[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="9_x"]
+[ext_resource type="PackedScene" path="res://effects/overdrive_burst.tscn" id="10_x"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="11_x"]
+[ext_resource type="PackedScene" path="res://effects/kill_confirm.tscn" id="12_x"]
 
 [sub_resource type="Resource" id="Sub_1"]
 script = ExtResource("2_x")
@@ -23,7 +22,6 @@ align_to_direction = false
 script = ExtResource("2_x")
 flash_color = Color(1, 0.25, 0.25, 0.9)
 flash_duration = 0.15
-screen_shake = 0.3
 
 [sub_resource type="Resource" id="Sub_3"]
 script = ExtResource("2_x")
@@ -45,92 +43,71 @@ align_to_direction = false
 [sub_resource type="Resource" id="Sub_6"]
 script = ExtResource("2_x")
 effect_scene = ExtResource("6_x")
-tint = Color(1, 0.9, 0.55, 1)
 
 [sub_resource type="Resource" id="Sub_7"]
 script = ExtResource("2_x")
-effect_scene = ExtResource("7_x")
-screen_shake = 0.08
+effect_scene = ExtResource("6_x")
+tint = Color(1, 0.55, 0.2, 1)
 
 [sub_resource type="Resource" id="Sub_8"]
 script = ExtResource("2_x")
-effect_scene = ExtResource("6_x")
-tint = Color(1, 0.45, 0.2, 1)
+effect_scene = ExtResource("7_x")
+align_to_direction = false
 
 [sub_resource type="Resource" id="Sub_9"]
 script = ExtResource("2_x")
-effect_scene = ExtResource("7_x")
-tint = Color(1, 0.55, 0.2, 1)
-screen_shake = 0.12
+effect_scene = ExtResource("8_x")
+attach_to_actor = true
 
 [sub_resource type="Resource" id="Sub_10"]
 script = ExtResource("2_x")
-effect_scene = ExtResource("8_x")
+effect_scene = ExtResource("9_x")
 align_to_direction = false
 
 [sub_resource type="Resource" id="Sub_11"]
 script = ExtResource("2_x")
-effect_scene = ExtResource("9_x")
-attach_to_actor = true
-screen_shake = 0.1
+effect_scene = ExtResource("6_x")
+scale = 1.4
 
 [sub_resource type="Resource" id="Sub_12"]
 script = ExtResource("2_x")
 effect_scene = ExtResource("10_x")
 align_to_direction = false
-
-[sub_resource type="Resource" id="Sub_13"]
-script = ExtResource("2_x")
-effect_scene = ExtResource("6_x")
-tint = Color(1, 1, 0.7, 1)
-
-[sub_resource type="Resource" id="Sub_14"]
-script = ExtResource("2_x")
-effect_scene = ExtResource("7_x")
-screen_shake = 0.2
-
-[sub_resource type="Resource" id="Sub_15"]
-script = ExtResource("2_x")
-effect_scene = ExtResource("11_x")
-align_to_direction = false
 flash_color = Color(1, 0.8, 0.3, 1)
 flash_duration = 1.0
 screen_shake = 0.35
 
-[sub_resource type="Resource" id="Sub_16"]
+[sub_resource type="Resource" id="Sub_13"]
 script = ExtResource("2_x")
-effect_scene = ExtResource("12_x")
+effect_scene = ExtResource("11_x")
 align_to_direction = false
 flash_color = Color(1, 1, 0.9, 1)
 flash_duration = 0.3
 screen_shake = 0.6
 
-[sub_resource type="Resource" id="Sub_17"]
+[sub_resource type="Resource" id="Sub_14"]
 script = ExtResource("2_x")
-effect_scene = ExtResource("13_x")
+effect_scene = ExtResource("12_x")
 align_to_direction = false
 
 [resource]
 script = ExtResource("1_x")
 body_scale = Vector2(0.85, 0.85)
-body_tint = Color(1, 0.78, 0.3, 0.4)
+body_tint = Color(1, 0.8, 0.35, 0.65)
 cues = Dictionary[StringName, ExtResource("2_x")]({
 &"spawn": SubResource("Sub_1"),
 &"hurt": SubResource("Sub_2"),
 &"heal": SubResource("Sub_3"),
 &"death": SubResource("Sub_4"),
 &"ability_failed": SubResource("Sub_5"),
-&"sunblade_slash_active": SubResource("Sub_6"),
-&"sunblade_slash_hit": SubResource("Sub_7"),
-&"searing_cut_active": SubResource("Sub_8"),
-&"searing_cut_hit": SubResource("Sub_9"),
-&"solar_charge_windup": SubResource("Sub_10"),
-&"solar_charge_active": SubResource("Sub_11"),
-&"solar_charge_end": SubResource("Sub_12"),
-&"dawnbreaker_active": SubResource("Sub_13"),
-&"dawnbreaker_hit": SubResource("Sub_14"),
-&"phoenix_rebirth": SubResource("Sub_15"),
-&"phoenix_rebirth_end": SubResource("Sub_16")
+&"sunblade_slash_hit": SubResource("Sub_6"),
+&"searing_cut_hit": SubResource("Sub_7"),
+&"solar_charge_windup": SubResource("Sub_8"),
+&"solar_charge_active": SubResource("Sub_9"),
+&"solar_charge_end": SubResource("Sub_10"),
+&"dawnbreaker_hit": SubResource("Sub_11"),
+&"phoenix_rebirth": SubResource("Sub_12"),
+&"phoenix_rebirth_end": SubResource("Sub_13")
 })
-kill_effect = SubResource("Sub_17")
+kill_effect = SubResource("Sub_14")
 damage_number_color = Color(1, 0.4, 0.4, 1)
