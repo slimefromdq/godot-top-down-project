@@ -30,6 +30,21 @@ signal cue_triggered(cue: StringName, context: Dictionary)
 ## Only matters for dummies that fight back (their attacks scale with it).
 @export_range(1, 20) var level: int = 1
 
+@export_group("Fight back")
+## Shoot at the nearest hero in range. Toggle live with set_fight_back().
+@export var fight_back: bool = false
+## Team used while fighting back, so fighting dummies don't shoot each other.
+@export var fight_back_team: StringName = &"dummies"
+@export var attack_projectile: ProjectileData = preload("res://resources/dummies/dummy_bolt.tres")
+@export var attack_interval: float = 1.5
+@export var attack_range: float = 800.0
+## Damage per bolt at level 1, plus attack_damage_per_level for each level above.
+@export var attack_damage: float = 30.0
+@export var attack_damage_per_level: float = 6.0
+@export var attack_damage_type: DamageInfo.Type = DamageInfo.Type.PHYSICAL
+## Bolts start this far out, clear of the dummy's own body.
+@export var attack_spawn_offset: float = 60.0
+
 @export_group("Anchor")
 ## Walks back to its spawn point after being displaced.
 @export var return_to_anchor: bool = true
@@ -50,6 +65,8 @@ var aim_direction := Vector2.DOWN
 var anchor := Vector2.ZERO
 
 var _time_since_damage: float = 0.0
+var _attack_timer: float = 0.0
+var _team_before_fighting: StringName = &""
 var _damage_log: Array[Vector2] = []    # (time, amount) pairs
 var _time: float = 0.0
 
@@ -71,6 +88,8 @@ func _ready() -> void:
 	health_component.damaged.connect(_on_damaged)
 	health_component.about_to_die.connect(_on_about_to_die)
 	health_component.died.connect(_on_died)
+	_team_before_fighting = team
+	set_fight_back(fight_back)
 
 
 # Live reconfiguration (debug panel): new HP / resistances / level.
@@ -83,6 +102,12 @@ func configure(new_max_health: float, new_armor: float, new_magic_resist: float,
 	stats_component.level = level
 	stats_component.stats_changed.emit()
 	health_component.reset()
+
+
+func set_fight_back(enabled: bool) -> void:
+	fight_back = enabled
+	team = fight_back_team if enabled else _team_before_fighting
+	_attack_timer = attack_interval
 
 
 func make_stat_block() -> StatBlock:
@@ -102,6 +127,33 @@ func _physics_process(delta: float) -> void:
 		steer = to_anchor.normalized() * clampf(to_anchor.length() / anchor_slowdown_distance, 0.0, 1.0)
 	velocity = movement_component.get_velocity(velocity, steer, delta)
 	move_and_slide()
+	if fight_back and not health_component.is_dead():
+		_attack_timer -= delta
+		if _attack_timer <= 0.0:
+			_attack_timer = attack_interval
+			_shoot_nearest_hero()
+
+
+func _shoot_nearest_hero() -> void:
+	if attack_projectile == null or status_component.is_stunned():
+		return
+	var best: Node2D = null
+	var best_distance := attack_range
+	for node in get_tree().get_nodes_in_group(&"heroes"):
+		var hero := node as Hero
+		if hero == null or hero.health_component.is_dead() or hero.team == team:
+			continue
+		var distance := global_position.distance_to(hero.global_position)
+		if distance <= best_distance:
+			best = hero
+			best_distance = distance
+	if best == null:
+		return
+	aim_direction = (best.global_position - global_position).normalized()
+	var damage := attack_damage + attack_damage_per_level * (level - 1)
+	var template := DamageInfo.create(damage, self, attack_damage_type)
+	template.label = &"dummy_bolt"
+	Projectile.fire(self, attack_projectile, global_position + aim_direction * attack_spawn_offset, aim_direction, template)
 
 
 func _process(delta: float) -> void:

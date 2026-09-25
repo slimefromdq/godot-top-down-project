@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/abilities/common/charge_ability.gd" id="2_x"]
+[ext_resource type="Resource" path="res://heroes/avery/data/fire_trail.tres" id="3_x"]
+
+[resource]
+script = ExtResource("1_x")
+id = &"solar_charge"
+display_name = "Solar Charge"
+description = "Plant, then charge toward the cursor, leaving a trail of fire."
+ability_script = ExtResource("2_x")
+cooldown = 9.0
+cooldown_per_level = -0.25
+tags = Array[StringName]([&"movement", &"ability"])
+feel_preset = &"charge"
+distance = 420.0
+speed = 1700.0
+carry_momentum = true
+trail_zone = ExtResource("3_x")
+trail_spacing = 55.0

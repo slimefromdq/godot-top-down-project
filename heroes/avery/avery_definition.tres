@@ -1,0 +1,69 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="3_x"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="4_x"]
+[ext_resource type="Resource" path="res://heroes/avery/abilities/sunblade_slash.tres" id="5_x"]
+[ext_resource type="Resource" path="res://heroes/avery/abilities/searing_cut.tres" id="6_x"]
+[ext_resource type="Resource" path="res://heroes/avery/abilities/solar_charge.tres" id="7_x"]
+[ext_resource type="Resource" path="res://heroes/avery/abilities/dawnbreaker.tres" id="8_x"]
+[ext_resource type="Resource" path="res://heroes/avery/abilities/phoenix_rebirth.tres" id="9_x"]
+[ext_resource type="Resource" path="res://heroes/avery/avery_feel.tres" id="10_x"]
+[ext_resource type="Resource" path="res://heroes/avery/avery_visuals.tres" id="11_x"]
+[ext_resource type="Resource" path="res://heroes/avery/avery_audio.tres" id="12_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("3_x")
+base = 720.0
+growth = 72.0
+
+[sub_resource type="Resource" id="Sub_2"]
+script = ExtResource("3_x")
+base = 48.0
+growth = 4.0
+
+[sub_resource type="Resource" id="Sub_3"]
+script = ExtResource("3_x")
+base = 30.0
+growth = 5.0
+
+[sub_resource type="Resource" id="Sub_4"]
+script = ExtResource("3_x")
+base = 30.0
+growth = 3.0
+
+[sub_resource type="Resource" id="Sub_5"]
+script = ExtResource("3_x")
+base = 25.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Sub_6"]
+script = ExtResource("2_x")
+health = SubResource("Sub_1")
+weapon = SubResource("Sub_2")
+magic = SubResource("Sub_3")
+armor = SubResource("Sub_4")
+magic_resist = SubResource("Sub_5")
+
+[resource]
+script = ExtResource("1_x")
+hero_id = &"avery"
+display_name = "Avery"
+title = "the Sunblade"
+role = 0
+description = "A valiant knight with a flaming sword. Consistent at every level, with strong late-game sustain. Blade damage scales with Weapon; fire and healing scale with Magic."
+stats = SubResource("Sub_6")
+move_speed = 540.0
+acceleration = 2600.0
+friction = 2800.0
+abilities = Dictionary[StringName, ExtResource("4_x")]({
+&"primary": ExtResource("5_x"),
+&"ability_1": ExtResource("6_x"),
+&"movement": ExtResource("7_x"),
+&"cc": ExtResource("8_x"),
+&"ultimate": ExtResource("9_x")
+})
+feel_profile = ExtResource("10_x")
+visual_profile = ExtResource("11_x")
+audio_profile = ExtResource("12_x")

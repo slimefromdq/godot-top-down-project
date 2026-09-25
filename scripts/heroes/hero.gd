@@ -101,6 +101,9 @@ func _setup_player_control() -> void:
 	add_to_group(&"player")
 	var input := PlayerHeroInput.new()
 	input.name = "PlayerHeroInput"
+	# Read input BEFORE the hero moves this tick (lower priority runs first),
+	# otherwise every key press would take effect one physics tick late.
+	input.process_physics_priority = -1
 	add_child(input)
 	# The map debug view expects the camera to be a child of the player.
 	if get_node_or_null(^"Camera2D") == null:

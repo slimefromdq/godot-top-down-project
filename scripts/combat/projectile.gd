@@ -116,16 +116,8 @@ func _hit_targets_between(from: Vector2, to: Vector2) -> void:
 
 
 func _can_hit(hurtbox: HurtboxComponent) -> bool:
-	if _already_hit.has(hurtbox.get_instance_id()) or not hurtbox.is_valid_target():
-		return false
-	var source := damage_template.source
-	if source != null and is_instance_valid(source):
-		if hurtbox.owner == source:
-			return false
-		var team = source.get(&"team")
-		if team != null and team != &"" and hurtbox.get_team() == team:
-			return false
-	return true
+	return not _already_hit.has(hurtbox.get_instance_id()) \
+		and Hitbox.can_hit(damage_template.source, hurtbox)
 
 
 func _expire() -> void:

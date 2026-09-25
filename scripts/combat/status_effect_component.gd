@@ -70,9 +70,12 @@ func apply(effect: StatusEffect, source: Node = null, direction: Vector2 = Vecto
 	if effect.tick_damage != null:
 		entry.tick_amount = effect.tick_damage.evaluate(StatsComponent.find_on(source))
 
-	_displace(effect, source, direction)
+	# Stun first: it interrupts the victim's current cast (which may stop a
+	# dash), THEN the displacement starts, so the stun's own knockback isn't
+	# cancelled by that interrupt.
 	if effect.stuns:
 		stunned.emit(effect)
+	_displace(effect, source, direction)
 	if is_new:
 		status_applied.emit(effect)
 

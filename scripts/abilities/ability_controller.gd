@@ -40,8 +40,10 @@ func _ready() -> void:
 
 # Adds an ability built at runtime (Hero does this per slot).
 func add_ability(ability: Ability, slot_id: StringName = &"") -> void:
-	add_child(ability)
+	# Register first so the ability already knows its actor in its own _ready
+	# (passives like a revive connect to the actor's hooks there).
 	_register(ability, slot_id)
+	add_child(ability)
 	abilities_changed.emit()
 
 

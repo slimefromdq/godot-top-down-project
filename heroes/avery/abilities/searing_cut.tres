@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="SearingCutData" format=3]
+
+[ext_resource type="Script" path="res://heroes/avery/abilities/searing_cut_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://heroes/avery/abilities/searing_cut_ability.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="4_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("3_x")
+kind = 0
+radius = 190.0
+arc_degrees = 140.0
+
+[sub_resource type="Resource" id="Sub_2"]
+script = ExtResource("4_x")
+base = 30.0
+weapon_ratio = 0.35
+magic_ratio = 0.55
+
+[sub_resource type="Resource" id="Sub_3"]
+script = ExtResource("4_x")
+base = 28.0
+per_level = 2.0
+magic_ratio = 0.45
+
+[sub_resource type="Resource" id="Sub_4"]
+script = ExtResource("4_x")
+base = 55.0
+magic_ratio = 0.9
+
+[resource]
+script = ExtResource("1_x")
+id = &"searing_cut"
+display_name = "Searing Cut"
+description = "A wide burning slash. Heals Avery for each enemy hit, less for each extra target."
+ability_script = ExtResource("2_x")
+cooldown = 7.0
+cooldown_per_level = -0.2
+hit_shape = SubResource("Sub_1")
+damage = SubResource("Sub_2")
+damage_type = 1
+knockback = 120.0
+tags = Array[StringName]([&"ability"])
+meter_label = &"searing_cut"
+feel_preset = &"heavy"
+heal_per_target = SubResource("Sub_3")
+falloff = 0.5
+max_targets_healed = 4
+heal_cap = SubResource("Sub_4")

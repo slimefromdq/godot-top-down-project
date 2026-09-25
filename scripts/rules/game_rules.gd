@@ -34,6 +34,10 @@ const DEFAULT_PATH := "res://resources/rules/game_rules.tres"
 ## early presses get dropped.
 @export var default_input_buffer: float = 0.3
 
+@export_group("Test maps")
+## Maps the F3 switcher cycles through, in order.
+@export_file("*.tscn") var test_maps: PackedStringArray = []
+
 @export_group("Collision")
 ## Physics layers a Hitbox or Projectile searches for hurtboxes. Team checks
 ## then decide who can actually be hit. (Layers 3 and 5 are the legacy

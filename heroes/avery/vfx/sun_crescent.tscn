@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://heroes/avery/vfx/sun_crescent_visual.gd" id="1_vis"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_fire"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.95, 0.6, 0.9, 1, 0.5, 0.1, 0.7, 0.6, 0.1, 0.05, 0)
+
+[node name="SunCrescent" type="Node2D"]
+script = ExtResource("1_vis")
+
+[node name="Embers" type="CPUParticles2D" parent="."]
+material = SubResource("CanvasItemMaterial_add")
+amount = 30
+lifetime = 0.3
+local_coords = false
+emission_shape = 3
+emission_rect_extents = Vector2(8, 36)
+direction = Vector2(-1, 0)
+spread = 25.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 40.0
+initial_velocity_max = 120.0
+scale_amount_min = 3.0
+scale_amount_max = 7.0
+color_ramp = SubResource("Gradient_fire")

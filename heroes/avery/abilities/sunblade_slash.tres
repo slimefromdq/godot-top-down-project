@@ -1,0 +1,91 @@
+[gd_resource type="Resource" script_class="MeleeAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/melee_attack_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/abilities/common/melee_attack_ability.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/abilities/attack_step.gd" id="3_x"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="4_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="5_x"]
+[ext_resource type="Resource" path="res://heroes/avery/data/sun_crescent.tres" id="6_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("4_x")
+kind = 0
+radius = 170.0
+arc_degrees = 110.0
+
+[sub_resource type="Resource" id="Sub_2"]
+script = ExtResource("5_x")
+base = 22.0
+weapon_ratio = 0.75
+
+[sub_resource type="Resource" id="Sub_3"]
+script = ExtResource("3_x")
+hit_shape = SubResource("Sub_1")
+damage = SubResource("Sub_2")
+knockback = 160.0
+feel_preset = &"light"
+meter_label = &"blade"
+
+[sub_resource type="Resource" id="Sub_4"]
+script = ExtResource("4_x")
+kind = 0
+radius = 170.0
+arc_degrees = 110.0
+
+[sub_resource type="Resource" id="Sub_5"]
+script = ExtResource("5_x")
+base = 22.0
+weapon_ratio = 0.75
+
+[sub_resource type="Resource" id="Sub_6"]
+script = ExtResource("3_x")
+hit_shape = SubResource("Sub_4")
+damage = SubResource("Sub_5")
+knockback = 160.0
+feel_preset = &"light"
+meter_label = &"blade"
+
+[sub_resource type="Resource" id="Sub_7"]
+script = ExtResource("4_x")
+kind = 0
+radius = 200.0
+arc_degrees = 150.0
+
+[sub_resource type="Resource" id="Sub_8"]
+script = ExtResource("5_x")
+base = 38.0
+weapon_ratio = 1.15
+
+[sub_resource type="Resource" id="Sub_9"]
+script = ExtResource("3_x")
+hit_shape = SubResource("Sub_7")
+damage = SubResource("Sub_8")
+knockback = 480.0
+feel_preset = &"finisher"
+meter_label = &"blade"
+
+[sub_resource type="Resource" id="Sub_10"]
+script = ExtResource("5_x")
+base = 10.0
+weapon_ratio = 0.2
+magic_ratio = 0.25
+
+[resource]
+script = ExtResource("1_x")
+id = &"sunblade_slash"
+display_name = "Sunblade Slash"
+description = "Three-hit combo; the third swing is a heavy finisher. Every swing also throws a fiery crescent that burns."
+ability_script = ExtResource("2_x")
+cooldown = 0.0
+damage_type = 0
+tags = Array[StringName]([&"basic_attack"])
+meter_label = &"blade"
+feel_preset = &"light"
+combo_steps = Array[ExtResource("3_x")]([SubResource("Sub_3"), SubResource("Sub_6"), SubResource("Sub_9")])
+combo_enabled = true
+combo_reset_time = 0.7
+swing_projectile = ExtResource("6_x")
+swing_projectile_damage = SubResource("Sub_10")
+swing_projectile_damage_type = 1
+swing_projectile_label = &"crescent"
+projectile_spawn_offset = 70.0

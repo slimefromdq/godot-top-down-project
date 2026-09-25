@@ -44,3 +44,4 @@ input_action = &"hero_ultimate"
 [resource]
 script = ExtResource("1_rules")
 slots = Array[ExtResource("2_slot")]([SubResource("Slot_primary"), SubResource("Slot_ability_1"), SubResource("Slot_ability_2"), SubResource("Slot_movement"), SubResource("Slot_cc"), SubResource("Slot_ultimate")])
+test_maps = PackedStringArray("res://scenes/dream_basin_world.tscn", "res://scenes/training_grounds_world.tscn")

@@ -28,8 +28,6 @@ signal hit_landed(info: DamageInfo, hurtbox: HurtboxComponent)
 @export var debug_draw: bool = false
 
 var _attacks: Dictionary = {}    # attack_id -> Attack
-var _query_circle := CircleShape2D.new()
-var _query_rect := RectangleShape2D.new()
 
 
 class Attack:
@@ -125,27 +123,39 @@ func _check(attack_id: int) -> void:
 # previews can ask "would this hit anything?" without dealing damage.
 func find_targets(shape: HitShape, direction: Vector2) -> Array[HurtboxComponent]:
 	var actor := get_actor()
-	var origin := actor.global_position + direction * shape.forward_offset
-	var query := PhysicsShapeQueryParameters2D.new()
-	query.collide_with_areas = true
-	query.collide_with_bodies = false
-	query.collision_mask = GameRules.current().hurtbox_mask
+	return query(actor, actor.global_position, direction, shape, actor)
+
+
+# The shared search behind Hitbox, GroundZone and area bursts: every hurtbox
+# `source` is allowed to hit inside `shape`, placed at `origin` facing
+# `direction`. `context` is any node in the world (for physics access).
+static func query(context: Node2D, origin: Vector2, direction: Vector2, shape: HitShape,
+		source: Node) -> Array[HurtboxComponent]:
+	if direction == Vector2.ZERO:
+		direction = Vector2.RIGHT
+	origin += direction * shape.forward_offset
+	var params := PhysicsShapeQueryParameters2D.new()
+	params.collide_with_areas = true
+	params.collide_with_bodies = false
+	params.collision_mask = GameRules.current().hurtbox_mask
 
 	match shape.kind:
 		HitShape.Kind.LINE:
-			_query_rect.size = Vector2(shape.length, shape.width)
-			query.shape = _query_rect
-			query.transform = Transform2D(direction.angle(), origin + direction * shape.length / 2.0)
+			var rect := RectangleShape2D.new()
+			rect.size = Vector2(shape.length, shape.width)
+			params.shape = rect
+			params.transform = Transform2D(direction.angle(), origin + direction * shape.length / 2.0)
 		_:
 			# ARC searches the full circle, then filters by angle below.
-			_query_circle.radius = shape.radius
-			query.shape = _query_circle
-			query.transform = Transform2D(0.0, origin)
+			var circle := CircleShape2D.new()
+			circle.radius = shape.radius
+			params.shape = circle
+			params.transform = Transform2D(0.0, origin)
 
 	var results: Array[HurtboxComponent] = []
-	for hit in actor.get_world_2d().direct_space_state.intersect_shape(query, 64):
+	for hit in context.get_world_2d().direct_space_state.intersect_shape(params, 64):
 		var hurtbox := hit.collider as HurtboxComponent
-		if hurtbox == null or not _can_hit(hurtbox):
+		if hurtbox == null or not can_hit(source, hurtbox):
 			continue
 		if shape.kind == HitShape.Kind.ARC and not _inside_arc(hurtbox, origin, direction, shape):
 			continue
@@ -153,14 +163,17 @@ func find_targets(shape: HitShape, direction: Vector2) -> Array[HurtboxComponent
 	return results
 
 
-func _can_hit(hurtbox: HurtboxComponent) -> bool:
+# Team rules in one place: never yourself, never a teammate, anyone may hit
+# a neutral (team-less) target, and a neutral source hits everyone.
+static func can_hit(source: Node, hurtbox: HurtboxComponent) -> bool:
 	if not hurtbox.is_valid_target():
 		return false
-	var actor := get_actor()
-	if hurtbox.owner == actor or hurtbox.get_parent() == actor:
+	if source == null or not is_instance_valid(source):
+		return true
+	if hurtbox.owner == source or hurtbox.get_parent() == source:
 		return false
-	var my_team: StringName = actor.get(&"team") if actor.get(&"team") != null else &""
-	return my_team == &"" or hurtbox.get_team() != my_team
+	var team = source.get(&"team")
+	return team == null or team == &"" or hurtbox.get_team() != team
 
 
 # The target counts if any part of its body (approximated as a circle)

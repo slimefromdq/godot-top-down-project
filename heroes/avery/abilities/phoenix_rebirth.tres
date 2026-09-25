@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="PhoenixRebirthData" format=3]
+
+[ext_resource type="Script" path="res://heroes/avery/abilities/phoenix_rebirth_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://heroes/avery/abilities/phoenix_rebirth_ability.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="4_x"]
+[ext_resource type="Resource" path="res://heroes/avery/data/avery_burst_knockback.tres" id="5_x"]
+[ext_resource type="Resource" path="res://heroes/avery/data/avery_rebirth_state.tres" id="6_x"]
+[ext_resource type="Resource" path="res://heroes/avery/data/avery_burn.tres" id="7_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("3_x")
+kind = 1
+radius = 300.0
+
+[sub_resource type="Resource" id="Sub_2"]
+script = ExtResource("4_x")
+base = 60.0
+per_level = 8.0
+magic_ratio = 1.0
+
+[resource]
+script = ExtResource("1_x")
+id = &"phoenix_rebirth"
+display_name = "Phoenix Rebirth"
+description = "Passive. When Avery would die, she is reborn in flame with 40% HP and scorches everything around her. Long cooldown."
+ability_script = ExtResource("2_x")
+cooldown = 100.0
+cooldown_per_level = -3.0
+hit_shape = SubResource("Sub_1")
+damage = SubResource("Sub_2")
+damage_type = 1
+on_hit_status = ExtResource("5_x")
+tags = Array[StringName]([&"ability", &"ultimate"])
+meter_label = &"phoenix_burst"
+restore_health_ratio = 0.4
+rebirth_duration = 1.2
+invulnerable_after = 0.3
+rebirth_state = ExtResource("6_x")
+cleanse_on_trigger = true
+burst_enabled = true
+burst_extra_status = ExtResource("7_x")
