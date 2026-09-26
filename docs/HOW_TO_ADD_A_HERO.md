@@ -368,7 +368,7 @@ Template → "Nimbus", basic attack deleted, then:
 | Slot | Data | Script |
 |---|---|---|
 | passive | `steady_hand.tres`: `values/bonus_per_stack` 0.1, `max_stacks` 4, `still_speed` | `steady_hand.gd` (`PassiveAbility`): a stack per second standing still, pips, `consume()` |
-| primary | `umbrella_rifle.tres`: `RangedAttackData`, SEMI, 1.1/s, 5 rounds, 1.2 x Weapon, pierce 1, `values/crit_multiplier` 1.75 | `umbrella_rifle.gd`: Steady Hand bonus, `grant_crit()`, crits + free pierce against his Overcast |
+| primary | `umbrella_rifle.tres`: `RangedAttackData`, SEMI, 1.1/s, 5 rounds, 1.6 x Weapon, pierce 1, `values/crit_multiplier` 1.75 | `umbrella_rifle.gd`: Steady Hand bonus, `grant_crit()`, crits + free pierce against his Overcast |
 | ability_1 | `scope.tres`: `SelfStatusData` with `hold_to_keep`; the status has -40% speed, `camera_look_ahead` 500 and the `AimLaser` | shared `SelfStatusAbility` |
 | movement | `descend.tres`: `LaunchData`, 1100 px, 1.6 s, `steer_speed` 450 | shared `LaunchAbility` |
 | cc | `parry.tres`: `SelfStatusData`, a 0.35 s `parries` status whose melee stun is 0.5 s; `values/cooldown_refund` 0.5 | `parry_ability.gd`: refund + next-shot crit on `parried` |

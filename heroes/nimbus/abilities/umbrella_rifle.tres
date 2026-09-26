@@ -7,7 +7,7 @@
 
 [sub_resource type="Resource" id="Damage"]
 script = ExtResource("9_v")
-weapon_ratio = 1.2
+weapon_ratio = 1.6
 
 [sub_resource type="Resource" id="Crit"]
 script = ExtResource("9_v")
@@ -23,7 +23,7 @@ magazine_size = 5
 reload_time = 2.0
 id = &"umbrella_rifle"
 display_name = "Umbrella Rifle"
-description = "Semi-automatic: heavy, fast rounds (1.2x Weapon) that pierce one target. 5 rounds. Crits deal 1.75x."
+description = "Semi-automatic: heavy, fast rounds (1.6x Weapon) that pierce one target. 5 rounds. Crits deal 1.75x."
 ability_script = ExtResource("2_a")
 cooldown = 0.0
 damage = SubResource("Damage")

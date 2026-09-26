@@ -85,8 +85,8 @@ func _test_rifle() -> void:
 	hits_log.clear()
 	await _shoot(Vector2(800, 0))
 	var weapon := nimbus.stats_component.get_stat(&"weapon")
-	_check("1.2 x Weapon per round", not _hits(a).is_empty() and _near(_hits(a)[0].amount, 1.2 * weapon, 0.5),
-		"%.1f vs %.1f" % [_hits(a)[0].amount if not _hits(a).is_empty() else 0.0, 1.2 * weapon])
+	_check("1.6 x Weapon per round", _near(_ratio(), 1.6) and not _hits(a).is_empty() and _near(_hits(a)[0].amount, _ratio() * weapon, 0.5),
+		"%.1f vs %.1f" % [_hits(a)[0].amount if not _hits(a).is_empty() else 0.0, _ratio() * weapon])
 	_check("pierces one target (hits two)", not _hits(b).is_empty() and _hits(c).is_empty(), "")
 	_check("no crit without a reason", not _hits(a)[0].has_tag(&"crit") if not _hits(a).is_empty() else false, "")
 	_clear()
@@ -119,7 +119,7 @@ func _test_steady_hand() -> void:
 	nimbus.request_slot(&"primary", target.global_position)
 	await _seconds(0.3)
 	var weapon := nimbus.stats_component.get_stat(&"weapon")
-	_check("the next shot deals +40%", not _hits(target).is_empty() and _near(_hits(target)[0].amount, 1.2 * weapon * 1.4, 0.5),
+	_check("the next shot deals +40%", not _hits(target).is_empty() and _near(_hits(target)[0].amount, _ratio() * weapon * 1.4, 0.5),
 		"%.1f" % (_hits(target)[0].amount if not _hits(target).is_empty() else 0.0))
 	_check("...and spends it", passive.get_bonus() < 0.11, "%.2f" % passive.get_bonus())
 	await _seconds(2.1)
@@ -202,7 +202,7 @@ func _test_parry_projectile() -> void:
 	var weapon := nimbus.stats_component.get_stat(&"weapon")
 	var crit := _hits(target)
 	_check("the next shot crits (1.75x)", not crit.is_empty() and crit[0].has_tag(&"crit")
-		and _near(crit[0].amount, 1.2 * weapon * 1.75, 0.5), "%.1f" % (crit[0].amount if not crit.is_empty() else 0.0))
+		and _near(crit[0].amount, _ratio() * weapon * 1.75, 0.5), "%.1f" % (crit[0].amount if not crit.is_empty() else 0.0))
 	hits_log.clear()
 	await _seconds(0.6)    # the rifle's fire interval (1.1 shots/s)
 	await _shoot(Vector2(400, 9000))
@@ -311,7 +311,7 @@ func _test_overcast() -> void:
 	var all_hit := [a, b, c].all(func(d): return _hits(d).size() == 1 and _hits(d)[0].has_tag(&"crit"))
 	_check("shots into it crit and pierce everyone inside", all_hit,
 		"hits %d/%d/%d" % [_hits(a).size(), _hits(b).size(), _hits(c).size()])
-	_check("...at 1.75x", not _hits(a).is_empty() and _near(_hits(a)[0].amount, 1.2 * weapon * 1.75, 0.5), "")
+	_check("...at 1.75x", not _hits(a).is_empty() and _near(_hits(a)[0].amount, _ratio() * weapon * 1.75, 0.5), "")
 	var far_cast := Vector2(10000, 18000)
 	nimbus.get_ability(&"ultimate").cooldown_remaining = 0.0
 	nimbus.request_slot(&"ultimate", far_cast)
@@ -326,6 +326,11 @@ func _test_overcast() -> void:
 
 
 # --- Helpers -----------------------------------------------------------------------------------
+
+# The rifle's Weapon ratio, from its data (1.6).
+func _ratio() -> float:
+	return nimbus.get_ranged_ability().data.damage.weapon_ratio
+
 
 func _hits(target: Node) -> Array:
 	return hits_log.filter(func(i): return i.target == target and i.label == &"umbrella_rifle")
