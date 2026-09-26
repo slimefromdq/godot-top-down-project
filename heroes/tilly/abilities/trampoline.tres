@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="PlacePadData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/place_pad_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/abilities/common/place_pad_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/tilly/data/tilly_bounce_back.tres" id="3_a"]
+
+[resource]
+script = ExtResource("1_a")
+place_range = 500.0
+max_offset = 700.0
+min_offset = 200.0
+pad_radius = 70.0
+air_time = 0.8
+arc_height = 170.0
+lifetime = 10.0
+max_launches = 4
+enemy_status = ExtResource("3_a")
+pad_color = Color(0.98, 0.8, 0.1, 1)
+id = &"trampoline"
+display_name = "Trampoline"
+description = "Press to place a trampoline, drag to aim its landing spot (up to 700 px), release. Allies who step on it are launched there; enemies are bounced back the way they came. Lasts 10 s or 4 launches. 2 charges."
+ability_script = ExtResource("2_a")
+cooldown = 16.0
+max_charges = 2
+tags = Array[StringName]([&"ability"])
+charge_enabled = true
+charge_time_max = 5.0
+charge_move_speed_multiplier = 1.0
+feel_preset = &"quick"

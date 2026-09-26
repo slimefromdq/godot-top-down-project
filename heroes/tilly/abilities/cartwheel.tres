@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/tilly/abilities/cartwheel_ability.gd" id="2_a"]
+
+[resource]
+script = ExtResource("1_a")
+distance = 350.0
+speed = 1600.0
+carry_momentum = false
+id = &"cartwheel"
+display_name = "Cartwheel"
+description = "A quick 350 px cartwheel. If it ends on one of your trampolines you launch with it and the cooldown resets."
+ability_script = ExtResource("2_a")
+cooldown = 8.0
+tags = Array[StringName]([&"movement"])
+feel_preset = &"quick"

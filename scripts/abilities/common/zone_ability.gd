@@ -8,6 +8,9 @@ class_name ZoneAbility
 #             spawn_owned_zone, so it ends with the cast)
 #   recovery  from the feel preset
 #
+# With data.instant the cast is only its feel preset: the zone is spawned at
+# the active phase and lasts zone_duration on its own (a stun doesn't end it).
+#
 # Per-target logic without a new zone class: override the hooks below, which
 # are wired to the zone's target_entered / target_ticked / target_exited.
 # Cues: <id>_zone_start (context.zone_duration), <id>_zone_end.
@@ -23,6 +26,8 @@ func get_zone_data() -> ZoneAbilityData:
 func _get_cast_feel() -> AttackFeel:
 	# Copy: the preset is shared with other abilities.
 	var feel: AttackFeel = super().duplicate()
+	if get_zone_data().instant:
+		return feel
 	feel.active = get_zone_data().zone_duration
 	feel.lunge_distance = 0.0
 	return feel
@@ -38,7 +43,11 @@ func _activate(_target_position: Vector2) -> String:
 func _on_active_start() -> void:
 	var zone_data := get_zone_data()
 	var at := actor.global_position + cast_direction * zone_data.spawn_offset
-	zone = spawn_owned_zone(zone_data.zone, at, cast_direction, zone_data.zone_duration)
+	if zone_data.instant:
+		# Not owned by the cast: it simply runs its duration.
+		zone = GroundZone.spawn(actor, zone_data.zone, at, cast_direction, actor, zone_data.zone_duration)
+	else:
+		zone = spawn_owned_zone(zone_data.zone, at, cast_direction, zone_data.zone_duration)
 	zone.target_entered.connect(_on_zone_target_entered)
 	zone.target_ticked.connect(_on_zone_target_ticked)
 	zone.target_exited.connect(_on_zone_target_exited)
@@ -47,6 +56,8 @@ func _on_active_start() -> void:
 
 
 func _on_active_end() -> void:
+	if get_zone_data().instant:
+		return
 	if is_instance_valid(zone):
 		end_owned_zones()
 		if is_instance_valid(actor):

@@ -54,6 +54,7 @@ var free_pierce: Callable
 ## Tag added to a projectile's hits after a parry turned it around.
 const TAG_REFLECTED := &"reflected"
 var _travelled: float = 0.0
+var _bounces_used: int = 0
 ## Which pass a returning projectile is on (always OUTBOUND otherwise).
 var current_pass: Pass = Pass.OUTBOUND
 
@@ -144,6 +145,19 @@ func _physics_process(delta: float) -> void:
 	if data.stops_at_walls:
 		var ray := PhysicsRayQueryParameters2D.create(from, to, GameRules.current().wall_mask)
 		var wall := get_world_2d().direct_space_state.intersect_ray(ray)
+		if not wall.is_empty() and _bounces_used < data.wall_bounces:
+			# Ricochet: hit what's on the way to the wall, then turn off it.
+			_bounces_used += 1
+			_hit_targets_between(from, wall.position)
+			if is_queued_for_deletion():
+				return
+			var normal: Vector2 = wall.normal
+			direction = direction.bounce(normal).normalized()
+			rotation = direction.angle()
+			global_position = wall.position + normal * 2.0
+			if _age >= data.lifetime:
+				_expire()
+			return
 		if not wall.is_empty():
 			to = wall.position
 			_hit_targets_between(from, to)

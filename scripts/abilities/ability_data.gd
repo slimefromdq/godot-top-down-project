@@ -39,6 +39,9 @@ enum ChargeBelowMin {
 @export var cooldown: float = 5.0
 ## Added per level above 1. Negative = shorter cooldown at higher levels.
 @export var cooldown_per_level: float = 0.0
+## Uses stored up (a trampoline you can place twice). Each use takes one; the
+## cooldown recharges one at a time. 1 = a normal cooldown.
+@export_range(1, 9) var max_charges: int = 1
 ## Cost hook for a future resource system (mana, heat...). Nothing spends it
 ## yet; see Ability._pay_cost().
 @export var cost: float = 0.0
@@ -180,6 +183,8 @@ func validate() -> PackedStringArray:
 		problems.append("'%s' has no ability_script" % id)
 	elif not _script_extends_ability(ability_script):
 		problems.append("'%s' ability_script doesn't extend Ability" % id)
+	if max_charges < 1:
+		problems.append("'%s' needs at least 1 charge" % id)
 	if cooldown < 0.0 or cost < 0.0 or ability_range < 0.0 or knockback < 0.0:
 		problems.append("'%s' has a negative cooldown/cost/range/knockback" % id)
 	if hit_shape != null and hit_shape.has_negative():

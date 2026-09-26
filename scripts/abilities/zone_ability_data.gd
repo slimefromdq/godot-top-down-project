@@ -16,6 +16,9 @@ class_name ZoneAbilityData
 ## Pixels ahead of the hero (along the aim) where the zone is placed. Ignored
 ## while the zone follows its owner.
 @export var spawn_offset: float = 0.0
+## Cast it and move on: the zone lasts zone_duration on its own while the
+## cast is just its feel preset (no channel). Off = channel the zone.
+@export var instant: bool = false
 
 
 func get_range() -> float:

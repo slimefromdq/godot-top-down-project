@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="GroundZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/ground_zone_data.gd" id="1_z"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_z"]
+[ext_resource type="Resource" path="res://heroes/tilly/data/tilly_saved.tres" id="3_z"]
+
+[sub_resource type="Resource" id="Shape"]
+script = ExtResource("2_z")
+kind = 1
+radius = 600.0
+
+[resource]
+script = ExtResource("1_z")
+shape = SubResource("Shape")
+duration = 6.0
+tick_interval = 0.5
+meter_label = &"safety_net"
+intercepts_deaths = true
+intercept_health_ratio = 0.15
+intercept_move_to_owner = 90.0
+intercept_status = ExtResource("3_z")
+follow_owner = true
+affects = 1
+ends_if_owner_dies = true
+outlives_cast = true
+color = Color(1, 0.85, 0.2, 0.12)
+outline_color = Color(1, 0.9, 0.3, 0.8)
+outline_width = 4.0

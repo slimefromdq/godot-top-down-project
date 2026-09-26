@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="1_p"]
+[ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="2_p"]
+
+[resource]
+script = ExtResource("1_p")
+speed = 1100.0
+lifetime = 0.7
+radius = 18.0
+wall_bounces = 2
+hit_effect = ExtResource("2_p")

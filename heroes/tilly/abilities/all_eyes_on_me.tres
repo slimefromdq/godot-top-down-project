@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="SelfStatusData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/self_status_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/tilly/abilities/all_eyes_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/tilly/data/tilly_spotlight.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/tilly/data/tilly_taunt.tres" id="4_a"]
+
+[resource]
+script = ExtResource("1_a")
+self_status = ExtResource("3_a")
+count_radius = 300.0
+id = &"all_eyes_on_me"
+display_name = "All Eyes on Me"
+description = "A dazzling spin. Enemies within 300 px are forced to walk toward Tilly for 1.25 s while she takes 40% less damage."
+ability_script = ExtResource("2_a")
+cooldown = 12.0
+on_hit_status = ExtResource("4_a")
+tags = Array[StringName]([&"ability", &"cc"])
+feel_preset = &"spin"

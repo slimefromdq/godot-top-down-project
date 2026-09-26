@@ -36,7 +36,8 @@ func take_hit(info: DamageInfo) -> void:
 		for effect in info.statuses:
 			status_component.apply(effect, info.source, info.direction)
 	if movement_component != null and info.knockback != Vector2.ZERO:
-		movement_component.apply_knockback(info.knockback)
+		movement_component.apply_knockback(info.knockback
+			* StatusEffectComponent.multiplier_of(status_component, StatusEffect.DISPLACEMENT_TAKEN))
 
 
 # Abilities use this to reject targets that are already dead.

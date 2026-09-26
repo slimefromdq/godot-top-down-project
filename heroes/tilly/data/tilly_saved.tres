@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"tilly_saved"
+display_name = "Caught by the Net"
+duration = 1.0
+untargetable = true
+body_alpha = 0.6
