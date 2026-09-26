@@ -68,6 +68,9 @@ var controller: AbilityController
 ## Which hero slot this fills ("primary", "cc" ...). Empty for legacy abilities.
 var slot_id: StringName
 var cooldown_remaining: float = 0.0
+# AbilityData.max_charges > 1: uses in stock (-1 = not initialised = full).
+# cooldown_remaining is then the recharge of the next one.
+var _charges: int = -1
 
 var phase: Phase = Phase.IDLE
 ## Seconds spent in the current phase.
@@ -134,7 +137,23 @@ func get_cooldown() -> float:
 
 
 func is_ready() -> bool:
+	if get_max_charges() > 1:
+		return get_charges() > 0
 	return cooldown_remaining <= 0.0
+
+
+func get_max_charges() -> int:
+	return data.max_charges if data != null else 1
+
+
+# Uses in stock. Single-charge abilities: 1 when ready, else 0.
+func get_charges() -> int:
+	var most := get_max_charges()
+	if most <= 1:
+		return 1 if cooldown_remaining <= 0.0 else 0
+	if _charges < 0:
+		_charges = most
+	return _charges
 
 
 func is_casting() -> bool:
@@ -193,6 +212,8 @@ func repeats_while_held(slot_default: bool) -> bool:
 # HUD pips (current, max) shown on this ability's slot, e.g. a passive's
 # stacks. (-1, -1) = none.
 func get_hud_pips() -> Vector2i:
+	if get_max_charges() > 1:
+		return Vector2i(get_charges(), get_max_charges())
 	return Vector2i(-1, -1)
 
 
@@ -201,7 +222,18 @@ func reset_cooldown() -> void:
 	if cooldown_remaining <= 0.0:
 		return
 	cooldown_remaining = 0.0
+	_recharge_one()
 	cooldown_finished.emit()
+
+
+# Charges: the recharge finished, one more use in stock; keep recharging
+# until full.
+func _recharge_one() -> void:
+	if get_max_charges() <= 1:
+		return
+	_charges = mini(get_charges() + 1, get_max_charges())
+	if _charges < get_max_charges():
+		cooldown_remaining = 0.0 if cooldowns_disabled else get_cooldown()
 
 
 func reduce_cooldown(seconds: float) -> void:
@@ -215,6 +247,8 @@ func reduce_cooldown(seconds: float) -> void:
 
 # 0 when ready, 1 right after casting. Handy for cooldown sweeps.
 func get_cooldown_ratio() -> float:
+	if get_max_charges() > 1 and get_charges() > 0:
+		return 0.0    # usable; the pips show how many
 	var total := get_cooldown()
 	if total <= 0.0:
 		return 0.0
@@ -434,6 +468,13 @@ func _is_silent_block(reason: String) -> bool:
 
 
 func _spend_cooldown() -> void:
+	if get_max_charges() > 1:
+		_charges = maxi(get_charges() - 1, 0)
+		if cooldowns_disabled:
+			_charges = get_max_charges()
+		elif cooldown_remaining <= 0.0:
+			cooldown_remaining = get_cooldown()
+		return
 	cooldown_remaining = 0.0 if cooldowns_disabled else get_cooldown()
 
 
@@ -476,6 +517,7 @@ func _physics_process(delta: float) -> void:
 		cooldown_remaining -= delta
 		if cooldowns_disabled or cooldown_remaining <= 0.0:
 			cooldown_remaining = 0.0
+			_recharge_one()
 			cooldown_finished.emit()
 	if phase != Phase.IDLE:
 		_check_tether()

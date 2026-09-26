@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ZoneAbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/zone_ability_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/abilities/common/zone_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/tilly/data/tilly_net.tres" id="3_a"]
+
+[resource]
+script = ExtResource("1_a")
+zone = ExtResource("3_a")
+zone_duration = 6.0
+instant = true
+id = &"safety_net"
+display_name = "Safety Net"
+description = "A 600 px net around Tilly for 6 s. Any ally inside who would die is instead bounced to her side at 15% health and untargetable for 1 s, once per ally."
+ability_script = ExtResource("2_a")
+cooldown = 100.0
+tags = Array[StringName]([&"ultimate"])
+feel_preset = &"quick"

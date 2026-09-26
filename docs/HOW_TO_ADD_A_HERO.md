@@ -118,6 +118,12 @@ For each slot in the definition's `abilities` dictionary, point at an
 | a parry: reflect the first projectile / stun the first melee attacker | `StatusEffect.parries` + `parry_melee_status`; react with `actor.combat_hooks.parried(kind, attacker, info)` | none (a small script for rewards) |
 | a leap / glide to the cursor over low cover and ledges, optionally steerable | `LaunchData` + `LaunchAbility` (`max_distance`, `air_time`, `steer_speed`); scripts can `actor.retarget_launch(point)` mid-air | none |
 | shots that pass through some targets without using up pierce | override `RangedAttackAbility._hit_is_free_pierce(hurtbox)` (`Projectile.free_pierce`) | a small script |
+| an ability with charges (two uses stocked, one recharging) | `AbilityData.max_charges`; the HUD shows them as pips | none |
+| place a jump pad: press, drag the landing spot, release; allies launch, enemies bounce | `PlacePadData` + `PlacePadAbility` (charge group on for the drag); scripts can `JumpPad.place(...)` | none |
+| a zone that saves allies who would die (a safety net) | `GroundZoneData` Death intercept group (`intercepts_deaths`, health ratio, move to owner, status); `GroundZone.death_intercepted` | none |
+| cast a zone and move on (no channel) | `ZoneAbilityData.instant` | none |
+| shots that ricochet off walls | `ProjectileData.wall_bounces` | none |
+| shorter knockbacks and pulls on someone | `StatusEffect.DISPLACEMENT_TAKEN` in `stat_multipliers` (0.6 = 40% shorter) | none |
 | hard CC that can't be chained forever | automatic: **Resolve** (`GameRules.resolve_duration` / `resolve_cc_multiplier`) halves a stun, root or taunt that lands within 2 s of the last one ending. Carries, self-applied CC, walk-out-able pulls and formations are exempt; `StatusEffect.ignores_resolve` exempts any other | none |
 | "can A see B?" (a stalker passive, a sight-gated autofire) | `CombatQueries.has_line_of_sight(from, to)`: walls on `GameRules.sight_mask`, and bushes (can't see in from outside; from inside you see out) | none |
 | hide in bushes / reveal someone | bushes hide their occupants automatically (`CombatQueries.is_hidden_from`, drawn per viewer by `VisualsComponent`); a `StatusEffect` with `reveals` shows them anyway | none |
@@ -359,6 +365,27 @@ FeelProfile, not the cue profiles.
   hero automatically.
 
 ---
+
+## What Tilly took
+
+A movement SUPPORT, role Flex (title: The Crash Test Acrobat). Tools → New
+Hero from Template → "Tilly", basic attack deleted, then:
+
+| Slot | Data | Script |
+|---|---|---|
+| passive | `crumple_zone.tres` (`TillyCrumpleZoneData`): an always-on status with `displacement_taken` 0.6, and a +25% speed status on landing | `crumple_zone.gd` (`PassiveAbility`): keeps the status on, applies the other on `Actor.landed` |
+| primary | `bouncy_balls.tres`: `RangedAttackData`, AUTO 2.5/s, `wall_bounces` 2 | generic `RangedAttackAbility` |
+| ability_1 | `trampoline.tres`: `PlacePadData`, 700 px, 10 s / 4 launches, `max_charges` 2, 16 s recharge, enemies get a 250 px bounce back | shared `PlacePadAbility` |
+| movement | `cartwheel.tres`: `ChargeData`, 350 px | `cartwheel_ability.gd`: ending on her own pad resets the cooldown (the pad launches her) |
+| cc | `all_eyes_on_me.tres`: `SelfStatusData` (40% less damage, 1.25 s), `count_radius` 300, `on_hit_status` = a compel | `all_eyes_ability.gd`: puts the compel on every enemy counted |
+| ultimate | `safety_net.tres`: `ZoneAbilityData`, `instant`; a 600 px ALLIES zone with the death intercept (15%, beside her, 1 s untargetable) | generic `ZoneAbility` |
+
+Shared pieces added for her: placed `JumpPad`s (`owner_actor`, `enemy_status`,
+`lifetime`, `max_launches`, `wait_for_footing`) with `PlacePadData` /
+`PlacePadAbility`, `AbilityData.max_charges`, the `GroundZoneData` death
+intercept, `ZoneAbilityData.instant`, `ProjectileData.wall_bounces` and
+`StatusEffect.DISPLACEMENT_TAKEN`. `tools/heroes/support_infra_test` covers
+the pieces alone and `tools/heroes/tilly_test` covers the kit.
 
 ## What Nimbus took
 

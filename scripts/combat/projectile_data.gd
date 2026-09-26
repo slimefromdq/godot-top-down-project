@@ -15,6 +15,9 @@ class_name ProjectileData
 @export var radius: float = 30.0
 ## Stopped by walls (GameRules.wall_mask).
 @export var stops_at_walls: bool = true
+## Ricochets: bounce off this many walls (angle in = angle out) before a wall
+## stops it. Each bounce keeps its range, pierce and hit list.
+@export var wall_bounces: int = 0
 ## Lobbed (a grenade, a canister): flies over walls and heads to the shooter's
 ## aim point, at most max range (speed x lifetime) away, hitting nothing on
 ## the way, and expires there. Pair it with explode_on_expire.

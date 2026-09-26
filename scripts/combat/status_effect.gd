@@ -34,6 +34,9 @@ const DAMAGE_TAKEN := &"damage_taken"
 ## stat_multipliers. TRUE damage has no per-type multiplier.
 const DAMAGE_TAKEN_PHYSICAL := &"damage_taken_physical"
 const DAMAGE_TAKEN_MAGIC := &"damage_taken_magic"
+## How far knockbacks, pulls and other displacements move this actor
+## (0.6 = 40% shorter). Launches (jump pads) and carries aren't affected.
+const DISPLACEMENT_TAKEN := &"displacement_taken"
 
 ## What happens when the same status is applied again while active.
 enum StackRule {

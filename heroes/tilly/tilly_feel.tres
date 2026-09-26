@@ -1,0 +1,63 @@
+[gd_resource type="Resource" script_class="FeelProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/feel/feel_profile.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="2_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/feel/impact_light.tres" id="3_x"]
+
+[sub_resource type="Resource" id="Feel_throw"]
+script = ExtResource("2_x")
+windup = 0.0
+active = 0.02
+recovery = 0.08
+move_multiplier = 0.85
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+weight = 0.5
+release_snap = -5.0
+hitstop = 0.0
+shake_on_hit = 0.04
+camera_nudge = 2.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Feel_quick"]
+script = ExtResource("2_x")
+windup = 0.0
+active = 0.02
+recovery = 0.08
+move_multiplier = 1.0
+lunge_distance = 0.0
+movement_cancel_after = 0.0
+ability_cancel_after = 0.0
+weight = 0.6
+hitstop = 0.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Feel_spin"]
+script = ExtResource("2_x")
+windup = 0.1
+active = 0.05
+recovery = 0.15
+move_multiplier = 0.4
+lunge_distance = 0.0
+movement_cancel_after = 0.1
+ability_cancel_after = 0.1
+weight = 1.2
+windup_squash = 0.12
+windup_glow = Color(1, 0.9, 0.3, 0.6)
+hitstop = 0.03
+shake_on_swing = 0.15
+trail_particles = 0
+
+[sub_resource type="Resource" id="Feel_fallback"]
+script = ExtResource("2_x")
+
+[resource]
+script = ExtResource("1_x")
+presets = Dictionary[StringName, ExtResource("2_x")]({
+&"throw": SubResource("Feel_throw"),
+&"quick": SubResource("Feel_quick"),
+&"spin": SubResource("Feel_spin")
+})
+fallback = SubResource("Feel_fallback")
+impact_sound = ExtResource("3_x")

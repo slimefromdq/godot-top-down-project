@@ -34,6 +34,9 @@ func _run() -> void:
 	await _test_ally_targeting()
 	await _test_formation()
 	await _test_charged_bash_and_passive()
+	await _test_placed_pads()
+	await _test_death_intercept()
+	await _test_charges_bounces_displacement()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
 	get_tree().quit(failures)
@@ -568,6 +571,186 @@ func _test_charged_bash_and_passive() -> void:
 
 
 # --- Helpers ------------------------------------------------------------------
+
+# A1b Placed jump pads (JumpPad.place): team filter, enemy status, launch
+# count, lifetime, waiting for footing; a map pad still launches anyone.
+func _test_placed_pads() -> void:
+	hero.global_position = Vector2(0, 40000)
+	var ally := _hero(Vector2(-400, 40000), &"a")
+	var enemy := _hero(Vector2(-400, 40300), &"b")
+	spawned.append(ally)
+	spawned.append(enemy)
+	await _physics_frames(2)
+	var shove := StatusEffect.new()
+	shove.id = &"test_pad_shove"
+	shove.duration = 0.3
+	shove.displace_distance = 200.0
+	var pad := JumpPad.place(hero, Vector2(300, 40000), Vector2(900, 40000), hero, 60.0, 0.5, 120.0, 0.0, 2, shove, Color.YELLOW)
+	ally.global_position = Vector2(300, 40000)
+	await _physics_frames(3)
+	_check("a placed pad launches its owner's allies to its landing spot", ally.is_airborne()
+		and ally.get_launch_target() == Vector2(900, 40000), "")
+	enemy.global_position = Vector2(300, 40000)
+	await _physics_frames(3)
+	_check("...enemies get its enemy_status instead", not enemy.is_airborne()
+		and enemy.status_component.has_status(&"test_pad_shove"), "")
+	await _seconds(0.6)
+	ally.global_position = Vector2(300, 40000)
+	await _physics_frames(3)
+	await _seconds(0.6)
+	_check("...and it disappears after max_launches", not is_instance_valid(pad) or pad.is_queued_for_deletion(), "")
+
+	var timed := JumpPad.place(hero, Vector2(300, 40600), Vector2(900, 40600), hero, 60.0, 0.5, 120.0, 0.3, 0, null, Color.YELLOW)
+	await _seconds(0.45)
+	_check("...or after its lifetime", not is_instance_valid(timed) or timed.is_queued_for_deletion(), "")
+
+	var footing := JumpPad.place(hero, Vector2(300, 41000), Vector2(900, 41000), hero, 60.0, 0.5, 120.0, 0.0, 0, null, Color.YELLOW)
+	ally.global_position = Vector2(100, 41000)
+	await _physics_frames(2)
+	ally.movement_component.displace(Vector2.RIGHT, 200.0, 0.25)
+	await _physics_frames(4)
+	_check("wait_for_footing: no launch while dashing across", not ally.is_airborne(), "")
+	await _until_flag(func(): return ally.is_airborne(), 0.6)
+	_check("...but a dash that ends on it launches", ally.is_airborne(), "")
+	footing.queue_free()
+
+	var map_pad := JumpPad.new()
+	map_pad.landing_offset = Vector2(500, 0)
+	map_pad.position = Vector2(300, 41600)
+	add_child(map_pad)
+	spawned.append(map_pad)
+	enemy.global_position = Vector2(-200, 41600)
+	await _seconds(0.7)
+	enemy.status_component.clear()
+	await _physics_frames(2)
+	enemy.global_position = Vector2(300, 41600)
+	await _physics_frames(3)
+	_check("a map pad (no owner) still launches anyone", enemy.is_airborne(), "")
+	await _seconds(0.8)
+	_clear()
+	await _physics_frames(2)
+
+
+# A2b GroundZoneData death intercept: save an ally once, at a set health,
+# beside the owner, with a status.
+func _test_death_intercept() -> void:
+	hero.global_position = Vector2(0, 44000)
+	hero.health_component.reset()
+	var ally := _hero(Vector2(300, 44000), &"a")
+	var enemy := _dummy(Vector2(0, 44500))
+	enemy.team = &"b"
+	spawned.append(ally)
+	await _physics_frames(2)
+	var saved := StatusEffect.new()
+	saved.id = &"test_saved"
+	saved.duration = 1.0
+	saved.untargetable = true
+	var net := GroundZoneData.new()
+	net.shape = HitShape.circle(500.0)
+	net.duration = 5.0
+	net.affects = Hitbox.Affects.ALLIES
+	net.intercepts_deaths = true
+	net.intercept_health_ratio = 0.25
+	net.intercept_move_to_owner = 80.0
+	net.intercept_status = saved
+	var zone := GroundZone.spawn(hero, net, hero.global_position, Vector2.RIGHT, hero)
+	await _physics_frames(2)
+	ally.hurtbox.take_hit(DamageInfo.create(999999.0, enemy))
+	_check("death intercept: an ally who would die is saved", not ally.health_component.is_dead()
+		and is_equal_approx(ally.health_component.current_health, ally.health_component.max_health * 0.25), "")
+	_check("...moved beside the owner, with the status", absf(ally.global_position.distance_to(hero.global_position) - 80.0) < 1.0
+		and ally.status_component.has_status(&"test_saved"), "")
+	ally.status_component.remove(&"test_saved")
+	ally.hurtbox.take_hit(DamageInfo.create(999999.0, enemy))
+	_check("...once per ally per zone", ally.health_component.is_dead(), "")
+	zone.end()
+	_clear()
+	await _physics_frames(2)
+
+
+# AbilityData.max_charges, ProjectileData.wall_bounces, DISPLACEMENT_TAKEN.
+func _test_charges_bounces_displacement() -> void:
+	# A fresh test hero: earlier sections reconfigure the main one.
+	var main_hero := hero
+	hero = _hero(Vector2(0, 47000), &"a")
+	spawned.append(hero)
+	await _physics_frames(2)
+	var ability := hero.get_ability(&"cc")
+	_check("(fresh test hero has a cc ability)", ability != null, "")
+	if ability == null:
+		hero = main_hero
+		return
+	var old_charges := ability.data.max_charges
+	ability.data.max_charges = 2
+	ability._charges = -1
+	ability.cooldown_remaining = 0.0
+	_check("max_charges: starts full", ability.get_charges() == 2 and ability.is_ready()
+		and ability.get_hud_pips() == Vector2i(2, 2), "")
+	ability._spend_cooldown()
+	_check("a use takes one charge and starts the recharge", ability.get_charges() == 1 and ability.is_ready()
+		and ability.cooldown_remaining > 0.0 and ability.get_cooldown_ratio() == 0.0, "")
+	ability._spend_cooldown()
+	_check("with none left it's not ready", ability.get_charges() == 0 and not ability.is_ready(), "")
+	ability.reduce_cooldown(ability.cooldown_remaining)
+	_check("the recharge returns one charge and restarts", ability.get_charges() == 1 and ability.cooldown_remaining > 0.0, "")
+	ability.reset_cooldown()
+	_check("...until full", ability.get_charges() == 2 and ability.cooldown_remaining == 0.0, "")
+	ability.data.max_charges = old_charges
+	ability._charges = -1
+
+	var wall := StaticBody2D.new()
+	wall.collision_layer = MapLayers.WORLD
+	var shape := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(40, 1000)
+	shape.shape = rect
+	wall.add_child(shape)
+	wall.position = Vector2(300, 47000)
+	add_child(wall)
+	spawned.append(wall)
+	var behind := _dummy(Vector2(-150, 47000))
+	await _physics_frames(2)
+	var ball := ProjectileData.new()
+	ball.speed = 1200.0
+	ball.lifetime = 0.6
+	ball.wall_bounces = 1
+	var hp := behind.health_component.current_health
+	Projectile.fire(hero, ball, Vector2(40, 47000), Vector2.RIGHT, DamageInfo.create(10.0, hero))
+	await _seconds(0.5)
+	_check("wall_bounces: a shot at a wall comes back off it", behind.health_component.current_health < hp, "")
+	var stopped := ProjectileData.new()
+	stopped.speed = 1200.0
+	stopped.lifetime = 0.6
+	hp = behind.health_component.current_health
+	Projectile.fire(hero, stopped, Vector2(40, 47000), Vector2.RIGHT, DamageInfo.create(10.0, hero))
+	await _seconds(0.5)
+	_check("...without bounces a wall stops it", behind.health_component.current_health == hp, "")
+
+	var sturdy := StatusEffect.new()
+	sturdy.id = &"test_sturdy"
+	sturdy.duration = 2.0
+	sturdy.stat_multipliers = {StatusEffect.DISPLACEMENT_TAKEN: 0.5}
+	hero.status_component.apply(sturdy, hero)
+	var push := StatusEffect.new()
+	push.id = &"test_push"
+	push.duration = 0.3
+	push.displace_distance = 200.0
+	push.displace_duration = 0.2
+	hero.global_position = Vector2(0, 48000)
+	hero.status_component.apply(push, null, Vector2.RIGHT)
+	await _seconds(0.35)
+	_check("DISPLACEMENT_TAKEN 0.5 halves a 200 px push", absf(hero.global_position.x - 100.0) < 8.0, "%.0f" % hero.global_position.x)
+	hero = main_hero
+	_clear()
+	await _physics_frames(2)
+
+
+func _until_flag(condition: Callable, timeout: float) -> void:
+	var waited := 0.0
+	while not condition.call() and waited < timeout:
+		await get_tree().physics_frame
+		waited += get_physics_process_delta_time()
+
 
 func _hero(at: Vector2, team: StringName) -> Hero:
 	var h: Hero = load(HERO).instantiate()

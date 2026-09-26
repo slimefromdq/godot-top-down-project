@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"tilly_taunt"
+display_name = "All Eyes on Me"
+duration = 1.25
+compel_enabled = true
+compel_speed_multiplier = 1.0
+compel_stop_distance = 80.0
+compel_overrides_input = true
+body_tint = Color(1, 0.85, 0.2, 0.35)

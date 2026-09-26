@@ -46,6 +46,19 @@ class_name GroundZoneData
 ## Targets inside are at full ramp at once (a "breach": max damage now).
 @export var ramp_starts_full: bool = false
 
+@export_group("Death intercept")
+## A safety net: an ally inside (by `affects`) who would die is saved instead,
+## once per ally per zone: the death is cancelled (about_to_die), health set
+## to intercept_health_ratio of max, moved next to the zone's owner and given
+## intercept_status. GroundZone.death_intercepted reports each save.
+@export var intercepts_deaths: bool = false
+## Health left after a save, as a fraction of max health.
+@export_range(0.0, 1.0, 0.01) var intercept_health_ratio: float = 0.15
+## Pixels from the owner the saved ally is put down. < 0 = don't move them.
+@export var intercept_move_to_owner: float = 90.0
+## Put on the saved ally (e.g. a moment of untargetable).
+@export var intercept_status: StatusEffect
+
 @export_group("Leftover")
 ## Spawned where this zone was when it ran its course or was end()ed (a
 ## residue, embers): same owner, facing the same way. Not spawned when the

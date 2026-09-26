@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TillyCrumpleZoneData" format=3]
+
+[ext_resource type="Script" path="res://heroes/tilly/abilities/crumple_zone_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/tilly/abilities/crumple_zone.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/tilly/data/tilly_crumple.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/tilly/data/tilly_landing.tres" id="4_a"]
+
+[resource]
+script = ExtResource("1_a")
+always_status = ExtResource("3_a")
+landing_status = ExtResource("4_a")
+id = &"crumple_zone"
+display_name = "Crumple Zone"
+description = "Knockbacks and pulls on Tilly are 40% shorter. Whenever she lands from a launch she flips and gets +25% move speed for 1.5 s."
+ability_script = ExtResource("2_a")
+cooldown = 0.0
+tags = Array[StringName]([&"passive"])

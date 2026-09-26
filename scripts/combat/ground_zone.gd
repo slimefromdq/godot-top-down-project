@@ -25,6 +25,8 @@ signal target_ticked(hurtbox: HurtboxComponent)
 signal target_exited(hurtbox: HurtboxComponent)
 ## The zone is about to disappear (duration, owner death, or end()).
 signal ended
+## Death intercept (GroundZoneData.intercepts_deaths): this ally was saved.
+signal death_intercepted(hurtbox: HurtboxComponent)
 
 var data: GroundZoneData
 var source: Node
@@ -40,6 +42,10 @@ var _tick_amount: float = 0.0
 var _attack_id: int = 0
 var _inside: Dictionary = {}    # hurtbox instance id -> HurtboxComponent
 var _ended := false
+# Death intercept: health component -> its about_to_die callable, and the
+# allies already saved once.
+var _watched: Dictionary = {}
+var _saved: Dictionary = {}
 
 
 static func spawn(context: Node, zone_data: GroundZoneData, at: Vector2, dir: Vector2, from: Node,
@@ -174,6 +180,7 @@ func _update_inside() -> void:
 			var hurtbox: HurtboxComponent = now[key]
 			if data.status_while_inside != null and hurtbox.status_component != null:
 				hurtbox.status_component.apply(data.status_while_inside, _status_source(), direction)
+			_watch(hurtbox)
 			target_entered.emit(hurtbox)
 
 
@@ -186,7 +193,52 @@ func _exit(key: int) -> void:
 	var hurtbox := node as HurtboxComponent
 	if data.status_while_inside != null and hurtbox.status_component != null:
 		hurtbox.status_component.remove_from(data.status_while_inside.id, _status_source())
+	_unwatch(hurtbox)
 	target_exited.emit(hurtbox)
+
+
+# --- Death intercept -----------------------------------------------------------
+
+func _watch(hurtbox: HurtboxComponent) -> void:
+	if not data.intercepts_deaths or hurtbox.health_component == null:
+		return
+	var health := hurtbox.health_component
+	if _watched.has(health) or _saved.has(health.get_instance_id()):
+		return
+	var callable := _on_about_to_die.bind(hurtbox)
+	_watched[health] = callable
+	health.about_to_die.connect(callable)
+
+
+func _unwatch(hurtbox: HurtboxComponent) -> void:
+	var health := hurtbox.health_component if is_instance_valid(hurtbox) else null
+	if health == null or not _watched.has(health):
+		return
+	if health.about_to_die.is_connected(_watched[health]):
+		health.about_to_die.disconnect(_watched[health])
+	_watched.erase(health)
+
+
+func _on_about_to_die(event: DeathEvent, hurtbox: HurtboxComponent) -> void:
+	if event.cancelled or _ended or not is_instance_valid(hurtbox):
+		return
+	var health := hurtbox.health_component
+	_saved[health.get_instance_id()] = true
+	event.cancel(health.max_health * data.intercept_health_ratio, self)
+	_unwatch(hurtbox)
+	var ally := ZoneRamp.target_of(hurtbox) as Node2D
+	var owner_2d := _owner_source() as Node2D
+	if ally != null and owner_2d != null and data.intercept_move_to_owner >= 0.0:
+		var away := owner_2d.global_position.direction_to(ally.global_position)
+		if away == Vector2.ZERO:
+			away = Vector2.RIGHT
+		ally.global_position = owner_2d.global_position + away * data.intercept_move_to_owner
+		var movement = ally.get(&"movement_component")
+		if movement is MovementComponent:
+			movement.stop_forced_move()
+	if data.intercept_status != null and hurtbox.status_component != null:
+		hurtbox.status_component.apply(data.intercept_status, _owner_source())
+	death_intercepted.emit(hurtbox)
 
 
 # Who the zone's statuses come from: its owner, or the zone itself

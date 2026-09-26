@@ -220,6 +220,14 @@ Tilly supports by moving her team, not healing it: trampolines send allies over 
 
 **Built from.** Balls: `ProjectileData` with bounce. Trampoline: the new placeable jump pad (a runtime `JumpPad` with team filter, lifetime and charges); the enemy bounce is a displacement status. Cartwheel: `ChargeData`, plus a check for overlapping her own pad at the end. All Eyes on Me: compel status with `compel_overrides_input` and a damage-reduction self status. Safety Net: a zone that subscribes to each ally's `CombatHooks.about_to_die`, the same hook Avery's Phoenix Rebirth uses.
 
+**Built in Phase 3.** Choices the table left open:
+- A trampoline goes down at the cursor within 500 px of Tilly. A drag shorter than 200 px lands 200 px along her aim.
+- Enemies are bounced 250 px back the way they came, and that doesn't use up one of the 4 launches.
+- An ally dashing across a trampoline isn't launched until they stop on it. That's what lets Cartwheel end on one.
+- Safety Net also catches Tilly herself, since she's inside it; it's saved allies once each.
+- Bouncy Balls deal 8 + 0.5/level + 35% Weapon per ball, about 84 sustained damage per second at level 10 against Melody's 81.
+- Taunted enemies are pulled toward her but still aim wherever they like: the "target her" part needs AI, which dummies don't have yet.
+
 **Readability.** Trampolines always draw both ends, like the map's jump pads, so enemies can wait at the landing ring. That's the counterplay, and it's why pads expire after 4 launches.
 
 ## Motes and Wake the Dreamer

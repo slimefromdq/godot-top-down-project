@@ -551,6 +551,7 @@ func _apply_modifiers(entry: Entry) -> void:
 func _displace(effect: StatusEffect, source: Node, direction: Vector2) -> void:
 	if effect.displace_distance <= 0.0 or movement_component == null:
 		return
+	var scale := get_multiplier(StatusEffect.DISPLACEMENT_TAKEN)
 	var root := _get_root() as Node2D
 	var dir := direction
 	var source_2d := source as Node2D
@@ -559,12 +560,12 @@ func _displace(effect: StatusEffect, source: Node, direction: Vector2) -> void:
 		if effect.displace_direction == StatusEffect.DisplaceDirection.TOWARD_SOURCE:
 			# Don't pull past the attacker: stop at most at their feet.
 			var gap := root.global_position.distance_to(source_2d.global_position)
-			var distance := minf(effect.displace_distance, maxf(gap - effect.pull_stop_distance, 0.0))
+			var distance := minf(effect.displace_distance * scale, maxf(gap - effect.pull_stop_distance, 0.0))
 			movement_component.displace(-dir, distance, effect.displace_duration)
 			return
 	if dir == Vector2.ZERO:
 		return
-	movement_component.displace(dir.normalized(), effect.displace_distance, effect.displace_duration)
+	movement_component.displace(dir.normalized(), effect.displace_distance * scale, effect.displace_duration)
 
 
 func _compel_entry() -> Entry:
