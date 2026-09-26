@@ -104,12 +104,13 @@ func _test_pickup_and_cap() -> void:
 	_check("a nearby Mote is pulled in and attaches", carrier.get_mote_count() == 1 and got == [a1],
 		str(carrier.get_mote_count()))
 	_check("get_mote_count / get_mote_value", carrier.get_mote_count() == 1 and carrier.get_mote_value() == 1, "")
-	for i in 7:
+	var cap := rules.max_carried
+	for i in cap + 2:
 		carrier.add_mote(director.small_data, 1)
-	_check("capped at max_carried (5)", carrier.get_mote_count() == 5, str(carrier.get_mote_count()))
+	_check("capped at max_carried (%d)" % cap, cap >= 15 and carrier.get_mote_count() == cap, str(carrier.get_mote_count()))
 	var extra := director.spawn_mote(a1.global_position + Vector2(60, 0))
 	await _frames(20)
-	_check("a full carrier doesn't pull in more", is_instance_valid(extra) and carrier.get_mote_count() == 5, "")
+	_check("a full carrier doesn't pull in more", is_instance_valid(extra) and carrier.get_mote_count() == cap, "")
 	extra.queue_free()
 	carrier.clear()
 	await _frames(1)
@@ -164,7 +165,7 @@ func _test_death_burst() -> void:
 	var ring_ok := true
 	for m in loose:
 		var d: float = m._to.distance_to(Vector2.ZERO)
-		ring_ok = ring_ok and m.dropped and d > rules.burst_radius * 0.5 and d < rules.burst_radius * 1.3
+		ring_ok = ring_ok and m.dropped and d > rules.burst_radius * 0.4 and d < rules.burst_radius * 1.5
 	_check("scattered in a ring around the body", ring_ok, "")
 	_check("the values come with them", loose.map(func(m): return m.value).reduce(func(s, v): return s + v, 0) == 8, "")
 	director.clear_motes()
@@ -186,6 +187,13 @@ func _test_jostle() -> void:
 	var loose := director.get_loose_motes()
 	_check("an enemy push drops one Mote where they land", carrier.get_mote_count() == 2 and loose.size() == 1
 		and loose[0].dropped and loose[0].last_carrier == a1, "%d carried, %d loose" % [carrier.get_mote_count(), loose.size()])
+	director.clear_motes()
+
+	_fill(carrier, 25)
+	a1.status_component.apply(push, b1, Vector2.LEFT)
+	await _frames(20)
+	_check("a full stack of 25 loses jostle_drop_fraction (5)", carrier.get_mote_count() == 20
+		and director.get_loose_motes().size() == 5, "%d carried" % carrier.get_mote_count())
 	director.clear_motes()
 
 	_fill(carrier, 2)
@@ -258,10 +266,11 @@ func _test_heavy_pockets() -> void:
 	add_child(pad)
 	await _frames(2)
 	var plain := await _flight_time(pad)
-	_fill(carrier, 3)
-	_check("extra_air_time = 0.1 s per Mote", is_equal_approx(MoteCarrier.extra_air_time(a1), 0.3), "")
+	_fill(carrier, 10)
+	var extra := rules.heavy_pockets_air_time * 10
+	_check("extra_air_time = heavy_pockets_air_time per Mote", is_equal_approx(MoteCarrier.extra_air_time(a1), extra), "")
 	var heavy := await _flight_time(pad)
-	_check("a jump pad flight is 0.3 s longer with 3 Motes", absf(heavy - plain - 0.3) < 0.06,
+	_check("a jump pad flight is %.2f s longer with 10 Motes" % extra, absf(heavy - plain - extra) < 0.06,
 		"%.2f -> %.2f" % [plain, heavy])
 	carrier.clear()
 	pad.queue_free()
@@ -316,20 +325,20 @@ func _test_can_deposit() -> void:
 func _test_reveal() -> void:
 	print("\n-- Reveal steps")
 	var carrier := MoteCarrier.find_on(a1)
-	_fill(carrier, 3)
-	_check("value 3: hidden", carrier.get_reveal_interval() < 0.0, str(carrier.get_reveal_interval()))
+	_fill(carrier, 7)
+	_check("value 7: hidden", carrier.get_reveal_interval() < 0.0, str(carrier.get_reveal_interval()))
 	_fill(carrier, 1)
-	_check("value 4: pings every 6 s", is_equal_approx(carrier.get_reveal_interval(), 6.0), "")
+	_check("value 8: pings every 6 s", is_equal_approx(carrier.get_reveal_interval(), 6.0), "")
 	carrier.clear()
-	carrier.add_mote(director.small_data, 2)
+	_fill(carrier, 10)
 	carrier.add_mote(director.small_data, 5)
-	_check("value 7: pings every 3 s", is_equal_approx(carrier.get_reveal_interval(), 3.0), "")
+	_check("value 15: pings every 3 s", is_equal_approx(carrier.get_reveal_interval(), 3.0), "")
 	pings.clear()
 	await _frames(3)
 	_check("pings the ENEMY team's minimap", pings.size() >= 1 and pings[0][1] == &"b", str(pings))
-	carrier.add_mote(director.small_data, 3)
+	carrier.add_mote(director.small_data, 7)
 	await _frames(2)
-	_check("value 10: always shown (minimap_revealed)", carrier.get_reveal_interval() == 0.0
+	_check("value 22: always shown (minimap_revealed)", carrier.get_reveal_interval() == 0.0
 		and a1.is_in_group(MoteCarrier.REVEALED_GROUP), "")
 	carrier.clear()
 	await _frames(2)

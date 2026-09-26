@@ -10,8 +10,9 @@ class_name MoteCarrier
 #               spawns fresh Motes.
 #   death       every Mote bursts out in a ring and lands scattered
 #   jostle      an ENEMY displacement (Actor.displaced: a push or pull of at
-#               least jostle_min_distance, a carry, an abduction) drops one
-#               Mote where the carrier lands, once the forced move, flight,
+#               least jostle_min_distance, a carry, an abduction) knocks
+#               jostle_drop_fraction of the stack (at least one) loose where
+#               the carrier lands, once the forced move, flight,
 #               carry or minigame is over. A displacement_taken multiplier
 #               of 0 (Iron Will-style) means no jostle.
 #   reveal      carried value steps (MatchRules.reveal_values) ping the enemy
@@ -184,6 +185,25 @@ func drop_one(distance: float = -1.0) -> Mote:
 	return mote
 
 
+## Drop the last `n` picked up (a jostle), fanned out around the carrier.
+func drop_some(n: int) -> Array[Mote]:
+	var spawned: Array[Mote] = []
+	var start := randf() * TAU
+	var d := get_rules().jostle_drop_distance
+	n = mini(n, get_mote_count())
+	for i in n:
+		var data: MoteData = _datas.pop_back()
+		var value: int = _values.pop_back()
+		var at := _clear_point(actor.global_position, Vector2.from_angle(start + TAU * i / maxi(n, 1)),
+			d * randf_range(0.8, 1.3))
+		spawned.append(Mote.spawn(actor, data, at, value, true, actor.global_position, actor))
+	if n > 0:
+		_emit_changed()
+		MatchManager.play_world_cue(actor, &"mote_drop", {"position": actor.global_position, "count": n})
+		dropped.emit(actor.global_position, n)
+	return spawned
+
+
 ## Every Mote bursts out in a ring (death).
 func burst_all() -> Array[Mote]:
 	var spawned: Array[Mote] = []
@@ -194,7 +214,7 @@ func burst_all() -> Array[Mote]:
 	var start := randf() * TAU
 	var radius := get_rules().burst_radius
 	for i in n:
-		var at := _clear_point(from, Vector2.from_angle(start + TAU * i / n), radius * randf_range(0.7, 1.15))
+		var at := _clear_point(from, Vector2.from_angle(start + TAU * i / n), radius * randf_range(0.5, 1.4))
 		spawned.append(Mote.spawn(actor, _datas[i], at, _values[i], true, from, actor))
 	_values.clear()
 	_datas.clear()
@@ -214,7 +234,7 @@ func _physics_process(delta: float) -> void:
 	if _jostle_pending and _is_settled():
 		_jostle_pending = false
 		if not actor.health_component.is_dead():
-			drop_one()
+			drop_some(get_rules().jostle_drop_count(get_mote_count()))
 	var can_now := get_mote_count() > 0 and can_deposit()
 	if can_now and not _was_ready:
 		deposit_ready.emit()

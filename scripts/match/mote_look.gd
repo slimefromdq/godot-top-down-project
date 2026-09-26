@@ -2,7 +2,7 @@ extends Node2D
 class_name MoteLook
 
 # Placeholder look for a Mote: a round little dream-bug, the young of Cpt.
-# Yellow's species. Soft yellow body with a dark stripe, fluttering wings,
+# Yellow's species. Soft yellow body, fluttering wings,
 # bobbing antennae, two big glossy eyes that look toward the nearest hero,
 # rosy cheeks and a small smile. A Dream Mote is bigger and fluffier, with a
 # slow shimmering halo.
@@ -14,7 +14,8 @@ class_name MoteLook
 
 const BODY := Color(1.0, 0.84, 0.18)
 const BODY_DARK := Color(0.93, 0.66, 0.08)
-const STRIPE := Color(0.2, 0.14, 0.03)
+## Antennae and the smile.
+const INK := Color(0.2, 0.14, 0.03)
 const WING := Color(0.93, 0.98, 1.0, 0.55)
 const EYE := Color(1, 1, 1)
 const PUPIL := Color(0.1, 0.07, 0.12)
@@ -80,7 +81,7 @@ static func draw_mote(canvas: CanvasItem, at: Vector2, size: float, t: float, lo
 		var base := Vector2(side * r * 0.3, -r * 0.82)
 		var tip := Vector2(side * r * 0.62 + sway, -r * 1.42)
 		canvas.draw_polyline(PackedVector2Array([base, base.lerp(tip, 0.5) + Vector2(side * r * 0.1, -r * 0.05), tip]),
-			_a(STRIPE, alpha), maxf(r * 0.08, 1.5))
+			_a(INK, alpha), maxf(r * 0.08, 1.5))
 		canvas.draw_circle(tip, r * 0.13, _a(BODY_DARK, alpha))
 
 	# Fluffy fringe for the Dream Mote.
@@ -89,10 +90,9 @@ static func draw_mote(canvas: CanvasItem, at: Vector2, size: float, t: float, lo
 			var a := TAU * i / 12.0 + t * 0.2
 			canvas.draw_circle(Vector2.from_angle(a) * r * 0.92, r * 0.2, _a(BODY.lightened(0.25), alpha))
 
-	# Body: rim, fill, top stripe, glossy highlight.
+	# Body: rim, fill, glossy highlight.
 	canvas.draw_circle(Vector2.ZERO, r * 1.04, _a(BODY_DARK, alpha))
 	canvas.draw_circle(Vector2(0, -r * 0.04), r * 0.96, _a(BODY, alpha))
-	canvas.draw_arc(Vector2(0, r * 0.35), r * 1.02, PI * 1.28, PI * 1.72, 16, _a(STRIPE, alpha * 0.85), r * 0.16)
 	canvas.draw_circle(Vector2(-r * 0.38, -r * 0.42), r * 0.22, _a(Color(1, 1, 1, 0.55), alpha))
 	canvas.draw_circle(Vector2(-r * 0.18, -r * 0.6), r * 0.08, _a(Color(1, 1, 1, 0.7), alpha))
 
@@ -111,7 +111,7 @@ static func draw_mote(canvas: CanvasItem, at: Vector2, size: float, t: float, lo
 	# Rosy cheeks and a small smile.
 	for side in [-1.0, 1.0]:
 		canvas.draw_circle(Vector2(side * r * 0.58, r * 0.36), r * 0.13, _a(CHEEK, alpha))
-	canvas.draw_arc(Vector2(0, r * 0.32), r * 0.2, PI * 0.15, PI * 0.85, 10, _a(STRIPE, alpha), maxf(r * 0.07, 1.5))
+	canvas.draw_arc(Vector2(0, r * 0.32), r * 0.2, PI * 0.15, PI * 0.85, 10, _a(INK, alpha), maxf(r * 0.07, 1.5))
 	canvas.draw_set_transform(Vector2.ZERO)
 
 

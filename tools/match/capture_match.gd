@@ -49,7 +49,7 @@ func _run() -> void:
 	director.spawn_mote(player.global_position + Vector2(-420, -120), true)
 	await get_tree().create_timer(0.8).timeout
 	await _shot("motes_loose")
-	DebugTools.give_player_motes(4)
+	DebugTools.give_player_motes(25)
 	player.global_position += Vector2(0, -520)
 	await get_tree().create_timer(0.8).timeout
 	await _shot("motes_carried")

@@ -22,7 +22,7 @@ class_name Minimap
 # (StatusEffect.reveals), or it's in the "minimap_revealed" group (a Mote
 # carrier over the top reveal step). add_ping(position, viewer_team) flashes
 # a spot for one team only (the lower reveal steps ping instead). A hero
-# carrying Motes gets a pip per Mote next to its dot.
+# carrying Motes gets a pip per motes_per_pip next to its dot.
 
 @export var width: float = 280.0
 @export var margin: float = 20.0
@@ -40,6 +40,8 @@ class_name Minimap
 @export var fog_refresh: float = 0.1
 @export var ping_time: float = 1.6
 @export var mote_pip_color := Color("fde047")
+## A carrier gets one pip per this many Motes.
+@export var motes_per_pip: int = 5
 
 var _map: GameMap
 var _root: Control
@@ -263,10 +265,10 @@ func _draw_dynamic(canvas: Control) -> void:
 		_draw_mote_pips(canvas, player, point)
 
 
-# A pip per carried Mote, in an arc above the dot.
+# A pip per MOTES_PER_PIP carried Motes (rounded up), in an arc above the dot.
 func _draw_mote_pips(canvas: Control, node: Node, point: Vector2) -> void:
 	var carrier := MoteCarrier.find_on(node)
-	var n := carrier.get_mote_count() if carrier != null else 0
+	var n := ceili(carrier.get_mote_count() / float(motes_per_pip)) if carrier != null else 0
 	for i in n:
 		var a := -PI * 0.5 + (i - (n - 1) * 0.5) * 0.55
 		var at := point + Vector2.from_angle(a) * 8.0

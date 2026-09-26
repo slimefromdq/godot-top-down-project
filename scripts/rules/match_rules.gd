@@ -45,25 +45,28 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 
 @export_group("Motes")
 ## Most Motes one hero can carry (a Dream Mote takes one slot).
-@export var max_carried: int = 5
+@export var max_carried: int = 25
 ## Enemy minimap reveal steps by carried VALUE: at reveal_values[i] or more,
 ## the carrier pings the enemy minimap every reveal_ping_intervals[i]
 ## seconds (0 = shown all the time). Ascending.
-@export var reveal_values: PackedInt32Array = PackedInt32Array([4, 7, 10])
+@export var reveal_values: PackedInt32Array = PackedInt32Array([8, 15, 22])
 @export var reveal_ping_intervals: PackedFloat32Array = PackedFloat32Array([6.0, 3.0, 0.0])
 ## Enemy displacements (pushes, pulls, carries, abductions) needed to jostle
-## one Mote loose. Pushes shorter than jostle_min_distance don't count.
+## Motes loose. Pushes shorter than jostle_min_distance don't count.
 @export var jostle_displacements_required: int = 1
 @export var jostle_min_distance: float = 100.0
 ## For jostle_displacements_required > 1: displacements this far apart
 ## start the count again.
 @export var jostle_window: float = 4.0
+## A jostle knocks loose this share of the stack (rounded up), at least one.
+## 0.2 = a full stack of 25 loses 5.
+@export_range(0.0, 1.0, 0.05) var jostle_drop_fraction: float = 0.2
 ## Heavy pockets: seconds of extra air time per carried Mote on jump pads
 ## and trampolines.
-@export var heavy_pockets_air_time: float = 0.1
+@export var heavy_pockets_air_time: float = 0.04
 ## Death burst: Motes scatter this far from the body.
 @export var burst_radius: float = 170.0
-## A jostled Mote lands this far from the carrier.
+## Jostled Motes land about this far from the carrier.
 @export var jostle_drop_distance: float = 120.0
 
 @export_group("Spawning")
@@ -140,6 +143,11 @@ func reveal_interval_for(value: int) -> float:
 		if value >= reveal_values[i]:
 			interval = reveal_ping_intervals[i]
 	return interval
+
+
+## How many Motes a jostle knocks loose from a stack of `count`.
+func jostle_drop_count(count: int) -> int:
+	return mini(count, maxi(1, ceili(count * jostle_drop_fraction)))
 
 
 func respawn_time(level: int) -> float:
