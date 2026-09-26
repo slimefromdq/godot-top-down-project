@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="2_x"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="3_x"]
+[ext_resource type="PackedScene" path="res://effects/muzzle_flash.tscn" id="4_x"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="5_x"]
+[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="6_x"]
+
+[sub_resource type="Resource" id="Cue_hurt"]
+script = ExtResource("2_x")
+flash_color = Color(1, 0.3, 0.25, 0.9)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Cue_death"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("3_x")
+tint = Color(0.6, 0.75, 1, 1)
+
+[sub_resource type="Resource" id="Cue_fire"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("4_x")
+tint = Color(0.75, 0.9, 1, 1)
+screen_shake = 0.1
+
+[sub_resource type="Resource" id="Cue_parry"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("5_x")
+align_to_direction = false
+tint = Color(0.7, 0.9, 1, 1)
+
+[sub_resource type="Resource" id="Cue_glide"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("6_x")
+tint = Color(0.75, 0.9, 1, 1)
+
+[resource]
+script = ExtResource("1_x")
+body_tint = Color(0.55, 0.6, 0.7, 0.55)
+cues = Dictionary[StringName, ExtResource("2_x")]({
+&"hurt": SubResource("Cue_hurt"),
+&"death": SubResource("Cue_death"),
+&"umbrella_rifle_fire": SubResource("Cue_fire"),
+&"parry_success": SubResource("Cue_parry"),
+&"descend_launch": SubResource("Cue_glide")
+})

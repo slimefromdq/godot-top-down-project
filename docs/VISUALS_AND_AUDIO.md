@@ -149,6 +149,11 @@ so they look the same on every target:
   or a list an ability sets with `status_component.set_vfx_viewers(id, actors)`.
   Only the local player's screen is filtered (`LocalView`); tint, alpha and
   sound aren't.
+- **Camera Look Ahead**: the player's own camera leans this many pixels
+  toward the cursor while the status is on them (a scope). Ease speed is
+  `ShakeCamera.look_ahead_ease`.
+- A laser sight: use `effects/feel/aim_laser.tscn` as the Attached Vfx; it
+  draws the actor's aim line (stopped by walls) for as long as the status lasts.
 
 ## Bushes
 

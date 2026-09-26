@@ -329,6 +329,7 @@ func _fire_shot(aim: Vector2, extra: bool, label: StringName) -> void:
 		if projectile_data.lobbed:
 			projectile.lob_distance = origin.distance_to(actor.aim_point)
 		projectile.hit_modifier = _modify_hit
+		projectile.free_pierce = _hit_is_free_pierce
 		projectile.hit_landed.connect(_on_projectile_hit)
 		_on_projectile_fired(projectile, extra)
 
@@ -447,6 +448,11 @@ func _build_hit(info: DamageInfo, _hurtbox: HurtboxComponent) -> DamageInfo:
 # Override to react after a hit landed (info.final_amount is set).
 func _on_target_hit(_info: DamageInfo, _hurtbox: HurtboxComponent) -> void:
 	pass
+
+
+# Override: true = hitting this target doesn't use up the shot's pierce.
+func _hit_is_free_pierce(_hurtbox: HurtboxComponent) -> bool:
+	return false
 
 
 # --- Simulation ----------------------------------------------------------------

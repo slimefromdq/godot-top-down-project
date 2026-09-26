@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+[ext_resource type="Resource" path="res://heroes/nimbus/data/nimbus_parry_stun.tres" id="2_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"nimbus_parry"
+display_name = "Parry"
+duration = 0.35
+parries = true
+parry_melee_status = ExtResource("2_s")
+body_tint = Color(0.7, 0.9, 1, 0.5)

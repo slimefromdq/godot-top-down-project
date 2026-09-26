@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ZoneAbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/zone_ability_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/nimbus/abilities/overcast_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/nimbus/data/nimbus_overcast_zone.tres" id="3_a"]
+
+[resource]
+script = ExtResource("1_a")
+zone = ExtResource("3_a")
+zone_duration = 6.0
+id = &"overcast"
+display_name = "Overcast"
+description = "Place a 500 px raincloud anywhere within two screens for 6 s. Enemies under it are revealed (even in bushes) and slowed 15%; Nimbus's shots into it always crit and pierce everyone inside."
+ability_script = ExtResource("2_a")
+cooldown = 70.0
+ability_range = 3600.0
+tags = Array[StringName]([&"ultimate"])
+feel_preset = &"instant"

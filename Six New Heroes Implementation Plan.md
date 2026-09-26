@@ -136,6 +136,15 @@ Nimbus is the roster's low-mobility gun carry: slow, heavy, precise shots from f
 
 **Built from.** Rifle: `RangedAttackData`, `fire_mode = SEMI`, pierce 1. Scope: the new camera look-ahead, plus a movement `stat_modifier` while held. Descend: `ChargeData` whose movement calls `Actor.launch()` so it clears ledges like a jump pad; steering in the air needs a small script feeding his move input into the flight. Parry: the new reflect window. Overcast: a `GroundZoneData` that applies a reveal status and a "marked for Nimbus" status his gun checks for.
 
+**Built in Phase 2.** Choices the table left open:
+- Descend flies over low cover and ledges like a jump pad, but full walls still stop it (the same rule as map jump pads).
+- A far cursor is clamped to 1100 px, and steering moves the landing point at 450 px/s.
+- A Parry crit uses the same 1.75× as Overcast.
+- Steady Hand's bonus is spent by the next shot.
+- "Two screens" for Overcast is 3600 px.
+- Scope is held while he keeps shooting; its laser is stopped by walls.
+- Move speed is 490, against Cosmo's 520, the next-slowest Carry.
+
 **The top-down sniper problem.** In a top-down game a sniper's range is capped by the screen. Scope solves it by moving the camera rather than zooming out, so he still sees nothing behind him. The laser line keeps it fair: you always know which direction a Nimbus shot is coming from, even if he's off your screen.
 
 ## Hazmat, The Contaminant (Tank)

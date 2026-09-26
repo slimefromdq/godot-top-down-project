@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/nimbus/abilities/umbrella_rifle.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/nimbus/data/nimbus_round.tres" id="3_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Damage"]
+script = ExtResource("9_v")
+weapon_ratio = 1.2
+
+[sub_resource type="Resource" id="Crit"]
+script = ExtResource("9_v")
+base = 1.75
+
+[resource]
+script = ExtResource("1_a")
+projectile = ExtResource("3_a")
+muzzles = Array[Vector2]([Vector2(60, 0)])
+fire_mode = 1
+shots_per_second = 1.1
+magazine_size = 5
+reload_time = 2.0
+id = &"umbrella_rifle"
+display_name = "Umbrella Rifle"
+description = "Semi-automatic: heavy, fast rounds (1.2x Weapon) that pierce one target. 5 rounds. Crits deal 1.75x."
+ability_script = ExtResource("2_a")
+cooldown = 0.0
+damage = SubResource("Damage")
+damage_type = 0
+tags = Array[StringName]([&"basic_attack"])
+meter_label = &"umbrella_rifle"
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"crit_multiplier": SubResource("Crit")
+})
+feel_preset = &"rifle"

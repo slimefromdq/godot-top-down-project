@@ -27,6 +27,9 @@ class_name SelfStatusData
 @export var max_enemies_counted: int = 0
 ## Count only enemy heroes (the "heroes" group), not minions or dummies.
 @export var count_heroes_only: bool = false
+## Keep the status only while the key is held (a scope, a stance): released
+## = removed. The status's duration caps the hold.
+@export var hold_to_keep: bool = false
 
 
 func get_strength(enemies: int) -> float:

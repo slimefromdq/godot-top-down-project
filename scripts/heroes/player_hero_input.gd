@@ -38,7 +38,7 @@ func _physics_process(_delta: float) -> void:
 		var pressed := Input.is_action_pressed(slot.input_action)
 		# A release can be missed (focus loss, the press was buffered and
 		# started after the key came up): a charge never outlives its key.
-		if ability.is_charging() and not pressed:
+		if (ability.is_charging() or ability.is_held()) and not pressed:
 			hero.release_slot(slot.id, hero.aim_point)
 		if _held.get(slot.id, false) and ability.repeats_while_held(slot.hold_to_repeat):
 			if pressed:
