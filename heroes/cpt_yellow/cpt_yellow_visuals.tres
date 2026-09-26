@@ -1,0 +1,149 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="2_x"]
+[ext_resource type="PackedScene" path="res://heroes/cpt_yellow/vfx/bug_army.tscn" id="3_x"]
+[ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="4_x"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="5_x"]
+[ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="6_x"]
+[ext_resource type="PackedScene" path="res://effects/muzzle_flash.tscn" id="7_x"]
+[ext_resource type="PackedScene" path="res://heroes/cpt_yellow/vfx/ride_swarm.tscn" id="8_x"]
+[ext_resource type="PackedScene" path="res://heroes/cpt_yellow/vfx/swarm_landing.tscn" id="9_x"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="10_x"]
+[ext_resource type="PackedScene" path="res://heroes/cpt_yellow/vfx/rally_swarm.tscn" id="11_x"]
+[ext_resource type="PackedScene" path="res://heroes/cpt_yellow/vfx/charge_windup.tscn" id="12_x"]
+[ext_resource type="PackedScene" path="res://heroes/cpt_yellow/vfx/wave_crest.tscn" id="13_x"]
+[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="14_x"]
+[ext_resource type="PackedScene" path="res://effects/kill_confirm.tscn" id="15_x"]
+
+[sub_resource type="Resource" id="Cue_spawn"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("3_x")
+attach_to_actor = true
+align_to_direction = false
+
+[sub_resource type="Resource" id="Cue_hurt"]
+script = ExtResource("2_x")
+flash_color = Color(1, 0.3, 0.25, 0.9)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Cue_heal"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("4_x")
+align_to_direction = false
+tint = Color(0.45, 1, 0.5, 1)
+
+[sub_resource type="Resource" id="Cue_death"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("5_x")
+align_to_direction = false
+tint = Color(1, 0.85, 0.2, 1)
+screen_shake = 0.8
+
+[sub_resource type="Resource" id="Cue_text"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("4_x")
+align_to_direction = false
+
+[sub_resource type="Resource" id="Cue_spark_small"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("6_x")
+scale = 0.6
+tint = Color(1, 0.85, 0.2, 1)
+
+[sub_resource type="Resource" id="Cue_muzzle"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("7_x")
+scale = 0.6
+tint = Color(1, 0.85, 0.2, 1)
+
+[sub_resource type="Resource" id="Cue_ride"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("8_x")
+attach_to_actor = true
+align_to_direction = false
+
+[sub_resource type="Resource" id="Cue_landing_telegraph"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("9_x")
+attach_to_actor = true
+align_to_direction = false
+
+[sub_resource type="Resource" id="Cue_landing_burst"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("10_x")
+align_to_direction = false
+tint = Color(1, 0.85, 0.2, 1)
+flash_color = Color(1, 0.95, 0.5, 0.9)
+flash_duration = 0.2
+screen_shake = 0.45
+
+[sub_resource type="Resource" id="Cue_spark"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("6_x")
+scale = 1.2
+tint = Color(1, 0.85, 0.2, 1)
+
+[sub_resource type="Resource" id="Cue_rally"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("11_x")
+attach_to_actor = true
+align_to_direction = false
+flash_color = Color(1, 0.9, 0.3, 0.8)
+flash_duration = 0.25
+
+[sub_resource type="Resource" id="Cue_charge_windup"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("12_x")
+attach_to_actor = true
+align_to_direction = false
+flash_color = Color(1, 0.85, 0.2, 0.8)
+flash_duration = 0.5
+screen_shake = 0.2
+
+[sub_resource type="Resource" id="Cue_charge_active"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("13_x")
+attach_to_actor = true
+align_to_direction = false
+screen_shake = 0.5
+
+[sub_resource type="Resource" id="Cue_charge_end"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("14_x")
+align_to_direction = false
+tint = Color(1, 0.85, 0.2, 1)
+screen_shake = 0.3
+
+[sub_resource type="Resource" id="Cue_kill"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("15_x")
+align_to_direction = false
+
+[resource]
+script = ExtResource("1_x")
+body_scale = Vector2(0.5, 0.5)
+body_offset = Vector2(0, -34)
+body_tint = Color(1, 0.8, 0.1, 0.7)
+cues = Dictionary[StringName, ExtResource("2_x")]({
+&"spawn": SubResource("Cue_spawn"),
+&"hurt": SubResource("Cue_hurt"),
+&"heal": SubResource("Cue_heal"),
+&"death": SubResource("Cue_death"),
+&"ability_failed": SubResource("Cue_text"),
+&"stinger_volley_fire": SubResource("Cue_muzzle"),
+&"stinger_volley_hit": SubResource("Cue_spark_small"),
+&"swarm_ride_charge_start": SubResource("Cue_ride"),
+&"swarm_ride_windup": SubResource("Cue_landing_telegraph"),
+&"swarm_ride_active": SubResource("Cue_landing_burst"),
+&"swarm_ride_hit": SubResource("Cue_spark"),
+&"rally_applied": SubResource("Cue_rally"),
+&"sting_hit": SubResource("Cue_spark"),
+&"charge_windup": SubResource("Cue_charge_windup"),
+&"charge_active": SubResource("Cue_charge_active"),
+&"charge_hit": SubResource("Cue_spark"),
+&"charge_end": SubResource("Cue_charge_end"),
+&"charge_drop": SubResource("Cue_spark")
+})
+kill_effect = SubResource("Cue_kill")
+damage_number_color = Color(1, 0.4, 0.4, 1)

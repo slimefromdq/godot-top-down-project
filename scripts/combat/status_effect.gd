@@ -12,6 +12,7 @@ class_name StatusEffect
 #   * displacement       knockback or pull, applied once when the status lands
 #   * damage over time   burn, poison: a ScalingValue ticked every interval
 #   * compel             forced march toward the applier (a taunt, a charm)
+#   * carry              dragged along with the applier (a wave, a grab)
 #   * stat modifiers     StatModifiers on the target's StatsComponent
 #                        (-20% Health, +30 Armor) while active
 #   * shield             absorbs damage before health; ends when depleted
@@ -130,6 +131,20 @@ enum DisplaceDirection {
 @export var compel_break_hold_time: float = 0.4
 @export var compel_break_on_movement_ability: bool = true
 
+@export_group("Carry")
+## Carried: the target is dragged along with the applier, holding the offset
+## it had when the status landed (a wave that sweeps enemies up, a grab).
+## Overrides the target's own movement, knockbacks and dashes while active;
+## walls still stop it. Ends early if the applier dies, and the target stops
+## dead when it ends. Pair with `stuns` for "stunned and carried".
+@export var carry_enabled: bool = false
+## The captured offset is shortened to at most this many pixels, so carried
+## targets bunch up on the carrier (0 = keep the offset as it was).
+@export var carry_max_offset: float = 0.0
+## Fastest a carried target may move to get back onto its carry point (after
+## being held up by a wall).
+@export var carry_max_speed: float = 4000.0
+
 @export_group("Shield")
 ## Damage absorbed before health, snapshotted from the APPLIER's stats when
 ## applied (times the application's strength). The status ends when the
@@ -187,11 +202,11 @@ static func damage_taken_stat(damage_type: DamageInfo.Type) -> StringName:
 
 
 func is_crowd_control() -> bool:
-	return stuns or roots or silences or displace_distance > 0.0 or compel_enabled
+	return stuns or roots or silences or displace_distance > 0.0 or compel_enabled or carry_enabled
 
 
 func ends_with_applier() -> bool:
-	return ends_if_applier_dies or compel_enabled
+	return ends_if_applier_dies or compel_enabled or carry_enabled
 
 
 # Problems a designer should fix. Empty = fine.
@@ -206,6 +221,8 @@ func validate() -> PackedStringArray:
 		problems.append("status '%s' tick_damage has negative numbers" % id)
 	if compel_enabled and (compel_speed_multiplier <= 0.0 or compel_stop_distance < 0.0):
 		problems.append("status '%s' compel needs a positive speed and stop distance" % id)
+	if carry_enabled and (carry_max_offset < 0.0 or carry_max_speed <= 0.0):
+		problems.append("status '%s' carry needs a positive max speed and a non-negative max offset" % id)
 	if shield_amount != null and shield_amount.has_negative():
 		problems.append("status '%s' shield_amount has negative numbers" % id)
 	if compel_follow_trail and (compel_trail_spacing <= 0.0 or compel_break_hold_time < 0.0):

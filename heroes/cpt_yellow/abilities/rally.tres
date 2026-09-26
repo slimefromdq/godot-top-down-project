@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="SelfStatusData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/self_status_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/abilities/common/self_status_ability.gd" id="2_x"]
+[ext_resource type="Resource" path="res://heroes/cpt_yellow/data/yellow_rally_shield.tres" id="3_x"]
+
+[resource]
+script = ExtResource("1_x")
+self_status = ExtResource("3_x")
+strength_base = 1.0
+strength_per_enemy = 0.4
+count_radius = 450.0
+max_enemies_counted = 5
+id = &"rally"
+display_name = "Rally"
+description = "The army swarms back around you: a big shield for 2 s. Every enemy nearby makes it stronger (+40% each, up to 5)."
+ability_script = ExtResource("2_x")
+cooldown = 11.0
+cooldown_per_level = -0.3
+tags = Array[StringName]([&"ability"])
+feel_preset = &"rally"

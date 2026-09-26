@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://heroes/cpt_yellow/vfx/rally_swarm.gd" id="1_s"]
+
+[node name="RallySwarm" type="Node2D"]
+z_index = 2
+script = ExtResource("1_s")

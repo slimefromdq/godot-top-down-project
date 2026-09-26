@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_x"]
+[ext_resource type="PackedScene" path="res://heroes/cpt_yellow/vfx/latched_bug.tscn" id="2_x"]
+
+[resource]
+script = ExtResource("1_x")
+id = &"sting_slow"
+display_name = "Stung (slowed)"
+duration = 2.5
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 0.6
+})
+attached_vfx = ExtResource("2_x")
+body_tint = Color(1, 0.85, 0.2, 0.3)

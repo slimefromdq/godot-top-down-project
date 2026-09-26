@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_x"]
+[ext_resource type="Resource" path="res://heroes/cpt_yellow/data/yellow_sting.tres" id="4_x"]
+[ext_resource type="Resource" path="res://heroes/cpt_yellow/data/yellow_sting_slow.tres" id="5_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("3_x")
+base = 30.0
+per_level = 5.0
+weapon_ratio = 0.5
+
+[resource]
+script = ExtResource("1_x")
+projectile = ExtResource("4_x")
+muzzles = Array[Vector2]([Vector2(50, 0)])
+fire_mode = 1
+shots_per_second = 2.0
+id = &"sting"
+display_name = "Sting"
+description = "Flick a big stinger bug. The first enemy hit gets a bug latched on: slowed by 40% for 2.5 s."
+ability_script = ExtResource("2_x")
+cooldown = 8.0
+cooldown_per_level = -0.2
+damage = SubResource("Sub_1")
+damage_type = 0
+on_hit_status = ExtResource("5_x")
+tags = Array[StringName]([&"ability", &"cc"])
+meter_label = &"sting"
+feel_preset = &"sting"

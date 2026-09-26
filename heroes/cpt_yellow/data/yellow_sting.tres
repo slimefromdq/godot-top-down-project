@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="1_x"]
+[ext_resource type="PackedScene" path="res://heroes/cpt_yellow/vfx/sting_projectile.tscn" id="2_x"]
+[ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="3_x"]
+[ext_resource type="PackedScene" path="res://effects/wall_puff.tscn" id="4_x"]
+
+[resource]
+script = ExtResource("1_x")
+speed = 1500.0
+lifetime = 0.42
+radius = 24.0
+visual_scene = ExtResource("2_x")
+hit_effect = ExtResource("3_x")
+expire_effect = ExtResource("4_x")

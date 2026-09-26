@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="RideData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ride_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/abilities/common/ride_ability.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="4_x"]
+[ext_resource type="Resource" path="res://heroes/cpt_yellow/data/yellow_landing_knockback.tres" id="5_x"]
+[ext_resource type="Resource" path="res://heroes/cpt_yellow/data/yellow_riding.tres" id="6_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("3_x")
+kind = 1
+radius = 260.0
+
+[sub_resource type="Resource" id="Sub_2"]
+script = ExtResource("4_x")
+base = 45.0
+per_level = 7.0
+weapon_ratio = 0.6
+
+[resource]
+script = ExtResource("1_x")
+ride_speed = 1050.0
+ride_acceleration = 7000.0
+turn_rate_degrees = 300.0
+steer_mode = 0
+ride_status = ExtResource("6_x")
+landing_telegraph = 0.25
+id = &"swarm_ride"
+display_name = "Swarm Ride"
+description = "Hold: the swarm carries you forward at high speed; steer with movement. Let go (or after 3 s) to land: the bugs bunch up for a moment, then burst outward, damaging and knocking back everyone nearby."
+ability_script = ExtResource("2_x")
+cooldown = 12.0
+cooldown_per_level = -0.3
+hit_shape = SubResource("Sub_1")
+damage = SubResource("Sub_2")
+damage_type = 0
+on_hit_status = ExtResource("5_x")
+tags = Array[StringName]([&"ability", &"movement"])
+meter_label = &"swarm_landing"
+charge_enabled = true
+charge_time_max = 3.0
+charge_min_to_fire = 0.0
+charge_below_min = 1
+charge_auto_release_at_max = true
+charge_move_speed_multiplier = 1.0
+charge_can_cancel = false
+feel_preset = &"landing"

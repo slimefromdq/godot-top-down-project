@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_x"]
+[ext_resource type="Resource" path="res://heroes/cpt_yellow/data/yellow_stinger.tres" id="4_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("3_x")
+base = 2.5
+per_level = 0.3
+weapon_ratio = 0.07
+
+[resource]
+script = ExtResource("1_x")
+projectile = ExtResource("4_x")
+projectiles_per_shot = 4
+spread_degrees = 16.0
+muzzles = Array[Vector2]([Vector2(50, 0)])
+fire_mode = 0
+shots_per_second = 4.0
+id = &"stinger_volley"
+display_name = "Stinger Volley"
+description = "Hold to spray a narrow cone of stinging bugs. Short range, no reloading: steady close-range pressure."
+ability_script = ExtResource("2_x")
+cooldown = 0.0
+damage = SubResource("Sub_1")
+damage_type = 0
+tags = Array[StringName]([&"basic_attack"])
+meter_label = &"stinger"
+feel_preset = &"volley"

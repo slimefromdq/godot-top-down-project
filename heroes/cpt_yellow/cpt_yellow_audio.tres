@@ -1,0 +1,71 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="2_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="3_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="4_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="5_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/kill_chime.tres" id="6_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/skillshot.tres" id="7_x"]
+[ext_resource type="AudioStream" path="res://audio/sfx/cpt_yellow/stinger.wav" id="8_x"]
+[ext_resource type="AudioStream" path="res://audio/sfx/cpt_yellow/swarm.wav" id="9_x"]
+[ext_resource type="AudioStream" path="res://audio/sfx/cpt_yellow/buzz_rise.wav" id="10_x"]
+[ext_resource type="AudioStream" path="res://audio/sfx/cpt_yellow/bugle.wav" id="11_x"]
+[ext_resource type="AudioStream" path="res://audio/sfx/cpt_yellow/wave.wav" id="12_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/feel/impact_heavy.tres" id="13_x"]
+
+[sub_resource type="Resource" id="Snd_stinger"]
+script = ExtResource("2_x")
+streams = Array[AudioStream]([ExtResource("8_x")])
+volume_db = -10.0
+pitch_min = 0.9
+pitch_max = 1.2
+min_interval = 0.05
+max_voices = 3
+
+[sub_resource type="Resource" id="Snd_swarm"]
+script = ExtResource("2_x")
+streams = Array[AudioStream]([ExtResource("9_x")])
+volume_db = -4.0
+
+[sub_resource type="Resource" id="Snd_buzz_rise"]
+script = ExtResource("2_x")
+streams = Array[AudioStream]([ExtResource("10_x")])
+pitch_min = 1.0
+pitch_max = 1.0
+
+[sub_resource type="Resource" id="Snd_bugle"]
+script = ExtResource("2_x")
+streams = Array[AudioStream]([ExtResource("11_x")])
+volume_db = 2.0
+pitch_min = 1.0
+pitch_max = 1.0
+
+[sub_resource type="Resource" id="Snd_wave"]
+script = ExtResource("2_x")
+streams = Array[AudioStream]([ExtResource("12_x")])
+pitch_min = 0.95
+pitch_max = 1.0
+
+[sub_resource type="Resource" id="Snd_rally"]
+script = ExtResource("2_x")
+streams = Array[AudioStream]([ExtResource("9_x")])
+pitch_min = 1.3
+pitch_max = 1.4
+
+[resource]
+script = ExtResource("1_x")
+cues = Dictionary[StringName, ExtResource("2_x")]({
+&"ability_failed": ExtResource("3_x"),
+&"hurt": ExtResource("4_x"),
+&"death": ExtResource("5_x"),
+&"stinger_volley_fire": SubResource("Snd_stinger"),
+&"swarm_ride_charge_start": SubResource("Snd_swarm"),
+&"swarm_ride_windup": SubResource("Snd_buzz_rise"),
+&"swarm_ride_active": ExtResource("13_x"),
+&"rally_applied": SubResource("Snd_rally"),
+&"sting_fire": ExtResource("7_x"),
+&"charge_windup": SubResource("Snd_bugle"),
+&"charge_active": SubResource("Snd_wave")
+})
+kill_sound = ExtResource("6_x")

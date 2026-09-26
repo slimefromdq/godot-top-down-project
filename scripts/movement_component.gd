@@ -5,16 +5,20 @@ class_name MovementComponent
 # involuntary or scripted motion: dashes, lunges, knockbacks, launches.
 #
 # Priority each tick:
+#   0. carried (StatusEffect.carry_*): dragged along with the applier,
+#      holding the offset it had when the status landed (a wave, a grab)
 #   1. forced move (dash, lunge, knockback/pull, launch): exact velocity
 #   2. stunned or rooted: brake to a stop, ignore input
-#   3. compelled (StatusEffect.compel_*): walk toward the applier's current
+#   3. cruise (set_cruise): a driven run along a direction the caller
+#      steers every tick (a mount, a steered ride), ignoring input
+#   4. compelled (StatusEffect.compel_*): walk toward the applier's current
 #      position (or, in a formation, to this follower's point on the
 #      applier's trail); replaces or adds to the input depending on the
 #      status. Holding input against a breakable formation breaks free.
-#   4. normal steering, times status multipliers and action multipliers
+#   5. normal steering, times status multipliers and action multipliers
 #
 # Every controller (player hero, enemy AI, dummy, jungle creature) steers
-# through get_velocity(), so they all obey 1-3 without knowing about them.
+# through get_velocity(), so they all obey 0-4 without knowing about them.
 
 @export var move_speed: float = 300.0
 @export var acceleration: float = 1200.0
@@ -42,6 +46,13 @@ var _speed_zones: Array[Node] = []
 var _action_multipliers: Dictionary = {}    # Object -> float
 # Seconds of input held against a breakable formation.
 var _break_hold: float = 0.0
+# Cruise (set_cruise): one requester at a time, the latest wins.
+var _cruise_requester: Object
+var _cruise_direction := Vector2.ZERO
+var _cruise_speed: float = 0.0
+var _cruise_acceleration: float = -1.0
+# Was carried last tick: stop dead when the carry ends (a drop, not a slide).
+var _was_carried := false
 
 
 # `carry_momentum`: leave at running speed afterwards (dashes feel fluid) or
@@ -108,6 +119,29 @@ func get_action_multiplier() -> float:
 	return result
 
 
+# Drive the body along `direction` at `speed` px/s (times the MOVE_SPEED
+# status multiplier, so slows still bite) instead of following input. The
+# caller steers by calling this again every tick with a new direction.
+# Stuns and roots still stop it and forced moves still take priority.
+# `accel` < 0 uses the normal acceleration.
+func set_cruise(requester: Object, direction: Vector2, speed: float, accel: float = -1.0) -> void:
+	_cruise_requester = requester
+	_cruise_direction = direction.normalized()
+	_cruise_speed = speed
+	_cruise_acceleration = accel
+
+
+# Only the requester that set the cruise can clear it.
+func clear_cruise(requester: Object) -> void:
+	if _cruise_requester == requester:
+		_cruise_requester = null
+		_cruise_direction = Vector2.ZERO
+
+
+func is_cruising() -> bool:
+	return is_instance_valid(_cruise_requester) and _cruise_direction != Vector2.ZERO
+
+
 func can_walk() -> bool:
 	return status_component == null or not status_component.is_rooted()
 
@@ -123,6 +157,14 @@ func get_velocity(
 	input_direction: Vector2,
 	delta: float
 ) -> Vector2:
+
+	var carried: Variant = _carry_velocity(delta)
+	if carried != null:
+		return carried
+	if _was_carried:
+		# Dropped: land where the carry left us instead of sliding on.
+		_was_carried = false
+		current_velocity = Vector2.ZERO
 
 	# The countdown happens here, in the same call that applies the forced
 	# velocity, so an N-tick move moves exactly N times no matter which node
@@ -145,8 +187,14 @@ func get_velocity(
 		input_direction = Vector2.ZERO
 
 	var speed := get_move_speed()
+	var accel := acceleration
+	if can_walk() and is_cruising():
+		input_direction = _cruise_direction
+		speed = _cruise_speed * StatusEffectComponent.multiplier_of(status_component, StatusEffect.MOVE_SPEED)
+		if _cruise_acceleration >= 0.0:
+			accel = _cruise_acceleration
 	var compel_velocity := Vector2.ZERO
-	if can_walk() and status_component != null:
+	if can_walk() and status_component != null and not is_cruising():
 		var effect := status_component.get_compel_effect()
 		if effect != null:
 			compel_velocity = _compel_velocity(effect, status_component.get_compel_source(), speed)
@@ -165,7 +213,6 @@ func get_velocity(
 	_pending_impulse = Vector2.ZERO
 
 	var target_velocity := input_direction * speed + compel_velocity
-	var accel := acceleration
 	for zone in _speed_zones:
 		if is_instance_valid(zone):
 			target_velocity = zone.boost_velocity(target_velocity)
@@ -181,6 +228,26 @@ func get_velocity(
 		Vector2.ZERO,
 		friction * delta
 	)
+
+
+# Carried (StatusEffect.carry_enabled): the velocity that puts the body back
+# on its carry point this tick, or null when not carried. Replaces every
+# other kind of motion, so a carried target can't be knocked or dashed out.
+func _carry_velocity(delta: float) -> Variant:
+	if status_component == null or delta <= 0.0:
+		return null
+	var effect := status_component.get_carry_effect()
+	var carrier := status_component.get_carrier()
+	var body := (owner if owner != null else get_parent()) as Node2D
+	if effect == null or carrier == null or body == null:
+		return null
+	if not _was_carried:
+		# Whatever was moving us (a knockback, a dash) is over.
+		stop_forced_move()
+		_pending_impulse = Vector2.ZERO
+	_was_carried = true
+	var goal := carrier.global_position + status_component.get_carry_offset()
+	return ((goal - body.global_position) / delta).limit_length(effect.carry_max_speed)
 
 
 # Walk toward `source` at a fraction of our own speed; nothing inside the

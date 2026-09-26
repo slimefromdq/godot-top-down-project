@@ -21,8 +21,13 @@ class_name ChargeAbility
 # (charged: lerped to values/damage_full) plus on_hit_status (e.g. a
 # knockback status). Cue <id>_hit per target.
 #
-# Cues: <id>_windup carries context.target_position and context.duration for
-# the telegraph; <id>_active marks the launch; <id>_end fires on arrival.
+# Sweep and drop (data): end_on_hit_status_on_arrival removes on_hit_status
+# (e.g. a carry) from every bashed target when the dash ends, and
+# arrival_status is applied to them then. Cue <id>_drop per target.
+#
+# Cues: <id>_windup carries context.target_position, context.duration and
+# context.hit_width (the bash's width) for the telegraph; <id>_active marks
+# the launch; <id>_end fires on arrival.
 
 var _last_trail_point := Vector2.ZERO
 var _dashing := false
@@ -31,6 +36,8 @@ var _move_direction := Vector2.ZERO
 # This cast's dash length (charge-dependent).
 var _distance: float = 0.0
 var _bash_id: int = 0
+# Everything this cast's bash hit, for the arrival release.
+var _bashed: Array[HurtboxComponent] = []
 
 
 func get_charge_data() -> ChargeData:
@@ -51,6 +58,8 @@ func _get_cast_feel() -> AttackFeel:
 		_distance = minf(_distance, actor.global_position.distance_to(cast_target))
 	feel.active = get_charge_data().get_dash_time(_distance)
 	feel.lunge_distance = 0.0
+	if get_charge_data().telegraph_time >= 0.0:
+		feel.windup = get_charge_data().telegraph_time
 	return feel
 
 
@@ -88,8 +97,14 @@ func _cue_context() -> Dictionary:
 	context["target_position"] = actor.global_position + get_dash_direction() * _distance
 	context["direction"] = get_dash_direction()
 	context["distance"] = _distance
-	context["distance"] = _distance
+	context["hit_width"] = _hit_width()
 	return context
+
+
+func _hit_width() -> float:
+	if data.hit_shape == null:
+		return 0.0
+	return data.hit_shape.width if data.hit_shape.kind == HitShape.Kind.LINE else data.hit_shape.radius * 2.0
 
 
 func _on_active_start() -> void:
@@ -120,6 +135,7 @@ func _on_active_tick(_delta: float) -> void:
 
 func _on_active_end() -> void:
 	_end_bash()
+	_release_bashed()
 	var charge := get_charge_data()
 	if _dashing and is_instance_valid(actor) and charge.self_status != null:
 		actor.status_component.apply(charge.self_status, actor)
@@ -140,6 +156,7 @@ func _start_bash() -> void:
 	if not hitbox.hit_landed.is_connected(_on_bash_landed):
 		hitbox.hit_landed.connect(_on_bash_landed)
 	_bash_id = DamageInfo.new_attack_id()
+	_bashed.clear()
 	hitbox.begin(data.hit_shape, get_dash_direction(), _make_bash, _bash_id)
 
 
@@ -166,12 +183,29 @@ func _make_bash(_hurtbox: HurtboxComponent) -> DamageInfo:
 func _on_bash_landed(info: DamageInfo, hurtbox: HurtboxComponent) -> void:
 	if _bash_id == 0 or info.attack_id != _bash_id:
 		return
+	_bashed.append(hurtbox)
 	actor.trigger_cue(StringName(str(ability_id) + "_hit"), {
 		"position": hurtbox.global_position, "target": hurtbox.owner, "direction": info.direction})
 
 
+# Arrival: let go of what the bash swept up, then apply arrival_status.
+func _release_bashed() -> void:
+	var charge := get_charge_data()
+	for hurtbox in _bashed:
+		if not is_instance_valid(hurtbox) or hurtbox.status_component == null:
+			continue
+		if charge.end_on_hit_status_on_arrival and data.on_hit_status != null:
+			hurtbox.status_component.remove_from(data.on_hit_status.id, actor)
+		if charge.arrival_status != null and hurtbox.is_valid_target():
+			hurtbox.status_component.apply(charge.arrival_status, actor, get_dash_direction())
+		actor.trigger_cue(StringName(str(ability_id) + "_drop"), {
+			"position": hurtbox.global_position, "target": hurtbox.owner, "direction": get_dash_direction()})
+	_bashed.clear()
+
+
 func _on_cast_end(interrupted: bool) -> void:
 	_end_bash()
+	_release_bashed()
 	# A stun mid-dash stops the body where it is.
 	if interrupted and _dashing and is_instance_valid(actor):
 		actor.movement_component.stop_forced_move()
