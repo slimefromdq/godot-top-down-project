@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/abilities/common/charge_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/hazmat/data/hazmat_sealed.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/hazmat/data/hazmat_shove.tres" id="4_a"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="5_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Bash"]
+script = ExtResource("5_a")
+kind = 1
+radius = 90.0
+
+[sub_resource type="Resource" id="Damage"]
+script = ExtResource("9_v")
+base = 20.0
+per_level = 3.0
+weapon_ratio = 0.3
+
+[resource]
+script = ExtResource("1_a")
+distance = 400.0
+self_status = ExtResource("3_a")
+speed = 1600.0
+id = &"seal_suit"
+display_name = "Seal Suit"
+description = "Seal up and shove 400 px forward, pushing enemies aside, then take 30% less damage for 2 s."
+ability_script = ExtResource("2_a")
+cooldown = 12.0
+hit_shape = SubResource("Bash")
+damage = SubResource("Damage")
+damage_type = 0
+on_hit_status = ExtResource("4_a")
+tags = Array[StringName]([&"movement"])
+meter_label = &"seal_suit"
+feel_preset = &"shove"

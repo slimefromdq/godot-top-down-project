@@ -44,6 +44,10 @@ var can_split := true
 var split_damage: float = -1.0
 
 var _exploded := false
+## Lobbed projectiles (ProjectileData.lobbed) land after this many pixels.
+## < 0 = at max range. RangedAttackAbility sets it to the aim point.
+var lob_distance: float = -1.0
+var _travelled: float = 0.0
 ## Which pass a returning projectile is on (always OUTBOUND otherwise).
 var current_pass: Pass = Pass.OUTBOUND
 
@@ -123,6 +127,9 @@ func _physics_process(delta: float) -> void:
 		return
 	if data.return_to_caster:
 		_process_returning(delta)
+		return
+	if data.lobbed:
+		_process_lobbed(delta)
 		return
 	var from := global_position
 	var to := from + direction * data.speed * delta
@@ -251,6 +258,8 @@ func _explode(at: Vector2) -> void:
 		elif data.explosion_ally_status != null and hurtbox.status_component != null:
 			hurtbox.status_component.apply(data.explosion_ally_status, source, direction)
 	_spawn_feedback(data.explosion_effect, data.explosion_sound, at)
+	if data.explosion_zone != null:
+		GroundZone.spawn(self, data.explosion_zone, at, direction, source)
 	exploded.emit(at)
 	if can_split and data.split_on_explode and data.split_projectile != null:
 		_split(at)
@@ -283,6 +292,17 @@ func _spawn_feedback(effect: PackedScene, sound: SoundCue, at: Vector2) -> void:
 
 func get_range() -> float:
 	return data.speed * data.lifetime
+
+
+# A lob touches nothing in flight: it lands on its spot and expires there.
+func _process_lobbed(delta: float) -> void:
+	var land_at := get_range() if lob_distance < 0.0 else minf(lob_distance, get_range())
+	var step := minf(data.speed * delta, land_at - _travelled)
+	_travelled += step
+	_age += delta
+	global_position += direction * step
+	if _travelled >= land_at - 0.01:
+		_expire()
 
 
 func _process_returning(delta: float) -> void:

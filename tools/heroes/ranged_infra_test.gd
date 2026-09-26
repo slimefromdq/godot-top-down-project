@@ -43,6 +43,8 @@ func _run() -> void:
 	await _test_stat_modifier_status()
 	await _test_status_target_died()
 	await _test_follow_cone()
+	await _test_zone_ramp()
+	await _test_zone_leftover_and_lob()
 	_test_cooldown_api()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
@@ -684,6 +686,156 @@ func _test_follow_cone() -> void:
 	_check("zone ends when the channel ends", not is_instance_valid(zone2), "")
 	inside.queue_free()
 	behind.queue_free()
+
+
+# GroundZoneData Ramp group + ZoneRamp: damage per target grows per tick,
+# shared by zones with the same owner and key, reset after time outside.
+func _test_zone_ramp() -> void:
+	hero.global_position = Vector2(0, 30000)
+	var target := _spawn_dummy(Vector2(0, 30000))
+	var other := _spawn_dummy(Vector2(2000, 30000))
+	await _physics_frames(2)
+	var amounts: Array[float] = []
+	var log_hit := func(info: DamageInfo):
+		if info.target == target and info.label == &"test_ramp":
+			amounts.append(info.amount)
+	CombatEvents.damage_dealt.connect(log_hit)
+
+	var ramping := _ramp_zone(&"test_ramp", 0.25)
+	var zone := GroundZone.spawn(hero, ramping, target.global_position, Vector2.RIGHT, hero, 10.0)
+	await _seconds(1.45)
+	# 0.25 per tick, ramp_max 2: x1, x1.25, x1.5, x1.75, x2, x2 ...
+	_check("a ramping zone's ticks grow per tick", amounts.size() >= 6
+		and is_equal_approx(amounts[1], amounts[0] * 1.25) and is_equal_approx(amounts[3], amounts[0] * 1.75), str(amounts))
+	_check("...capped at ramp_max", amounts.size() >= 6 and is_equal_approx(amounts[4], amounts[0] * 2.0)
+		and is_equal_approx(amounts[5], amounts[0] * 2.0), str(amounts))
+
+	var key := ramping.get_ramp_key()
+	_check("the ramp key falls back to the meter label", key == &"test_ramp", str(key))
+	var steps := ZoneRamp.get_steps(hero, key, target)
+	var sibling := _ramp_zone(&"test_ramp", 0.25)
+	sibling.tick_damage = null    # a status-only zone with the same key
+	_check("another zone with the same owner and key reads the same ramp", steps >= 3
+		and ZoneRamp.multiplier(hero, sibling.get_ramp_key(), target, 0.5, 2.0) == 2.0, str(steps))
+	_check("other targets and other keys are independent", ZoneRamp.get_steps(hero, key, other) == 0
+		and ZoneRamp.get_steps(hero, &"other_key", target) == 0, "")
+
+	zone.end()
+	await _seconds(ramping.ramp_reset_after + 0.1)
+	amounts.clear()
+	zone = GroundZone.spawn(hero, ramping, target.global_position, Vector2.RIGHT, hero, 10.0)
+	await _physics_frames(2)
+	_check("time outside resets it: the first tick is x1 again", amounts.size() == 1 and ZoneRamp.get_steps(hero, key, target) == 1, str(amounts))
+	zone.end()
+
+	var full := _ramp_zone(&"test_ramp_full", 0.25)
+	full.ramp_starts_full = true
+	amounts.clear()
+	var hits_full: Array[float] = []
+	var log_full := func(info: DamageInfo):
+		if info.target == target and info.label == &"test_ramp_full":
+			hits_full.append(info.amount)
+	CombatEvents.damage_dealt.connect(log_full)
+	zone = GroundZone.spawn(hero, full, target.global_position, Vector2.RIGHT, hero, 10.0)
+	await _physics_frames(2)
+	var base := full.tick_damage.evaluate(hero.stats_component)
+	_check("ramp_starts_full: the first tick is already at ramp_max", hits_full.size() == 1
+		and is_equal_approx(hits_full[0], base * 2.0), str(hits_full))
+	zone.end()
+
+	ZoneRamp.raise_steps(hero, &"test_ramp", other, 1)
+	_check("raise_steps gives a head start", ZoneRamp.get_steps(hero, &"test_ramp", other) == 1
+		and ZoneRamp.multiplier(hero, &"test_ramp", other, 0.5, 2.0) == 1.5, "")
+	ZoneRamp.reset(hero, &"test_ramp", other)
+	_check("reset clears it", ZoneRamp.get_steps(hero, &"test_ramp", other) == 0, "")
+
+	CombatEvents.damage_dealt.disconnect(log_hit)
+	CombatEvents.damage_dealt.disconnect(log_full)
+	target.queue_free()
+	other.queue_free()
+	await _physics_frames(2)
+
+
+# GroundZoneData.leaves_zone, ProjectileData.lobbed + explosion_zone.
+func _test_zone_leftover_and_lob() -> void:
+	hero.global_position = Vector2(0, 33000)
+	await _physics_frames(2)
+	var residue := _ramp_zone(&"test_residue", 0.0)
+	residue.duration = 3.0
+	var parent := _ramp_zone(&"test_parent", 0.0)
+	parent.duration = 0.3
+	parent.leaves_zone = residue
+	GroundZone.spawn(hero, parent, Vector2(400, 33000), Vector2.RIGHT, hero)
+	await _seconds(0.45)
+	var left := _zones_labelled(&"test_residue")
+	_check("a zone that ends leaves its leaves_zone where it was", left.size() == 1
+		and left[0].global_position.distance_to(Vector2(400, 33000)) < 1.0 and left[0].source == hero, "")
+	for zone in left:
+		zone.end()
+
+	var freed := GroundZone.spawn(hero, parent, Vector2(400, 33000), Vector2.RIGHT, hero)
+	freed.free()
+	await _physics_frames(2)
+	_check("...but not when it's freed without ending (a map change)", _zones_labelled(&"test_residue").is_empty(), "")
+
+	var cloud := _ramp_zone(&"test_lob_cloud", 0.0)
+	cloud.duration = 3.0
+	var lob := ProjectileData.new()
+	lob.speed = 1000.0
+	lob.lifetime = 0.8
+	lob.lobbed = true
+	lob.explode_on_expire = true
+	lob.explosion_shape = HitShape.new()
+	lob.explosion_shape.kind = HitShape.Kind.CIRCLE
+	lob.explosion_shape.radius = 100.0
+	lob.explosion_zone = cloud
+	var wall: Node2D = load("res://scenes/wall.tscn").instantiate()
+	wall.position = Vector2(200, 33000)
+	add_child(wall)
+	var blocker := _spawn_dummy(Vector2(120, 33000))
+	await _physics_frames(2)
+	var projectile := Projectile.fire(hero, lob, Vector2(0, 33000), Vector2.RIGHT, DamageInfo.create(10.0, hero))
+	projectile.lob_distance = 450.0
+	var blocker_hp := blocker.health_component.current_health
+	await _seconds(0.6)
+	var clouds := _zones_labelled(&"test_lob_cloud")
+	_check("a lob flies over walls and heads, landing at lob_distance", clouds.size() == 1
+		and clouds[0].global_position.distance_to(Vector2(450, 33000)) < 2.0
+		and blocker.health_component.current_health == blocker_hp, str(clouds.map(func(z): return z.global_position)))
+	_check("explosion_zone is left where it explodes, owned by the shooter", clouds.size() == 1 and clouds[0].source == hero, "")
+	var far := Projectile.fire(hero, lob, Vector2(0, 33000), Vector2.RIGHT, DamageInfo.create(10.0, hero))
+	await _seconds(1.0)
+	_check("with no lob_distance it lands at max range (speed x lifetime)", is_instance_valid(far) == false
+		and _zones_labelled(&"test_lob_cloud").any(func(z): return z.global_position.distance_to(Vector2(800, 33000)) < 2.0), "")
+	for zone in _zones_labelled(&"test_lob_cloud"):
+		zone.end()
+	wall.queue_free()
+	blocker.queue_free()
+	await _physics_frames(2)
+
+
+func _ramp_zone(label: StringName, ramp_per_tick: float) -> GroundZoneData:
+	var zone := GroundZoneData.new()
+	zone.shape = HitShape.new()
+	zone.shape.kind = HitShape.Kind.CIRCLE
+	zone.shape.radius = 150.0
+	zone.duration = 10.0
+	zone.tick_interval = 0.25
+	zone.tick_damage = ScalingValue.new()
+	zone.tick_damage.base = 10.0
+	zone.meter_label = label
+	zone.ramp_per_tick = ramp_per_tick
+	zone.ramp_max = 2.0
+	zone.ramp_reset_after = 0.5
+	return zone
+
+
+func _zones_labelled(label: StringName) -> Array:
+	var result := []
+	for node in get_tree().current_scene.get_children():
+		if node is GroundZone and not node.is_queued_for_deletion() and node.data.meter_label == label:
+			result.append(node)
+	return result
 
 
 func _test_cooldown_api() -> void:

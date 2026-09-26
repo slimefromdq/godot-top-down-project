@@ -15,6 +15,10 @@ class_name GroundZone
 #   target_entered(hurtbox)   started being inside
 #   target_ticked(hurtbox)    a tick landed on them (after damage/statuses)
 #   target_exited(hurtbox)    left, died, or the zone ended
+#
+# Ramp (data.ramp_per_tick): damage per target grows with every tick it takes,
+# shared with the owner's other zones of the same ramp key (see ZoneRamp).
+# Leftover (data.leaves_zone): a zone spawned where this one ended.
 
 signal target_entered(hurtbox: HurtboxComponent)
 signal target_ticked(hurtbox: HurtboxComponent)
@@ -50,7 +54,7 @@ static func spawn(context: Node, zone_data: GroundZoneData, at: Vector2, dir: Ve
 	zone._tick_amount = zone_data.tick_damage.evaluate(StatsComponent.find_on(from)) \
 		if zone_data.tick_damage != null else 0.0
 	zone._attack_id = DamageInfo.new_attack_id()
-	zone.z_index = -5    # under characters
+	zone.z_index = zone_data.draw_z_index    # under characters
 	# Place it BEFORE it enters the tree: _ready runs the first tick, which
 	# must happen where the zone is, not at the world origin. (The scene root
 	# sits at the origin, so position == global here.)
@@ -69,6 +73,7 @@ func _ready() -> void:
 			visual.rotation = direction.angle()
 	# First tick right away: stepping into fire should hurt immediately.
 	_update_inside()
+	_touch_ramps()
 	_tick()
 
 
@@ -96,7 +101,22 @@ func end() -> void:
 	for key in _inside.keys():
 		_exit(key)
 	ended.emit()
+	if data.leaves_zone != null and is_inside_tree():
+		GroundZone.spawn(self, data.leaves_zone, global_position, direction, _owner_source())
 	queue_free()
+
+
+# Ramping zones: everyone inside is "still in the gas" this physics tick.
+func _touch_ramps() -> void:
+	if not data.has_ramp():
+		return
+	var key := data.get_ramp_key()
+	for hurtbox in get_targets_inside():
+		var target := ZoneRamp.target_of(hurtbox)
+		ZoneRamp.touch(_owner_source(), key, target, data.ramp_reset_after)
+		if data.ramp_starts_full:
+			ZoneRamp.raise_steps(_owner_source(), key, target,
+				ZoneRamp.steps_to_max(data.ramp_per_tick, data.ramp_max))
 
 
 func _physics_process(delta: float) -> void:
@@ -108,6 +128,7 @@ func _physics_process(delta: float) -> void:
 	_age += delta
 	_follow_owner()
 	_update_inside()
+	_touch_ramps()
 	_tick_timer += delta
 	if data.tick_interval > 0.0 and _tick_timer + StatusEffectComponent.TICK_EPSILON >= data.tick_interval:
 		_tick_timer -= data.tick_interval
@@ -182,7 +203,13 @@ func _tick() -> void:
 			continue
 		var hittable := Hitbox.can_hit(owner_source, hurtbox)
 		if _tick_amount > 0.0 and hittable:
-			var info := DamageInfo.create(_tick_amount, owner_source, data.damage_type)
+			var amount := _tick_amount
+			var ramp_target: Node = null
+			if data.has_ramp():
+				ramp_target = ZoneRamp.target_of(hurtbox)
+				amount *= ZoneRamp.multiplier(owner_source, data.get_ramp_key(), ramp_target,
+					data.ramp_per_tick, data.ramp_max)
+			var info := DamageInfo.create(amount, owner_source, data.damage_type)
 			info.tags = [DamageInfo.TAG_AREA, DamageInfo.TAG_DOT]
 			info.label = data.meter_label
 			info.attack_id = _attack_id
@@ -193,6 +220,8 @@ func _tick() -> void:
 				info.add_status(data.status)
 				info.add_status(data.status_while_inside)
 			hurtbox.take_hit(info)
+			if ramp_target != null:
+				ZoneRamp.add_step(owner_source, data.get_ramp_key(), ramp_target)
 		if (not hittable or _tick_amount <= 0.0 or data.statuses_from_zone) \
 				and is_instance_valid(hurtbox) and hurtbox.status_component != null and hurtbox.is_valid_target():
 			hurtbox.status_component.apply(data.status, status_source, direction)

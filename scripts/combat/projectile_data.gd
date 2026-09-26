@@ -15,6 +15,10 @@ class_name ProjectileData
 @export var radius: float = 30.0
 ## Stopped by walls (GameRules.wall_mask).
 @export var stops_at_walls: bool = true
+## Lobbed (a grenade, a canister): flies over walls and heads to the shooter's
+## aim point, at most max range (speed x lifetime) away, hitting nothing on
+## the way, and expires there. Pair it with explode_on_expire.
+@export var lobbed: bool = false
 ## Knockback impulse along the flight direction.
 @export var knockback: float = 0.0
 ## Optional status applied to everything it hits.
@@ -53,6 +57,9 @@ class_name ProjectileData
 @export var explosion_label: StringName = &""
 @export var explosion_effect: PackedScene
 @export var explosion_sound: SoundCue
+## Ground zone left where it explodes (a gas cloud, a fire pool). Its owner is
+## the shooter.
+@export var explosion_zone: GroundZoneData
 
 @export_subgroup("Split")
 ## On exploding, fire `split_count` copies of split_projectile in a fan

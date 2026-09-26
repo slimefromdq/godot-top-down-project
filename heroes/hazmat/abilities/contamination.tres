@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ZoneAbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/zone_ability_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/hazmat/abilities/contamination.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/hazmat/data/hazmat_aura.tres" id="3_a"]
+
+[resource]
+script = ExtResource("1_a")
+zone = ExtResource("3_a")
+id = &"contamination"
+display_name = "Contamination"
+description = "A gas aura follows Hazmat. Its damage ramps up +50% for every second an enemy stays inside, up to 3x, and resets once they've been out for 1 s."
+ability_script = ExtResource("2_a")
+cooldown = 0.0
+tags = Array[StringName]([&"passive"])

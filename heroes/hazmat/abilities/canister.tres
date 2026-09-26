@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/hazmat/data/hazmat_canister.tres" id="3_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Damage"]
+script = ExtResource("9_v")
+base = 20.0
+per_level = 3.0
+magic_ratio = 0.3
+
+[resource]
+script = ExtResource("1_a")
+projectile = ExtResource("3_a")
+muzzles = Array[Vector2]([Vector2(40, 0)])
+fire_mode = 1
+shots_per_second = 1.0
+id = &"canister"
+display_name = "Canister"
+description = "Lob a canister at the cursor (up to 800 px, over walls). It bursts into a 250 px gas cloud for 6 s that shares Contamination's ramp."
+ability_script = ExtResource("2_a")
+cooldown = 12.0
+damage = SubResource("Damage")
+damage_type = 1
+tags = Array[StringName]([&"ability"])
+meter_label = &"canister"
+feel_preset = &"sting"

@@ -1,0 +1,94 @@
+[gd_resource type="Resource" script_class="FeelProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/feel/feel_profile.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="2_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/feel/impact_light.tres" id="3_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/feel/impact_heavy.tres" id="4_x"]
+
+[sub_resource type="Resource" id="Feel_volley"]
+script = ExtResource("2_x")
+windup = 0.0
+active = 0.02
+recovery = 0.06
+move_multiplier = 0.8
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+weight = 0.4
+windup_lean = 0.0
+windup_squash = 0.0
+release_snap = -4.0
+hitstop = 0.0
+shake_on_hit = 0.03
+camera_nudge = 1.5
+trail_particles = 0
+
+[sub_resource type="Resource" id="Feel_rally"]
+script = ExtResource("2_x")
+windup = 0.08
+active = 0.02
+recovery = 0.1
+move_multiplier = 0.8
+lunge_distance = 0.0
+movement_cancel_after = 0.0
+ability_cancel_after = 0.0
+weight = 0.8
+windup_lean = 0.0
+windup_squash = 0.1
+windup_glow = Color(0.85, 1, 0.3, 0.5)
+release_snap = 0.0
+hitstop = 0.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Feel_sting"]
+script = ExtResource("2_x")
+windup = 0.08
+active = 0.02
+recovery = 0.18
+move_multiplier = 0.6
+lunge_distance = 0.0
+movement_cancel_after = 0.05
+ability_cancel_after = 0.08
+weight = 1.0
+windup_lean = 6.0
+release_snap = -10.0
+hitstop = 0.04
+shake_on_hit = 0.12
+camera_nudge = 5.0
+trail_particles = 0
+impact_sound = ExtResource("3_x")
+
+[sub_resource type="Resource" id="Feel_shove"]
+script = ExtResource("2_x")
+windup = 0.1
+active = 0.02
+recovery = 0.15
+move_multiplier = 0.5
+lunge_distance = 0.0
+movement_cancel_after = 0.1
+ability_cancel_after = 0.1
+weight = 1.6
+windup_lean = 10.0
+windup_squash = 0.12
+windup_glow = Color(0.85, 1, 0.3, 0.5)
+release_snap = 14.0
+hitstop = 0.05
+shake_on_hit = 0.2
+camera_nudge = 8.0
+trail_particles = 0
+impact_sound = ExtResource("4_x")
+pitch_scale = 0.85
+
+[sub_resource type="Resource" id="Feel_fallback"]
+script = ExtResource("2_x")
+
+[resource]
+script = ExtResource("1_x")
+presets = Dictionary[StringName, ExtResource("2_x")]({
+&"volley": SubResource("Feel_volley"),
+&"rally": SubResource("Feel_rally"),
+&"sting": SubResource("Feel_sting"),
+&"shove": SubResource("Feel_shove")
+})
+fallback = SubResource("Feel_fallback")
+impact_sound = ExtResource("3_x")

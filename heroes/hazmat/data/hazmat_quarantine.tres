@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"hazmat_quarantine"
+display_name = "Quarantined"
+duration = 0.4
+stuns = true
+displace_distance = 500.0
+displace_duration = 0.2
+displace_direction = 2
+pull_stop_distance = 110.0
+body_tint = Color(0.72, 1, 0.18, 0.4)

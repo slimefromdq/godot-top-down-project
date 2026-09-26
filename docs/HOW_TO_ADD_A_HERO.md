@@ -109,6 +109,9 @@ For each slot in the definition's `abilities` dictionary, point at an
 | a buff/shield on yourself that grows with enemies nearby | `SelfStatusData` + `SelfStatusAbility` (`strength_base` + `strength_per_enemy`) | none |
 | enemies swept up and carried along with you, then dropped | `StatusEffect.carry_enabled` as a dash's `on_hit_status` + `ChargeData.end_on_hit_status_on_arrival` / `arrival_status` | none |
 | a dash telegraph of its own length | `ChargeData.telegraph_time` | none |
+| a zone whose damage ramps the longer you stand in it (a gas that gets worse) | `GroundZoneData` Ramp group: `ramp_per_tick`, `ramp_max`, `ramp_reset_after`, `ramp_key` (zones with the same owner + key share one ramp per target), `ramp_starts_full`; push it from scripts with `ZoneRamp.raise_steps` / `reset` | none |
+| a zone that leaves another behind when it ends (a residue, embers) | `GroundZoneData.leaves_zone` | none |
+| a lobbed grenade that lands on the cursor, over walls, and leaves a cloud | `ProjectileData.lobbed` + `explode_on_expire` + `explosion_shape` + `explosion_zone` (any zone) | none |
 | hard CC that can't be chained forever | automatic: **Resolve** (`GameRules.resolve_duration` / `resolve_cc_multiplier`) halves a stun, root or taunt that lands within 2 s of the last one ending. Carries, self-applied CC, walk-out-able pulls and formations are exempt; `StatusEffect.ignores_resolve` exempts any other | none |
 | "can A see B?" (a stalker passive, a sight-gated autofire) | `CombatQueries.has_line_of_sight(from, to)`: walls on `GameRules.sight_mask`, and bushes (can't see in from outside; from inside you see out) | none |
 | hide in bushes / reveal someone | bushes hide their occupants automatically (`CombatQueries.is_hidden_from`, drawn per viewer by `VisualsComponent`); a `StatusEffect` with `reveals` shows them anyway | none |
@@ -238,6 +241,18 @@ var zone := spawn_owned_zone(data.zone)   # ends with this cast
 zone.target_entered.connect(_on_enter)    # also target_ticked, target_exited
 ```
 
+**Ramping zones.** Give a `GroundZoneData` a `ramp_per_tick` and each damage
+tick on a target hits `1 + ramp_per_tick x (ticks it already took)` times
+harder, up to `ramp_max`, so with 1 s ticks 0.5 is "+50% per second inside".
+The ramp belongs to (owner, `ramp_key`, target): every zone of that owner
+with the same key shares it, so an aura and the clouds its hero throws feed
+one ramp. A target outside all of them for `ramp_reset_after` seconds starts
+over. `ramp_starts_full` puts everyone inside at `ramp_max` at once. Scripts
+push it directly: `ZoneRamp.raise_steps(owner, key, target, steps)` (a head
+start that never lowers it) and `ZoneRamp.reset(...)` (a cleanse).
+`draw_z_index` lifts a zone's drawing (and its outline) above other ground
+zones, still under characters.
+
 **Avery**, slot by slot:
 
 | Slot | Data | Script |
@@ -338,6 +353,26 @@ FeelProfile, not the cue profiles.
   hero automatically.
 
 ---
+
+## What Hazmat took
+
+A slow zone TANK (title: The Contaminant). Tools → New Hero from Template →
+"Hazmat", basic attack deleted, then:
+
+| Slot | Data | Script |
+|---|---|---|
+| passive | `contamination.tres` (`ZoneAbilityData`): `hazmat_aura.tres`, a 220 px `follow_owner` circle, 1 s ticks of 10 + 20% Magic, ramp 0.5 per tick up to x3, reset after 1 s, `ramp_key` contamination | `contamination.gd` (`PassiveAbility`): keeps the aura up, `suspend(seconds)`, `get_ramp_key()` |
+| primary | `sprayer.tres`: `RangedAttackData`, AUTO, 5 droplets in a 30° cone, 350 px; `values/ramp_head_start` | `sprayer_ability.gd`: a hit raises the target's Contamination ramp one step |
+| ability_1 | `canister.tres`: a one-shot gun firing `hazmat_canister.tres` (`lobbed`, explodes on landing, `explosion_zone` = a 250 px 6 s cloud on the same ramp) | generic `RangedAttackAbility` |
+| movement | `seal_suit.tres`: `ChargeData`, 400 px, a shove (`hit_shape` + knockback `on_hit_status`), `self_status` = 30% less damage for 2 s | generic `ChargeAbility` |
+| cc | `quarantine.tres`: one-shot gun (500 px) whose `on_hit_status` pulls to him (`TOWARD_SOURCE`) and stuns 0.4 s | generic `RangedAttackAbility` |
+| ultimate | `containment_breach.tres` (`ZoneAbilityData`): a 500 px `follow_owner` zone, `ramp_starts_full`, `outlives_cast`, `leaves_zone` = an 8 s residue | `containment_breach_ability.gd`: suspends the aura, spawns the breach (instant, he keeps fighting) |
+
+Shared pieces added for him: the `GroundZoneData` Ramp group and `ZoneRamp`,
+`GroundZoneData.leaves_zone` and `draw_z_index`, `ProjectileData.lobbed` and
+`explosion_zone`. The Ranged Test hero's cone ramps (+10% per tick up to
+x1.5); `tools/heroes/ranged_infra_test` covers the pieces alone and
+`tools/heroes/hazmat_test` covers the kit.
 
 ## What Cpt. Yellow took
 
