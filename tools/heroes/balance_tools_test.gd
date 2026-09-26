@@ -36,6 +36,7 @@ func _run() -> void:
 	await _test_meter_and_inspector()
 	_test_panel_and_validation()
 	await _test_swap_to_second_hero()
+	await _test_ally_dummy()
 	_check("all checks ran (no script errors)", checks >= MIN_CHECKS, "%d checks" % checks)
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
 	get_tree().quit(failures)
@@ -233,6 +234,51 @@ func _test_swap_to_second_hero() -> void:
 	await _seconds(0.6)
 	_check("Rook's basic attack lands and lifesteals", rook.health_component.current_health > 100.0,
 		"%.1f" % rook.health_component.current_health)
+
+
+# The ally dummy: on the player's team, patrolling, showing its buffs; Melody's
+# Wind-Up Key (played via "Play as") targets it and it visibly walks faster.
+func _test_ally_dummy() -> void:
+	var world := get_tree().current_scene
+	var ally := world.get_node_or_null("Dummies/Ally") as TrainingDummy
+	_check("the Training Grounds have an ally dummy", ally != null, "")
+	if ally == null:
+		return
+	var melody := DebugTools.swap_player(load("res://heroes/melody/melody_definition.tres"))
+	await _frames(3)
+	# Scripted input: the real mouse (not held, headless) would release the crank.
+	melody.get_node("PlayerHeroInput").set_physics_process(false)
+	melody.get_node("PlayerHeroInput").set_process(false)
+	_check("...on the player's team", ally.team == melody.team and Hitbox.is_ally(melody, ally.hurtbox), str(ally.team))
+	_check("...reading its buffs (none yet)", ally.dps_label.text == "no buffs", ally.dps_label.text)
+	var walked := 0.0
+	var last := ally.global_position
+	for i in 48:
+		await get_tree().physics_frame
+		walked += ally.global_position.distance_to(last)
+		last = ally.global_position
+	_check("...patrolling", walked > 100.0, "%.0f px in 48 frames" % walked)
+	DebugTools.set_all_dummies_fight_back(true)
+	_check("'fight back' leaves it friendly", not ally.fight_back and ally.team == melody.team, "")
+	DebugTools.set_all_dummies_fight_back(false)
+
+	var base_speed := ally.movement_component.get_move_speed()
+	melody.global_position = ally.global_position + Vector2(0, -250)
+	melody.velocity = Vector2.ZERO
+	await _frames(2)
+	melody.aim_point = ally.global_position
+	melody.request_slot(&"ability_1", ally.global_position)
+	await _seconds(0.9)
+	melody.aim_point = ally.global_position
+	melody.release_slot(&"ability_1", ally.global_position)
+	await _seconds(0.3)
+	_check("Melody's Wind-Up Key winds the ally dummy", ally.status_component.has_status_from(&"melody_wound_up", melody), "")
+	var fastest := 0.0
+	for i in 20:
+		await get_tree().physics_frame
+		fastest = maxf(fastest, ally.velocity.length())
+	_check("...it walks faster", fastest > base_speed * 1.1, "%.0f vs %.0f px/s" % [fastest, base_speed])
+	_check("...and its readout shows the buff", ally.dps_label.text.contains("speed x"), ally.dps_label.text)
 
 
 func _check(label: String, ok: bool, detail: String) -> void:

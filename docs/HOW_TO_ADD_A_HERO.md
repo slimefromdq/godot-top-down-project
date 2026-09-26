@@ -301,7 +301,10 @@ FeelProfile, not the cue profiles.
 
 * Press **F1 → Hero → "Play as"** to swap the player to your hero in any map.
 * **Training Grounds** (F3) has resistance dummies, a pack for multi-target
-  abilities, a dummy that fights back, and a killable one.
+  abilities, a dummy that fights back, a killable one, and an ally on your
+  team (south-west) that patrols and reads out its buffs and shield, for
+  ally-targeted abilities like Melody's Wind-Up Key. A dummy becomes an ally
+  with `team`, `patrol_offset` and `buff_readout`.
 * **F1** edits any number live (Reset restores the .tres), **F2** shows every
   ability number at the current level, **F4** is the damage meter.
 * **Tools → Validate Heroes** and **Tools → Export Balance CSV** include your

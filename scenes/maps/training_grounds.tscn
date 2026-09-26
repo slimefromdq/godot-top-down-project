@@ -140,6 +140,16 @@ theme_override_font_sizes/font_size = 26
 text = "KILLABLE  -  death + respawn"
 horizontal_alignment = 1
 
+[node name="Ally" type="Label" parent="Signs"]
+offset_left = -1375
+offset_top = 1130
+offset_right = -775
+offset_bottom = 1170
+theme_override_colors/font_color = Color(0.3, 0.26, 0.2, 0.85)
+theme_override_font_sizes/font_size = 26
+text = "ALLY  -  on your team: buffs, shields, ally targeting"
+horizontal_alignment = 1
+
 [node name="Cover" type="Label" parent="Signs"]
 offset_left = -300
 offset_top = 720

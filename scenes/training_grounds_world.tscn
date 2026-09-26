@@ -74,6 +74,14 @@ level = 5
 position = Vector2(1050, 650)
 max_health = 800.0
 
+[node name="Ally" parent="Dummies" instance=ExtResource("5_dummy")]
+position = Vector2(-1300, 1000)
+team = &"a"
+can_die = false
+max_health = 1000.0
+patrol_offset = Vector2(450, 0)
+buff_readout = true
+
 [node name="GameOverScreen" parent="." instance=ExtResource("4_game_over")]
 
 [node name="AbilityBar" parent="." node_paths=PackedStringArray("actor") instance=ExtResource("6_bar")]
