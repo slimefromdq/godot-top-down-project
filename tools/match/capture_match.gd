@@ -1,7 +1,9 @@
 extends Node
 
 # Screenshots of the match HUD (clock, gold, level and XP bar), the F1 > Match
-# tab, and the respawn countdown, in Dream Basin.
+# tab, the respawn countdown, and Motes (loose, a carried stack, the Dream
+# Mote and its off-screen arrow, a dreaming zone, the M-view spawn overlay),
+# in Dream Basin.
 #
 #   xvfb-run godot --rendering-driver opengl3 res://tools/match/capture_match.tscn -- <out_dir>
 
@@ -37,6 +39,36 @@ func _run() -> void:
 		await get_tree().process_frame
 	await _shot("match_debug_tab")
 	DebugTools.toggle_panel()
+
+	# Motes: a few loose around the player, then a full carried stack.
+	var player := DebugTools.get_player()
+	var director := MoteDirector.find(get_tree())
+	player.get_node("PlayerHeroInput").set_physics_process(false)
+	for i in 4:
+		director.spawn_mote(player.global_position + Vector2(260 + 150 * i, -160 + 90 * (i % 2)))
+	director.spawn_mote(player.global_position + Vector2(-420, -120), true)
+	await get_tree().create_timer(0.8).timeout
+	await _shot("motes_loose")
+	DebugTools.give_player_motes(4)
+	player.global_position += Vector2(0, -520)
+	await get_tree().create_timer(0.8).timeout
+	await _shot("motes_carried")
+	# The Dream Mote far away: off-screen arrow. A dreaming zone nearby.
+	director.clear_motes()
+	director.spawn_mote(Vector2.ZERO, true)
+	director.force_next_zone()
+	var zone: DreamZone = director.get_zone_pairs()[director.get_active_pair()][0]
+	player.global_position = zone.get_spawn_points()[0].global_position + Vector2(0, 200)
+	await get_tree().create_timer(director.get_rules().zone_warning + 3.0).timeout
+	await _shot("motes_zone_and_arrow")
+	DebugTools.set_mote_overlay_enabled(true)
+	var view := get_tree().current_scene.get_node("MapDebugView") as MapDebugView
+	view.toggle()
+	await get_tree().create_timer(0.8).timeout
+	await _shot("motes_overlay")
+	view.toggle()
+	DebugTools.set_mote_overlay_enabled(false)
+	await get_tree().create_timer(0.5).timeout
 	# Avery's revive would cancel the death: die as Jose instead.
 	var jose := DebugTools.swap_player(load("res://heroes/jose/jose_definition.tres"))
 	await get_tree().create_timer(0.3).timeout

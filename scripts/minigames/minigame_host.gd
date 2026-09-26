@@ -4,12 +4,16 @@ class_name MinigameHost
 # Plays a MinigameInstance for its actor. Find or make one with
 # MinigameHost.find_or_create(actor) (it lives under Components).
 #
-#   play(minigame)   starts it: the data's occupied_status goes on the actor
+#   play(minigame, source)
+#                    starts it: the data's occupied_status goes on the actor
 #                    and, if the actor is the local viewer (LocalView), a
 #                    MinigameView overlay opens for them only
 #   set_input(move)  this tick's move vector (PlayerHeroInput sends WASD; a
 #                    test or a network client can too). A tick with no input
 #                    uses the minigame's bot_input().
+#   source           who put the actor in it (an abductor), or null for a
+#                    practice run. When a sourced minigame ends, the actor
+#                    reports Actor.displaced(source, INF): they were moved.
 #   press(action)    a key press for the minigame
 #   stop()           ends it now ({"stopped": true})
 # Signals: started(minigame), finished(minigame, result).
@@ -22,6 +26,7 @@ const VIEW_SCRIPT := preload("res://scripts/minigames/minigame_view.gd")
 
 var actor: Node2D
 var current: MinigameInstance
+var source: Node
 var _input := Vector2.ZERO
 var _has_input := false
 var _view: CanvasLayer
@@ -52,10 +57,11 @@ func is_playing() -> bool:
 	return current != null and not current.is_done()
 
 
-func play(minigame: MinigameInstance) -> bool:
+func play(minigame: MinigameInstance, by: Node = null) -> bool:
 	if is_playing() or minigame == null or minigame.data == null:
 		return false
 	current = minigame
+	source = by
 	minigame.actor = actor
 	add_child(minigame)
 	minigame.finished.connect(_on_finished.bind(minigame))
@@ -102,5 +108,9 @@ func _on_finished(result: Dictionary, minigame: MinigameInstance) -> void:
 	if is_instance_valid(_view):
 		_view.queue_free()
 	_view = null
+	var by := source
+	source = null
+	if is_instance_valid(by) and actor != null and actor.has_signal(&"displaced"):
+		actor.displaced.emit(by, INF)
 	finished.emit(minigame, result)
 	minigame.queue_free.call_deferred()

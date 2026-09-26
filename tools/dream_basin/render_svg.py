@@ -185,6 +185,20 @@ def render(m):
         elif mk["kind"] == "sleepwalker":
             o.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="14" fill="#efe9e0" stroke="#8a7f70" stroke-width="2"/>')
 
+    # motes: dreaming zones (dashed lilac), trickle points (gold), Dream Mote spot
+    for z in m["dream_zones"]:
+        o.append(poly(z["pts"], fill="#c4b5fd", fill_opacity="0.12", stroke="#8b5cf6",
+                      stroke_width="1.5", stroke_dasharray="6 4"))
+        for (x, y) in z["spawns"]:
+            cx, cy = P(x, y)
+            o.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3.5" fill="#a78bfa"/>')
+    for mk in m["mote_spawns"]:
+        cx, cy = P(mk["x"], mk["y"])
+        o.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>')
+    for d in m["dream_point"]:
+        cx, cy = P(d["x"], d["y"])
+        o.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="11" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="3"/>')
+
     # labels
     for lb in m["labels"]:
         o.append(text(lb["x"], lb["y"], lb["text"], lb["size"], fill="#1f2937", font_weight="700",
@@ -216,6 +230,9 @@ def _legend(x0):
         ("strip", "", "Speed strip (both directions)"),
         ("lane", "", "Long sight lane"),
         ("ring", "", "Cradle ring (kept open)"),
+        ("mote", "", "Mote trickle point"),
+        ("zone", "", "Dreaming zone (mirrored pairs)"),
+        ("dream", "", "Dream Mote spot"),
     ]
     o = [f'<text x="{x}" y="70" font-size="30" font-weight="700" fill="#111">DREAM BASIN</text>',
          f'<text x="{x}" y="100" font-size="15" fill="#555">5 x 9 screens (9600 x 9720 px)</text>',
@@ -246,6 +263,12 @@ def _legend(x0):
             o.append(f'<line x1="{x}" y1="{cy}" x2="{x + 30}" y2="{cy}" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="6 3"/>')
         elif kind == "ring":
             o.append(f'<rect x="{x}" y="{cy - 8}" width="30" height="16" fill="#a79be6" fill-opacity="0.35" stroke="#7c6fd0" stroke-dasharray="4 3"/>')
+        elif kind == "mote":
+            o.append(f'<circle cx="{x + 15}" cy="{cy}" r="6" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>')
+        elif kind == "zone":
+            o.append(f'<rect x="{x}" y="{cy - 10}" width="30" height="20" fill="#c4b5fd" fill-opacity="0.25" stroke="#8b5cf6" stroke-dasharray="6 4"/>')
+        elif kind == "dream":
+            o.append(f'<circle cx="{x + 15}" cy="{cy}" r="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="3"/>')
         elif kind == "bellg":
             o.append(f'<rect x="{x + 6}" y="{cy - 9}" width="18" height="18" rx="3" fill="none" stroke="#2f8f6a" stroke-width="2" stroke-dasharray="3 2"/>')
         elif kind == "bellw":

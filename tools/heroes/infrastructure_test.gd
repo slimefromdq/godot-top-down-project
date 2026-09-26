@@ -233,6 +233,26 @@ func _test_statuses() -> void:
 	_check("knockback status pushes ~100px away", pushed > 85.0 and pushed < 115.0, "%.1f" % pushed)
 	dummy.return_to_anchor = true
 
+	# Actor.displaced: who pushed and how far (Mote Jostle listens).
+	var displaced: Array = []
+	var on_displaced := func(source, distance): displaced.append([source, distance])
+	hero.displaced.connect(on_displaced)
+	hero.status_component.apply(knock, dummy)
+	var carry := StatusEffect.new()
+	carry.id = &"test_carry"
+	carry.duration = 0.1
+	carry.carry_enabled = true
+	hero.status_component.apply(carry, dummy)
+	var host := MinigameHost.find_or_create(hero)
+	host.play(AirlockMinigame.new(load("res://resources/minigames/airlock.tres")), dummy)
+	host.stop()
+	hero.displaced.disconnect(on_displaced)
+	_check("Actor.displaced: push (source, distance), carry and abduction (INF)", displaced.size() == 3
+		and displaced[0][0] == dummy and is_equal_approx(displaced[0][1], 100.0)
+		and displaced[1][1] == INF and displaced[2][0] == dummy, str(displaced))
+	await _seconds(0.2)
+	hero.status_component.clear()
+
 	var slow := StatusEffect.new()
 	slow.id = &"test_slow"
 	slow.stat_multipliers = {StatusEffect.MOVE_SPEED: 0.5}

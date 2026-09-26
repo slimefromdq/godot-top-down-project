@@ -102,6 +102,31 @@ shared ones in `audio/sfx/`.
 | `phase_dash_end` | Dash finished | position (landing spot) |
 | `arc_zap_hit` | Click-cast landed | position (target), target |
 
+### Match cues
+
+The match objective isn't an actor, so its cues live in two match-wide
+profiles, `MatchRules.cue_visuals` and `cue_audio`
+(`resources/match/match_visuals.tres`, `match_audio.tres`), played with
+`MatchManager.play_world_cue(from, cue, context)`. A hero cue (`level_up`)
+uses the hero's own profile entry instead when it has one. All placeholders
+until M4.
+
+| Cue | When | Context |
+|---|---|---|
+| `level_up` | A hero gains a level (MatchManager) | level |
+| `mote_spawn` / `dream_mote_spawn` | A Mote / the Dream Mote appears | position |
+| `dream_mote_warning` | The Dream Mote is coming (ground telegraph) | position, radius, duration |
+| `mote_pickup` | A Mote attaches to its carrier | count, pitch (rises with the stack) |
+| `mote_drop` | A jostled Mote pops out | position |
+| `mote_burst` | A carrier died: every Mote bursts out | count, radius |
+| `mote_fade` | A dropped Mote ran out of time | position |
+| `mote_decoy_pop` | A decoy was grabbed | source (who grabbed it) |
+| `zone_start` | A dreaming zone pair starts | position (one half) |
+
+The Mote's body is `MoteData.look_scene` (`scenes/match/mote_look.tscn`, a
+procedural dream-bug); carried Motes are drawn by `MoteOrbit` with the same
+look. Dreaming zones tint themselves (`DreamZone`).
+
 Every cue also gets `position`, `direction`, `source` and `visuals` filled in
 automatically. Custom scripts can trigger anything with
 `actor.trigger_cue(&"my_cue", {...})`.

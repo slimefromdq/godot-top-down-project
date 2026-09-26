@@ -448,6 +448,91 @@
 <circle cx="475.0" cy="60.4" r="5" fill="#c05a3c"/>
 <circle cx="450.0" cy="60.4" r="5" fill="#c05a3c"/>
 <circle cx="425.0" cy="60.4" r="5" fill="#c05a3c"/>
+<polygon points="50.0,424.0 235.0,424.0 235.0,628.0 50.0,628.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="170.0" cy="466.0" r="3.5" fill="#a78bfa"/>
+<circle cx="90.0" cy="562.0" r="3.5" fill="#a78bfa"/>
+<circle cx="190.0" cy="544.0" r="3.5" fill="#a78bfa"/>
+<circle cx="120.0" cy="442.0" r="3.5" fill="#a78bfa"/>
+<polygon points="50.0,208.0 235.0,208.0 235.0,406.0 50.0,406.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="170.0" cy="382.0" r="3.5" fill="#a78bfa"/>
+<circle cx="85.0" cy="322.0" r="3.5" fill="#a78bfa"/>
+<circle cx="200.0" cy="286.0" r="3.5" fill="#a78bfa"/>
+<circle cx="120.0" cy="226.0" r="3.5" fill="#a78bfa"/>
+<polygon points="50.0,646.0 235.0,646.0 235.0,844.0 50.0,844.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="180.0" cy="706.0" r="3.5" fill="#a78bfa"/>
+<circle cx="105.0" cy="778.0" r="3.5" fill="#a78bfa"/>
+<circle cx="200.0" cy="808.0" r="3.5" fill="#a78bfa"/>
+<circle cx="65.0" cy="718.0" r="3.5" fill="#a78bfa"/>
+<polygon points="245.0,628.0 345.0,628.0 385.0,688.0 385.0,808.0 245.0,808.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="285.0" cy="676.0" r="3.5" fill="#a78bfa"/>
+<circle cx="306.0" cy="790.0" r="3.5" fill="#a78bfa"/>
+<circle cx="355.0" cy="736.0" r="3.5" fill="#a78bfa"/>
+<circle cx="258.0" cy="769.6" r="3.5" fill="#a78bfa"/>
+<polygon points="665.0,622.0 790.0,622.0 790.0,802.0 665.0,802.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="685.0" cy="640.0" r="3.5" fill="#a78bfa"/>
+<circle cx="762.0" cy="694.0" r="3.5" fill="#a78bfa"/>
+<circle cx="710.0" cy="784.0" r="3.5" fill="#a78bfa"/>
+<circle cx="750.0" cy="658.0" r="3.5" fill="#a78bfa"/>
+<polygon points="720.0,868.0 990.0,868.0 990.0,1000.0 720.0,1000.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="795.0" cy="928.0" r="3.5" fill="#a78bfa"/>
+<circle cx="910.0" cy="910.0" r="3.5" fill="#a78bfa"/>
+<circle cx="965.0" cy="964.0" r="3.5" fill="#a78bfa"/>
+<circle cx="855.0" cy="988.0" r="3.5" fill="#a78bfa"/>
+<polygon points="990.0,628.0 805.0,628.0 805.0,424.0 990.0,424.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="870.0" cy="586.0" r="3.5" fill="#a78bfa"/>
+<circle cx="950.0" cy="490.0" r="3.5" fill="#a78bfa"/>
+<circle cx="850.0" cy="508.0" r="3.5" fill="#a78bfa"/>
+<circle cx="920.0" cy="610.0" r="3.5" fill="#a78bfa"/>
+<polygon points="990.0,844.0 805.0,844.0 805.0,646.0 990.0,646.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="870.0" cy="670.0" r="3.5" fill="#a78bfa"/>
+<circle cx="955.0" cy="730.0" r="3.5" fill="#a78bfa"/>
+<circle cx="840.0" cy="766.0" r="3.5" fill="#a78bfa"/>
+<circle cx="920.0" cy="826.0" r="3.5" fill="#a78bfa"/>
+<polygon points="990.0,406.0 805.0,406.0 805.0,208.0 990.0,208.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="860.0" cy="346.0" r="3.5" fill="#a78bfa"/>
+<circle cx="935.0" cy="274.0" r="3.5" fill="#a78bfa"/>
+<circle cx="840.0" cy="244.0" r="3.5" fill="#a78bfa"/>
+<circle cx="975.0" cy="334.0" r="3.5" fill="#a78bfa"/>
+<polygon points="795.0,424.0 695.0,424.0 655.0,364.0 655.0,244.0 795.0,244.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="755.0" cy="376.0" r="3.5" fill="#a78bfa"/>
+<circle cx="734.0" cy="262.0" r="3.5" fill="#a78bfa"/>
+<circle cx="685.0" cy="316.0" r="3.5" fill="#a78bfa"/>
+<circle cx="782.0" cy="282.4" r="3.5" fill="#a78bfa"/>
+<polygon points="375.0,430.0 250.0,430.0 250.0,250.0 375.0,250.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="355.0" cy="412.0" r="3.5" fill="#a78bfa"/>
+<circle cx="278.0" cy="358.0" r="3.5" fill="#a78bfa"/>
+<circle cx="330.0" cy="268.0" r="3.5" fill="#a78bfa"/>
+<circle cx="290.0" cy="394.0" r="3.5" fill="#a78bfa"/>
+<polygon points="320.0,184.0 50.0,184.0 50.0,52.0 320.0,52.0" fill="#c4b5fd" fill-opacity="0.12" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<circle cx="245.0" cy="124.0" r="3.5" fill="#a78bfa"/>
+<circle cx="130.0" cy="142.0" r="3.5" fill="#a78bfa"/>
+<circle cx="75.0" cy="88.0" r="3.5" fill="#a78bfa"/>
+<circle cx="185.0" cy="64.0" r="3.5" fill="#a78bfa"/>
+<circle cx="155.0" cy="760.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="95.0" cy="676.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="180.0" cy="580.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="96.0" cy="490.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="185.0" cy="352.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="110.0" cy="256.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="290.0" cy="760.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="335.0" cy="700.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="695.0" cy="664.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="760.0" cy="766.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="600.0" cy="661.1" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="381.4" cy="604.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="885.0" cy="292.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="945.0" cy="376.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="860.0" cy="472.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="944.0" cy="562.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="855.0" cy="700.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="930.0" cy="796.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="750.0" cy="292.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="705.0" cy="352.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="345.0" cy="388.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="280.0" cy="286.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="440.0" cy="390.9" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="658.6" cy="448.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="520.0" cy="526.0" r="11" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="3"/>
 <text x="145.0" y="700.0" font-size="15.0" text-anchor="middle" dominant-baseline="middle" fill="#1f2937" font-weight="700" fill-opacity="0.72" letter-spacing="1" stroke="#fbfaf7" stroke-width="2.5" paint-order="stroke">THE TANGLE</text>
 <text x="145.0" y="526.0" font-size="13.0" text-anchor="middle" dominant-baseline="middle" fill="#1f2937" font-weight="700" fill-opacity="0.72" letter-spacing="1" stroke="#fbfaf7" stroke-width="2.5" paint-order="stroke">THE GLADE</text>
 <text x="145.0" y="334.0" font-size="15.0" text-anchor="middle" dominant-baseline="middle" fill="#1f2937" font-weight="700" fill-opacity="0.72" letter-spacing="1" stroke="#fbfaf7" stroke-width="2.5" paint-order="stroke">STILT RIDGE</text>
@@ -502,4 +587,10 @@
 <text x="1102.0" y="627" font-size="16" fill="#222">Long sight lane</text>
 <rect x="1060.0" y="648" width="30" height="16" fill="#a79be6" fill-opacity="0.35" stroke="#7c6fd0" stroke-dasharray="4 3"/>
 <text x="1102.0" y="661" font-size="16" fill="#222">Cradle ring (kept open)</text>
+<circle cx="1075.0" cy="690" r="6" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<text x="1102.0" y="695" font-size="16" fill="#222">Mote trickle point</text>
+<rect x="1060.0" y="714" width="30" height="20" fill="#c4b5fd" fill-opacity="0.25" stroke="#8b5cf6" stroke-dasharray="6 4"/>
+<text x="1102.0" y="729" font-size="16" fill="#222">Dreaming zone (mirrored pairs)</text>
+<circle cx="1075.0" cy="758" r="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="3"/>
+<text x="1102.0" y="763" font-size="16" fill="#222">Dream Mote spot</text>
 </svg>

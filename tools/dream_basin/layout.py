@@ -44,6 +44,10 @@ L = {
     "markers": [],      # {x, y, kind, label}
     "lanes": [],        # sight lanes {a, b, label}
     "labels": [],       # {x, y, text, size}
+    # Motes (the "Wake the Dreamer" objective)
+    "mote_spawns": [],  # trickle points {x, y}
+    "dream_zones": [],  # {pair, name, pts, spawns: [(x, y)]}
+    "dream_point": [],  # the Dream Mote spot {x, y} (self-symmetric: centre)
 }
 
 
@@ -169,6 +173,18 @@ def teleporter(a, b, two_way, name):
 
 def speed_strip(x, y, w, h, direction=(1, 0)):
     L["speed_strips"].append({"x": x, "y": Y(y), "w": w, "h": h, "dir": direction})
+
+
+def mote_spawn(x, y):
+    L["mote_spawns"].append({"x": x, "y": Y(y)})
+
+
+def dream_zone(pair, name, pts, spawns):
+    """One half of a mirrored dreaming-zone pair; the rotation makes the other.
+    `pts` is a polygon already in real space (use rect/poly); `spawns` are
+    authored points."""
+    L["dream_zones"].append({"pair": pair, "name": name, "pts": pts,
+                             "spawns": [(x, Y(y)) for x, y in spawns]})
 
 
 def lane(a, b, text):
@@ -416,6 +432,39 @@ lane((-1550, 1100), (1550, -1100), "Moon Aisle")
 lane((3150, 2050), (-500, 1250), "Ridge Line (A)")
 lane((3000, 2550), (3000, -800), "Wild Rail (A)")
 
+# ==========================================================================
+# MOTES: trickle spawn points, dreaming zones, the Dream Mote spot
+#   12 authored trickle points (24 with the rotation) over the Wilds, the
+#   Ruins, the Driftfield and the Cradle ring, all well clear of the spawn
+#   doors (check.py enforces >= 1200 px, reachability and the mirroring).
+# ==========================================================================
+for (mx, my) in [
+    (-3650, 1950), (-4250, 1250),     # Tangle
+    (-3400, 450), (-4240, -300),      # Glade
+    (-3350, -1450), (-4100, -2250),   # Stilt Ridge
+    (-2300, 1950), (-1850, 1450),     # Lullaby Ruins
+    (1750, 1150), (2400, 2000),       # Driftfield
+    (800, 1126), (-1386, 650),        # Cradle ring (on the open oval path)
+]:
+    mote_spawn(mx, my)
+
+# Dreaming zones: one half each; the rotation makes its mirrored twin.
+dream_zone("glade", "The Glades", rect(-4700, -850, -2850, 850),
+           [(-3500, -500), (-4300, 300), (-3300, 150), (-4000, -700)])
+dream_zone("ridge", "The Stilt Ridges", rect(-4700, -2650, -2850, -1000),
+           [(-3500, -1200), (-4350, -1700), (-3200, -2000), (-4000, -2500)])
+dream_zone("tangle", "The Tangles", rect(-4700, 1000, -2850, 2650),
+           [(-3400, 1500), (-4150, 2100), (-3200, 2350), (-4550, 1600)])
+dream_zone("ruins", "The Lullaby Ruins", poly([(-2750, 850), (-1750, 850), (-1350, 1350),
+                                              (-1350, 2350), (-2750, 2350)]),
+           [(-2350, 1250), (-2140, 2200), (-1650, 1750), (-2620, 2030)])
+dream_zone("driftfield", "The Driftfields", rect(1450, 800, 2700, 2300),
+           [(1650, 950), (2420, 1400), (1900, 2150), (2300, 1100)])
+dream_zone("orchard", "The Orchards", rect(2000, 2850, 4700, 3950),
+           [(2750, 3350), (3900, 3200), (4450, 3650), (3350, 3850)])
+
+L["dream_point"].append({"x": 0, "y": 0})
+
 # Region labels (authored half only; rotated copies get B names below)
 label(-3750, 1450, "THE TANGLE", 150)
 label(-3750, 0, "THE GLADE", 130)
@@ -467,6 +516,11 @@ def build():
             continue
         out["markers"].append({**m, "x": -m["x"], "y": -m["y"], "team": _swap(m["team"]),
                                "label": m["label"]})
+    for mk in L["mote_spawns"]:
+        out["mote_spawns"].append({"x": -mk["x"], "y": -mk["y"]})
+    for z in L["dream_zones"]:
+        out["dream_zones"].append({**z, "pts": [_rot(p) for p in z["pts"]],
+                                   "spawns": [_rot(p) for p in z["spawns"]]})
     for ln in L["lanes"]:
         if ln["label"] in ("Moon Aisle",):
             continue

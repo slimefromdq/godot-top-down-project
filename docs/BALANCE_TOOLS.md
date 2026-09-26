@@ -43,6 +43,10 @@ values.
   * Skip the warmup, end the match for Dawn or Dusk, respawn now.
   * **Play as team** flips the player between Dawn (`a`) and Dusk (`b`) and
     moves them to that team's spawn, so you can test either side solo.
+  * **Motes**: a Mote or Dream Mote at the cursor, give the player N Motes,
+    force the next dreaming zone, clear every Mote (loose and carried), and
+    **Mote spawns on the M map view** (trickle points, zones and their spawn
+    points, the Dream Mote spot; press M to see them).
   * The match's `MatchRules`, editable live (a private copy per match).
 * **Tools**: export the balance CSV, validate heroes, reset the meter, show or hide the overlays, switch maps. **Sight lines** draws a line from you to every nearby enemy: green if you can see it, red if a wall or a bush blocks it (`CombatQueries.has_line_of_sight`). **Airlock practice** plays Sam's airlock maze on you.
 
@@ -136,6 +140,7 @@ godot --headless res://tools/heroes/balance_tools_test.tscn
 godot --headless res://tools/heroes/map_switch_test.tscn
 godot --headless res://tools/dream_basin/smoke_test.tscn
 godot --headless res://tools/match/match_test.tscn
+godot --headless res://tools/match/mote_test.tscn
 ```
 
 Each exits with the number of failed checks (0 = all passed).
@@ -146,3 +151,5 @@ and 10, measured in-engine against a dummy with no resists
 (`dps_harness.gd`, also used by `cosmo_test` for her balance targets).
 `tools/heroes/capture_feel.tscn` saves screenshots of a finisher swing
 (run under a display or `xvfb-run` with `--rendering-driver opengl3`).
+`tools/match/capture_match.tscn` does the same for the match HUD, the F1
+Match tab and Motes (loose, carried, a dreaming zone, the spawn overlay).

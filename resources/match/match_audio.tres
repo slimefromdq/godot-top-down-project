@@ -3,6 +3,10 @@
 [ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_sound"]
 [ext_resource type="AudioStream" path="res://audio/sfx/overdrive.wav" id="2_wav"]
 [ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="3_profile"]
+[ext_resource type="AudioStream" path="res://audio/sfx/kill_chime.wav" id="4_chime"]
+[ext_resource type="AudioStream" path="res://audio/sfx/dash.wav" id="5_dash"]
+[ext_resource type="AudioStream" path="res://audio/sfx/death.wav" id="6_death"]
+[ext_resource type="AudioStream" path="res://audio/sfx/fail.wav" id="7_fail"]
 
 [sub_resource type="Resource" id="Sound_level_up"]
 script = ExtResource("1_sound")
@@ -11,8 +15,68 @@ volume_db = -6.0
 pitch_min = 1.3
 pitch_max = 1.3
 
+[sub_resource type="Resource" id="Sound_mote_pickup"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("4_chime")])
+volume_db = -8.0
+pitch_min = 1.0
+pitch_max = 1.0
+min_interval = 0.04
+
+[sub_resource type="Resource" id="Sound_mote_drop"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("5_dash")])
+volume_db = -6.0
+pitch_min = 1.4
+pitch_max = 1.6
+
+[sub_resource type="Resource" id="Sound_mote_burst"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("6_death")])
+volume_db = -6.0
+pitch_min = 1.5
+pitch_max = 1.6
+
+[sub_resource type="Resource" id="Sound_dream_mote_spawn"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("2_wav")])
+volume_db = -2.0
+pitch_min = 0.8
+pitch_max = 0.8
+positional = false
+
+[sub_resource type="Resource" id="Sound_dream_mote_warning"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("4_chime")])
+volume_db = -4.0
+pitch_min = 0.7
+pitch_max = 0.7
+positional = false
+
+[sub_resource type="Resource" id="Sound_zone_start"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("2_wav")])
+volume_db = -8.0
+pitch_min = 0.6
+pitch_max = 0.6
+positional = false
+
+[sub_resource type="Resource" id="Sound_mote_decoy_pop"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("7_fail")])
+volume_db = -6.0
+pitch_min = 1.3
+pitch_max = 1.4
+
 [resource]
 script = ExtResource("3_profile")
 cues = Dictionary[StringName, ExtResource("1_sound")]({
-&"level_up": SubResource("Sound_level_up")
+&"dream_mote_spawn": SubResource("Sound_dream_mote_spawn"),
+&"dream_mote_warning": SubResource("Sound_dream_mote_warning"),
+&"level_up": SubResource("Sound_level_up"),
+&"mote_burst": SubResource("Sound_mote_burst"),
+&"mote_decoy_pop": SubResource("Sound_mote_decoy_pop"),
+&"mote_drop": SubResource("Sound_mote_drop"),
+&"mote_pickup": SubResource("Sound_mote_pickup"),
+&"zone_start": SubResource("Sound_zone_start")
 })

@@ -92,7 +92,7 @@ func _land_beam() -> void:
 	_host = MinigameHost.find_or_create(victim)
 	var game := AirlockMinigame.new(encounter.minigame) if encounter.minigame is AirlockData \
 		else MinigameInstance.new(encounter.minigame)
-	if not _host.play(game):
+	if not _host.play(game, actor):
 		status.remove_from(encounter.abducted_status.id, actor)
 		state = State.IDLE
 		return

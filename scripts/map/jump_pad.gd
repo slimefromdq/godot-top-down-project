@@ -10,7 +10,8 @@ class_name JumpPad
 # Both ends are always drawn: the landing ring warns defenders where you'll be.
 #
 # The flight itself is Actor.launch(): a timed forced move that ignores low
-# cover and ledges (that's how a pad can take you UP a cliff).
+# cover and ledges (that's how a pad can take you UP a cliff). Carried Motes
+# add MatchRules.heavy_pockets_air_time each (MoteCarrier.extra_air_time).
 #
 # Placed pads (JumpPad.place(), e.g. a hero's trampoline) add a few runtime
 # rules; a map pad leaves them at their defaults and behaves as always:
@@ -184,7 +185,8 @@ func _try(actor: Actor) -> void:
 			actor.status_component.apply(enemy_status, pad_owner, back.normalized())
 		return
 	_handled[actor.get_instance_id()] = true
-	actor.launch(get_landing_position(), air_time, arc_height)
+	# Heavy pockets: every carried Mote makes the flight a little longer.
+	actor.launch(get_landing_position(), air_time + MoteCarrier.extra_air_time(actor), arc_height)
 	launches += 1
 	actor_launched.emit(actor)
 	_bounce = 1.0
