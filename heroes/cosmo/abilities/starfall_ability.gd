@@ -47,7 +47,7 @@ func get_time_left() -> float:
 
 func get_meteor_rate() -> float:
 	var passive := WAXING.find_on(actor)
-	return get_starfall_data().get_meteor_rate(passive.moons if passive != null else 1)
+	return get_starfall_data().get_meteor_rate(passive.get_waxes() if passive != null else 0)
 
 
 func _ready() -> void:

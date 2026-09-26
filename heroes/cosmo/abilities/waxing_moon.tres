@@ -14,10 +14,10 @@ base = 1.4
 
 [resource]
 script = ExtResource("2_kli34")
-regen_interval_by_moons = Array[float]([2.6, 2.4, 2.2, 2.0])
+regen_interval_by_moons = Array[float]([2.6, 2.45, 2.3, 2.15, 2.0])
 id = &"waxing_moon"
 display_name = "Waxing Moon"
-description = "Her moons are her ammunition: 1 at level 1, 2 at 4, 3 at 7, 4 at 10. Each regenerates on its own."
+description = "Her moons are her ammunition: 4 at level 1, then one more at levels 3, 5, 7 and 10. Spent moons come back one at a time."
 ability_script = ExtResource("1_wxrig")
 cooldown = 0.0
 values = Dictionary[StringName, ExtResource("3_m0vs1")]({

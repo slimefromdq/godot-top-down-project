@@ -7,22 +7,22 @@
 
 [sub_resource type="Resource" id="Resource_8txwf"]
 script = ExtResource("2_x6ns4")
-base = 10.0
-magic_ratio = 0.55
+base = 8.0
+magic_ratio = 0.4
 
 [resource]
 script = ExtResource("4_etyjr")
 projectile = ExtResource("3_xqp1v")
 muzzles = Array[Vector2]([Vector2(40, 0)])
 fire_mode = 1
-shots_per_second = 3.0
+shots_per_second = 10.0
 magazine_size = 1
 auto_reload_when_empty = false
 reload_style = 2
 regen_interval = 2.6
 id = &"moonshot"
 display_name = "Moonshot"
-description = "Launch an orbiting moon. Moons come back one at a time."
+description = "Launch an orbiting moon through every enemy in its path. Moons come back one at a time."
 ability_script = ExtResource("1_nb48j")
 cooldown = 0.0
 damage = SubResource("Resource_8txwf")

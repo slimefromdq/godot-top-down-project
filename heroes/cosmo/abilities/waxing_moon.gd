@@ -3,8 +3,8 @@ extends PassiveAbility
 # Waxing Moon: Cosmo's passive, in the "passive" slot. Owns her moon count
 # and drives her primary: moons ARE its magazine.
 #
-#   * On spawn and every level change: count = moons reached in
-#     moon_breakpoints -> gun.set_max_ammo(count, fill_new = true) (a new
+#   * On spawn and every level change: count = base_moons + breakpoints
+#     reached in moon_breakpoints -> gun.set_max_ammo(count, fill_new = true) (a new
 #     moon arrives loaded) and gun.set_regen_interval() from
 #     regen_interval_by_moons, if set.
 #   * moon_waxed(count) + the wax cue on each new moon.
@@ -65,6 +65,11 @@ func update_moons(announce: bool) -> void:
 func get_moon_offset(index: int, count: int) -> Vector2:
 	var radius := data.get_value(&"orbit_radius", get_stats())
 	return Vector2.from_angle(orbit_angle + TAU * index / maxi(count, 1)) * radius
+
+
+## Moons gained beyond her base: indexes the by-moons arrays.
+func get_waxes() -> int:
+	return get_wax_data().get_waxes(moons)
 
 
 func get_hud_pips() -> Vector2i:

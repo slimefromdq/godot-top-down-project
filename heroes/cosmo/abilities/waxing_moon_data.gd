@@ -3,17 +3,20 @@ extends AbilityData
 class_name CosmoWaxingMoonData
 
 # Waxing Moon (Cosmo's passive). Her moons are her primary's magazine:
-# moon count = how many moon_breakpoints her level has reached.
+# moon count = base_moons + how many moon_breakpoints her level has reached.
 # Named values:
 #   values/orbit_radius   px from her centre
 #   values/orbit_speed    radians per second (cosmetic AND where shots leave)
 #   values/moonlit_full   the amp her burst estimate assumes (CSV only)
 
 @export_group("Moons")
-## Levels at which she gains a moon (1 moon at level 1, 2 at 4, ...).
-@export var moon_breakpoints: Array[int] = [1, 4, 7, 10]
-## Optional: primary regen interval (s) by moon count (index 0 = 1 moon).
-## Empty = the primary's own regen_interval.
+## Moons she starts with at level 1.
+@export var base_moons: int = 4
+## Levels at which she gains one more moon on top of base_moons.
+@export var moon_breakpoints: Array[int] = [3, 5, 7, 10]
+## Optional: primary regen interval (s) by moons gained (index 0 =
+## base_moons, 1 = one breakpoint reached, ...). Empty = the primary's own
+## regen_interval.
 @export var regen_interval_by_moons: Array[float] = []
 ## The slot of the gun whose magazine is the moons.
 @export var gun_slot: StringName = &"primary"
@@ -22,17 +25,22 @@ class_name CosmoWaxingMoonData
 
 
 func get_moon_count(level: int) -> int:
-	var count := 0
+	var count := base_moons
 	for at_level in moon_breakpoints:
 		if level >= at_level:
 			count += 1
 	return maxi(count, 1)
 
 
+## Moons gained beyond base_moons: the index into the by-moons arrays.
+func get_waxes(moons: int) -> int:
+	return maxi(moons - base_moons, 0)
+
+
 func get_regen_interval(moons: int) -> float:
 	if regen_interval_by_moons.is_empty():
 		return -1.0
-	return regen_interval_by_moons[clampi(moons - 1, 0, regen_interval_by_moons.size() - 1)]
+	return regen_interval_by_moons[mini(get_waxes(moons), regen_interval_by_moons.size() - 1)]
 
 
 # Her derived balance rows (source "derived"): moons, the primary's
@@ -66,8 +74,8 @@ func get_hero_metrics(definition: HeroDefinition, level: int) -> Dictionary:
 
 func validate() -> PackedStringArray:
 	var problems := super()
-	if moon_breakpoints.is_empty() or moon_breakpoints[0] != 1:
-		problems.append("'%s' moon_breakpoints must start at level 1" % id)
+	if base_moons < 1:
+		problems.append("'%s' base_moons must be at least 1" % id)
 	for i in range(1, moon_breakpoints.size()):
 		if moon_breakpoints[i] <= moon_breakpoints[i - 1]:
 			problems.append("'%s' moon_breakpoints must increase" % id)

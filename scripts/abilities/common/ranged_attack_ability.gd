@@ -308,6 +308,7 @@ func _fire_shot(aim: Vector2, extra: bool, label: StringName) -> void:
 		muzzle = ranged.muzzles[muzzle_index]
 		_muzzle_index = (muzzle_index + 1) % ranged.muzzles.size()
 	var origin := _get_shot_origin(aim, muzzle)
+	var shot_aim := _get_shot_direction(aim, origin)
 	var count := maxi(ranged.projectiles_per_shot, 1)
 	var perfect := was_perfect_release() and not extra
 	var base_damage := _base_damage() if extra else _shot_damage()
@@ -315,7 +316,7 @@ func _fire_shot(aim: Vector2, extra: bool, label: StringName) -> void:
 	var projectile_data := _get_shot_projectile(perfect, extra)
 	var weight := current_feel.weight if current_feel != null and not extra else 1.0
 	for i in count:
-		var direction := aim.rotated(deg_to_rad(_spread_angle(i, count)))
+		var direction := shot_aim.rotated(deg_to_rad(_spread_angle(i, count)))
 		var template := DamageInfo.create(damage, actor, ranged.damage_type)
 		template.tags = ranged.tags.duplicate()
 		if perfect:
@@ -412,6 +413,12 @@ func _on_projectile_hit(info: DamageInfo, hurtbox: HurtboxComponent) -> void:
 # aim. Override to launch from somewhere else (an orbiting moon).
 func _get_shot_origin(aim: Vector2, muzzle: Vector2) -> Vector2:
 	return actor.global_position + muzzle.rotated(aim.angle())
+
+
+# Which way this shot flies (before spread). Default: the aim. Override to
+# converge shots from an offset origin on the cursor.
+func _get_shot_direction(aim: Vector2, _origin: Vector2) -> Vector2:
+	return aim
 
 
 # Which ProjectileData this shot flies as. Override for per-shot variants

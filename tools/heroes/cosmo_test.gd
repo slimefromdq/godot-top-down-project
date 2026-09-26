@@ -65,7 +65,7 @@ func _test_moons_by_level() -> void:
 		counts.append(c.get_ranged_ability().get_max_ammo())
 		c.queue_free()
 	await _physics_frames(1)
-	_check("moons by level follow the breakpoints [1, 4, 7, 10]", counts == [1, 1, 1, 2, 2, 2, 3, 3, 3, 4], str(counts))
+	_check("4 base moons, +1 at levels 3, 5, 7 and 10", counts == [4, 4, 5, 5, 6, 6, 7, 7, 7, 8], str(counts))
 
 
 func _test_waxing_and_regen() -> void:
@@ -74,17 +74,17 @@ func _test_waxing_and_regen() -> void:
 	var waxed := []
 	passive.moon_waxed.connect(func(n): waxed.append(n))
 	cues.clear()
-	gun.set_max_ammo(gun.get_max_ammo())    # (no-op; the gun starts full)
+	_check("she starts with 4 moons", gun.get_max_ammo() == 4 and gun.get_ammo() == 4, str(gun.get_max_ammo()))
+	cosmo.stats_component.set_level(2)
+	_check("no new moon before a breakpoint", waxed.is_empty() and gun.get_max_ammo() == 4, "")
 	cosmo.stats_component.set_level(3)
-	_check("no new moon before a breakpoint", waxed.is_empty() and gun.get_max_ammo() == 1, "")
-	cosmo.stats_component.set_level(4)
-	_check("leveling to a breakpoint adds a moon", gun.get_max_ammo() == 2 and waxed == [2], str(waxed))
-	_check("...filled", gun.get_ammo() == 2, str(gun.get_ammo()))
+	_check("leveling to a breakpoint adds a moon", gun.get_max_ammo() == 5 and waxed == [5], str(waxed))
+	_check("...filled", gun.get_ammo() == 5, str(gun.get_ammo()))
 	_check("...with the cosmo_wax cue", _cue_count(&"cosmo_wax") == 1, "")
-	_check("regen speeds up as she waxes (regen_interval_by_moons)", is_equal_approx(gun.get_regen_interval(), 2.4), "")
-	_check("pips show moons", passive.get_hud_pips() == Vector2i(2, 2), str(passive.get_hud_pips()))
+	_check("regen speeds up as she waxes (regen_interval_by_moons)", is_equal_approx(gun.get_regen_interval(), 2.45), "")
+	_check("pips show moons", passive.get_hud_pips() == Vector2i(5, 5), str(passive.get_hud_pips()))
 
-	# Shots leave from the orbit.
+	# Shots leave from the orbit, and fast: the whole orbit in half a second.
 	var at := cosmo.global_position + Vector2(600, 0)
 	_aim(at)
 	cues.clear()
@@ -93,10 +93,12 @@ func _test_waxing_and_regen() -> void:
 	var fires := _cue_contexts(&"moonshot_fire")
 	var launch_distance: float = (fires[0].position as Vector2).distance_to(cosmo.global_position) if not fires.is_empty() else 0.0
 	_check("a moon launches from its place in the orbit", absf(launch_distance - 78.0) < 2.0, "%.1f px" % launch_distance)
-	await _seconds(0.4)
-	cosmo.request_slot(&"primary", at)
-	await _seconds(0.1)
-	_check("both moons spent", gun.get_ammo() == 0, str(gun.get_ammo()))
+	for i in 4:
+		await _seconds(0.1)
+		cosmo.request_slot(&"primary", at)
+	await _seconds(0.05)
+	_check("all 5 moons fired within half a second", gun.get_ammo() == 0 and _cue_count(&"moonshot_fire") == 5,
+		"%d left, %d fired" % [gun.get_ammo(), _cue_count(&"moonshot_fire")])
 	_check("R does nothing for a REGEN gun", not cosmo.reload() and not gun.is_reloading(), "")
 	await _seconds(2.0)
 	_check("one moon back after regen_interval (counted from the first shot)", gun.get_ammo() == 1, str(gun.get_ammo()))
@@ -106,7 +108,35 @@ func _test_waxing_and_regen() -> void:
 	await _seconds(2.4)
 	_check("regen refills one at a time while firing", gun.get_ammo() == 1, str(gun.get_ammo()))
 	await _seconds(2.5)
-	_check("...up to the moon count", gun.get_ammo() == 2, str(gun.get_ammo()))
+	_check("...one per regen_interval", gun.get_ammo() == 2, str(gun.get_ammo()))
+
+	# Moons pierce.
+	_reset(Vector2(0, -6000), 1)
+	await _physics_frames(2)
+	var line := [_dummy(Vector2(200, -6000)), _dummy(Vector2(300, -6000)), _dummy(Vector2(400, -6000))]
+	await _physics_frames(2)
+	hits_log.clear()
+	_aim(Vector2(700, -6000))
+	cosmo.request_slot(&"primary", Vector2(700, -6000))
+	await _seconds(0.6)
+	var pierced := hits_log.filter(func(i): return i.label == &"moonshot" and line.has(i.target))
+	_check("a moon pierces every enemy in its path", pierced.size() == 3, "%d hits" % pierced.size())
+	_clear()
+
+	# A full volley converges on the cursor: every moon hits one target.
+	_reset(Vector2(0, -6000), 10)
+	await _physics_frames(2)
+	var single := _dummy(Vector2(400, -6000))
+	await _physics_frames(2)
+	hits_log.clear()
+	_aim(single.global_position)
+	for i in 8:
+		cosmo.request_slot(&"primary", single.global_position)
+		await _seconds(0.1)
+	await _seconds(0.5)
+	var volley := hits_log.filter(func(i): return i.label == &"moonshot" and i.target == single)
+	_check("all 8 moons of a volley converge on one target", volley.size() == 8, "%d hits" % volley.size())
+	_clear()
 
 
 # --- Crescent -------------------------------------------------------------------
@@ -265,8 +295,8 @@ func _test_starfall() -> void:
 	var outside := impacts.filter(func(p): return p.distance_to(center) > storm_radius)
 	_check("meteors land only inside storm_radius", not impacts.is_empty() and outside.is_empty(),
 		"%d impacts, %d outside" % [impacts.size(), outside.size()])
-	# 4 moons: 5.5 meteors/s over a 3.5 s channel.
-	_check("4 moons: ~5.5 meteors per second", impacts.size() >= 17 and impacts.size() <= 21, str(impacts.size()))
+	# 8 moons (+4 over base): 5.5 meteors/s over a 3.5 s channel.
+	_check("8 moons: ~5.5 meteors per second", impacts.size() >= 17 and impacts.size() <= 21, str(impacts.size()))
 	_check("each meteor is warned by a shadow first", _cue_count(&"starfall_meteor_warn") == impacts.size(),
 		"%d warns, %d impacts" % [_cue_count(&"starfall_meteor_warn"), impacts.size()])
 	var physical_after := DamageInfo.create(100.0, null, DamageInfo.Type.PHYSICAL)
@@ -280,7 +310,7 @@ func _test_starfall() -> void:
 	cosmo.request_slot(&"ultimate", center)
 	await _seconds(4.0)
 	var few := _cue_count(&"starfall_impact")
-	_check("1 moon: ~2.5 meteors per second", few >= 7 and few <= 10, str(few))
+	_check("base 4 moons: ~3.5 meteors per second", few >= 10 and few <= 14, str(few))
 	starfall.data.scale_with_moons = false
 	_reset(Vector2(0, 8000), 1)
 	cues.clear()
@@ -394,7 +424,7 @@ func _reset(at: Vector2, level: int) -> void:
 	cosmo.health_component.reset()
 	for ability in cosmo.ability_controller.abilities:
 		ability.cooldown_remaining = 0.0
-	cosmo.get_ranged_ability().set_max_ammo(cosmo.get_ranged_ability().get_max_ammo())
+	cosmo.get_ranged_ability().reload_instantly()
 	_aim(at + Vector2(300, 0))
 
 

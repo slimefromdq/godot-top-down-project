@@ -21,9 +21,10 @@ class_name CosmoStarfallData
 @export var resist_status: StatusEffect
 
 @export_group("Moons")
-## Meteors per second scale with her moon count (index 0 = 1 moon).
+## Meteors per second scale with her moons gained (index 0 = her base
+## moons, 1 = one Waxing Moon breakpoint reached, ...).
 @export var scale_with_moons: bool = true
-@export var meteors_per_second_by_moons: Array[float] = [2.5, 3.5, 4.5, 5.5]
+@export var meteors_per_second_by_moons: Array[float] = [3.5, 4.0, 4.5, 5.0, 5.5]
 
 @export_group("Interrupts")
 @export var ends_on_stun: bool = true
@@ -38,16 +39,16 @@ class_name CosmoStarfallData
 @export var channel_music_priority: int = 50
 
 
-func get_meteor_rate(moons: int) -> float:
+func get_meteor_rate(waxes: int) -> float:
 	if scale_with_moons and not meteors_per_second_by_moons.is_empty():
-		return meteors_per_second_by_moons[clampi(moons - 1, 0, meteors_per_second_by_moons.size() - 1)]
+		return meteors_per_second_by_moons[clampi(waxes, 0, meteors_per_second_by_moons.size() - 1)]
 	return get_value(&"meteors_per_second", null)
 
 
 func get_balance_metrics(_level: int, _weapon: float, _magic: float) -> Dictionary:
 	var result := {}
 	for i in meteors_per_second_by_moons.size():
-		result["meteors_per_second/%d_moons" % (i + 1)] = meteors_per_second_by_moons[i]
+		result["meteors_per_second/+%d_moons" % i] = meteors_per_second_by_moons[i]
 	return result
 
 

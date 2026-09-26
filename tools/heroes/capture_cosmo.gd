@@ -61,12 +61,13 @@ func _run() -> void:
 	_report("tide")
 
 	_step("volley")
-	for i in 4:
+	for i in 8:
 		cosmo.request_slot(&"primary", pack)
-		await _wait(0.34)    # SEMI at 3 shots/s
-	await _shot("5_volley")
+		await _wait(0.1)    # SEMI at 10 shots/s
+		if i == 5:
+			await _shot("5_volley")
 	await _wait(0.6)
-	_report("4-moon volley")
+	_report("8-moon volley (piercing the pack)")
 
 	_step("new moon")
 	cosmo.request_slot(&"movement", cosmo.global_position + Vector2(0, 300))

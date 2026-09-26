@@ -81,12 +81,13 @@ func _draw_ammo(gun: RangedAttackAbility) -> void:
 # A row of pips along the top: filled = current, hollow = empty.
 func _draw_pips(current: int, maximum: int) -> void:
 	var spacing := minf(18.0, (SIZE.x - 16.0) / maximum)
+	var radius := minf(6.0, spacing * 0.4)
 	for i in maximum:
 		var at := Vector2(SIZE.x / 2.0 + (i - (maximum - 1) / 2.0) * spacing, 14.0)
 		if i < current:
-			draw_circle(at, 6.0, Color(1.0, 0.85, 0.3))
+			draw_circle(at, radius, Color(1.0, 0.85, 0.3))
 		else:
-			draw_arc(at, 6.0, 0.0, TAU, 16, Color(1, 1, 1, 0.5), 2.0)
+			draw_arc(at, radius, 0.0, TAU, 16, Color(1, 1, 1, 0.5), 2.0)
 
 
 # A bar just above the slot. It turns gold at full charge and flashes white

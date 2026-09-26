@@ -337,8 +337,8 @@ attack deleted, then:
 
 | Slot | Data | Script |
 |---|---|---|
-| passive | `waxing_moon.tres` (`CosmoWaxingMoonData`): `moon_breakpoints` [1,4,7,10], `regen_interval_by_moons`, orbit radius/speed | `waxing_moon.gd` (`PassiveAbility`): the moon count, `set_max_ammo` / `set_regen_interval` on the gun, the orbit, `moon_waxed` |
-| primary | `moonshot.tres`: `RangedAttackData`, SEMI, REGEN reload, MAGIC | `moonshot_ability.gd`: only `_get_shot_origin` (a moon launches from its orbit) |
+| passive | `waxing_moon.tres` (`CosmoWaxingMoonData`): `base_moons` 4, `moon_breakpoints` [3,5,7,10] (one more moon each), `regen_interval_by_moons`, orbit radius/speed | `waxing_moon.gd` (`PassiveAbility`): the moon count, `set_max_ammo` / `set_regen_interval` on the gun, the orbit, `moon_waxed` |
+| primary | `moonshot.tres`: `RangedAttackData`, SEMI at 10/s, REGEN reload, MAGIC; the moon projectile pierces (`pierce -1`) | `moonshot_ability.gd`: `_get_shot_origin` (a moon launches from its orbit) and `_get_shot_direction` (the volley converges on the cursor) |
 | ability_1 | `crescent.tres` (`CosmoCrescentData`): `return_to_caster`, `curve_amount`, `pierce -1`, `moonlit_amp` / `moonlit_amp_full` | `crescent_ability.gd`: applies Moonlit per pass |
 | cc | `tide.tres` (`CosmoTideData`): a `statuses_from_zone` pull zone, a detonation template | `tide_ability.gd`: the countdown and `Projectile.explode_at` |
 | movement | `new_moon.tres`: `ChargeData` with `stop_at_target` and an untargetable `self_status` | generic `ChargeAbility` |
