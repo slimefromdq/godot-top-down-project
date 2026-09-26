@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/abilities/common/charge_ability.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="4_x"]
+[ext_resource type="Resource" path="res://heroes/cpt_yellow/data/yellow_wave_carry.tres" id="5_x"]
+[ext_resource type="Resource" path="res://heroes/cpt_yellow/data/yellow_wave_drop.tres" id="6_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("3_x")
+kind = 2
+length = 180.0
+width = 460.0
+
+[sub_resource type="Resource" id="Sub_2"]
+script = ExtResource("4_x")
+base = 70.0
+per_level = 12.0
+weapon_ratio = 0.8
+
+[resource]
+script = ExtResource("1_x")
+direction_mode = 0
+distance = 1000.0
+speed = 1150.0
+carry_momentum = false
+telegraph_time = 0.5
+end_on_hit_status_on_arrival = true
+arrival_status = ExtResource("6_x")
+id = &"charge"
+display_name = "CHARGE!"
+description = "Bugle call: the army piles up behind you for 0.5 s, then a long, wide wave surges forward with you on the crest. Every enemy it hits is stunned and carried along, then dropped (stunned briefly) where the wave ends."
+ability_script = ExtResource("2_x")
+cooldown = 75.0
+cooldown_per_level = -2.5
+hit_shape = SubResource("Sub_1")
+damage = SubResource("Sub_2")
+damage_type = 0
+on_hit_status = ExtResource("5_x")
+tags = Array[StringName]([&"ability", &"ultimate"])
+meter_label = &"charge_wave"
+ability_range = 1000.0
+feel_preset = &"charge"

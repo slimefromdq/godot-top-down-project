@@ -78,6 +78,8 @@ class Entry:
 	# How strongly this application applies (multipliers and shield).
 	var strength: float = 1.0
 	var shield_remaining: float = 0.0
+	# carry_enabled: where the target rides relative to the applier.
+	var carry_offset := Vector2.ZERO
 
 
 # `source` is who applied it (for DoT kill credit and snapshotting their
@@ -135,6 +137,8 @@ func apply(effect: StatusEffect, source: Node = null, direction: Vector2 = Vecto
 			TrailRecorder.leave(previous_source, _get_root())
 		TrailRecorder.join(source, _get_root())
 
+	if effect.carry_enabled and (is_new or previous_source != source):
+		entry.carry_offset = _carry_offset_for(effect, source)
 	entry.source = source
 	if effect.tick_damage != null:
 		entry.tick_amount = effect.tick_damage.evaluate(StatsComponent.find_on(source))
@@ -334,6 +338,28 @@ func is_compelled() -> bool:
 	return _compel_entry() != null
 
 
+# The carry currently dragging this actor (the most recently applied one), or
+# null. MovementComponent reads these every physics tick.
+func get_carry_effect() -> StatusEffect:
+	var entry := _carry_entry()
+	return entry.effect if entry != null else null
+
+
+func get_carrier() -> Node2D:
+	var entry := _carry_entry()
+	return entry.source as Node2D if entry != null else null
+
+
+# Where the carried actor rides, relative to the carrier.
+func get_carry_offset() -> Vector2:
+	var entry := _carry_entry()
+	return entry.carry_offset if entry != null else Vector2.ZERO
+
+
+func is_carried() -> bool:
+	return _carry_entry() != null
+
+
 # Simulation timers run on physics ticks (see HealthComponent for why).
 func _physics_process(delta: float) -> void:
 	for key in _active.keys():
@@ -453,6 +479,23 @@ func _compel_entry() -> Entry:
 		if entry.effect.compel_enabled and is_instance_valid(entry.source) and entry.source is Node2D:
 			found = entry    # later entries were applied later
 	return found
+
+
+func _carry_entry() -> Entry:
+	var found: Entry = null
+	for entry in _active.values():
+		if entry.effect.carry_enabled and is_instance_valid(entry.source) and entry.source is Node2D:
+			found = entry
+	return found
+
+
+func _carry_offset_for(effect: StatusEffect, source: Node) -> Vector2:
+	var root := _get_root() as Node2D
+	var source_2d := source as Node2D
+	if root == null or source_2d == null:
+		return Vector2.ZERO
+	var offset := root.global_position - source_2d.global_position
+	return offset.limit_length(effect.carry_max_offset) if effect.carry_max_offset > 0.0 else offset
 
 
 func _key_for(effect: StatusEffect, source: Node) -> String:

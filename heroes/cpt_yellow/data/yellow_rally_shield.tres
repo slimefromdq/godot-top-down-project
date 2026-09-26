@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("2_x")
+base = 150.0
+per_level = 25.0
+
+[resource]
+script = ExtResource("1_x")
+id = &"rally_shield"
+display_name = "Rally"
+duration = 2.0
+shield_amount = SubResource("Sub_1")
+body_tint = Color(1, 0.9, 0.3, 0.3)

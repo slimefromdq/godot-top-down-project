@@ -104,6 +104,11 @@ For each slot in the definition's `abilities` dictionary, point at an
 | a pull you can slowly walk out of, toward a zone | compel with `compel_overrides_input = false` (strength = `compel_speed_multiplier`) as a zone status with `statuses_from_zone` | none |
 | a blink up to the cursor, then an effect on yourself | `ChargeData` with a high `speed`, `stop_at_target`, `self_status` | none |
 | a hero-level number in the CSV (a combo's burst) | override `AbilityData.get_hero_metrics(definition, level)` (source "derived") | a small data script |
+| hold to ride fast and steer, then land with a telegraphed burst | `RideData` + `RideAbility` (the ride is the Charge phase: `charge_time_max` = longest ride) | none |
+| drive the body along a direction you steer every tick (a mount) | `movement_component.set_cruise(self, dir, speed)` / `clear_cruise(self)` | a small script |
+| a buff/shield on yourself that grows with enemies nearby | `SelfStatusData` + `SelfStatusAbility` (`strength_base` + `strength_per_enemy`) | none |
+| enemies swept up and carried along with you, then dropped | `StatusEffect.carry_enabled` as a dash's `on_hit_status` + `ChargeData.end_on_hit_status_on_arrival` / `arrival_status` | none |
+| a dash telegraph of its own length | `ChargeData.telegraph_time` | none |
 | something new | extend `Ability` (or `MeleeAttackAbility` / `RangedAttackAbility`) | a small script |
 
 `tools/heroes/ranged_test/` is a test-only hero that uses every row above
@@ -311,6 +316,28 @@ FeelProfile, not the cue profiles.
   hero automatically.
 
 ---
+
+## What Cpt. Yellow took
+
+A dive TANK (title: Yellow Army): a small commander riding a swarm of yellow
+bugs. Everything is generic; the only hero-specific code is placeholder VFX.
+
+| Slot | Data | Script |
+|---|---|---|
+| primary | `stinger_volley.tres`: `RangedAttackData`, AUTO, 4 bugs per shot in a 16° cone, short range, no magazine | generic `RangedAttackAbility` |
+| ability_1 (RMB) | `swarm_ride.tres` (`RideData`): hold to ride (`ride_speed`, `turn_rate_degrees`, `charge_time_max` 3 s), `landing_telegraph` 0.25 s, landing `hit_shape` + `damage` + knockback `on_hit_status` | shared `RideAbility` |
+| movement (Shift) | `rally.tres` (`SelfStatusData`): `yellow_rally_shield.tres` (2 s shield), `strength_per_enemy` 0.4 up to 5 enemies in `count_radius` | shared `SelfStatusAbility` |
+| cc (E) | `sting.tres`: one-shot `RangedAttackData`; `on_hit_status` = `yellow_sting_slow.tres` (a latched bug, -40% speed) | generic `RangedAttackAbility` |
+| ultimate (Q) | `charge.tres`: `ChargeData`, `telegraph_time` 0.5, a wide LINE bash whose `on_hit_status` stuns and carries (`yellow_wave_carry.tres`), `end_on_hit_status_on_arrival`, `arrival_status` (`yellow_wave_drop.tres`) | generic `ChargeAbility` |
+
+Shared pieces added for him: `MovementComponent.set_cruise` (a steered
+drive), `StatusEffect` carry (`carry_enabled`, `carry_max_offset`,
+`carry_max_speed`), `RideData`/`RideAbility`, `SelfStatusData`/
+`SelfStatusAbility`, `ChargeData.telegraph_time` / arrival release /
+`arrival_status`, and `effects/feel/area_telegraph.tscn` (a warning circle
+for any area that lands around its caster). His body-is-the-army look is
+`vfx/bug_army.gd` (cosmetic, spawned by the `spawn` cue).
+`tools/heroes/cpt_yellow_test` covers the kit.
 
 ## What Melody took
 

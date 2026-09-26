@@ -6,7 +6,14 @@ class_name ChargeData
 # leaving a trail of GroundZones behind it.
 #
 # Timing: the windup (the telegraph) and recovery come from the feel preset
-# like any other ability; the dash itself lasts distance / speed.
+# like any other ability (telegraph_time overrides the windup); the dash
+# itself lasts distance / speed.
+#
+# Sweep and drop: with a bash (hit_shape + damage) whose on_hit_status
+# carries (StatusEffect.carry_enabled), everything the dash runs into is
+# swept along with the hero. end_on_hit_status_on_arrival lets them go when
+# the dash ends, and arrival_status is applied to each of them then (a
+# stun on landing).
 
 ## Which way the dash goes.
 enum DirectionMode {
@@ -35,6 +42,16 @@ enum DirectionMode {
 @export var invulnerable_duration: float = 0.0
 ## Keep running speed after the dash (fluid) instead of stopping dead.
 @export var carry_momentum: bool = true
+## Seconds of telegraph (the windup) before the dash starts. Negative = the
+## feel preset's windup.
+@export var telegraph_time: float = -1.0
+
+@export_group("Arrival")
+## When the dash ends (or is cut short), remove on_hit_status from every
+## target the bash hit: a carry lasts exactly as long as the dash.
+@export var end_on_hit_status_on_arrival: bool = false
+## Applied to every target the bash hit when the dash ends (a drop stun).
+@export var arrival_status: StatusEffect
 
 @export_group("Trail")
 ## Zone dropped along the path. Empty = no trail.
@@ -67,6 +84,9 @@ func validate() -> PackedStringArray:
 	var problems := super()
 	if min_distance < 0.0 or (charge_enabled and min_distance > distance):
 		problems.append("'%s' min_distance must be between 0 and distance" % id)
+	if arrival_status != null:
+		for problem in arrival_status.validate():
+			problems.append("'%s' arrival_status: %s" % [id, problem])
 	if invulnerable_duration < 0.0:
 		problems.append("'%s' invulnerable_duration is negative" % id)
 	if distance <= 0.0 or speed <= 0.0:

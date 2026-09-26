@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_x"]
+
+[resource]
+script = ExtResource("1_x")
+id = &"swarm_riding"
+display_name = "Riding the swarm"
+duration = 99.0
+stack_rule = 0
+body_tint = Color(1, 0.85, 0.2, 0.35)
