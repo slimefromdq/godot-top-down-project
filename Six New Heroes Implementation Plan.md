@@ -93,6 +93,15 @@ Pike wins by choosing one enemy and making every fight a 1v1 with them. Her whol
 
 **Readability and counterplay.** The Beloved sees a pink heart over their own head, and it beats faster as Pike gets closer, with a matching heartbeat sound; it glows brighter once she's within teleport range. Allies of the Beloved see a smaller heart, so they know to stick close. Because the teleport is easy to reach, the counterplay is in her passive: keep her in view and her burst and root never trigger. Staying near teammates keeps her ult from being a free pick.
 
+**Built in Phase 5.** Choices the table left open:
+- The ring is a real wall on a new physics layer. Walking, dashes, launches and projectiles all stop at it, and `Actor.teleport_to` refuses to cross it; map teleporters and Safety Net's pull go through that too.
+- Sight isn't blocked, so everyone can watch.
+- **Known limitation, left as is:** area damage centred outside the ring can still reach inside, just as it ignores walls today.
+- The ring is centred between Pike and her Beloved.
+- There You Are is a teleport: 90 px behind the Beloved, opposite their facing, or beside them if that spot is inside a wall. It fails beyond 900 px.
+- Obsession only fades Pike (40% opacity); she's never invisible.
+- Move speed is 560, the same as Jose.
+
 **Why the max-HP damage.** 0.4% per knife is about 8 extra damage per hit on a 2000 HP tank, around 30 per second at full speed. Small on carries, meaningful on tanks: it's what lets her win duels she otherwise shouldn't.
 
 ## Butler, The Composed (Tank)

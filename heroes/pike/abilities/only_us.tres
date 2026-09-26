@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/pike/abilities/only_us_ability.gd" id="2_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Radius"]
+script = ExtResource("9_v")
+base = 450.0
+
+[sub_resource type="Resource" id="Duration"]
+script = ExtResource("9_v")
+base = 4.0
+
+[sub_resource type="Resource" id="MaxDistance"]
+script = ExtResource("9_v")
+base = 600.0
+
+[resource]
+script = ExtResource("1_a")
+id = &"only_us"
+display_name = "Only Us"
+description = "A heart-shaped ring (450 px) closes around you and your Beloved for 4 s. Nobody gets in or out: walking, dashes, launches, teleports and projectiles all stop at it. Your Beloved must be within 600 px."
+ability_script = ExtResource("2_a")
+cooldown = 90.0
+ability_range = 600.0
+tags = Array[StringName]([&"ultimate"])
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"ring_radius": SubResource("Radius"),
+&"ring_duration": SubResource("Duration"),
+&"max_distance": SubResource("MaxDistance")
+})
+feel_preset = &"quick"

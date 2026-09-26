@@ -75,9 +75,9 @@ func show_incoming(progress: float) -> void:
 
 
 func receive(actor: Actor) -> void:
-	actor.global_position = global_position
-	actor.velocity = Vector2.ZERO
-	actor.reset_physics_interpolation()
+	# A teleport can't cross a ContainmentRing (nobody in or out).
+	if not actor.teleport_to(global_position):
+		return
 	if actor not in _just_arrived:
 		_just_arrived.append(actor)
 	EffectSpawner.spawn(self, arrive_effect, {"position": global_position})

@@ -232,9 +232,14 @@ func _on_about_to_die(event: DeathEvent, hurtbox: HurtboxComponent) -> void:
 		var away := owner_2d.global_position.direction_to(ally.global_position)
 		if away == Vector2.ZERO:
 			away = Vector2.RIGHT
-		ally.global_position = owner_2d.global_position + away * data.intercept_move_to_owner
+		var spot := owner_2d.global_position + away * data.intercept_move_to_owner
+		# A rescue pull is a teleport: it can't cross a ContainmentRing.
+		var moved: bool = ally.teleport_to(spot) if ally.has_method(&"teleport_to") \
+			else not ContainmentRing.crosses_any(get_tree(), ally.global_position, spot)
+		if moved and not ally.has_method(&"teleport_to"):
+			ally.global_position = spot
 		var movement = ally.get(&"movement_component")
-		if movement is MovementComponent:
+		if moved and movement is MovementComponent:
 			movement.stop_forced_move()
 	if data.intercept_status != null and hurtbox.status_component != null:
 		hurtbox.status_component.apply(data.intercept_status, _owner_source())

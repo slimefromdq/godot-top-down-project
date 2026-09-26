@@ -96,6 +96,7 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	add_to_group(&"minimap_units")
 	add_to_group(&"training_dummies")
+	collision_mask |= MapLayers.BARRIERS
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	anchor = global_position
 	health_component.damaged.connect(_on_damaged)
