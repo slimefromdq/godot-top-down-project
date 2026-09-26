@@ -53,6 +53,15 @@ signal cue_triggered(cue: StringName, context: Dictionary)
 ## Slows down over this distance as it arrives (no overshoot wobble).
 @export var anchor_slowdown_distance: float = 60.0
 
+@export_group("Ally")
+## Walk back and forth between the anchor and anchor + patrol_offset, so
+## move-speed buffs and slows show. Zero = stand still. Displacement
+## (knockback, pulls) still works; it resumes the walk afterwards.
+@export var patrol_offset: Vector2 = Vector2.ZERO
+## Replace the DPS readout with the buffs it's under (move speed, fire rate,
+## damage multipliers and shield): for an ally dummy on the player's team.
+@export var buff_readout: bool = false
+
 @onready var health_component: HealthComponent = $Components/HealthComponent
 @onready var status_component: StatusEffectComponent = $Components/StatusComponent
 @onready var movement_component: MovementComponent = $Components/MovementComponent
@@ -63,6 +72,8 @@ signal cue_triggered(cue: StringName, context: Dictionary)
 
 var aim_direction := Vector2.DOWN
 var anchor := Vector2.ZERO
+# Patrolling: heading to anchor + patrol_offset (true) or back to the anchor.
+var _patrol_out: bool = true
 
 var _time_since_damage: float = 0.0
 # Damage since the dummy last reset to full health.
@@ -92,6 +103,8 @@ func _ready() -> void:
 	health_component.died.connect(_on_died)
 	_team_before_fighting = team
 	set_fight_back(fight_back)
+	if buff_readout:
+		dps_label.grow_horizontal = Control.GROW_DIRECTION_BOTH    # longer text stays centred
 
 
 # Live reconfiguration (debug panel): new HP / resistances / level.
@@ -112,6 +125,11 @@ func set_fight_back(enabled: bool) -> void:
 	_attack_timer = attack_interval
 
 
+# On a team of its own (not neutral), e.g. the ally dummy on the player's team.
+func is_teamed() -> bool:
+	return _team_before_fighting != &""
+
+
 func make_stat_block() -> StatBlock:
 	var block := StatBlock.new()
 	block.health = StatScaling.make(max_health)
@@ -123,9 +141,14 @@ func make_stat_block() -> StatBlock:
 
 
 func _physics_process(delta: float) -> void:
-	var to_anchor := anchor - global_position
+	var to_anchor := get_patrol_target() - global_position
 	var steer := Vector2.ZERO
-	if return_to_anchor and to_anchor.length() > anchor_tolerance:
+	if patrol_offset != Vector2.ZERO and to_anchor.length() <= anchor_tolerance:
+		_patrol_out = not _patrol_out
+		to_anchor = get_patrol_target() - global_position
+	if patrol_offset != Vector2.ZERO:
+		steer = to_anchor.normalized()    # full speed: the walk is the readout
+	elif return_to_anchor and to_anchor.length() > anchor_tolerance:
 		steer = to_anchor.normalized() * clampf(to_anchor.length() / anchor_slowdown_distance, 0.0, 1.0)
 	velocity = movement_component.get_velocity(velocity, steer, delta)
 	move_and_slide()
@@ -170,7 +193,29 @@ func _process(delta: float) -> void:
 	var total := 0.0
 	for entry in _damage_log:
 		total += entry.y
-	dps_label.text = "DPS %d   total %d" % [roundi(total / dps_window), roundi(_total_taken)]
+	if buff_readout:
+		dps_label.text = get_buff_text()
+	else:
+		dps_label.text = "DPS %d   total %d" % [roundi(total / dps_window), roundi(_total_taken)]
+
+
+# Where it's walking to: the anchor, or the far end of its patrol.
+func get_patrol_target() -> Vector2:
+	return anchor + patrol_offset if patrol_offset != Vector2.ZERO and _patrol_out else anchor
+
+
+# "speed x1.35  fire x1.20  shield 80", only the stats that are buffed or
+# debuffed; "no buffs" otherwise.
+func get_buff_text() -> String:
+	var parts: PackedStringArray = []
+	for stat in [[StatusEffect.MOVE_SPEED, "speed"], [StatusEffect.FIRE_RATE, "fire"], [StatusEffect.DAMAGE, "damage"]]:
+		var multiplier := status_component.get_multiplier(stat[0])
+		if not is_equal_approx(multiplier, 1.0):
+			parts.append("%s x%.2f" % [stat[1], multiplier])
+	var shield := status_component.get_shield_total()
+	if shield > 0.0:
+		parts.append("shield %d" % roundi(shield))
+	return "  ".join(parts) if not parts.is_empty() else "no buffs"
 
 
 func trigger_cue(cue: StringName, context: Dictionary = {}) -> void:

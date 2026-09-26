@@ -149,14 +149,16 @@ func apply_to_all_dummies() -> void:
 	for node in get_tree().get_nodes_in_group(&"training_dummies"):
 		var dummy := node as TrainingDummy
 		dummy.configure(dummy_health, dummy_armor, dummy_magic_resist, dummy_level)
-		dummy.set_fight_back(dummy_fight_back)
+		if not dummy.is_teamed():    # the ally dummy never turns on you
+			dummy.set_fight_back(dummy_fight_back)
 		dummy.can_die = dummy_can_die
 
 
 func set_all_dummies_fight_back(enabled: bool) -> void:
 	dummy_fight_back = enabled
 	for node in get_tree().get_nodes_in_group(&"training_dummies"):
-		(node as TrainingDummy).set_fight_back(enabled)
+		if not (node as TrainingDummy).is_teamed():
+			(node as TrainingDummy).set_fight_back(enabled)
 
 
 func clear_spawned_dummies() -> void:
