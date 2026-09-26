@@ -9,7 +9,9 @@ class_name MinigameData
 @export var min_duration: float = 1.0
 ## Forced end (result "timeout") after this long.
 @export var max_duration: float = 4.0
-## Kept on the actor while it plays (default: rooted and silenced).
+## Kept on the actor while it plays (default: silenced; the player's WASD
+## goes to the minigame, and a steering ability like Close Encounter can still
+## move the body, so it doesn't root).
 @export var occupied_status: StatusEffect
 
 

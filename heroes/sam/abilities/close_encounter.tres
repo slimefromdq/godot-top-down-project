@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="SamEncounterData" format=3]
+
+[ext_resource type="Script" path="res://heroes/sam/abilities/close_encounter_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/sam/abilities/close_encounter_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://resources/minigames/airlock.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/sam/data/sam_abducted.tres" id="4_a"]
+[ext_resource type="Resource" path="res://heroes/sam/data/sam_daze.tres" id="5_a"]
+[ext_resource type="Script" path="res://scripts/abilities/ally_targeting.gd" id="6_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Targeting"]
+script = ExtResource("6_a")
+cast_range = 700.0
+snap_radius = 150.0
+requires_line_of_sight = false
+accepts = 0
+
+[sub_resource type="Resource" id="Telegraph"]
+script = ExtResource("9_v")
+base = 0.4
+
+[sub_resource type="Resource" id="Beam"]
+script = ExtResource("9_v")
+base = 90.0
+
+[sub_resource type="Resource" id="Ufo"]
+script = ExtResource("9_v")
+base = 350.0
+
+[resource]
+script = ExtResource("1_a")
+minigame = ExtResource("3_a")
+abducted_status = ExtResource("4_a")
+daze_status = ExtResource("5_a")
+id = &"close_encounter"
+display_name = "Close Encounter"
+description = "Beam up an enemy within 700 px (0.4 s to land: they can dodge it). They play the airlock maze while you fly the UFO toward your cursor; you can move and shoot but cast nothing else. When they get out (or at 4 s) they drop wherever the UFO is, dazed for 0.3 s."
+ability_script = ExtResource("2_a")
+cooldown = 80.0
+ally_targeting = SubResource("Targeting")
+tags = Array[StringName]([&"ultimate"])
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"telegraph": SubResource("Telegraph"),
+&"beam_radius": SubResource("Beam"),
+&"ufo_speed": SubResource("Ufo")
+})
+feel_preset = &"quick"

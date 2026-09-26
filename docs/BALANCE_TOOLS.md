@@ -35,7 +35,7 @@ values.
 * **Feel**
   * Global comfort settings: shake intensity, trauma cap, shake speed, hitstop on/off and scale, nudge scale, flash on/off.
   * The hero's FeelProfile, editable live.
-* **Tools**: export the balance CSV, validate heroes, reset the meter, show or hide the overlays, switch maps. **Sight lines** draws a line from you to every nearby enemy: green if you can see it, red if a wall or a bush blocks it (`CombatQueries.has_line_of_sight`). **Airlock practice** plays Sam's airlock minigame on you.
+* **Tools**: export the balance CSV, validate heroes, reset the meter, show or hide the overlays, switch maps. **Sight lines** draws a line from you to every nearby enemy: green if you can see it, red if a wall or a bush blocks it (`CombatQueries.has_line_of_sight`). **Airlock practice** plays Sam's airlock maze on you.
 
 ## F2 stat inspector
 
@@ -120,6 +120,7 @@ godot --headless res://tools/heroes/nimbus_test.tscn
 godot --headless res://tools/heroes/tilly_test.tscn
 godot --headless res://tools/heroes/butler_test.tscn
 godot --headless res://tools/heroes/pike_test.tscn
+godot --headless res://tools/heroes/sam_test.tscn
 godot --headless res://tools/heroes/airlock_test.tscn
 godot --headless res://tools/heroes/feel_test.tscn
 godot --headless res://tools/heroes/balance_tools_test.tscn

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+[ext_resource type="PackedScene" path="res://heroes/sam/vfx/ufo.tscn" id="2_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sam_abducted"
+display_name = "Abducted"
+duration = 5.0
+untargetable = true
+stat_multipliers = Dictionary[StringName, float]({
+&"damage_taken": 0.0
+})
+attached_vfx = ExtResource("2_s")
+body_alpha = 0.7

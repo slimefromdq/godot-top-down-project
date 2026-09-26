@@ -2,17 +2,23 @@
 
 [ext_resource type="Script" path="res://scripts/minigames/airlock_data.gd" id="1_a"]
 [ext_resource type="Resource" path="res://resources/minigames/occupied.tres" id="2_a"]
+[ext_resource type="Script" path="res://scripts/minigames/maze_layout.gd" id="3_a"]
+
+[sub_resource type="Resource" id="Maze_a"]
+script = ExtResource("3_a")
+walls = Array[Rect2]([Rect2(130, 0, 20, 210), Rect2(270, 90, 20, 210)])
+
+[sub_resource type="Resource" id="Maze_b"]
+script = ExtResource("3_a")
+walls = Array[Rect2]([Rect2(130, 90, 20, 210), Rect2(270, 0, 20, 210)])
+
+[sub_resource type="Resource" id="Maze_c"]
+script = ExtResource("3_a")
+walls = Array[Rect2]([Rect2(110, 0, 20, 190), Rect2(210, 110, 20, 190), Rect2(310, 0, 20, 190)])
 
 [resource]
 script = ExtResource("1_a")
 min_duration = 1.2
 max_duration = 4.0
 occupied_status = ExtResource("2_a")
-heart_lanes = PackedFloat32Array(0.5, 0.42, 0.58, 0.5, 0.34, 0.66)
-heart_interval = 0.22
-heart_speed = 250.0
-bubble_columns = PackedFloat32Array(0.88, 0.6, 0.35, 0.88)
-bubble_first = 0.1
-bubble_interval = 0.3
-bubble_speed = 320.0
-arm_speed = 320.0
+layouts = Array[ExtResource("3_a")]([SubResource("Maze_a"), SubResource("Maze_b"), SubResource("Maze_c")])

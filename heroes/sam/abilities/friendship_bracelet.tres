@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/sam/abilities/bracelet_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/sam/data/sam_bracelet.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/sam/data/sam_linked.tres" id="4_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Chain"]
+script = ExtResource("9_v")
+base = 400.0
+
+[sub_resource type="Resource" id="Leash"]
+script = ExtResource("9_v")
+base = 300.0
+
+[sub_resource type="Resource" id="Share"]
+script = ExtResource("9_v")
+base = 0.5
+
+[sub_resource type="Resource" id="Duration"]
+script = ExtResource("9_v")
+base = 4.0
+
+[resource]
+script = ExtResource("1_a")
+projectile = ExtResource("3_a")
+muzzles = Array[Vector2]([Vector2(30, 0)])
+fire_mode = 1
+shots_per_second = 2.0
+id = &"friendship_bracelet"
+display_name = "Friendship Bracelet"
+description = "A bracelet that links whoever it hits to the nearest teammate of theirs within 400 px for 4 s. Enemies can't get more than 300 px apart; allies share 50% of the healing either receives."
+ability_script = ExtResource("2_a")
+cooldown = 12.0
+damage_type = 1
+on_hit_status = ExtResource("4_a")
+tags = Array[StringName]([&"ability", &"cc"])
+meter_label = &"friendship_bracelet"
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"chain_range": SubResource("Chain"),
+&"leash_distance": SubResource("Leash"),
+&"heal_share": SubResource("Share"),
+&"link_duration": SubResource("Duration")
+})
+feel_preset = &"throw"

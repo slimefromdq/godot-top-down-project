@@ -4,8 +4,7 @@
 
 [resource]
 script = ExtResource("1_s")
-id = &"minigame_occupied"
-display_name = "Busy"
-duration = 10.0
-silences = true
-ignores_resolve = true
+id = &"sam_daze"
+display_name = "Dazed"
+duration = 0.3
+stuns = true
