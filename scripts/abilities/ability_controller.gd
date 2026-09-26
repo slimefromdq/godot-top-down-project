@@ -101,6 +101,8 @@ func release(ability: Ability, target_position: Vector2) -> bool:
 		return false
 	if ability.is_charging():
 		return ability.release_charge(target_position)
+	if ability.is_held():
+		return ability.release_hold(target_position)
 	if _buffered == ability:
 		_buffered_released = true
 	return false

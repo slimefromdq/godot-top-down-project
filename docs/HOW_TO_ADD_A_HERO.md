@@ -112,6 +112,12 @@ For each slot in the definition's `abilities` dictionary, point at an
 | a zone whose damage ramps the longer you stand in it (a gas that gets worse) | `GroundZoneData` Ramp group: `ramp_per_tick`, `ramp_max`, `ramp_reset_after`, `ramp_key` (zones with the same owner + key share one ramp per target), `ramp_starts_full`; push it from scripts with `ZoneRamp.raise_steps` / `reset` | none |
 | a zone that leaves another behind when it ends (a residue, embers) | `GroundZoneData.leaves_zone` | none |
 | a lobbed grenade that lands on the cursor, over walls, and leaves a cloud | `ProjectileData.lobbed` + `explode_on_expire` + `explosion_shape` + `explosion_zone` (any zone) | none |
+| hold a key to keep a status on yourself (a scope, a guard stance), still free to shoot | `SelfStatusData.hold_to_keep` (released = removed; the status's duration caps the hold) | none |
+| a scope: the player's view shifts toward the cursor | `StatusEffect.camera_look_ahead` (px) on a self status; scripts can `ShakeCamera.request_look_ahead(requester, px)` | none |
+| a laser sight everyone can see | `effects/feel/aim_laser.tscn` (`AimLaser`) as a status's `attached_vfx` | none |
+| a parry: reflect the first projectile / stun the first melee attacker | `StatusEffect.parries` + `parry_melee_status`; react with `actor.combat_hooks.parried(kind, attacker, info)` | none (a small script for rewards) |
+| a leap / glide to the cursor over low cover and ledges, optionally steerable | `LaunchData` + `LaunchAbility` (`max_distance`, `air_time`, `steer_speed`); scripts can `actor.retarget_launch(point)` mid-air | none |
+| shots that pass through some targets without using up pierce | override `RangedAttackAbility._hit_is_free_pierce(hurtbox)` (`Projectile.free_pierce`) | a small script |
 | hard CC that can't be chained forever | automatic: **Resolve** (`GameRules.resolve_duration` / `resolve_cc_multiplier`) halves a stun, root or taunt that lands within 2 s of the last one ending. Carries, self-applied CC, walk-out-able pulls and formations are exempt; `StatusEffect.ignores_resolve` exempts any other | none |
 | "can A see B?" (a stalker passive, a sight-gated autofire) | `CombatQueries.has_line_of_sight(from, to)`: walls on `GameRules.sight_mask`, and bushes (can't see in from outside; from inside you see out) | none |
 | hide in bushes / reveal someone | bushes hide their occupants automatically (`CombatQueries.is_hidden_from`, drawn per viewer by `VisualsComponent`); a `StatusEffect` with `reveals` shows them anyway | none |
@@ -353,6 +359,27 @@ FeelProfile, not the cue profiles.
   hero automatically.
 
 ---
+
+## What Nimbus took
+
+A low-mobility gun CARRY (title: The Gentleman Spy). Tools → New Hero from
+Template → "Nimbus", basic attack deleted, then:
+
+| Slot | Data | Script |
+|---|---|---|
+| passive | `steady_hand.tres`: `values/bonus_per_stack` 0.1, `max_stacks` 4, `still_speed` | `steady_hand.gd` (`PassiveAbility`): a stack per second standing still, pips, `consume()` |
+| primary | `umbrella_rifle.tres`: `RangedAttackData`, SEMI, 1.1/s, 5 rounds, 1.6 x Weapon, pierce 1, `values/crit_multiplier` 1.75 | `umbrella_rifle.gd`: Steady Hand bonus, `grant_crit()`, crits + free pierce against his Overcast |
+| ability_1 | `scope.tres`: `SelfStatusData` with `hold_to_keep`; the status has -40% speed, `camera_look_ahead` 500 and the `AimLaser` | shared `SelfStatusAbility` |
+| movement | `descend.tres`: `LaunchData`, 1100 px, 1.6 s, `steer_speed` 450 | shared `LaunchAbility` |
+| cc | `parry.tres`: `SelfStatusData`, a 0.35 s `parries` status whose melee stun is 0.5 s; `values/cooldown_refund` 0.5 | `parry_ability.gd`: refund + next-shot crit on `parried` |
+| ultimate | `overcast.tres` (`ZoneAbilityData`, `ability_range` 3600): a 500 px 6 s cloud whose `status_while_inside` reveals and slows 15% | `overcast_ability.gd`: places the cloud on the cursor (instant) |
+
+Crits are Nimbus's own rule (his rifle script), tagged `crit` on the hit.
+Shared pieces added for him: `StatusEffect` parry and `camera_look_ahead`,
+`SelfStatusData.hold_to_keep` (+ `Ability.is_held` / `release_hold`),
+`LaunchData`/`LaunchAbility` and `Actor.retarget_launch`, `AimLaser`, and
+`Projectile.free_pierce`. `tools/heroes/ranged_infra_test` covers the pieces
+alone and `tools/heroes/nimbus_test` covers the kit.
 
 ## What Hazmat took
 

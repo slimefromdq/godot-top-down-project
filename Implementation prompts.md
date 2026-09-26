@@ -145,7 +145,7 @@ Kit:
 - passive, Steady Hand: each second standing still adds +10% damage to
   his next shot, up to +40%. Show it as pips.
 - primary, Umbrella Rifle: RangedAttackData, SEMI, 1.1 shots/s,
-  magazine 5, fast projectile, pierce 1, 1.2 x Weapon.
+  magazine 5, fast projectile, pierce 1, 1.6 x Weapon.
 - ability_1, Scope: hold. Camera look-ahead 500 px, -40% move speed, and a
   thin aim laser visible to all players while held.
 - movement, Descend: opens the umbrella and launches him (Actor.launch)

@@ -34,6 +34,7 @@ const REASON_TARGET_DIED := &"target_died"
 const REASON_APPLIER_DIED := &"applier_died"
 const REASON_SHIELD_BROKEN := &"shield_broken"   ## its shield was used up
 const REASON_BROKEN_FREE := &"broken_free"       ## a follower broke out of a formation
+const REASON_PARRIED := &"parried"               ## a parry status caught a hit
 
 ## Optional. Needed for displacement (knockback / pull) and compel.
 @export var movement_component: MovementComponent
@@ -362,6 +363,44 @@ func is_rooted() -> bool:
 # Hurtboxes ignore hits and statuses while this is true (StatusEffect.untargetable).
 func is_untargetable() -> bool:
 	return _any(func(e: StatusEffect): return e.untargetable)
+
+
+# --- Parry --------------------------------------------------------------------
+
+func can_parry() -> bool:
+	return _any(func(e: StatusEffect): return e.parries)
+
+
+# A hit of `kind` (&"projectile" or &"melee") from `attacker` is about to land.
+# With a parry status active, it's caught: the status ends, a melee attacker
+# gets parry_melee_status, the actor's CombatHooks.parried fires, and this
+# returns true (the caller then reflects or cancels the hit).
+func try_parry(kind: StringName, attacker, info: DamageInfo) -> bool:    # attacker untyped: may be freed
+	if not is_instance_valid(attacker):
+		attacker = null
+	for entry in _active.values():
+		if not entry.effect.parries:
+			continue
+		var effect: StatusEffect = entry.effect
+		_end(entry, REASON_PARRIED)
+		if kind == &"melee" and effect.parry_melee_status != null and attacker != null:
+			var attacker_status := CombatQueries.status_of(attacker)
+			if attacker_status != null:
+				attacker_status.apply(effect.parry_melee_status, _get_root())
+		var hooks := CombatHooks.find_on(_get_root())
+		if hooks != null:
+			hooks.parried.emit(kind, attacker, info)
+		return true
+	return false
+
+
+# How far the local player's camera leans toward the cursor
+# (StatusEffect.camera_look_ahead): the largest active value.
+func get_camera_look_ahead() -> float:
+	var result := 0.0
+	for entry in _active.values():
+		result = maxf(result, entry.effect.camera_look_ahead)
+	return result
 
 
 # Seen through bushes (StatusEffect.reveals; see CombatQueries).

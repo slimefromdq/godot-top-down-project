@@ -201,7 +201,9 @@ func _test_concealment() -> void:
 	var open_dummy := _dummy(Vector2(0, 400))
 	open_dummy.team = &"b"
 	_bush(Vector2(600, 0))
-	await _frames(4)
+	# The bush learns who's inside on physics steps; drawing updates on frames.
+	await _physics_frames(3)
+	await _frames(2)
 	var visuals := VisualsComponent.find_on(dummy)
 	_check("an enemy in a bush isn't drawn for the viewer", not dummy.visible and visuals.is_concealed(), "")
 	_check("an enemy in the open is drawn", open_dummy.visible, "")

@@ -141,6 +141,18 @@ func is_casting() -> bool:
 	return phase != Phase.IDLE
 
 
+# Hold-to-keep abilities (e.g. SelfStatusData.hold_to_keep): true while the
+# effect lasts and the key hasn't been released. Player input releases it
+# when the key comes up; AI calls Hero.release_slot().
+func is_held() -> bool:
+	return false
+
+
+# Key released on a held ability. Returns true if something ended.
+func release_hold(_target_position: Vector2) -> bool:
+	return false
+
+
 func is_charging() -> bool:
 	return phase == Phase.CHARGING
 

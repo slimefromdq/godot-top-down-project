@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+[ext_resource type="PackedScene" path="res://effects/feel/aim_laser.tscn" id="2_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"nimbus_scoped"
+display_name = "Scoped"
+duration = 30.0
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 0.6
+})
+attached_vfx = ExtResource("2_s")
+camera_look_ahead = 500.0

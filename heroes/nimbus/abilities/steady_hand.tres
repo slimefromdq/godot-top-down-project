@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/nimbus/abilities/steady_hand.gd" id="2_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Bonus"]
+script = ExtResource("9_v")
+base = 0.1
+
+[sub_resource type="Resource" id="Stacks"]
+script = ExtResource("9_v")
+base = 4.0
+
+[sub_resource type="Resource" id="Still"]
+script = ExtResource("9_v")
+base = 15.0
+
+[resource]
+script = ExtResource("1_a")
+id = &"steady_hand"
+display_name = "Steady Hand"
+description = "Each second Nimbus stands still adds +10% damage to his next shot, up to +40%. Moving resets it."
+ability_script = ExtResource("2_a")
+cooldown = 0.0
+tags = Array[StringName]([&"passive"])
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"bonus_per_stack": SubResource("Bonus"),
+&"max_stacks": SubResource("Stacks"),
+&"still_speed": SubResource("Still")
+})

@@ -109,6 +109,15 @@ enum VfxVisibleTo {
 ## already exempt without this.
 @export var ignores_resolve: bool = false
 
+@export_group("Parry")
+## While active, the first enemy hit is caught instead of landing, and the
+## status ends: a projectile flips to this actor's side and flies back the
+## way it came; a melee hit is cancelled and its attacker gets
+## parry_melee_status. The actor's CombatHooks.parried reports it.
+@export var parries: bool = false
+## Put on a melee attacker whose hit was parried (a stun).
+@export var parry_melee_status: StatusEffect
+
 @export_group("Vision")
 ## Seen by everyone while active, even inside a bush (see CombatQueries).
 @export var reveals: bool = false
@@ -197,6 +206,9 @@ enum VfxVisibleTo {
 ## Body opacity while active (a faded silhouette). 1 = unchanged; the
 ## lowest active value wins.
 @export_range(0.0, 1.0, 0.05) var body_alpha: float = 1.0
+## The local player's camera leans this many pixels toward the cursor while
+## the status is on them (a scope). Only the player's own view changes.
+@export var camera_look_ahead: float = 0.0
 ## Who can see attached_vfx. Body tint, alpha and apply_sound are not
 ## filtered.
 @export var vfx_visible_to: VfxVisibleTo = VfxVisibleTo.EVERYONE

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="LaunchData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/launch_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/abilities/common/launch_ability.gd" id="2_a"]
+
+[resource]
+script = ExtResource("1_a")
+max_distance = 1100.0
+air_time = 1.6
+arc_height = 180.0
+steer_speed = 450.0
+id = &"descend"
+display_name = "Descend"
+description = "Open the umbrella and glide toward the cursor (up to 1100 px, 1.6 s), sailing over low cover and ledges. Steer the landing with movement while airborne."
+ability_script = ExtResource("2_a")
+cooldown = 22.0
+tags = Array[StringName]([&"movement"])
+feel_preset = &"instant"

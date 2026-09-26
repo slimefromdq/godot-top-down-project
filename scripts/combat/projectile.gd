@@ -47,6 +47,12 @@ var _exploded := false
 ## Lobbed projectiles (ProjectileData.lobbed) land after this many pixels.
 ## < 0 = at max range. RangedAttackAbility sets it to the aim point.
 var lob_distance: float = -1.0
+## Optional. Callable(hurtbox) -> bool: true = hitting this target doesn't
+## use up pierce (a shot that passes through marked targets).
+## RangedAttackAbility wires it to its _hit_is_free_pierce hook.
+var free_pierce: Callable
+## Tag added to a projectile's hits after a parry turned it around.
+const TAG_REFLECTED := &"reflected"
 var _travelled: float = 0.0
 ## Which pass a returning projectile is on (always OUTBOUND otherwise).
 var current_pass: Pass = Pass.OUTBOUND
@@ -177,6 +183,11 @@ func _hit_targets_between(from: Vector2, to: Vector2) -> void:
 	found.sort_custom(func(a, b): return from.distance_squared_to(a.global_position) < from.distance_squared_to(b.global_position))
 
 	for hurtbox in found:
+		# A parry (StatusEffect.parries) catches the shot: it changes sides.
+		if hurtbox.status_component != null and not data.return_to_caster \
+				and hurtbox.status_component.try_parry(&"projectile", damage_template.source, damage_template):
+			_reflect(hurtbox)
+			return
 		_already_hit[hurtbox.get_instance_id()] = true
 		if data.explode_on_hit and data.explosion_shape != null:
 			# The blast replaces the direct hit (it catches this target too).
@@ -198,13 +209,38 @@ func _hit_targets_between(from: Vector2, to: Vector2) -> void:
 		hit_landed.emit(info, hurtbox)
 		pass_hit.emit(info, hurtbox, current_pass)
 		_spawn_feedback(data.hit_effect, data.hit_sound, hurtbox.global_position)
-		_hits += 1
+		if not (free_pierce.is_valid() and free_pierce.call(hurtbox)):
+			_hits += 1
 		if data.pierce >= 0 and _hits > data.pierce:
 			if data.return_to_caster and current_pass == Pass.OUTBOUND:
 				_start_return()    # out of pierce: come back early
 			else:
 				queue_free()
 			return
+
+
+# Parried: the projectile now belongs to the parrier and flies back the way
+# it came, with a fresh range, pierce and hit list. The original shooter's
+# hooks no longer see its hits.
+func _reflect(parrier_hurtbox: HurtboxComponent) -> void:
+	var parrier := parrier_hurtbox.owner if parrier_hurtbox.owner != null else parrier_hurtbox.get_parent()
+	for signal_name in [&"hit_landed", &"pass_hit"]:
+		for connection in get_signal_connection_list(signal_name):
+			disconnect(signal_name, connection.callable)
+	hit_modifier = Callable()
+	free_pierce = Callable()
+	damage_template = damage_template.copy()
+	damage_template.source = parrier
+	damage_template.attack_id = DamageInfo.new_attack_id()
+	if not damage_template.tags.has(TAG_REFLECTED):
+		damage_template.tags.append(TAG_REFLECTED)
+	direction = -direction
+	rotation = direction.angle()
+	fired_from = global_position
+	_age = 0.0
+	_hits = 0
+	_already_hit.clear()
+	_already_hit[parrier_hurtbox.get_instance_id()] = true
 
 
 func _can_hit(hurtbox: HurtboxComponent) -> bool:

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SelfStatusData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/self_status_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/abilities/common/self_status_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/nimbus/data/nimbus_scoped.tres" id="3_a"]
+
+[resource]
+script = ExtResource("1_a")
+self_status = ExtResource("3_a")
+count_radius = 0.0
+hold_to_keep = true
+id = &"scope"
+display_name = "Scope"
+description = "Hold: the view shifts 500 px toward the cursor and a thin laser shows your aim to everyone. -40% move speed. You can keep shooting."
+ability_script = ExtResource("2_a")
+cooldown = 0.0
+tags = Array[StringName]([&"ability"])
+feel_preset = &"instant"

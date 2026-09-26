@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="SelfStatusData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/self_status_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/nimbus/abilities/parry_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/nimbus/data/nimbus_parry.tres" id="3_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Refund"]
+script = ExtResource("9_v")
+base = 0.5
+
+[resource]
+script = ExtResource("1_a")
+self_status = ExtResource("3_a")
+count_radius = 0.0
+id = &"parry"
+display_name = "Parry"
+description = "A 0.35 s umbrella spin: reflects the first enemy projectile, or stuns a melee attacker for 0.5 s. Success refunds half the cooldown and makes the next shot a crit."
+ability_script = ExtResource("2_a")
+cooldown = 10.0
+tags = Array[StringName]([&"ability", &"cc"])
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"cooldown_refund": SubResource("Refund")
+})
+feel_preset = &"instant"

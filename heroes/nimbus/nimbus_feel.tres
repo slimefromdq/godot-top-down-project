@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="FeelProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/feel/feel_profile.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="2_x"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/feel/impact_heavy.tres" id="3_x"]
+
+[sub_resource type="Resource" id="Feel_rifle"]
+script = ExtResource("2_x")
+windup = 0.0
+active = 0.02
+recovery = 0.12
+move_multiplier = 0.7
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+weight = 1.4
+release_snap = -12.0
+hitstop = 0.04
+shake_on_hit = 0.12
+shake_on_swing = 0.08
+camera_nudge = 6.0
+trail_particles = 0
+impact_sound = ExtResource("3_x")
+
+[sub_resource type="Resource" id="Feel_instant"]
+script = ExtResource("2_x")
+windup = 0.0
+active = 0.02
+recovery = 0.05
+move_multiplier = 1.0
+lunge_distance = 0.0
+movement_cancel_after = 0.0
+ability_cancel_after = 0.0
+weight = 0.5
+windup_squash = 0.0
+release_snap = 0.0
+hitstop = 0.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Feel_fallback"]
+script = ExtResource("2_x")
+
+[resource]
+script = ExtResource("1_x")
+presets = Dictionary[StringName, ExtResource("2_x")]({
+&"rifle": SubResource("Feel_rifle"),
+&"instant": SubResource("Feel_instant")
+})
+fallback = SubResource("Feel_fallback")
+impact_sound = ExtResource("3_x")

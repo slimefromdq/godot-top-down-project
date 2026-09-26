@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="GroundZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/ground_zone_data.gd" id="1_z"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_z"]
+[ext_resource type="Resource" path="res://heroes/nimbus/data/nimbus_overcast.tres" id="3_z"]
+
+[sub_resource type="Resource" id="Shape"]
+script = ExtResource("2_z")
+kind = 1
+radius = 500.0
+
+[resource]
+script = ExtResource("1_z")
+shape = SubResource("Shape")
+duration = 6.0
+tick_interval = 0.25
+status_while_inside = ExtResource("3_z")
+meter_label = &"overcast"
+outlives_cast = true
+color = Color(0.55, 0.68, 0.9, 0.22)
+outline_color = Color(0.8, 0.9, 1, 0.8)
+outline_width = 4.0

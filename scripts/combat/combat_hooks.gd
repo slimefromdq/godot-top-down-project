@@ -12,6 +12,9 @@ class_name CombatHooks
 #   level_up(level)           this actor's level changed           (on_level_up)
 #   about_to_die(event)       cancellable; see DeathEvent
 #   heal_done(amount, target, label)  this actor healed someone (incl. itself)
+#   parried(kind, attacker, info)  this actor's parry status (StatusEffect.parries)
+#       caught a hit: kind &"projectile" (reflected back) or &"melee"
+#       (attacker stunned by parry_melee_status). info = the caught hit.
 #
 # Status notifications, on the APPLIER (whoever applied the status):
 #   status_target_died(status_id, target, info)  a target carrying this actor's
@@ -37,6 +40,7 @@ signal heal_done(amount: float, target: Node, label: StringName)
 signal status_target_died(status_id: StringName, target: Node, info: DamageInfo)
 signal status_expired(status_id: StringName, target: Node)
 signal status_removed(status_id: StringName, target: Node, reason: StringName)
+signal parried(kind: StringName, attacker: Node, info: DamageInfo)
 
 const META_KEY := &"combat_hooks"
 

@@ -53,6 +53,8 @@ var _airborne := false
 var _air_progress: float = 0.0
 var _arc_height: float = 0.0
 var _mask_before_launch: int = 0
+var _air_time: float = 0.0
+var _launch_target := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -95,6 +97,8 @@ func launch(target: Vector2, air_time: float, arc_height: float = 140.0) -> void
 	if _airborne or air_time <= 0.0:
 		return
 	_airborne = true
+	_air_time = air_time
+	_launch_target = target
 	_arc_height = arc_height
 	_mask_before_launch = collision_mask
 	collision_mask &= ~MapLayers.JUMPABLE
@@ -106,6 +110,23 @@ func launch(target: Vector2, air_time: float, arc_height: float = 140.0) -> void
 	var tween := create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 	tween.tween_method(_set_air_progress, 0.0, 1.0, air_time)
 	tween.finished.connect(_land)
+
+
+# Where the current launch will land (valid while airborne).
+func get_launch_target() -> Vector2:
+	return _launch_target
+
+
+# Steer a launch in flight: land on `target` instead, at the same moment. The
+# ground track bends toward it (a steerable glide). No effect on the ground.
+func retarget_launch(target: Vector2) -> void:
+	if not _airborne:
+		return
+	_launch_target = target
+	var remaining := _air_time * (1.0 - _air_progress)
+	if remaining <= 0.001:
+		return
+	movement_component.start_forced_move((target - global_position) / remaining, remaining)
 
 
 func _set_air_progress(t: float) -> void:

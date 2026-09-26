@@ -45,6 +45,8 @@ func _run() -> void:
 	await _test_follow_cone()
 	await _test_zone_ramp()
 	await _test_zone_leftover_and_lob()
+	await _test_parry()
+	await _test_look_ahead_pierce_and_launch()
 	_test_cooldown_api()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
@@ -812,6 +814,115 @@ func _test_zone_leftover_and_lob() -> void:
 	wall.queue_free()
 	blocker.queue_free()
 	await _physics_frames(2)
+
+
+# StatusEffect.parries: the first enemy projectile is reflected, the first
+# melee hit is cancelled and its attacker gets parry_melee_status.
+func _test_parry() -> void:
+	hero.global_position = Vector2(0, 36000)
+	hero.status_component.clear()
+	var shooter := _spawn_dummy(Vector2(300, 36000))
+	shooter.team = &"b"
+	await _physics_frames(2)
+	var caught := []
+	var on_parry := func(kind, attacker, _info): caught.append([kind, attacker])
+	hero.combat_hooks.parried.connect(on_parry)
+	var stun := StatusEffect.new()
+	stun.id = &"test_parry_stun"
+	stun.duration = 0.5
+	stun.stuns = true
+	var parry := StatusEffect.new()
+	parry.id = &"test_parry"
+	parry.duration = 1.0
+	parry.parries = true
+	parry.parry_melee_status = stun
+	hero.status_component.apply(parry, hero)
+
+	var bolt := ProjectileData.new()
+	bolt.speed = 1500.0
+	bolt.lifetime = 0.5
+	var hp := hero.health_component.current_health
+	var shooter_hp := shooter.health_component.current_health
+	Projectile.fire(shooter, bolt, Vector2(240, 36000), Vector2.LEFT, DamageInfo.create(40.0, shooter))
+	await _seconds(0.45)
+	_check("parry reflects the first enemy projectile back at its shooter",
+		hero.health_component.current_health == hp and shooter.health_component.current_health < shooter_hp, "")
+	_check("...reports it (CombatHooks.parried) and ends", caught.size() == 1 and caught[0][0] == &"projectile"
+		and caught[0][1] == shooter and not hero.status_component.has_status(&"test_parry"), str(caught))
+
+	hero.status_component.apply(parry, hero)
+	var melee := DamageInfo.create(40.0, shooter)
+	melee.tags.append(DamageInfo.TAG_MELEE)
+	hero.hurtbox.take_hit(melee)
+	_check("a parried melee hit does nothing", hero.health_component.current_health == hp, "")
+	_check("...and its attacker gets parry_melee_status", shooter.status_component.has_status(&"test_parry_stun")
+		and caught.size() == 2 and caught[1][0] == &"melee", "")
+	hero.hurtbox.take_hit(melee)
+	_check("one catch per window: the next melee hit lands", hero.health_component.current_health < hp, "")
+	hero.combat_hooks.parried.disconnect(on_parry)
+	hero.health_component.reset()
+	shooter.queue_free()
+	await _physics_frames(2)
+
+
+# StatusEffect.camera_look_ahead / ShakeCamera look-ahead, Projectile.free_pierce,
+# Actor.retarget_launch.
+func _test_look_ahead_pierce_and_launch() -> void:
+	hero.global_position = Vector2(0, 39000)
+	hero.status_component.clear()
+	var camera := ShakeCamera.new()
+	hero.add_child(camera)
+	_aim(hero, Vector2(1000, 39000))
+	var scope := StatusEffect.new()
+	scope.id = &"test_scope"
+	scope.duration = 5.0
+	scope.camera_look_ahead = 300.0
+	hero.status_component.apply(scope, hero)
+	await _seconds(1.0)
+	_check("a camera_look_ahead status leans the camera toward the aim", camera.get_look_offset().distance_to(Vector2(300, 0)) < 10.0,
+		str(camera.get_look_offset()))
+	camera.request_look_ahead(self, 450.0)
+	await _seconds(1.0)
+	_check("request_look_ahead: the largest request wins", camera.get_look_offset().distance_to(Vector2(450, 0)) < 10.0,
+		str(camera.get_look_offset()))
+	camera.release_look_ahead(self)
+	hero.status_component.remove(&"test_scope")
+	await _seconds(1.0)
+	_check("...and it eases back when released", camera.get_look_offset().length() < 10.0, str(camera.get_look_offset()))
+	camera.queue_free()
+
+	var near := _spawn_dummy(Vector2(300, 39000))
+	var far := _spawn_dummy(Vector2(500, 39000))
+	await _physics_frames(2)
+	var slug := ProjectileData.new()
+	slug.speed = 2000.0
+	slug.lifetime = 0.4
+	slug.pierce = 0
+	var near_hp := near.health_component.current_health
+	var far_hp := far.health_component.current_health
+	var shot := Projectile.fire(hero, slug, Vector2(100, 39000), Vector2.RIGHT, DamageInfo.create(10.0, hero))
+	shot.free_pierce = func(h: HurtboxComponent): return h.owner == near
+	await _seconds(0.4)
+	_check("free_pierce: a hit that doesn't use up pierce", near.health_component.current_health < near_hp
+		and far.health_component.current_health < far_hp, "")
+	near.queue_free()
+	far.queue_free()
+
+	hero.launch(Vector2(600, 39000), 1.0)
+	await _seconds(0.3)
+	hero.retarget_launch(Vector2(600, 39400))
+	_check("retarget_launch moves the landing point", hero.get_launch_target() == Vector2(600, 39400), "")
+	await _until_landed()
+	_check("...and the actor lands there, on time", hero.global_position.distance_to(Vector2(600, 39400)) < 15.0,
+		str(hero.global_position))
+	await _physics_frames(2)
+
+
+func _until_landed() -> void:
+	var waited := 0.0
+	while hero.is_airborne() and waited < 2.0:
+		await get_tree().physics_frame
+		waited += get_physics_process_delta_time()
 
 
 func _ramp_zone(label: StringName, ramp_per_tick: float) -> GroundZoneData:

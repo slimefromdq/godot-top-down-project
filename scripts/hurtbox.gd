@@ -24,6 +24,11 @@ func take_damage(amount: float, source: Node = null) -> void:
 func take_hit(info: DamageInfo) -> void:
 	if health_component == null or is_untargetable():
 		return
+	# A parry catches a melee hit outright (projectiles are reflected by
+	# Projectile before they get here).
+	if info.has_tag(DamageInfo.TAG_MELEE) and status_component != null \
+			and status_component.try_parry(&"melee", info.source, info):
+		return
 	health_component.apply_damage(info)
 	if health_component.is_dead():
 		return

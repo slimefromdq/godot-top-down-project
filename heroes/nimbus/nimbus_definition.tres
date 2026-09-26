@@ -1,0 +1,69 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="3_x"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="4_x"]
+[ext_resource type="Resource" path="res://heroes/nimbus/abilities/umbrella_rifle.tres" id="5_x"]
+[ext_resource type="Resource" path="res://heroes/nimbus/abilities/scope.tres" id="6_x"]
+[ext_resource type="Resource" path="res://heroes/nimbus/abilities/descend.tres" id="7_x"]
+[ext_resource type="Resource" path="res://heroes/nimbus/abilities/parry.tres" id="8_x"]
+[ext_resource type="Resource" path="res://heroes/nimbus/abilities/overcast.tres" id="9_x"]
+[ext_resource type="Resource" path="res://heroes/nimbus/abilities/steady_hand.tres" id="10_x"]
+[ext_resource type="Resource" path="res://heroes/nimbus/nimbus_feel.tres" id="11_x"]
+[ext_resource type="Resource" path="res://heroes/nimbus/nimbus_visuals.tres" id="12_x"]
+
+[sub_resource type="Resource" id="Sub_health"]
+script = ExtResource("3_x")
+base = 500.0
+growth = 50.0
+
+[sub_resource type="Resource" id="Sub_weapon"]
+script = ExtResource("3_x")
+base = 50.0
+growth = 6.6667
+
+[sub_resource type="Resource" id="Sub_magic"]
+script = ExtResource("3_x")
+base = 10.0
+growth = 0.8889
+
+[sub_resource type="Resource" id="Sub_armor"]
+script = ExtResource("3_x")
+base = 14.0
+growth = 1.7778
+
+[sub_resource type="Resource" id="Sub_mr"]
+script = ExtResource("3_x")
+base = 14.0
+growth = 1.1111
+
+[sub_resource type="Resource" id="Sub_stats"]
+script = ExtResource("2_x")
+health = SubResource("Sub_health")
+weapon = SubResource("Sub_weapon")
+magic = SubResource("Sub_magic")
+armor = SubResource("Sub_armor")
+magic_resist = SubResource("Sub_mr")
+
+[resource]
+script = ExtResource("1_x")
+hero_id = &"nimbus"
+display_name = "Nimbus"
+title = "The Gentleman Spy"
+role = 1
+description = "An unhurried gentleman with a rifle in his umbrella. Slow, heavy, precise shots from further away than anyone can see; his one escape is a steerable umbrella glide, so positioning is his whole defence."
+stats = SubResource("Sub_stats")
+move_speed = 490.0
+acceleration = 2400.0
+friction = 2800.0
+abilities = Dictionary[StringName, ExtResource("4_x")]({
+&"primary": ExtResource("5_x"),
+&"ability_1": ExtResource("6_x"),
+&"movement": ExtResource("7_x"),
+&"cc": ExtResource("8_x"),
+&"ultimate": ExtResource("9_x"),
+&"passive": ExtResource("10_x")
+})
+feel_profile = ExtResource("11_x")
+visual_profile = ExtResource("12_x")

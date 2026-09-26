@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"nimbus_overcast"
+display_name = "Overcast"
+duration = 0.5
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 0.85
+})
+reveals = true
+body_tint = Color(0.55, 0.7, 0.95, 0.35)
