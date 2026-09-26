@@ -19,6 +19,9 @@ class_name AllyTargeting
 @export var allow_self: bool = false
 ## Walls (GameRules.wall_mask) between caster and ally block the cast.
 @export var requires_line_of_sight: bool = true
+## No ally in reach: cast anyway at the cursor (cast_ally stays null) instead
+## of failing with "No ally" (a dash that shields whoever it reaches).
+@export var optional: bool = false
 
 
 func has_negative() -> bool:

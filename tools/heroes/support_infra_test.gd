@@ -37,6 +37,7 @@ func _run() -> void:
 	await _test_placed_pads()
 	await _test_death_intercept()
 	await _test_charges_bounces_displacement()
+	await _test_forms_and_blocker()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
 	get_tree().quit(failures)
@@ -741,6 +742,122 @@ func _test_charges_bounces_displacement() -> void:
 	await _seconds(0.35)
 	_check("DISPLACEMENT_TAKEN 0.5 halves a 200 px push", absf(hero.global_position.x - 100.0) < 8.0, "%.0f" % hero.global_position.x)
 	hero = main_hero
+	_clear()
+	await _physics_frames(2)
+
+
+# AbilityController.swap_slot / restore_slot, FrontalBlocker + BlockerAbility,
+# AbilityData.lifesteal, ChargeData.dash_status, AllyTargeting.optional.
+func _test_forms_and_blocker() -> void:
+	var h := _hero(Vector2(0, 50000), &"a")
+	spawned.append(h)
+	await _physics_frames(2)
+	var controller := h.ability_controller
+	var original := h.get_ability(&"cc")
+	var changed := [0]
+	controller.abilities_changed.connect(func(): changed[0] += 1)
+	original.cooldown_remaining = 4.0
+	var other: AbilityData = h.get_ability(&"ability_2").get_source_data()
+	var swapped := controller.swap_slot(&"cc", other)
+	_check("swap_slot: the slot now holds an ability built from the new data", swapped != original
+		and h.get_ability(&"cc") == swapped and swapped.ability_id == other.id and swapped.slot_id == &"cc", "")
+	_check("...keeps the slot's key and tells the HUD", swapped.input_action == original.input_action and changed[0] == 1, "")
+	_check("...the old one is dormant (not castable) and out of the list", original.is_dormant()
+		and not controller.abilities.has(original) and not h.request_slot(&"ability_2_unused", Vector2.ZERO), "")
+	await _seconds(0.5)
+	_check("a dormant cooldown keeps ticking", absf(original.cooldown_remaining - 3.5) < 0.05, "%.2f" % original.cooldown_remaining)
+	swapped.cooldown_remaining = 2.0
+	controller.restore_slot(&"cc")
+	_check("restore_slot: the original is back, cooldown intact", h.get_ability(&"cc") == original
+		and not original.is_dormant() and not controller.is_slot_swapped(&"cc"), "")
+	_check("swapping again reuses the same node and its cooldown", controller.swap_slot(&"cc", other) == swapped
+		and absf(swapped.cooldown_remaining - 2.0) < 0.05, "")
+	controller.restore_slot(&"cc")
+
+	# Blocker
+	var shooter := _dummy(Vector2(500, 50000))
+	shooter.team = &"b"
+	var block_data := BlockerData.new()
+	block_data.id = &"test_block"
+	block_data.ability_script = BlockerAbility
+	block_data.cooldown = 0.0
+	block_data.blocker_hp = ScalingValue.new()
+	block_data.blocker_hp.base = 150.0
+	block_data.feel_preset = &"instant"
+	var block := controller.swap_slot(&"cc", block_data) as BlockerAbility
+	await _physics_frames(2)
+	h.aim_direction = Vector2.RIGHT
+	h.request_slot(&"cc", Vector2(500, 50000))
+	# The test hero's feel has no "instant" preset: the fallback has a windup.
+	await _until_flag(func(): return block.is_held(), 1.0)
+	_check("BlockerAbility raises its FrontalBlocker while held", block.is_held() and block.blocker.is_raised()
+		and block.get_hud_meter() == 1.0, "")
+	var hp := h.health_component.current_health
+	var bolt := ProjectileData.new()
+	bolt.speed = 2000.0
+	bolt.lifetime = 0.4
+	Projectile.fire(shooter, bolt, Vector2(460, 50000), Vector2.LEFT, DamageInfo.create(100.0, shooter))
+	await _seconds(0.35)
+	_check("a raised blocker eats an enemy projectile from the front", h.health_component.current_health == hp
+		and absf(block.blocker.hp - 50.0) < 0.01, "%.0f left" % block.blocker.hp)
+	Projectile.fire(shooter, bolt, Vector2(460, 50000), Vector2.LEFT, DamageInfo.create(100.0, shooter))
+	await _seconds(0.35)
+	_check("...breaks when emptied (the overflow is still stopped)", block.blocker.is_broken() and not block.is_held()
+		and h.health_component.current_health == hp, "")
+	Projectile.fire(shooter, bolt, Vector2(460, 50000), Vector2.LEFT, DamageInfo.create(100.0, shooter))
+	await _seconds(0.35)
+	_check("...and then shots land", h.health_component.current_health < hp, "")
+	h.health_component.reset()
+	controller.restore_slot(&"cc")
+	_check("swapping a held blocker out drops it", not block.is_held(), "")
+
+	# Lifesteal on a gun (data only).
+	var gun := h.get_ranged_ability()
+	gun.data.lifesteal = 0.5
+	h.health_component.apply_damage(DamageInfo.create(200.0, shooter))
+	hp = h.health_component.current_health
+	var dealt := [0.0]
+	var log_hit := func(info: DamageInfo):
+		if info.source == h and info.label == gun.data.get_label():
+			dealt[0] += info.final_amount
+	CombatEvents.damage_dealt.connect(log_hit)
+	h.aim_point = shooter.global_position
+	h.aim_direction = Vector2.RIGHT
+	gun.reload_instantly()
+	h.request_slot(&"primary", shooter.global_position)
+	await _seconds(0.4)
+	CombatEvents.damage_dealt.disconnect(log_hit)
+	_check("AbilityData.lifesteal heals that share of the damage dealt", dealt[0] > 0.0
+		and absf(h.health_component.current_health - hp - dealt[0] * 0.5) < 0.5,
+		"healed %.1f of %.1f" % [h.health_component.current_health - hp, dealt[0]])
+	gun.data.lifesteal = 0.0
+
+	# dash_status + optional ally targeting.
+	var dash := h.get_ability(&"movement")
+	var dash_data := ChargeData.new()
+	dash_data.id = &"test_ghost_dash"
+	dash_data.ability_script = ChargeAbility
+	dash_data.distance = 300.0
+	dash_data.speed = 1000.0
+	dash_data.cooldown = 1.0
+	dash_data.feel_preset = &"instant"
+	dash_data.dash_status = StatusEffect.new()
+	dash_data.dash_status.id = &"test_ghost"
+	dash_data.dash_status.duration = 5.0
+	dash_data.dash_status.untargetable = true
+	dash_data.ally_targeting = AllyTargeting.new()
+	dash_data.ally_targeting.optional = true
+	var ghost := controller.swap_slot(&"movement", dash_data)
+	h.aim_direction = Vector2.DOWN
+	h.request_slot(&"movement", h.global_position + Vector2(0, 300))
+	await _physics_frames(2)
+	_check("optional ally targeting: no ally, the cast still goes", ghost.is_casting() and ghost.cast_ally == null, "")
+	await _until_flag(func(): return h.status_component.has_status(&"test_ghost"), 1.0)
+	_check("dash_status is on for the dash", h.status_component.has_status(&"test_ghost")
+		and h.movement_component.is_forced_moving(), "")
+	await _until_flag(func(): return not ghost.is_casting(), 1.5)
+	_check("...and off when it ends", not h.status_component.has_status(&"test_ghost"), "")
+	controller.restore_slot(&"movement")
 	_clear()
 	await _physics_frames(2)
 

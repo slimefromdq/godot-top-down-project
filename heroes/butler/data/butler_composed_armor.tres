@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_s"]
+
+[sub_resource type="Resource" id="Armor"]
+script = ExtResource("2_s")
+stat = &"armor"
+flat = 30.0
+
+[resource]
+script = ExtResource("1_s")
+id = &"butler_composed"
+display_name = "Composed"
+duration = 3.0
+stat_modifiers = Array[ExtResource("2_s")]([SubResource("Armor")])

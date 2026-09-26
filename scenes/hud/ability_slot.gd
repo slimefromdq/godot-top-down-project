@@ -47,6 +47,11 @@ func _draw() -> void:
 	var pips := ability.get_hud_pips()
 	if pips.y > 0:
 		_draw_pips(pips.x, pips.y)
+	var meter := ability.get_hud_meter()
+	if meter >= 0.0:
+		# A thin bar along the bottom edge (hunger, heat ...).
+		draw_rect(Rect2(4, SIZE.y - 30, SIZE.x - 8, 6), Color(0, 0, 0, 0.6))
+		draw_rect(Rect2(4, SIZE.y - 30, (SIZE.x - 8) * clampf(meter, 0.0, 1.0), 6), Color(0.85, 0.15, 0.25, 0.95))
 
 	var ratio := ability.get_cooldown_ratio()
 	if ratio > 0.0:

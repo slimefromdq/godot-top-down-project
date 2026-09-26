@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="2_x"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="3_x"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="4_x"]
+
+[sub_resource type="Resource" id="Cue_hurt"]
+script = ExtResource("2_x")
+flash_color = Color(1, 0.3, 0.25, 0.9)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Cue_death"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("3_x")
+tint = Color(0.6, 0.05, 0.12, 1)
+
+[sub_resource type="Resource" id="Cue_starving"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("4_x")
+align_to_direction = false
+tint = Color(0.9, 0.1, 0.15, 1)
+flash_color = Color(0.9, 0.1, 0.15, 0.8)
+flash_duration = 0.25
+screen_shake = 0.25
+
+[sub_resource type="Resource" id="Cue_recovered"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("4_x")
+align_to_direction = false
+tint = Color(0.95, 0.92, 0.85, 1)
+
+[resource]
+script = ExtResource("1_x")
+body_tint = Color(0.12, 0.1, 0.12, 0.55)
+cues = Dictionary[StringName, ExtResource("2_x")]({
+&"hurt": SubResource("Cue_hurt"),
+&"death": SubResource("Cue_death"),
+&"hunger_starving": SubResource("Cue_starving"),
+&"hunger_recovered": SubResource("Cue_recovered")
+})

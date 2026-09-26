@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="ButlerHungerData" format=3]
+
+[ext_resource type="Script" path="res://heroes/butler/abilities/hunger_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/butler/abilities/hunger.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/butler/abilities/claws.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/butler/abilities/bite.tres" id="4_a"]
+[ext_resource type="Resource" path="res://heroes/butler/abilities/pounce.tres" id="5_a"]
+[ext_resource type="Resource" path="res://heroes/butler/abilities/hiss.tres" id="6_a"]
+[ext_resource type="Resource" path="res://heroes/butler/data/butler_straighten_tie.tres" id="7_a"]
+[ext_resource type="Resource" path="res://heroes/butler/data/butler_composed_armor.tres" id="8_a"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="10_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Max"]
+script = ExtResource("9_v")
+base = 100.0
+
+[sub_resource type="Resource" id="PerHp"]
+script = ExtResource("9_v")
+base = 1.0
+
+[sub_resource type="Resource" id="PerSec"]
+script = ExtResource("9_v")
+base = 1.0
+
+[sub_resource type="Resource" id="Window"]
+script = ExtResource("9_v")
+base = 3.0
+
+[sub_resource type="Resource" id="Duration"]
+script = ExtResource("9_v")
+base = 8.0
+
+[sub_resource type="Resource" id="ArmorDelay"]
+script = ExtResource("9_v")
+base = 0.6
+
+[resource]
+script = ExtResource("1_a")
+starving_abilities = Dictionary[StringName, ExtResource("10_a")]({
+&"primary": ExtResource("3_a"),
+&"ability_1": ExtResource("4_a"),
+&"movement": ExtResource("5_a"),
+&"cc": ExtResource("6_a")
+})
+recover_status = ExtResource("7_a")
+recover_armor_status = ExtResource("8_a")
+id = &"hunger"
+display_name = "Hunger"
+description = "Hunger (0-100) rises by 1 per 1% of max HP lost and 1 per second in combat. At 100 Butler is Starving for up to 8 s: his kit turns into Claws, Bite, Pounce and Hiss. Each Bite lowers Hunger by 35; at 0 he straightens his tie (rooted 0.6 s), then gains bonus armor for 3 s."
+ability_script = ExtResource("2_a")
+cooldown = 0.0
+tags = Array[StringName]([&"passive"])
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"max_hunger": SubResource("Max"),
+&"hunger_per_hp_percent": SubResource("PerHp"),
+&"hunger_per_second": SubResource("PerSec"),
+&"combat_window": SubResource("Window"),
+&"starving_duration": SubResource("Duration"),
+&"recover_armor_delay": SubResource("ArmorDelay")
+})

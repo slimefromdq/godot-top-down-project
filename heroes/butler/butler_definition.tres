@@ -1,0 +1,69 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="3_x"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="4_x"]
+[ext_resource type="Resource" path="res://heroes/butler/abilities/cane.tres" id="5_x"]
+[ext_resource type="Resource" path="res://heroes/butler/abilities/vampiric_cloak.tres" id="6_x"]
+[ext_resource type="Resource" path="res://heroes/butler/abilities/at_your_service.tres" id="7_x"]
+[ext_resource type="Resource" path="res://heroes/butler/abilities/polite_refusal.tres" id="8_x"]
+[ext_resource type="Resource" path="res://heroes/butler/abilities/dinner_is_served.tres" id="9_x"]
+[ext_resource type="Resource" path="res://heroes/butler/abilities/hunger.tres" id="10_x"]
+[ext_resource type="Resource" path="res://heroes/butler/butler_feel.tres" id="11_x"]
+[ext_resource type="Resource" path="res://heroes/butler/butler_visuals.tres" id="12_x"]
+
+[sub_resource type="Resource" id="Sub_health"]
+script = ExtResource("3_x")
+base = 900.0
+growth = 94.4444
+
+[sub_resource type="Resource" id="Sub_weapon"]
+script = ExtResource("3_x")
+base = 38.0
+growth = 4.4444
+
+[sub_resource type="Resource" id="Sub_magic"]
+script = ExtResource("3_x")
+base = 20.0
+growth = 2.7778
+
+[sub_resource type="Resource" id="Sub_armor"]
+script = ExtResource("3_x")
+base = 38.0
+growth = 3.5556
+
+[sub_resource type="Resource" id="Sub_mr"]
+script = ExtResource("3_x")
+base = 30.0
+growth = 2.4444
+
+[sub_resource type="Resource" id="Sub_stats"]
+script = ExtResource("2_x")
+health = SubResource("Sub_health")
+weapon = SubResource("Sub_weapon")
+magic = SubResource("Sub_magic")
+armor = SubResource("Sub_armor")
+magic_resist = SubResource("Sub_mr")
+
+[resource]
+script = ExtResource("1_x")
+hero_id = &"butler"
+display_name = "Butler"
+title = "The Composed"
+role = 0
+description = "Two heroes in one body: a protective tank while Composed, a lifestealing bruiser while Starving. Hunger fills as he tanks; at the top, the gloves come off."
+stats = SubResource("Sub_stats")
+move_speed = 510.0
+acceleration = 2400.0
+friction = 2800.0
+abilities = Dictionary[StringName, ExtResource("4_x")]({
+&"primary": ExtResource("5_x"),
+&"ability_1": ExtResource("6_x"),
+&"movement": ExtResource("7_x"),
+&"cc": ExtResource("8_x"),
+&"ultimate": ExtResource("9_x"),
+&"passive": ExtResource("10_x")
+})
+feel_profile = ExtResource("11_x")
+visual_profile = ExtResource("12_x")

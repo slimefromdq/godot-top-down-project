@@ -110,7 +110,9 @@ func _physics_process(delta: float) -> void:
 
 func _make_hit(hurtbox: HurtboxComponent) -> DamageInfo:
 	var info := DamageInfo.create(
-		_step.damage.evaluate(get_stats()) * _damage_multiplier(), actor, data.damage_type)
+		# No damage on the step/data = a CC-only swing (a hiss, a shove).
+		(_step.damage.evaluate(get_stats()) if _step.damage != null else 0.0) * _damage_multiplier(),
+		actor, data.damage_type)
 	info.tags = data.tags.duplicate()
 	if not info.tags.has(DamageInfo.TAG_MELEE):
 		info.tags.append(DamageInfo.TAG_MELEE)

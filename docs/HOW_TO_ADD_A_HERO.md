@@ -124,6 +124,13 @@ For each slot in the definition's `abilities` dictionary, point at an
 | cast a zone and move on (no channel) | `ZoneAbilityData.instant` | none |
 | shots that ricochet off walls | `ProjectileData.wall_bounces` | none |
 | shorter knockbacks and pulls on someone | `StatusEffect.DISPLACEMENT_TAKEN` in `stat_multipliers` (0.6 = 40% shorter) | none |
+| a second form: swap a slot to another ability and back (each keeps its own cooldown) | `AbilityController.swap_slot(slot_id, data)` / `restore_slot(slot_id)` / `is_slot_swapped`; the swapped-out ability goes dormant (`Ability.is_dormant()`) | a small script (decides when) |
+| hold to raise a shield/cloak on your aim arc that eats projectiles and has its own HP | `BlockerData` + `BlockerAbility` (a `FrontalBlocker`: HP `ScalingValue`, regen, break, slots allowed while raised, raised/lowered statuses) | none |
+| lifesteal / a drain | `AbilityData.lifesteal` (share of this ability's damage dealt that heals the caster) | none |
+| a status only while dashing (untargetable swarm, barging armor) | `ChargeData.dash_status` | none |
+| an ally-targeted cast that still goes with no ally (dash anyway) | `AllyTargeting.optional` (`cast_ally` is null) | none |
+| a meter on the ability bar (hunger, heat) | override `Ability.get_hud_meter()` (0-1) | a small script |
+| a CC-only melee swing (no damage) | `MeleeAttackData` with no `damage` and an `on_hit_status` | none |
 | hard CC that can't be chained forever | automatic: **Resolve** (`GameRules.resolve_duration` / `resolve_cc_multiplier`) halves a stun, root or taunt that lands within 2 s of the last one ending. Carries, self-applied CC, walk-out-able pulls and formations are exempt; `StatusEffect.ignores_resolve` exempts any other | none |
 | "can A see B?" (a stalker passive, a sight-gated autofire) | `CombatQueries.has_line_of_sight(from, to)`: walls on `GameRules.sight_mask`, and bushes (can't see in from outside; from inside you see out) | none |
 | hide in bushes / reveal someone | bushes hide their occupants automatically (`CombatQueries.is_hidden_from`, drawn per viewer by `VisualsComponent`); a `StatusEffect` with `reveals` shows them anyway | none |
@@ -365,6 +372,27 @@ FeelProfile, not the cue profiles.
   hero automatically.
 
 ---
+
+## What Butler took
+
+A two-form TANK (title: The Composed). Tools → New Hero from Template →
+"Butler", basic attack deleted, then:
+
+| Slot | Composed (the definition) | Starving (`hunger.tres` `starving_abilities`) |
+|---|---|---|
+| primary | `cane.tres`: 3-step `MeleeAttackData` combo | `claws.tres`: faster combo, `lifesteal` 0.25 |
+| ability_1 | `vampiric_cloak.tres`: `BlockerData`, HP 400 → 1100, -30% speed raised, +20% speed flourish | `bite.tres`: melee lunge, 0.5 s stun, `lifesteal` 1.0, `values/hunger_restored` 35 (`bite_ability.gd` feeds the passive) |
+| movement | `at_your_service.tres`: `ChargeData` + optional `AllyTargeting`, shield `on_hit_status` (`at_your_service_ability.gd`: short dash with no ally, shield on arrival) | `pounce.tres`: `ChargeData` (`pounce_ability.gd`: aims at the enemy nearest the cursor) |
+| cc | `polite_refusal.tres`: melee sweep, 250 px knockback | `hiss.tres`: CC-only melee cone, 40% slow + 1 s silence |
+| ultimate | `dinner_is_served.tres`: 900 px `ChargeData`, untargetable `dash_status`, draining bash (`dinner_is_served_ability.gd` fills Hunger first) | same |
+| passive | `hunger.tres` (`ButlerHungerData`) | `hunger.gd`: the meter, `swap_slot` / `restore_slot`, the tie-straightening root and armor |
+
+The Hunger bar over his head (`vfx/hunger_bar.gd`) is cosmetic and drawn for
+everyone. Shared pieces added for him: `AbilityController.swap_slot` /
+`restore_slot`, `FrontalBlocker` + `BlockerData` / `BlockerAbility`,
+`AbilityData.lifesteal`, `ChargeData.dash_status`, `AllyTargeting.optional`,
+`Ability.get_hud_meter`, and CC-only melee. `tools/heroes/support_infra_test`
+covers them alone and `tools/heroes/butler_test` covers the kit.
 
 ## What Tilly took
 

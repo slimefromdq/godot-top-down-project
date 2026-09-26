@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="MeleeAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/melee_attack_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/abilities/common/melee_attack_ability.gd" id="2_a"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="8_h"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+[ext_resource type="Resource" path="res://heroes/butler/data/butler_refusal_knockback.tres" id="4_a"]
+[sub_resource type="Resource" id="Shape"]
+script = ExtResource("8_h")
+kind = 0
+radius = 200
+arc_degrees = 160
+
+[sub_resource type="Resource" id="Dmg"]
+script = ExtResource("9_v")
+base = 25.0
+per_level = 4.0
+weapon_ratio = 0.4
+
+
+[resource]
+script = ExtResource("1_a")
+id = &"polite_refusal"
+display_name = "Polite Refusal"
+description = "A sweeping cane swing that knocks enemies back 250 px."
+ability_script = ExtResource("2_a")
+cooldown = 9.0
+hit_shape = SubResource("Shape")
+damage = SubResource("Dmg")
+damage_type = 0
+on_hit_status = ExtResource("4_a")
+tags = Array[StringName]([&"ability", &"cc"])
+meter_label = &"polite_refusal"
+feel_preset = &"heavy"
+combo_enabled = false
