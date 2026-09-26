@@ -1,3 +1,7 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Import output of balance/balance_export.csv (kept as a plain file; see
+# balance_export.csv.import). Never commit these.
+*.translation
