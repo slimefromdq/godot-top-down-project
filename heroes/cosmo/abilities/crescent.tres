@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="CosmoCrescentData" format=3]
+
+[ext_resource type="Script" path="res://heroes/cosmo/abilities/crescent_ability.gd" id="1_opxi4"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_6u1a7"]
+[ext_resource type="Resource" path="res://heroes/cosmo/data/cosmo_moonlit.tres" id="3_hydad"]
+[ext_resource type="Resource" path="res://heroes/cosmo/data/cosmo_crescent_blade.tres" id="4_150hl"]
+[ext_resource type="Script" path="res://heroes/cosmo/abilities/crescent_data.gd" id="5_sbdbr"]
+
+[sub_resource type="Resource" id="Resource_bo5dd"]
+script = ExtResource("2_6u1a7")
+base = 25.0
+magic_ratio = 0.6
+
+[sub_resource type="Resource" id="Resource_f1e84"]
+script = ExtResource("2_6u1a7")
+base = 1.2
+
+[sub_resource type="Resource" id="Resource_b8p5k"]
+script = ExtResource("2_6u1a7")
+base = 1.35
+
+[resource]
+script = ExtResource("5_sbdbr")
+moonlit_status = ExtResource("3_hydad")
+projectile = ExtResource("4_150hl")
+muzzles = Array[Vector2]([Vector2(40, 0)])
+fire_mode = 1
+shots_per_second = 1.0
+id = &"crescent"
+display_name = "Crescent"
+description = "A crescent blade that flies out and curves back, cutting everything both ways. Enemies hit are Moonlit (+20% magic damage taken; +35% if hit both ways)."
+ability_script = ExtResource("1_opxi4")
+cooldown = 6.0
+damage = SubResource("Resource_bo5dd")
+damage_type = 1
+tags = Array[StringName]([&"ability"])
+values = Dictionary[StringName, ExtResource("2_6u1a7")]({
+&"moonlit_amp": SubResource("Resource_f1e84"),
+&"moonlit_amp_full": SubResource("Resource_b8p5k")
+})
+feel_preset = &"crescent"

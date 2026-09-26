@@ -1,0 +1,74 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="1_def"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="2_block"]
+[ext_resource type="Resource" path="res://heroes/cosmo/abilities/moonshot.tres" id="2_wle6b"]
+[ext_resource type="Resource" path="res://heroes/cosmo/abilities/crescent.tres" id="3_542al"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="3_scaling"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="4_ability"]
+[ext_resource type="Resource" path="res://heroes/cosmo/abilities/new_moon.tres" id="4_ps7wu"]
+[ext_resource type="Resource" path="res://heroes/cosmo/abilities/tide.tres" id="5_6kh5w"]
+[ext_resource type="Resource" path="res://heroes/cosmo/abilities/starfall.tres" id="6_f7bl8"]
+[ext_resource type="Resource" path="res://heroes/cosmo/cosmo_feel.tres" id="6_feel"]
+[ext_resource type="Resource" path="res://heroes/cosmo/abilities/waxing_moon.tres" id="7_xorg6"]
+[ext_resource type="Resource" path="res://heroes/cosmo/cosmo_audio.tres" id="8_b5m82"]
+[ext_resource type="Resource" path="res://heroes/cosmo/cosmo_visuals.tres" id="13_jpps3"]
+
+[sub_resource type="Resource" id="Resource_55a4x"]
+script = ExtResource("3_scaling")
+base = 14.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_odxm4"]
+script = ExtResource("3_scaling")
+base = 480.0
+growth = 44.0
+
+[sub_resource type="Curve" id="Curve_uauxk"]
+_data = [Vector2(0, 0), 0.0, 0.3, 0, 0, Vector2(0.21052632, 0.117), 1.0, 1.6, 0, 0, Vector2(0.47368422, 0.772), 1.9, 0.4, 0, 0, Vector2(1, 1), 0.45, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="Resource" id="Resource_qnsf8"]
+script = ExtResource("3_scaling")
+base = 28.0
+growth = 9.0
+curve = SubResource("Curve_uauxk")
+
+[sub_resource type="Resource" id="Resource_akof6"]
+script = ExtResource("3_scaling")
+base = 20.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_mqnq0"]
+script = ExtResource("3_scaling")
+base = 6.0
+growth = 1.0
+
+[sub_resource type="Resource" id="Resource_gvhxw"]
+script = ExtResource("2_block")
+health = SubResource("Resource_odxm4")
+weapon = SubResource("Resource_mqnq0")
+magic = SubResource("Resource_qnsf8")
+armor = SubResource("Resource_55a4x")
+magic_resist = SubResource("Resource_akof6")
+
+[resource]
+script = ExtResource("1_def")
+hero_id = &"cosmo"
+display_name = "Cosmo"
+title = "Moon Witch"
+role = 1
+description = "A moon witch whose power waxes over the match. One fragile moon early; by the end, a full ring and the sky itself."
+stats = SubResource("Resource_gvhxw")
+move_speed = 520.0
+abilities = Dictionary[StringName, ExtResource("4_ability")]({
+&"ability_1": ExtResource("3_542al"),
+&"cc": ExtResource("5_6kh5w"),
+&"movement": ExtResource("4_ps7wu"),
+&"passive": ExtResource("7_xorg6"),
+&"primary": ExtResource("2_wle6b"),
+&"ultimate": ExtResource("6_f7bl8")
+})
+feel_profile = ExtResource("6_feel")
+visual_profile = ExtResource("13_jpps3")
+audio_profile = ExtResource("8_b5m82")

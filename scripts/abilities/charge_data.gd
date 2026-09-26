@@ -17,6 +17,12 @@ enum DirectionMode {
 @export_group("Charge")
 @export var direction_mode: DirectionMode = DirectionMode.AIM
 @export var distance: float = 400.0
+## Stop at the aim point if it's closer than `distance` (a blink "up to"
+## its range). Off = always the full distance.
+@export var stop_at_target: bool = false
+## Applied to the hero when the dash arrives (a vanish after a blink, a
+## speed burst). Empty = none.
+@export var self_status: StatusEffect
 ## charge_enabled only: the distance at zero charge; `distance` is reached at
 ## full charge (a wind-up dash that goes further the longer you hold).
 @export var min_distance: float = 0.0

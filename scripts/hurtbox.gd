@@ -22,7 +22,7 @@ func take_damage(amount: float, source: Node = null) -> void:
 # stun a corpse, and the target's revive (about_to_die) sees the hit before
 # any CC lands.
 func take_hit(info: DamageInfo) -> void:
-	if health_component == null:
+	if health_component == null or is_untargetable():
 		return
 	health_component.apply_damage(info)
 	if health_component.is_dead():
@@ -36,7 +36,13 @@ func take_hit(info: DamageInfo) -> void:
 
 # Abilities use this to reject targets that are already dead.
 func is_valid_target() -> bool:
-	return monitorable and health_component != null and not health_component.is_dead()
+	return monitorable and health_component != null and not health_component.is_dead() \
+		and not is_untargetable()
+
+
+# An untargetable status (a vanish) makes every attack, zone and status skip us.
+func is_untargetable() -> bool:
+	return status_component != null and status_component.is_untargetable()
 
 
 # Team of the actor this hurtbox belongs to (empty = neutral, hit by anyone).

@@ -28,6 +28,11 @@ const MOVE_SPEED := &"move_speed"
 const FIRE_RATE := &"fire_rate"
 const DAMAGE := &"damage"
 const DAMAGE_TAKEN := &"damage_taken"
+## Incoming damage of one type only ("weapon" damage is PHYSICAL here).
+## Set them with the incoming_*_multiplier fields below, or as keys in
+## stat_multipliers. TRUE damage has no per-type multiplier.
+const DAMAGE_TAKEN_PHYSICAL := &"damage_taken_physical"
+const DAMAGE_TAKEN_MAGIC := &"damage_taken_magic"
 
 ## What happens when the same status is applied again while active.
 enum StackRule {
@@ -52,6 +57,11 @@ enum DisplaceDirection {
 ## 1.0 means unchanged, 1.5 means +50%, 0.5 means -50%. With STACK, each
 ## stack applies the multiplier again (0.9 at 3 stacks = 0.729).
 @export var stat_multipliers: Dictionary[StringName, float] = {}
+## Incoming PHYSICAL (weapon) damage x this while active (0.5 = half).
+## Same rules as stat_multipliers: strength, fading and stacks apply.
+@export var incoming_physical_multiplier: float = 1.0
+## Incoming MAGIC damage x this while active (1.3 = +30%).
+@export var incoming_magic_multiplier: float = 1.0
 ## The multipliers fade linearly from their full value back to 1.0 over the
 ## duration (a wind-up that runs down). Visuals can read the remaining
 ## fraction with StatusEffectComponent.get_fade_ratio().
@@ -79,6 +89,9 @@ enum DisplaceDirection {
 @export var roots: bool = false
 ## No casting abilities; walking is still allowed.
 @export var silences: bool = false
+## Can't be hit or targeted at all (hits, zones and statuses skip the
+## hurtbox) while active. Not invisibility: pair it with body_alpha.
+@export var untargetable: bool = false
 
 @export_group("Displacement")
 ## Pixels pushed when the status lands. 0 = none. The push is a short forced
@@ -147,8 +160,30 @@ enum DisplaceDirection {
 @export var attached_vfx: PackedScene
 ## Tint blended over the actor's body while active. Alpha controls strength.
 @export var body_tint: Color = Color(1, 1, 1, 0)
+## Body opacity while active (a faded silhouette). 1 = unchanged; the
+## lowest active value wins.
+@export_range(0.0, 1.0, 0.05) var body_alpha: float = 1.0
 ## Played once when the effect is applied.
 @export var apply_sound: SoundCue
+
+
+# The multiplier this status applies to `stat` at full strength: the
+# stat_multipliers entry, times the incoming_*_multiplier field for the
+# per-type damage stats.
+func get_stat_multiplier(stat: StringName) -> float:
+	var result: float = stat_multipliers.get(stat, 1.0)
+	if stat == DAMAGE_TAKEN_PHYSICAL:
+		result *= incoming_physical_multiplier
+	elif stat == DAMAGE_TAKEN_MAGIC:
+		result *= incoming_magic_multiplier
+	return result
+
+
+static func damage_taken_stat(damage_type: DamageInfo.Type) -> StringName:
+	match damage_type:
+		DamageInfo.Type.PHYSICAL: return DAMAGE_TAKEN_PHYSICAL
+		DamageInfo.Type.MAGIC: return DAMAGE_TAKEN_MAGIC
+	return &""
 
 
 func is_crowd_control() -> bool:

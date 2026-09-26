@@ -27,6 +27,7 @@ enum SpreadPattern {
 enum ReloadStyle {
 	FULL,       ## The whole magazine after reload_time.
 	PER_ROUND,  ## One round every reload_time; firing interrupts it (revolver, shotgun).
+	REGEN,      ## Rounds come back one every regen_interval, firing or not. No reloading (R does nothing).
 }
 
 @export_group("Projectile")
@@ -66,6 +67,8 @@ enum ReloadStyle {
 @export var reload_per_level: float = 0.0
 @export var auto_reload_when_empty: bool = true
 @export var reload_style: ReloadStyle = ReloadStyle.FULL
+## REGEN only: seconds per regenerated round.
+@export var regen_interval: float = 2.0
 
 @export_group("Damage falloff")
 ## Full damage up to falloff_start pixels from the muzzle, then a linear drop
@@ -85,6 +88,8 @@ func get_reload_time(level: int) -> float:
 
 # Seconds for a reload from empty to full.
 func get_full_reload_time(level: int) -> float:
+	if reload_style == ReloadStyle.REGEN:
+		return regen_interval * magazine_size
 	if reload_style == ReloadStyle.PER_ROUND:
 		return get_reload_time(level) * magazine_size
 	return get_reload_time(level)
@@ -125,7 +130,10 @@ func get_balance_metrics(level: int, weapon: float, magic: float) -> Dictionary:
 	var burst := per_shot * shots_per_second
 	var sustained := burst
 	var shots := get_shots_per_magazine()
-	if has_magazine() and shots > 0 and shots_per_second > 0.0:
+	if reload_style == ReloadStyle.REGEN and regen_interval > 0.0:
+		# Rounds come back one per interval: that's the long-run fire rate.
+		sustained = minf(burst, per_shot * ammo_per_shot / regen_interval) if ammo_per_shot > 0 else burst
+	elif has_magazine() and shots > 0 and shots_per_second > 0.0:
 		var cycle := shots / shots_per_second + get_full_reload_time(level)
 		sustained = per_shot * shots / cycle if cycle > 0.0 else burst
 	return {
@@ -159,6 +167,8 @@ func validate() -> PackedStringArray:
 		problems.append("'%s' magazine_size must be >= 0 and ammo_per_shot >= 1" % id)
 	elif has_magazine() and ammo_per_shot > magazine_size:
 		problems.append("'%s' ammo_per_shot is larger than the magazine" % id)
+	if reload_style == ReloadStyle.REGEN and regen_interval <= 0.0:
+		problems.append("'%s' REGEN needs a positive regen_interval" % id)
 	if falloff_start < 0.0 or falloff_end < 0.0 or (falloff_end > 0.0 and falloff_end < falloff_start):
 		problems.append("'%s' falloff range is invalid" % id)
 	return problems

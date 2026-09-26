@@ -27,6 +27,7 @@ class_name RangedAttackAbility
 #   <id>_reload_start  context.duration = seconds to full
 #   <id>_reload_round  PER_ROUND: one round loaded
 #   <id>_reload_end    magazine full
+#   <id>_regen         REGEN: one round came back (context.ammo)
 #   <id>_reload_cancel reload stopped early (firing, cancel_reload, death)
 #
 # Subclass hooks: _build_hit(info, hurtbox) to change a hit before it lands,
@@ -49,6 +50,9 @@ var _shot_timer: float = 0.0
 var _semi_queued: float = 0.0
 var _empty_click_timer: float = 0.0
 var _muzzle_index: int = 0
+var _max_ammo_override: int = -1
+var _regen_interval_override: float = -1.0
+var _regen_elapsed: float = 0.0
 
 
 func get_ranged_data() -> RangedAttackData:
@@ -76,8 +80,47 @@ func get_ammo() -> int:
 
 # 0 = infinite magazine.
 func get_max_ammo() -> int:
+	if _max_ammo_override >= 0:
+		return _max_ammo_override
 	var ranged := get_ranged_data()
 	return ranged.magazine_size if ranged != null else 0
+
+
+# Change the magazine size at runtime (a passive that grows the gun).
+# `fill_new`: the added rounds come loaded. Shrinking clamps the ammo.
+# A negative size goes back to the data's magazine_size.
+func set_max_ammo(size: int, fill_new: bool = true) -> void:
+	var before := get_max_ammo()
+	_max_ammo_override = size
+	var after := get_max_ammo()
+	if after > before and fill_new:
+		_ammo += after - before
+	_ammo = clampi(_ammo, 0, after)
+	if _reloading and _ammo >= after:
+		_finish_reload()
+	ammo_changed.emit(_ammo, after)
+
+
+func is_regen() -> bool:
+	var ranged := get_ranged_data()
+	return ranged != null and ranged.reload_style == RangedAttackData.ReloadStyle.REGEN
+
+
+# REGEN: seconds per round right now (runtime override, else the data).
+func get_regen_interval() -> float:
+	return _regen_interval_override if _regen_interval_override > 0.0 else get_ranged_data().regen_interval
+
+
+# REGEN: override the interval at runtime (<= 0 goes back to the data).
+func set_regen_interval(seconds: float) -> void:
+	_regen_interval_override = seconds
+
+
+# REGEN: 0..1 progress toward the next round (0 when full).
+func get_regen_ratio() -> float:
+	if not is_regen() or _ammo >= get_max_ammo():
+		return 0.0
+	return clampf(_regen_elapsed / get_regen_interval(), 0.0, 1.0)
 
 
 func has_magazine() -> bool:
@@ -120,7 +163,7 @@ func get_fire_interval() -> float:
 # Begin reloading. False if there's nothing to reload, it's already
 # reloading, or the hero is dead.
 func start_reload() -> bool:
-	if not has_magazine() or _reloading or _ammo >= get_max_ammo():
+	if not has_magazine() or _reloading or _ammo >= get_max_ammo() or is_regen():
 		return false
 	if actor == null or actor.health_component.is_dead():
 		return false
@@ -194,7 +237,7 @@ func get_block_reason() -> String:
 		if _empty_click_timer <= 0.0:
 			_empty_click_timer = get_fire_interval()
 			actor.trigger_cue(StringName(str(ability_id) + "_empty"), {"ability": ability_id})
-		if ranged.auto_reload_when_empty:
+		if ranged.auto_reload_when_empty and not is_regen():
 			start_reload()
 			return "Reloading"
 		return "Empty"
@@ -264,7 +307,8 @@ func _fire_shot(aim: Vector2, extra: bool, label: StringName) -> void:
 		muzzle_index = _muzzle_index % ranged.muzzles.size()
 		muzzle = ranged.muzzles[muzzle_index]
 		_muzzle_index = (muzzle_index + 1) % ranged.muzzles.size()
-	var origin := actor.global_position + muzzle.rotated(aim.angle())
+	var origin := _get_shot_origin(aim, muzzle)
+	var shot_aim := _get_shot_direction(aim, origin)
 	var count := maxi(ranged.projectiles_per_shot, 1)
 	var perfect := was_perfect_release() and not extra
 	var base_damage := _base_damage() if extra else _shot_damage()
@@ -272,7 +316,7 @@ func _fire_shot(aim: Vector2, extra: bool, label: StringName) -> void:
 	var projectile_data := _get_shot_projectile(perfect, extra)
 	var weight := current_feel.weight if current_feel != null and not extra else 1.0
 	for i in count:
-		var direction := aim.rotated(deg_to_rad(_spread_angle(i, count)))
+		var direction := shot_aim.rotated(deg_to_rad(_spread_angle(i, count)))
 		var template := DamageInfo.create(damage, actor, ranged.damage_type)
 		template.tags = ranged.tags.duplicate()
 		if perfect:
@@ -365,6 +409,18 @@ func _on_projectile_hit(info: DamageInfo, hurtbox: HurtboxComponent) -> void:
 	_on_target_hit(info, hurtbox)
 
 
+# Where this shot leaves from. Default: the muzzle offset, rotated to the
+# aim. Override to launch from somewhere else (an orbiting moon).
+func _get_shot_origin(aim: Vector2, muzzle: Vector2) -> Vector2:
+	return actor.global_position + muzzle.rotated(aim.angle())
+
+
+# Which way this shot flies (before spread). Default: the aim. Override to
+# converge shots from an offset origin on the cursor.
+func _get_shot_direction(aim: Vector2, _origin: Vector2) -> Vector2:
+	return aim
+
+
 # Which ProjectileData this shot flies as. Override for per-shot variants
 # (an empowered next shot). Default: perfect_projectile on a perfect
 # release, else projectile.
@@ -400,11 +456,29 @@ func _physics_process(delta: float) -> void:
 		_empty_click_timer -= delta
 	if _reloading:
 		_advance_reload(delta)
+	if is_regen():
+		_advance_regen(delta)
 	if _semi_queued > 0.0:
 		_semi_queued -= delta
 		if _shot_timer <= StatusEffectComponent.TICK_EPSILON and actor != null:
 			_semi_queued = 0.0
 			try_activate(actor.aim_point)
+
+
+# REGEN: one round per interval, whether firing or not; the clock idles
+# while full.
+func _advance_regen(delta: float) -> void:
+	if _ammo >= get_max_ammo():
+		_regen_elapsed = 0.0
+		return
+	_regen_elapsed += delta
+	var interval := get_regen_interval()
+	while _ammo < get_max_ammo() and interval > 0.0 \
+			and _regen_elapsed + StatusEffectComponent.TICK_EPSILON >= interval:
+		_regen_elapsed -= interval
+		_ammo += 1
+		ammo_changed.emit(_ammo, get_max_ammo())
+		actor.trigger_cue(StringName(str(ability_id) + "_regen"), {"ability": ability_id, "ammo": _ammo})
 
 
 func _advance_reload(delta: float) -> void:

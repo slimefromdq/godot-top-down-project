@@ -71,6 +71,9 @@ func _draw_ammo(gun: RangedAttackAbility) -> void:
 		var fill := SIZE.y * gun.get_reload_ratio()
 		draw_rect(Rect2(0, SIZE.y - fill, SIZE.x, fill), Color(0.5, 0.8, 1.0, 0.25))
 		_draw_centered("R", Vector2(SIZE.x / 2.0, SIZE.y / 2.0 - 10), 20, Color(0.6, 0.85, 1.0))
+	if gun.is_regen() and gun.get_regen_ratio() > 0.0:
+		# The next round coming back: a thin bar along the bottom edge.
+		draw_rect(Rect2(4, SIZE.y - 26, (SIZE.x - 8) * gun.get_regen_ratio(), 4), Color(0.7, 0.85, 1.0, 0.9))
 	var color := Color(1, 0.35, 0.3) if gun.get_ammo() == 0 else Color.WHITE
 	_draw_centered("%d/%d" % [gun.get_ammo(), gun.get_max_ammo()], Vector2(SIZE.x / 2.0, 18), 15, color)
 
@@ -78,12 +81,13 @@ func _draw_ammo(gun: RangedAttackAbility) -> void:
 # A row of pips along the top: filled = current, hollow = empty.
 func _draw_pips(current: int, maximum: int) -> void:
 	var spacing := minf(18.0, (SIZE.x - 16.0) / maximum)
+	var radius := minf(6.0, spacing * 0.4)
 	for i in maximum:
 		var at := Vector2(SIZE.x / 2.0 + (i - (maximum - 1) / 2.0) * spacing, 14.0)
 		if i < current:
-			draw_circle(at, 6.0, Color(1.0, 0.85, 0.3))
+			draw_circle(at, radius, Color(1.0, 0.85, 0.3))
 		else:
-			draw_arc(at, 6.0, 0.0, TAU, 16, Color(1, 1, 1, 0.5), 2.0)
+			draw_arc(at, radius, 0.0, TAU, 16, Color(1, 1, 1, 0.5), 2.0)
 
 
 # A bar just above the slot. It turns gold at full charge and flashes white

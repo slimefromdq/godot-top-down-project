@@ -15,8 +15,8 @@ arc_degrees = 110.0
 
 [sub_resource type="Resource" id="Sub_2"]
 script = ExtResource("5_x")
-base = 22.0
-weapon_ratio = 0.75
+base = 6.0
+weapon_ratio = 0.25
 
 [sub_resource type="Resource" id="Sub_3"]
 script = ExtResource("3_x")
@@ -34,8 +34,8 @@ arc_degrees = 110.0
 
 [sub_resource type="Resource" id="Sub_5"]
 script = ExtResource("5_x")
-base = 22.0
-weapon_ratio = 0.75
+base = 6.0
+weapon_ratio = 0.25
 
 [sub_resource type="Resource" id="Sub_6"]
 script = ExtResource("3_x")
@@ -53,8 +53,8 @@ arc_degrees = 150.0
 
 [sub_resource type="Resource" id="Sub_8"]
 script = ExtResource("5_x")
-base = 38.0
-weapon_ratio = 1.15
+base = 12.0
+weapon_ratio = 0.4
 
 [sub_resource type="Resource" id="Sub_9"]
 script = ExtResource("3_x")
@@ -66,9 +66,9 @@ meter_label = &"blade"
 
 [sub_resource type="Resource" id="Sub_10"]
 script = ExtResource("5_x")
-base = 10.0
-weapon_ratio = 0.2
-magic_ratio = 0.25
+base = 3.0
+weapon_ratio = 0.06
+magic_ratio = 0.1
 
 [resource]
 script = ExtResource("1_x")

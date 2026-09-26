@@ -122,7 +122,12 @@ func apply(effect: StatusEffect, source: Node = null, direction: Vector2 = Vecto
 				entry.time_left = duration
 				entry.shield_remaining += shield
 	entry.full_duration = maxf(entry.time_left, 0.0001)
-	entry.strength = strength
+	# A refresh keeps the stronger application (a weaker hit doesn't
+	# downgrade a stronger mark); STACK takes the latest.
+	if is_new or effect.stack_rule == StatusEffect.StackRule.STACK:
+		entry.strength = strength
+	else:
+		entry.strength = maxf(entry.strength, strength)
 	if effect.shield_amount != null:
 		shield_changed.emit(get_shield_total())
 	if effect.compel_enabled and effect.compel_follow_trail and (is_new or previous_source != source):
@@ -216,7 +221,7 @@ func get_active_effects() -> Array[StatusEffect]:
 func get_multiplier(stat: StringName) -> float:
 	var result := 1.0
 	for entry in _active.values():
-		var full: float = entry.effect.stat_multipliers.get(stat, 1.0)
+		var full: float = entry.effect.get_stat_multiplier(stat)
 		if full == 1.0:
 			continue
 		var scale: float = entry.strength
@@ -301,6 +306,11 @@ func is_stunned() -> bool:
 
 func is_rooted() -> bool:
 	return _any(func(e: StatusEffect): return e.roots or e.stuns)
+
+
+# Hurtboxes ignore hits and statuses while this is true (StatusEffect.untargetable).
+func is_untargetable() -> bool:
+	return _any(func(e: StatusEffect): return e.untargetable)
 
 
 func is_silenced() -> bool:

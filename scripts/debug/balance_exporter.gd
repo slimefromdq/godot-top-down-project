@@ -58,6 +58,9 @@ static func build_rows(definitions: Array[HeroDefinition], levels: Array[int] = 
 				rows.append([hero, role, level, "ability", str(slot), ability, "cooldown", data.get_cooldown(level)])
 				if data.get_range() > 0.0:
 					rows.append([hero, role, level, "ability", str(slot), ability, "range", data.get_range()])
+				var derived := data.get_hero_metrics(definition, level)
+				for metric in derived:
+					rows.append([hero, role, level, "derived", str(slot), ability, str(metric), derived[metric]])
 				var metrics := data.get_balance_metrics(level, stats[StatBlock.WEAPON], stats[StatBlock.MAGIC])
 				for metric in metrics:
 					rows.append([hero, role, level, "ability", str(slot), ability, str(metric), metrics[metric]])

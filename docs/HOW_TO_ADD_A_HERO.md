@@ -96,6 +96,14 @@ For each slot in the definition's `abilities` dictionary, point at an
 | a formation / parade line behind the caster | compel status with `compel_follow_trail` (+ `compel_breakable`) | none |
 | a charged dash that goes further and hits harder | `ChargeData` with `charge_enabled`, `min_distance`, `hit_shape` + `damage` / `values/damage_full` + `on_hit_status` | none |
 | a passive with stacks on the ability bar | the optional `passive` slot + `PassiveAbility` (override `get_hud_pips`) | a small script |
+| take more/less damage of one type (a magic amp, a weapon resist) | `StatusEffect.incoming_physical_multiplier` / `incoming_magic_multiplier` | none |
+| untargetable for a moment (a vanish), faded body | `StatusEffect.untargetable`, `body_alpha` | none |
+| a boomerang (out and back, optionally curved) | `ProjectileData.return_to_caster`, `curve_amount`; return hits carry `Projectile.TAG_RETURN` | none |
+| a blast with no projectile (ground-targeted, meteor) | `Projectile.explode_at(actor, data, at, dir, template, on_hit)` | a small script |
+| ammo that regenerates (no reloading) | `RangedAttackData.reload_style = REGEN` + `regen_interval`; `set_max_ammo()` / `set_regen_interval()` at runtime | none |
+| a pull you can slowly walk out of, toward a zone | compel with `compel_overrides_input = false` (strength = `compel_speed_multiplier`) as a zone status with `statuses_from_zone` | none |
+| a blink up to the cursor, then an effect on yourself | `ChargeData` with a high `speed`, `stop_at_target`, `self_status` | none |
+| a hero-level number in the CSV (a combo's burst) | override `AbilityData.get_hero_metrics(definition, level)` (source "derived") | a small data script |
 | something new | extend `Ability` (or `MeleeAttackAbility` / `RangedAttackAbility`) | a small script |
 
 `tools/heroes/ranged_test/` is a test-only hero that uses every row above
@@ -321,6 +329,29 @@ and gets a strength back, or -1. Encore numbers use `encore_value()`, the
 BASE of a named value times that strength, so they don't grow with Magic.
 The passive sits in the optional `passive` slot (GameRules), so its numbers
 show in F1/F2/CSV like any ability's.
+
+## What Cosmo took
+
+A back-loaded mage CARRY. Tools → New Hero from Template → "Cosmo", basic
+attack deleted, then:
+
+| Slot | Data | Script |
+|---|---|---|
+| passive | `waxing_moon.tres` (`CosmoWaxingMoonData`): `base_moons` 4, `moon_breakpoints` [3,5,7,10] (one more moon each), `regen_interval_by_moons`, orbit radius/speed | `waxing_moon.gd` (`PassiveAbility`): the moon count, `set_max_ammo` / `set_regen_interval` on the gun, the orbit, `moon_waxed` |
+| primary | `moonshot.tres`: `RangedAttackData`, SEMI at 10/s, REGEN reload, MAGIC; the moon projectile pierces (`pierce -1`) | `moonshot_ability.gd`: `_get_shot_origin` (a moon launches from its orbit) and `_get_shot_direction` (the volley converges on the cursor) |
+| ability_1 | `crescent.tres` (`CosmoCrescentData`): `return_to_caster`, `curve_amount`, `pierce -1`, `moonlit_amp` / `moonlit_amp_full` | `crescent_ability.gd`: applies Moonlit per pass |
+| cc | `tide.tres` (`CosmoTideData`): a `statuses_from_zone` pull zone, a detonation template | `tide_ability.gd`: the countdown and `Projectile.explode_at` |
+| movement | `new_moon.tres`: `ChargeData` with `stop_at_target` and an untargetable `self_status` | generic `ChargeAbility` |
+| ultimate | `starfall.tres` (`CosmoStarfallData`): meteor template, rate by moons, channel/resist statuses, end-on flags | `starfall_ability.gd`: the channel, meteor placement, warnings |
+
+Moonlit is an ordinary status whose `incoming_magic_multiplier` is 2.0,
+applied at strength `amp - 1`, so the amp lands in `HealthComponent.mitigate`
+for every magic source. Starfall's resist is the same trick with
+`incoming_physical_multiplier` 0.0 at strength 0.5. The shared pieces
+(per-type damage-taken, boomerangs, REGEN ammo, zone-sourced pulls,
+untargetable, `get_hero_metrics`) are in the generic systems;
+`tools/heroes/caster_infra_test` covers them and `tools/heroes/cosmo_test`
+covers the kit.
 
 ## What Jose took
 

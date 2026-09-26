@@ -71,7 +71,7 @@ The file is tidy (long) format, with one row per hero × level × metric, at lev
 | hero | `avery` |
 | role | `Tank` |
 | level | `10` |
-| source | `stat`, `derived` (effective HP) or `ability` |
+| source | `stat`, `derived` (effective HP, plus hero-level numbers an ability reports through `get_hero_metrics`, e.g. Cosmo's `moon_volley` and `burst_combo`) or `ability` |
 | slot | `ability_1` (empty for stats) |
 | ability | `searing_cut` (empty for stats) |
 | metric | `health`, `cooldown`, `range`, `damage`, `heal_per_target`, `combo_steps/3/damage`, `values/lifesteal` …; guns add `shots_per_second`, `magazine_size`, `reload_time` (empty to full), `damage_per_shot`, `burst_dps` and `sustained_dps` (with reloads) |
@@ -108,9 +108,11 @@ Problems are also printed when you save a definition or ability, and by **Tools 
 godot --headless res://tools/heroes/infrastructure_test.tscn
 godot --headless res://tools/heroes/ranged_infra_test.tscn
 godot --headless res://tools/heroes/support_infra_test.tscn
+godot --headless res://tools/heroes/caster_infra_test.tscn
 godot --headless res://tools/heroes/avery_test.tscn
 godot --headless res://tools/heroes/jose_test.tscn
 godot --headless res://tools/heroes/melody_test.tscn
+godot --headless res://tools/heroes/cosmo_test.tscn
 godot --headless res://tools/heroes/feel_test.tscn
 godot --headless res://tools/heroes/balance_tools_test.tscn
 godot --headless res://tools/heroes/map_switch_test.tscn
@@ -118,5 +120,10 @@ godot --headless res://tools/dream_basin/smoke_test.tscn
 ```
 
 Each exits with the number of failed checks (0 = all passed).
+
+`tools/heroes/dps_compare.tscn` isn't a test: it prints sustained DPS
+(primary only, 8 s) and a scripted 3 s burst for each carry at levels 1, 5
+and 10, measured in-engine against a dummy with no resists
+(`dps_harness.gd`, also used by `cosmo_test` for her balance targets).
 `tools/heroes/capture_feel.tscn` saves screenshots of a finisher swing
 (run under a display or `xvfb-run` with `--rendering-driver opengl3`).

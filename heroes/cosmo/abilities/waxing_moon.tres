@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="CosmoWaxingMoonData" format=3]
+
+[ext_resource type="Script" path="res://heroes/cosmo/abilities/waxing_moon.gd" id="1_wxrig"]
+[ext_resource type="Script" path="res://heroes/cosmo/abilities/waxing_moon_data.gd" id="2_kli34"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_m0vs1"]
+
+[sub_resource type="Resource" id="Resource_6wb4d"]
+script = ExtResource("3_m0vs1")
+base = 78.0
+
+[sub_resource type="Resource" id="Resource_arrj0"]
+script = ExtResource("3_m0vs1")
+base = 1.4
+
+[resource]
+script = ExtResource("2_kli34")
+regen_interval_by_moons = Array[float]([2.6, 2.45, 2.3, 2.15, 2.0])
+id = &"waxing_moon"
+display_name = "Waxing Moon"
+description = "Her moons are her ammunition: 4 at level 1, then one more at levels 3, 5, 7 and 10. Spent moons come back one at a time."
+ability_script = ExtResource("1_wxrig")
+cooldown = 0.0
+values = Dictionary[StringName, ExtResource("3_m0vs1")]({
+&"orbit_radius": SubResource("Resource_6wb4d"),
+&"orbit_speed": SubResource("Resource_arrj0")
+})

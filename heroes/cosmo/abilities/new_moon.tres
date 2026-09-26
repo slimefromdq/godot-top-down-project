@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/charge_ability.gd" id="1_m5teg"]
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="2_y3d68"]
+[ext_resource type="Resource" path="res://heroes/cosmo/data/cosmo_new_moon.tres" id="3_rqodm"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="4_34wec"]
+
+[resource]
+script = ExtResource("2_y3d68")
+distance = 420.0
+stop_at_target = true
+self_status = ExtResource("3_rqodm")
+speed = 14000.0
+carry_momentum = false
+id = &"new_moon"
+display_name = "New Moon"
+description = "Blink toward the cursor, then fade out of reach for a moment."
+ability_script = ExtResource("1_m5teg")
+cooldown = 10.0
+tags = Array[StringName]([&"movement"])
+feel_preset = &"blink"

@@ -10,12 +10,21 @@ class_name Projectile
 # the same on every machine.
 
 const SCENE_PATH := "res://scenes/combat/projectile.tscn"
+## Added to hits on a returning projectile's way back.
+const TAG_RETURN := &"return"
+
+enum Pass { OUTBOUND, RETURN }
 
 ## Every target hit, after the hit applied (info.final_amount is set).
 ## Explosions report each target they damage here too.
 signal hit_landed(info: DamageInfo, hurtbox: HurtboxComponent)
 ## The projectile exploded (ProjectileData explosion) at `at`.
 signal exploded(at: Vector2)
+## Like hit_landed, with which pass of a returning projectile it was.
+signal pass_hit(info: DamageInfo, hurtbox: HurtboxComponent, which_pass: Pass)
+## A returning projectile turned around / got back to its caster.
+signal turned_back(at: Vector2)
+signal returned
 
 var data: ProjectileData
 var direction := Vector2.RIGHT
@@ -35,6 +44,15 @@ var can_split := true
 var split_damage: float = -1.0
 
 var _exploded := false
+## Which pass a returning projectile is on (always OUTBOUND otherwise).
+var current_pass: Pass = Pass.OUTBOUND
+
+# Returning motion: the outbound path is a function of distance travelled,
+# the return path homes a base point on the caster and adds the bulge.
+var _out_distance: float = 0.0
+var _return_base := Vector2.ZERO
+var _return_length: float = 0.0
+var _detonation_only := false
 
 var _age: float = 0.0
 var _hits: int = 0
@@ -63,7 +81,32 @@ static func fire(context: Node, projectile_data: ProjectileData, origin: Vector2
 	return projectile
 
 
+# A blast with no flight (a ground-targeted detonation, a meteor): runs the
+# data's explosion at `at` right away, using `template` for damage.
+# `on_hit` (optional) is connected to hit_landed first, so the caller's
+# hooks see every target.
+static func explode_at(context: Node, projectile_data: ProjectileData, at: Vector2, dir: Vector2,
+		template: DamageInfo, on_hit: Callable = Callable()) -> Projectile:
+	var projectile: Projectile = load(SCENE_PATH).instantiate()
+	projectile._detonation_only = true
+	projectile.data = projectile_data
+	projectile.direction = dir.normalized() if dir != Vector2.ZERO else Vector2.RIGHT
+	projectile.damage_template = template
+	if template.attack_id == 0:
+		template.attack_id = DamageInfo.new_attack_id()
+	if on_hit.is_valid():
+		projectile.hit_landed.connect(on_hit)
+	context.get_tree().current_scene.add_child(projectile)
+	projectile.global_position = at
+	projectile.fired_from = at
+	projectile._explode(at)
+	projectile.queue_free()
+	return projectile
+
+
 func _ready() -> void:
+	if _detonation_only:
+		return
 	if data.visual_scene != null:
 		add_child(data.visual_scene.instantiate())
 	else:
@@ -76,6 +119,11 @@ func _draw() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _detonation_only:
+		return
+	if data.return_to_caster:
+		_process_returning(delta)
+		return
 	var from := global_position
 	var to := from + direction * data.speed * delta
 	_age += delta
@@ -137,18 +185,27 @@ func _hit_targets_between(from: Vector2, to: Vector2) -> void:
 			info = hit_modifier.call(info, hurtbox, fired_from.distance_to(hurtbox.global_position))
 			if info == null:
 				continue
+		if current_pass == Pass.RETURN and not info.tags.has(TAG_RETURN):
+			info.tags.append(TAG_RETURN)
 		hurtbox.take_hit(info)
 		hit_landed.emit(info, hurtbox)
+		pass_hit.emit(info, hurtbox, current_pass)
 		_spawn_feedback(data.hit_effect, data.hit_sound, hurtbox.global_position)
 		_hits += 1
 		if data.pierce >= 0 and _hits > data.pierce:
-			queue_free()
+			if data.return_to_caster and current_pass == Pass.OUTBOUND:
+				_start_return()    # out of pierce: come back early
+			else:
+				queue_free()
 			return
 
 
 func _can_hit(hurtbox: HurtboxComponent) -> bool:
-	return not _already_hit.has(hurtbox.get_instance_id()) \
-		and Hitbox.can_hit(damage_template.source, hurtbox)
+	# The shooter may be gone (a hero despawned with shots in flight).
+	var source = damage_template.source
+	if not is_instance_valid(source):
+		source = null
+	return not _already_hit.has(hurtbox.get_instance_id()) and Hitbox.can_hit(source, hurtbox)
 
 
 func _expire() -> void:
@@ -220,3 +277,70 @@ func _split(at: Vector2) -> void:
 func _spawn_feedback(effect: PackedScene, sound: SoundCue, at: Vector2) -> void:
 	EffectSpawner.spawn(self, effect, {"position": at, "direction": direction})
 	AudioManager.play_sfx(sound, at)
+
+
+# --- Returning projectiles --------------------------------------------------
+
+func get_range() -> float:
+	return data.speed * data.lifetime
+
+
+func _process_returning(delta: float) -> void:
+	_age += delta
+	var from := global_position
+	var to: Vector2
+	if current_pass == Pass.OUTBOUND:
+		var length := get_range()
+		_out_distance = minf(_out_distance + data.speed * delta, length)
+		var t := _out_distance / length if length > 0.0 else 1.0
+		to = fired_from + direction * _out_distance \
+			+ direction.orthogonal() * data.curve_amount * length * 0.5 * sin(PI * t)
+		if data.stops_at_walls:
+			var ray := PhysicsRayQueryParameters2D.create(from, to, GameRules.current().wall_mask)
+			var wall := get_world_2d().direct_space_state.intersect_ray(ray)
+			if not wall.is_empty():
+				to = wall.position
+				_out_distance = length
+		_hit_targets_between(from, to)
+		if is_queued_for_deletion():
+			return
+		global_position = to
+		if current_pass == Pass.OUTBOUND and _out_distance >= length:
+			_start_return()
+	else:
+		var caster = damage_template.source    # untyped: it may have been freed
+		if not is_instance_valid(caster) or not caster is Node2D:
+			_expire()
+			return
+		var home: Vector2 = caster.global_position
+		_return_base = _return_base.move_toward(home, data.speed * delta)
+		var left := _return_base.distance_to(home)
+		var u := clampf(1.0 - left / maxf(_return_length, 1.0), 0.0, 1.0)
+		var heading := (home - _return_base).normalized()
+		to = _return_base + heading.orthogonal() * data.curve_amount * _return_length * 0.5 * sin(PI * u)
+		_hit_targets_between(from, to)
+		if is_queued_for_deletion():
+			return
+		global_position = to
+		if left <= data.radius + 30.0:
+			returned.emit()
+			queue_free()
+			return
+	if to != from:
+		rotation = (to - from).angle()
+	if _age >= data.lifetime + data.return_timeout:
+		_expire()
+
+
+# Turn around: a fresh pass (every target can be hit once more).
+func _start_return() -> void:
+	if current_pass == Pass.RETURN:
+		return
+	current_pass = Pass.RETURN
+	_already_hit.clear()
+	_hits = 0
+	_return_base = global_position
+	var caster = damage_template.source    # untyped: it may have been freed
+	_return_length = global_position.distance_to(caster.global_position) \
+		if is_instance_valid(caster) and caster is Node2D else 0.0
+	turned_back.emit(global_position)

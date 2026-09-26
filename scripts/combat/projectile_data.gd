@@ -20,6 +20,19 @@ class_name ProjectileData
 ## Optional status applied to everything it hits.
 @export var on_hit_status: StatusEffect
 
+@export_group("Return")
+## Boomerang: fly to max range (speed x lifetime) along the aim, then home
+## back to the caster's CURRENT position and vanish on reaching them. A wall
+## (or running out of pierce) on the way out turns it around early; the way
+## back passes through walls so it always comes home. Each target can be
+## hit once per pass; return-pass hits carry the tag Projectile.TAG_RETURN.
+@export var return_to_caster: bool = false
+## Bends both passes into a crescent: the sideways bulge, as a fraction of
+## the pass length (0 = straight out and back). Negative bends the other way.
+@export var curve_amount: float = 0.0
+## Safety net: gone after this many seconds even if it never gets back.
+@export var return_timeout: float = 4.0
+
 @export_group("Explosion")
 ## Explode on the first target hit: the explosion replaces the direct hit,
 ## so the hit target takes the blast like everyone else (no double hit).
