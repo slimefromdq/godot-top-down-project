@@ -9,6 +9,7 @@ class_name GameOverScreen
 # button can be clicked.
 
 @onready var restart_button: Button = %RestartButton
+@onready var title_label: Label = $CenterContainer/VBoxContainer/TitleLabel
 
 
 func _ready() -> void:
@@ -16,9 +17,13 @@ func _ready() -> void:
 	restart_button.pressed.connect(_on_restart_button_pressed)
 
 
-# The world calls this. The screen doesn't know or care why the game ended,
-# so the same screen can be reused later for a victory or timeout.
-func show_screen() -> void:
+# The world calls this. The screen doesn't know or care why the game ended:
+# the caller passes the title ("YOU DIED", "DAWN VICTORY" ...). Empty keeps
+# the scene's own title.
+func show_screen(title: String = "", color: Color = Color.WHITE) -> void:
+	if title != "":
+		title_label.text = title
+	title_label.modulate = color
 	show()
 	# Focusing the button means Enter/Space activates it too, not just a click.
 	restart_button.grab_focus()

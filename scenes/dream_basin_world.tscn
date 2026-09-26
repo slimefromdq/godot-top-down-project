@@ -2,20 +2,22 @@
 
 [ext_resource type="Script" path="res://scripts/world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/maps/dream_basin.tscn" id="2_dream_basin"]
-[ext_resource type="PackedScene" path="res://heroes/avery/avery.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://heroes/avery/avery.tscn" id="3_avery"]
 [ext_resource type="PackedScene" path="res://scenes/game_over_screen.tscn" id="4_game_over_screen"]
 [ext_resource type="PackedScene" path="res://scenes/training_dummy.tscn" id="5_training_dummy"]
 [ext_resource type="PackedScene" path="res://scenes/hud/ability_bar.tscn" id="6_ability_bar"]
 [ext_resource type="PackedScene" path="res://scenes/hud/minimap.tscn" id="7_minimap"]
 [ext_resource type="Script" path="res://scripts/audio/music_request.gd" id="8_music_request"]
 [ext_resource type="Script" path="res://scripts/map/map_debug_view.gd" id="9_map_debug_view"]
+[ext_resource type="Script" path="res://scripts/match/match_manager.gd" id="10_match_manager"]
+[ext_resource type="PackedScene" path="res://scenes/hud/match_hud.tscn" id="11_match_hud"]
 
 [node name="World" type="Node"]
 script = ExtResource("1_world")
 
 [node name="DreamBasin" parent="." instance=ExtResource("2_dream_basin")]
 
-[node name="Player" parent="." instance=ExtResource("3_player")]
+[node name="Player" parent="." instance=ExtResource("3_avery")]
 position = Vector2(-950, 4656)
 team = &"a"
 player_controlled = true
@@ -47,3 +49,8 @@ script = ExtResource("8_music_request")
 
 [node name="MapDebugView" type="Node" parent="."]
 script = ExtResource("9_map_debug_view")
+
+[node name="MatchManager" type="Node" parent="."]
+script = ExtResource("10_match_manager")
+
+[node name="MatchHud" parent="." instance=ExtResource("11_match_hud")]

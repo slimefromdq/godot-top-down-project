@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MatchRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/rules/match_rules.gd" id="1_rules"]
+[ext_resource type="Resource" path="res://resources/match/match_visuals.tres" id="2_visuals"]
+[ext_resource type="Resource" path="res://resources/match/match_audio.tres" id="3_audio"]
+
+[resource]
+script = ExtResource("1_rules")
+cue_visuals = ExtResource("2_visuals")
+cue_audio = ExtResource("3_audio")

@@ -11,6 +11,15 @@ func _ready() -> void:
 	# player only reports that it died; it never reaches into the UI itself.
 	player.health_component.died.connect(_on_player_died)
 	add_to_group(&"player_listeners")
+	var match_manager := MatchManager.find(get_tree())
+	if match_manager != null:
+		on_match_started(match_manager)
+
+
+# Also called by the debug panel when it starts a match in a sandbox scene.
+func on_match_started(match_manager: MatchManager) -> void:
+	if not match_manager.match_ended.is_connected(_on_match_ended):
+		match_manager.match_ended.connect(_on_match_ended)
 
 
 # The debug panel can swap the player for another hero.
@@ -20,10 +29,19 @@ func on_player_replaced(new_player: Actor) -> void:
 
 
 func _on_player_died() -> void:
+	# In a match the MatchManager respawns the player instead.
+	if MatchManager.find(get_tree()) != null:
+		return
 	# Pausing stops every node whose process_mode is Inherit or Pausable:
 	# enemies, bullets and timers freeze. GameOverScreen is set to Always.
 	get_tree().paused = true
 	game_over_screen.show_screen()
+
+
+func _on_match_ended(winner_team: StringName) -> void:
+	get_tree().paused = true
+	var title := "%s VICTORY" % MatchManager.team_name(winner_team).to_upper()
+	game_over_screen.show_screen(title, MatchManager.team_color(winner_team))
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
