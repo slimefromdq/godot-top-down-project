@@ -5,8 +5,8 @@
 
 [sub_resource type="Resource" id="Sub_1"]
 script = ExtResource("2_x")
-base = 4.0
-magic_ratio = 0.08
+base = 2.0
+magic_ratio = 0.05
 
 [resource]
 script = ExtResource("1_x")
