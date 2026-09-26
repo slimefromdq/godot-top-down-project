@@ -22,6 +22,7 @@ const HERO_BASE := "res://scenes/heroes/hero_base.tscn"
 const DUMMY_SCENE := "res://scenes/training_dummy.tscn"
 const SPAWNED_GROUP := &"debug_spawned_dummies"
 const PLAYER_LISTENERS := &"player_listeners"
+const AIRLOCK := "res://resources/minigames/airlock.tres"
 
 var meter: DamageMeter
 
@@ -80,6 +81,20 @@ func _process(delta: float) -> void:
 			_inspector_label.text = inspect_text()
 		if _meter_panel.visible:
 			_refresh_meter()
+
+
+# F1 > Tools: play Sam's airlock on the player, alone.
+func start_airlock_practice() -> String:
+	var player := get_player()
+	if player == null:
+		return "No player hero."
+	var host := MinigameHost.find_or_create(player)
+	if not host.play(AirlockMinigame.new(load(AIRLOCK))):
+		return "Already playing."
+	_panel.visible = false
+	host.finished.connect(func(_game, result: Dictionary):
+		print("Airlock: %s" % result), CONNECT_ONE_SHOT)
+	return "Airlock: WASD to the door on the right."
 
 
 func set_sight_lines_enabled(enabled: bool) -> void:
@@ -520,6 +535,7 @@ func _tools_tab() -> Control:
 	box.add_child(_check("Stat inspector (F2)", _inspector.visible, func(on): _inspector.visible = on))
 	box.add_child(_check("Damage meter (F4)", _meter_panel.visible, func(on): _meter_panel.visible = on))
 	box.add_child(_check("Sight lines (green seen, red blocked)", sight_lines_enabled, set_sight_lines_enabled))
+	box.add_child(_button("Airlock practice (Sam's minigame)", func(): result.text = start_airlock_practice()))
 	box.add_child(_label("Maps (F3 cycles)", 15))
 	for path in GameRules.current().test_maps:
 		box.add_child(_button(path.get_file().get_basename().capitalize(), func(): MapSwitcher.go_to(path)))

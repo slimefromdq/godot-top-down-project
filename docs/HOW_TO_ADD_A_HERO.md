@@ -133,6 +133,10 @@ For each slot in the definition's `abilities` dictionary, point at an
 | a CC-only melee swing (no damage) | `MeleeAttackData` with no `damage` and an `on_hit_status` | none |
 | a ring nobody can cross for a while (walking, dashes, launches, teleports, projectiles) | `ContainmentRing.spawn(context, center, radius, duration, members)`; strangers inside are pushed out; ends if a member dies. Area damage centred outside can still reach in | a small script (decides when) |
 | a teleport / blink (through walls, but not through rings) | `actor.teleport_to(point)` (returns false if it would cross a `ContainmentRing`) | a small script |
+| a skillshot that stops on the first actor of EITHER team (shield a friend, root a foe) | `ProjectileData.affects` BOTH + `ally_hit_status` (allies take no damage); `RangedAttackAbility._on_ally_hit` | none |
+| click-target an ally or an enemy near the cursor | `AllyTargeting.accepts` (ALLIES / ENEMIES / BOTH) + `Ability.is_cast_target_ally()` to pick the status | a small script |
+| link two actors for a while: a leash (never more than N px apart) and/or a healing share | `ActorLink.spawn(context, a, b, duration, source, leash, share, status)` | a small script (decides who) |
+| a minigame that takes over one player's input for a few seconds | a `MinigameInstance` subclass + `MinigameData`, played by `MinigameHost.find_or_create(actor).play(...)`; see the airlock | a script per minigame |
 | hard CC that can't be chained forever | automatic: **Resolve** (`GameRules.resolve_duration` / `resolve_cc_multiplier`) halves a stun, root or taunt that lands within 2 s of the last one ending. Carries, self-applied CC, walk-out-able pulls and formations are exempt; `StatusEffect.ignores_resolve` exempts any other | none |
 | "can A see B?" (a stalker passive, a sight-gated autofire) | `CombatQueries.has_line_of_sight(from, to)`: walls on `GameRules.sight_mask`, and bushes (can't see in from outside; from inside you see out) | none |
 | hide in bushes / reveal someone | bushes hide their occupants automatically (`CombatQueries.is_hidden_from`, drawn per viewer by `VisualsComponent`); a `StatusEffect` with `reveals` shows them anyway | none |
@@ -243,6 +247,18 @@ draws the player's lines to nearby enemies.
 gets `GameRules.resolve_status` for `resolve_duration` (2 s); new hard CC on it
 meanwhile lasts `resolve_cc_multiplier` (50%) as long. No hero code is
 involved: `StatusEffect.is_hard_cc()` decides what counts.
+
+**Minigames.** A `MinigameInstance` runs on physics ticks for one actor:
+`MinigameHost.find_or_create(actor).play(game)` puts the data's
+`occupied_status` on the actor (default: rooted and silenced), routes that
+player's WASD to it (PlayerHeroInput; tests and network clients call
+`host.set_input(move)`), and opens a `MinigameView` overlay for the local
+viewer only, with a live inset of the real map. A tick with no input uses the
+game's `bot_input()` (what an AI victim does). `finish(result)` never ends it
+before `min_duration`; `max_duration` ends it with `{"timeout": true}`. Key
+presses reach `_on_press(action)`, so a rhythm phrase can run inside one
+later. The airlock (`AirlockMinigame`, `resources/minigames/airlock.tres`) is
+the first: practise it from F1 → Tools → Airlock practice.
 
 **Shields.** `StatusEffect.shield_amount` (a ScalingValue from the
 applier's stats, times the application's strength) soaks damage after
