@@ -10,6 +10,7 @@ extends Node2D
 # Exits with the number of failed checks (0 = all passed).
 
 const BUTLER := "res://heroes/butler/butler_hero.tscn"
+const AUDIO_COVERAGE := preload("res://tools/heroes/audio_coverage.gd")
 const ALLY := "res://tools/heroes/ranged_test/ranged_test_hero.tscn"
 const DUMMY := "res://scenes/training_dummy.tscn"
 
@@ -29,6 +30,7 @@ func _run() -> void:
 	butler = load(BUTLER).instantiate()
 	butler.team = &"a"
 	add_child(butler)
+	var audio = AUDIO_COVERAGE.new(butler)
 	await _physics_frames(3)
 	hunger = butler.get_ability(&"passive")
 	_test_assembled()
@@ -39,6 +41,7 @@ func _run() -> void:
 	await _test_dinner_is_served()
 	await _test_at_your_service()
 	await _test_other_moves()
+	_test_audio(audio)
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
 	get_tree().quit(failures)
@@ -385,6 +388,12 @@ func _clear() -> void:
 
 func _near(a: float, b: float, tolerance: float = 0.01) -> bool:
 	return absf(a - b) <= maxf(tolerance, absf(b) * 0.001)
+
+
+func _test_audio(audio) -> void:
+	print("\n-- Audio")
+	for c in audio.checks():
+		_check(c[0], c[1], c[2])
 
 
 func _check(label: String, ok: bool, detail: String) -> void:

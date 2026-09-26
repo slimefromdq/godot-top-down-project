@@ -1,0 +1,101 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="2_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="3_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="4_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="5_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/pike/knife_throw.wav" id="6_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/dry_fire.wav" id="7_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/pike/heartbeat.wav" id="8_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/pike/heart_pop.wav" id="9_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/kill_chime.wav" id="10_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/pike/blink.wav" id="11_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/pike/knife_pin.wav" id="12_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/pike/only_us.wav" id="13_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/kill_chime.tres" id="14_a"]
+
+[sub_resource type="Resource" id="Snd_juggled_knives_fire"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("6_a")])
+volume_db = -10.0
+pitch_min = 0.9
+pitch_max = 1.15
+min_interval = 0.06
+max_voices = 3
+
+[sub_resource type="Resource" id="Snd_juggled_knives_ambush"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("6_a")])
+volume_db = -2.0
+pitch_min = 0.72
+pitch_max = 0.78
+
+[sub_resource type="Resource" id="Snd_juggled_knives_regen"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("7_a")])
+volume_db = -18.0
+pitch_min = 1.4
+pitch_max = 1.6
+min_interval = 0.1
+max_voices = 2
+
+[sub_resource type="Resource" id="Snd_obsession_ambush_ready"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("8_a")])
+volume_db = -6.0
+
+[sub_resource type="Resource" id="Snd_beloved_fire"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("9_a")])
+volume_db = -6.0
+
+[sub_resource type="Resource" id="Snd_beloved_chosen"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("10_a")])
+volume_db = -8.0
+pitch_min = 1.2
+pitch_max = 1.25
+
+[sub_resource type="Resource" id="Snd_there_you_are_blink"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("11_a")])
+volume_db = -2.0
+
+[sub_resource type="Resource" id="Snd_dont_go_fire"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("6_a")])
+volume_db = -4.0
+pitch_min = 0.82
+pitch_max = 0.88
+
+[sub_resource type="Resource" id="Snd_dont_go_hit"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("12_a")])
+volume_db = -2.0
+
+[sub_resource type="Resource" id="Snd_only_us_ring"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("13_a")])
+pitch_min = 1.0
+pitch_max = 1.0
+max_voices = 2
+
+[resource]
+script = ExtResource("1_a")
+cues = Dictionary[StringName, ExtResource("2_a")]({
+&"ability_failed": ExtResource("3_a"),
+&"hurt": ExtResource("4_a"),
+&"death": ExtResource("5_a"),
+&"juggled_knives_fire": SubResource("Snd_juggled_knives_fire"),
+&"juggled_knives_ambush": SubResource("Snd_juggled_knives_ambush"),
+&"juggled_knives_regen": SubResource("Snd_juggled_knives_regen"),
+&"obsession_ambush_ready": SubResource("Snd_obsession_ambush_ready"),
+&"beloved_fire": SubResource("Snd_beloved_fire"),
+&"beloved_chosen": SubResource("Snd_beloved_chosen"),
+&"there_you_are_blink": SubResource("Snd_there_you_are_blink"),
+&"dont_go_fire": SubResource("Snd_dont_go_fire"),
+&"dont_go_hit": SubResource("Snd_dont_go_hit"),
+&"only_us_ring": SubResource("Snd_only_us_ring")
+})
+kill_sound = ExtResource("14_a")

@@ -381,7 +381,8 @@ effects and sounds (see `docs/VISUALS_AND_AUDIO.md`). Abilities emit
 ability-specific cues: guns add `<id>_fire`, `<id>_empty`,
 `<id>_reload_start` / `_reload_end`; charges add `<id>_charge_start` /
 `_charge_full` / `_charge_release` (full list in VISUALS_AND_AUDIO.md). Swing whoosh, impact and fire layers come from the
-FeelProfile, not the cue profiles.
+FeelProfile, not the cue profiles. Give every hero an `audio_profile` (sounds in
+`audio/sfx/<name>/`) and run `tools/heroes/audio_coverage.gd` from its test.
 
 ### 7. Test it
 

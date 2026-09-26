@@ -1,0 +1,65 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="2_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="3_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="4_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="5_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hazmat/spray.wav" id="6_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hazmat/canister_lob.wav" id="7_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hazmat/hose_whip.wav" id="8_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hazmat/hook_clank.wav" id="9_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hazmat/seal_hiss.wav" id="10_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hazmat/breach_alarm.wav" id="11_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/kill_chime.tres" id="12_a"]
+
+[sub_resource type="Resource" id="Snd_sprayer_fire"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("6_a")])
+volume_db = -12.0
+pitch_min = 0.9
+pitch_max = 1.1
+min_interval = 0.08
+max_voices = 3
+
+[sub_resource type="Resource" id="Snd_canister_fire"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("7_a")])
+volume_db = -6.0
+
+[sub_resource type="Resource" id="Snd_quarantine_fire"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("8_a")])
+volume_db = -4.0
+
+[sub_resource type="Resource" id="Snd_quarantine_hit"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("9_a")])
+volume_db = -2.0
+
+[sub_resource type="Resource" id="Snd_seal_suit_active"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("10_a")])
+volume_db = -4.0
+
+[sub_resource type="Resource" id="Snd_containment_breach_zone_start"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("11_a")])
+pitch_min = 1.0
+pitch_max = 1.0
+max_voices = 2
+
+[resource]
+script = ExtResource("1_a")
+cues = Dictionary[StringName, ExtResource("2_a")]({
+&"ability_failed": ExtResource("3_a"),
+&"hurt": ExtResource("4_a"),
+&"death": ExtResource("5_a"),
+&"sprayer_fire": SubResource("Snd_sprayer_fire"),
+&"canister_fire": SubResource("Snd_canister_fire"),
+&"quarantine_fire": SubResource("Snd_quarantine_fire"),
+&"quarantine_hit": SubResource("Snd_quarantine_hit"),
+&"seal_suit_active": SubResource("Snd_seal_suit_active"),
+&"containment_breach_zone_start": SubResource("Snd_containment_breach_zone_start")
+})
+kill_sound = ExtResource("12_a")

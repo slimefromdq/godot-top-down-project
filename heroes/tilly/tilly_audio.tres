@@ -1,0 +1,92 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="2_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="3_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="4_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="5_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/tilly/boing.wav" id="6_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/tilly/spring_stretch.wav" id="7_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/tilly/spring.wav" id="8_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/tilly/whoosh.wav" id="9_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/tilly/tada.wav" id="10_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/tilly/fanfare.wav" id="11_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/tilly/safety_net.wav" id="12_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/kill_chime.tres" id="13_a"]
+
+[sub_resource type="Resource" id="Snd_bouncy_balls_fire"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("6_a")])
+volume_db = -10.0
+pitch_min = 0.9
+pitch_max = 1.2
+min_interval = 0.08
+max_voices = 3
+
+[sub_resource type="Resource" id="Snd_trampoline_charge_start"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("7_a")])
+volume_db = -10.0
+
+[sub_resource type="Resource" id="Snd_trampoline_placed"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("8_a")])
+volume_db = -4.0
+
+[sub_resource type="Resource" id="Snd_cartwheel_active"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("9_a")])
+volume_db = -6.0
+pitch_min = 1.1
+pitch_max = 1.2
+
+[sub_resource type="Resource" id="Snd_cartwheel_trick"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("8_a")])
+volume_db = -6.0
+pitch_min = 1.2
+pitch_max = 1.3
+
+[sub_resource type="Resource" id="Snd_launch"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("9_a")])
+volume_db = -6.0
+pitch_min = 0.9
+pitch_max = 1.0
+
+[sub_resource type="Resource" id="Snd_crumple_zone_landed"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("10_a")])
+volume_db = -8.0
+pitch_min = 1.0
+min_interval = 0.2
+
+[sub_resource type="Resource" id="Snd_all_eyes_on_me_applied"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("11_a")])
+volume_db = -2.0
+
+[sub_resource type="Resource" id="Snd_safety_net_zone_start"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("12_a")])
+pitch_min = 1.0
+pitch_max = 1.0
+max_voices = 2
+
+[resource]
+script = ExtResource("1_a")
+cues = Dictionary[StringName, ExtResource("2_a")]({
+&"ability_failed": ExtResource("3_a"),
+&"hurt": ExtResource("4_a"),
+&"death": ExtResource("5_a"),
+&"bouncy_balls_fire": SubResource("Snd_bouncy_balls_fire"),
+&"trampoline_charge_start": SubResource("Snd_trampoline_charge_start"),
+&"trampoline_placed": SubResource("Snd_trampoline_placed"),
+&"cartwheel_active": SubResource("Snd_cartwheel_active"),
+&"cartwheel_trick": SubResource("Snd_cartwheel_trick"),
+&"launch": SubResource("Snd_launch"),
+&"crumple_zone_landed": SubResource("Snd_crumple_zone_landed"),
+&"all_eyes_on_me_applied": SubResource("Snd_all_eyes_on_me_applied"),
+&"safety_net_zone_start": SubResource("Snd_safety_net_zone_start")
+})
+kill_sound = ExtResource("13_a")

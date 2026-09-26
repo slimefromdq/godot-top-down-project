@@ -4,11 +4,18 @@
 [ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="2_p"]
 [ext_resource type="Resource" path="res://heroes/hazmat/data/hazmat_canister_cloud.tres" id="3_p"]
 [ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="4_p"]
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="90_snd"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hazmat/gas_bubbles.wav" id="91_snd"]
 
 [sub_resource type="Resource" id="Burst"]
 script = ExtResource("4_p")
 kind = 1
 radius = 250.0
+
+[sub_resource type="Resource" id="Snd_landing"]
+script = ExtResource("90_snd")
+streams = Array[AudioStream]([ExtResource("91_snd")])
+volume_db = -4.0
 
 [resource]
 script = ExtResource("1_p")
@@ -22,3 +29,4 @@ explode_on_expire = true
 explosion_shape = SubResource("Burst")
 explosion_label = &"canister"
 explosion_zone = ExtResource("3_p")
+explosion_sound = SubResource("Snd_landing")

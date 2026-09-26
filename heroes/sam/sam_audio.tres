@@ -1,0 +1,109 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="2_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="3_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="4_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="5_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/sam/blip.wav" id="6_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/sam/stretch.wav" id="7_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/sam/squeeze.wav" id="8_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/sam/tractor.wav" id="9_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/sam/beam_drop.wav" id="10_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/sam/jingle.wav" id="11_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/sam/link.wav" id="12_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/sam/ufo_whirr.wav" id="13_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/sam/beam_up.wav" id="14_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/sam/wah.wav" id="15_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/kill_chime.tres" id="16_a"]
+
+[sub_resource type="Resource" id="Snd_hello_fire"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("6_a")])
+volume_db = -10.0
+pitch_min = 0.9
+pitch_max = 1.15
+min_interval = 0.08
+max_voices = 3
+
+[sub_resource type="Resource" id="Snd_hug_fire"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("7_a")])
+volume_db = -6.0
+
+[sub_resource type="Resource" id="Snd_hug_hit"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("8_a")])
+volume_db = -4.0
+
+[sub_resource type="Resource" id="Snd_hug_ally_hit"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("8_a")])
+volume_db = -4.0
+pitch_min = 1.2
+pitch_max = 1.25
+
+[sub_resource type="Resource" id="Snd_tractor_beam_active"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("9_a")])
+volume_db = -4.0
+
+[sub_resource type="Resource" id="Snd_tractor_beam_end"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("10_a")])
+volume_db = -8.0
+
+[sub_resource type="Resource" id="Snd_friendship_bracelet_fire"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("11_a")])
+volume_db = -6.0
+
+[sub_resource type="Resource" id="Snd_friendship_bracelet_link"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("12_a")])
+volume_db = -4.0
+
+[sub_resource type="Resource" id="Snd_close_encounter_telegraph"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("13_a")])
+pitch_min = 1.0
+pitch_max = 1.0
+max_voices = 2
+
+[sub_resource type="Resource" id="Snd_close_encounter_abduct"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("14_a")])
+volume_db = -2.0
+
+[sub_resource type="Resource" id="Snd_close_encounter_drop"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("10_a")])
+volume_db = -2.0
+pitch_min = 0.78
+pitch_max = 0.82
+
+[sub_resource type="Resource" id="Snd_close_encounter_miss"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("15_a")])
+volume_db = -4.0
+
+[resource]
+script = ExtResource("1_a")
+cues = Dictionary[StringName, ExtResource("2_a")]({
+&"ability_failed": ExtResource("3_a"),
+&"hurt": ExtResource("4_a"),
+&"death": ExtResource("5_a"),
+&"hello_fire": SubResource("Snd_hello_fire"),
+&"hug_fire": SubResource("Snd_hug_fire"),
+&"hug_hit": SubResource("Snd_hug_hit"),
+&"hug_ally_hit": SubResource("Snd_hug_ally_hit"),
+&"tractor_beam_active": SubResource("Snd_tractor_beam_active"),
+&"tractor_beam_end": SubResource("Snd_tractor_beam_end"),
+&"friendship_bracelet_fire": SubResource("Snd_friendship_bracelet_fire"),
+&"friendship_bracelet_link": SubResource("Snd_friendship_bracelet_link"),
+&"close_encounter_telegraph": SubResource("Snd_close_encounter_telegraph"),
+&"close_encounter_abduct": SubResource("Snd_close_encounter_abduct"),
+&"close_encounter_drop": SubResource("Snd_close_encounter_drop"),
+&"close_encounter_miss": SubResource("Snd_close_encounter_miss")
+})
+kill_sound = ExtResource("16_a")

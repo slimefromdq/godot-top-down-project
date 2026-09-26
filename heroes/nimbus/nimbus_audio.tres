@@ -1,0 +1,100 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="2_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="3_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="4_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="5_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/nimbus/rifle_shot.wav" id="6_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/reload.wav" id="7_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/dry_fire.wav" id="8_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/nimbus/scope_in.wav" id="9_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/nimbus/umbrella_open.wav" id="10_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/nimbus/parry_ting.wav" id="11_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/feel/impact_light.wav" id="12_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/nimbus/thunder.wav" id="13_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/kill_chime.tres" id="14_a"]
+
+[sub_resource type="Resource" id="Snd_umbrella_rifle_fire"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("6_a")])
+volume_db = -3.0
+min_interval = 0.1
+max_voices = 3
+
+[sub_resource type="Resource" id="Snd_umbrella_rifle_reload_start"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("7_a")])
+volume_db = -6.0
+pitch_min = 0.8
+pitch_max = 0.85
+
+[sub_resource type="Resource" id="Snd_umbrella_rifle_reload_end"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("8_a")])
+volume_db = -10.0
+pitch_min = 0.8
+pitch_max = 0.85
+min_interval = 0.2
+
+[sub_resource type="Resource" id="Snd_scope_applied"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("9_a")])
+volume_db = -8.0
+
+[sub_resource type="Resource" id="Snd_scope_released"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("9_a")])
+volume_db = -12.0
+pitch_min = 0.75
+pitch_max = 0.8
+
+[sub_resource type="Resource" id="Snd_parry_applied"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("10_a")])
+volume_db = -6.0
+pitch_min = 1.1
+pitch_max = 1.2
+
+[sub_resource type="Resource" id="Snd_parry_success"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("11_a")])
+volume_db = -2.0
+
+[sub_resource type="Resource" id="Snd_descend_launch"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("10_a")])
+volume_db = -4.0
+pitch_min = 0.8
+pitch_max = 0.85
+
+[sub_resource type="Resource" id="Snd_descend_land"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("12_a")])
+volume_db = -8.0
+pitch_min = 0.8
+pitch_max = 0.9
+
+[sub_resource type="Resource" id="Snd_overcast_zone_start"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("13_a")])
+max_voices = 2
+
+[resource]
+script = ExtResource("1_a")
+cues = Dictionary[StringName, ExtResource("2_a")]({
+&"ability_failed": ExtResource("3_a"),
+&"hurt": ExtResource("4_a"),
+&"death": ExtResource("5_a"),
+&"umbrella_rifle_fire": SubResource("Snd_umbrella_rifle_fire"),
+&"umbrella_rifle_reload_start": SubResource("Snd_umbrella_rifle_reload_start"),
+&"umbrella_rifle_reload_end": SubResource("Snd_umbrella_rifle_reload_end"),
+&"scope_applied": SubResource("Snd_scope_applied"),
+&"scope_released": SubResource("Snd_scope_released"),
+&"parry_applied": SubResource("Snd_parry_applied"),
+&"parry_success": SubResource("Snd_parry_success"),
+&"descend_launch": SubResource("Snd_descend_launch"),
+&"descend_land": SubResource("Snd_descend_land"),
+&"overcast_zone_start": SubResource("Snd_overcast_zone_start")
+})
+kill_sound = ExtResource("14_a")

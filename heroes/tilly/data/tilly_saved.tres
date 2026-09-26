@@ -1,6 +1,13 @@
 [gd_resource type="Resource" script_class="StatusEffect" format=3]
 
 [ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="90_snd"]
+[ext_resource type="AudioStream" path="res://audio/sfx/tilly/saved.wav" id="91_snd"]
+
+[sub_resource type="Resource" id="Snd_saved"]
+script = ExtResource("90_snd")
+streams = Array[AudioStream]([ExtResource("91_snd")])
+volume_db = -2.0
 
 [resource]
 script = ExtResource("1_s")
@@ -9,3 +16,4 @@ display_name = "Caught by the Net"
 duration = 1.0
 untargetable = true
 body_alpha = 0.6
+apply_sound = SubResource("Snd_saved")

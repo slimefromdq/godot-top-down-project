@@ -1,0 +1,128 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="2_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="3_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="4_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="5_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/butler/cloak_swish.wav" id="6_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/feel/impact_heavy.wav" id="7_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/butler/cloak_tear.wav" id="8_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/dash.wav" id="9_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/butler/service_bell.wav" id="10_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/butler/heartbeat.wav" id="11_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/butler/chomp.wav" id="12_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/butler/hiss.wav" id="13_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/butler/dinner_gong.wav" id="14_a"]
+[ext_resource type="AudioStream" path="res://audio/sfx/butler/bats.wav" id="15_a"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/kill_chime.tres" id="16_a"]
+
+[sub_resource type="Resource" id="Snd_vampiric_cloak_raised"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("6_a")])
+volume_db = -6.0
+
+[sub_resource type="Resource" id="Snd_vampiric_cloak_lowered"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("6_a")])
+volume_db = -12.0
+pitch_min = 1.2
+pitch_max = 1.3
+
+[sub_resource type="Resource" id="Snd_vampiric_cloak_absorbed"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("7_a")])
+volume_db = -10.0
+pitch_min = 0.65
+pitch_max = 0.75
+min_interval = 0.08
+max_voices = 2
+
+[sub_resource type="Resource" id="Snd_vampiric_cloak_broken"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("8_a")])
+volume_db = -2.0
+
+[sub_resource type="Resource" id="Snd_at_your_service_active"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("9_a")])
+volume_db = -8.0
+
+[sub_resource type="Resource" id="Snd_at_your_service_shield"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("10_a")])
+volume_db = -6.0
+
+[sub_resource type="Resource" id="Snd_hunger_starving"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("11_a")])
+pitch_min = 1.0
+pitch_max = 1.0
+
+[sub_resource type="Resource" id="Snd_hunger_recovered"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("10_a")])
+volume_db = -8.0
+pitch_min = 0.88
+pitch_max = 0.92
+
+[sub_resource type="Resource" id="Snd_bite_hit"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("12_a")])
+volume_db = -2.0
+
+[sub_resource type="Resource" id="Snd_pounce_active"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("9_a")])
+volume_db = -6.0
+pitch_min = 0.8
+pitch_max = 0.85
+
+[sub_resource type="Resource" id="Snd_hiss_active"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("13_a")])
+volume_db = -4.0
+
+[sub_resource type="Resource" id="Snd_dinner_is_served_windup"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("14_a")])
+pitch_min = 1.0
+pitch_max = 1.0
+max_voices = 2
+
+[sub_resource type="Resource" id="Snd_dinner_is_served_active"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("15_a")])
+volume_db = -2.0
+
+[sub_resource type="Resource" id="Snd_dinner_is_served_hit"]
+script = ExtResource("2_a")
+streams = Array[AudioStream]([ExtResource("12_a")])
+volume_db = -4.0
+pitch_min = 0.75
+pitch_max = 0.85
+min_interval = 0.05
+max_voices = 4
+
+[resource]
+script = ExtResource("1_a")
+cues = Dictionary[StringName, ExtResource("2_a")]({
+&"ability_failed": ExtResource("3_a"),
+&"hurt": ExtResource("4_a"),
+&"death": ExtResource("5_a"),
+&"vampiric_cloak_raised": SubResource("Snd_vampiric_cloak_raised"),
+&"vampiric_cloak_lowered": SubResource("Snd_vampiric_cloak_lowered"),
+&"vampiric_cloak_absorbed": SubResource("Snd_vampiric_cloak_absorbed"),
+&"vampiric_cloak_broken": SubResource("Snd_vampiric_cloak_broken"),
+&"at_your_service_active": SubResource("Snd_at_your_service_active"),
+&"at_your_service_shield": SubResource("Snd_at_your_service_shield"),
+&"hunger_starving": SubResource("Snd_hunger_starving"),
+&"hunger_recovered": SubResource("Snd_hunger_recovered"),
+&"bite_hit": SubResource("Snd_bite_hit"),
+&"pounce_active": SubResource("Snd_pounce_active"),
+&"hiss_active": SubResource("Snd_hiss_active"),
+&"dinner_is_served_windup": SubResource("Snd_dinner_is_served_windup"),
+&"dinner_is_served_active": SubResource("Snd_dinner_is_served_active"),
+&"dinner_is_served_hit": SubResource("Snd_dinner_is_served_hit")
+})
+kill_sound = ExtResource("16_a")
