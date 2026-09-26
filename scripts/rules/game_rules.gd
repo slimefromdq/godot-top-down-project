@@ -23,6 +23,16 @@ const DEFAULT_PATH := "res://resources/rules/game_rules.tres"
 ## worth the same amount of effective HP, which keeps tank stacking linear.
 @export var resistance_constant: float = 100.0
 
+@export_group("Crowd control")
+## Resolve: after a stun, root or taunt (StatusEffect.is_hard_cc) ends on an
+## actor, they carry resolve_status for this many seconds. 0 turns the rule off.
+@export var resolve_duration: float = 2.0
+## While Resolved, new hard CC lasts this fraction of its duration.
+@export_range(0.0, 1.0, 0.05) var resolve_cc_multiplier: float = 0.5
+## The status that marks a Resolved actor (its look and HUD name). Its own
+## duration is ignored: resolve_duration is used.
+@export var resolve_status: StatusEffect
+
 @export_group("Ability slots")
 ## Every slot a hero can have, in HUD order.
 @export var slots: Array[SlotDefinition] = []
@@ -46,6 +56,10 @@ const DEFAULT_PATH := "res://resources/rules/game_rules.tres"
 ## Layers that stop projectiles and dashes. Low cover and ledges are left out on
 ## purpose: projectiles fly over them.
 @export_flags_2d_physics var wall_mask: int = 1
+## Layers that block line of sight (CombatQueries.has_line_of_sight). Full
+## cover only by default: you can see over low cover and ledges. Bushes block
+## sight by their own rule, not by layer.
+@export_flags_2d_physics var sight_mask: int = 1
 
 
 static var _current: GameRules

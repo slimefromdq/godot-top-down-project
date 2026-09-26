@@ -35,7 +35,7 @@ values.
 * **Feel**
   * Global comfort settings: shake intensity, trauma cap, shake speed, hitstop on/off and scale, nudge scale, flash on/off.
   * The hero's FeelProfile, editable live.
-* **Tools**: export the balance CSV, validate heroes, reset the meter, show or hide the overlays, switch maps.
+* **Tools**: export the balance CSV, validate heroes, reset the meter, show or hide the overlays, switch maps. **Sight lines** draws a line from you to every nearby enemy: green if you can see it, red if a wall or a bush blocks it (`CombatQueries.has_line_of_sight`).
 
 ## F2 stat inspector
 
@@ -109,10 +109,12 @@ godot --headless res://tools/heroes/infrastructure_test.tscn
 godot --headless res://tools/heroes/ranged_infra_test.tscn
 godot --headless res://tools/heroes/support_infra_test.tscn
 godot --headless res://tools/heroes/caster_infra_test.tscn
+godot --headless res://tools/heroes/shared_systems_test.tscn
 godot --headless res://tools/heroes/avery_test.tscn
 godot --headless res://tools/heroes/jose_test.tscn
 godot --headless res://tools/heroes/melody_test.tscn
 godot --headless res://tools/heroes/cosmo_test.tscn
+godot --headless res://tools/heroes/cpt_yellow_test.tscn
 godot --headless res://tools/heroes/feel_test.tscn
 godot --headless res://tools/heroes/balance_tools_test.tscn
 godot --headless res://tools/heroes/map_switch_test.tscn

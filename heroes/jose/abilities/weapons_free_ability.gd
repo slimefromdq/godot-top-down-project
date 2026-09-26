@@ -174,9 +174,8 @@ func _next_target() -> HurtboxComponent:
 func _has_line_of_sight(hurtbox: HurtboxComponent) -> bool:
 	if not get_weapons_free_data().requires_line_of_sight:
 		return true
-	var query := PhysicsRayQueryParameters2D.create(actor.global_position, hurtbox.global_position,
-		GameRules.current().wall_mask)
-	return actor.get_world_2d().direct_space_state.intersect_ray(query).is_empty()
+	var target := hurtbox.owner as Node2D if hurtbox.owner != null else hurtbox.get_parent() as Node2D
+	return CombatQueries.has_line_of_sight(actor, target if target != null else hurtbox)
 
 
 func _fire_at(hurtbox: HurtboxComponent) -> void:

@@ -9,6 +9,7 @@ extends CanvasLayer
 #                       the current level
 #   F4  Damage meter    total, rolling DPS, breakdown by source, healing
 #                       received, damage taken
+#   Tools > Sight lines  line-of-sight overlay (SightLinesOverlay)
 #
 # Everything here edits RUNTIME copies (each hero and ability owns a private
 # duplicate of its data), so nothing is written to .tres files and "Reset"
@@ -40,6 +41,11 @@ var dummy_level: int = 1
 var dummy_fight_back: bool = false
 var dummy_can_die: bool = false
 
+# Tools > Sight lines. The overlay lives in the current map (world space) and
+# is re-added after a map switch while this is on.
+var sight_lines_enabled: bool = false
+var _sight_lines: SightLinesOverlay
+
 
 func _ready() -> void:
 	layer = 40
@@ -66,6 +72,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	_update_sight_lines()
 	_inspect_timer -= delta
 	if _inspect_timer <= 0.0:
 		_inspect_timer = INSPECT_INTERVAL
@@ -73,6 +80,23 @@ func _process(delta: float) -> void:
 			_inspector_label.text = inspect_text()
 		if _meter_panel.visible:
 			_refresh_meter()
+
+
+func set_sight_lines_enabled(enabled: bool) -> void:
+	sight_lines_enabled = enabled
+	_update_sight_lines()
+
+
+func _update_sight_lines() -> void:
+	var scene := get_tree().current_scene
+	var wanted := sight_lines_enabled and scene != null
+	if wanted and not is_instance_valid(_sight_lines):
+		_sight_lines = SightLinesOverlay.new()
+		_sight_lines.name = "SightLinesOverlay"
+		scene.add_child(_sight_lines)
+	elif not wanted and is_instance_valid(_sight_lines):
+		_sight_lines.queue_free()
+		_sight_lines = null
 
 
 func get_player() -> Hero:
@@ -495,6 +519,7 @@ func _tools_tab() -> Control:
 	box.add_child(_button("Reset damage meter", meter.reset))
 	box.add_child(_check("Stat inspector (F2)", _inspector.visible, func(on): _inspector.visible = on))
 	box.add_child(_check("Damage meter (F4)", _meter_panel.visible, func(on): _meter_panel.visible = on))
+	box.add_child(_check("Sight lines (green seen, red blocked)", sight_lines_enabled, set_sight_lines_enabled))
 	box.add_child(_label("Maps (F3 cycles)", 15))
 	for path in GameRules.current().test_maps:
 		box.add_child(_button(path.get_file().get_basename().capitalize(), func(): MapSwitcher.go_to(path)))

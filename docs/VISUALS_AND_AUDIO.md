@@ -144,6 +144,18 @@ so they look the same on every target:
 - **Attached Vfx**: shown for as long as the status lasts.
 - **Body Tint**: colour blended over the body.
 - **Apply Sound**: played once on application.
+- **Vfx Visible To**: who sees the Attached Vfx: everyone (default), the
+  target's allies, the target's enemies, only the target and its applier,
+  or a list an ability sets with `status_component.set_vfx_viewers(id, actors)`.
+  Only the local player's screen is filtered (`LocalView`); tint, alpha and
+  sound aren't.
+
+## Bushes
+
+A `Bush` hides whoever stands in it from everyone outside it. For the local
+player, `VisualsComponent` stops drawing an enemy (and its health bar and
+minimap dot) while it's hidden; you, your teammates and revealed actors
+(`StatusEffect.reveals`) are always drawn. See `CombatQueries` for the rule.
 
 ## Projectiles
 

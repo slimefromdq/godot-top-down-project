@@ -14,6 +14,11 @@ class_name StatusEffectComponent
 #   status_removed(id, target, reason)    ended for any reason (see REASON_*)
 #   status_target_died(id, target, info)  the target died while carrying it
 # That's how a "mark" ability learns its marked target died, whoever killed it.
+#
+# Resolve (GameRules.resolve_*): when hard CC (StatusEffect.is_hard_cc) that
+# someone else applied ends, the actor gets GameRules.resolve_status; while
+# it lasts, new hard CC is shortened by resolve_cc_multiplier. That's the one
+# place CC chains are limited, so no hero needs its own diminishing returns.
 
 signal status_applied(effect: StatusEffect)
 signal status_removed(effect: StatusEffect)
@@ -45,6 +50,10 @@ var _active: Dictionary = {}
 # Makes every stat-modifier source id unique, even for the same applier
 # re-applying after an expiry.
 static var _next_serial: int = 1
+# StatusEffect.VfxVisibleTo.LISTED: status id -> actors allowed to see its VFX.
+var _vfx_viewers: Dictionary = {}
+# clear() ends everything at once (a reset or death): it grants no Resolve.
+var _clearing := false
 
 
 func _ready() -> void:
@@ -97,6 +106,8 @@ func apply(effect: StatusEffect, source: Node = null, direction: Vector2 = Vecto
 	var first_of_id := is_new and not has_status(effect.id)
 	var previous_source = null    # untyped: may have been freed
 	var duration := duration_override if duration_override >= 0.0 else effect.duration
+	if _resolve_applies(effect, source) and is_resolved():
+		duration *= GameRules.current().resolve_cc_multiplier
 	var shield := effect.shield_amount.evaluate(StatsComponent.find_on(source)) * strength \
 		if effect.shield_amount != null else 0.0
 	if is_new:
@@ -173,8 +184,44 @@ func remove_from(effect_id: StringName, source: Node) -> void:
 
 
 func clear() -> void:
+	_clearing = true
 	for entry in _active.values():
 		_end(entry, REASON_REMOVED)
+	_clearing = false
+
+
+# --- Resolve -----------------------------------------------------------------
+
+# True while new hard CC on this actor is shortened.
+func is_resolved() -> bool:
+	var status := GameRules.current().resolve_status
+	return status != null and has_status(status.id)
+
+
+# Hard CC from someone else: the kind Resolve shortens and grants.
+func _resolve_applies(effect: StatusEffect, source) -> bool:    # untyped: may be freed
+	return effect.is_hard_cc() and not (is_instance_valid(source) and source == _get_root())
+
+
+func _grant_resolve() -> void:
+	var rules := GameRules.current()
+	if rules.resolve_status == null or rules.resolve_duration <= 0.0:
+		return
+	if health_component != null and health_component.is_dead():
+		return
+	apply(rules.resolve_status, null, Vector2.ZERO, 1.0, rules.resolve_duration)
+
+
+# --- Viewer-filtered VFX ------------------------------------------------------
+
+# Who may see a LISTED status's attached VFX (StatusEffect.VfxVisibleTo).
+# The list lasts until the status fully ends.
+func set_vfx_viewers(effect_id: StringName, viewers: Array) -> void:
+	_vfx_viewers[effect_id] = viewers.duplicate()
+
+
+func get_vfx_viewers(effect_id: StringName) -> Array:
+	return _vfx_viewers.get(effect_id, [])
 
 
 func has_status(effect_id: StringName) -> bool:
@@ -317,6 +364,11 @@ func is_untargetable() -> bool:
 	return _any(func(e: StatusEffect): return e.untargetable)
 
 
+# Seen through bushes (StatusEffect.reveals; see CombatQueries).
+func is_revealed() -> bool:
+	return _any(func(e: StatusEffect): return e.reveals)
+
+
 func is_silenced() -> bool:
 	return _any(func(e: StatusEffect): return e.silences or e.stuns)
 
@@ -411,7 +463,10 @@ func _end(entry: Entry, reason: StringName) -> void:
 			hooks.status_expired.emit(entry.effect.id, _get_root())
 	_notify_removed(entry.source, entry.effect.id, reason)
 	if not has_status(entry.effect.id):
+		_vfx_viewers.erase(entry.effect.id)
 		status_removed.emit(entry.effect)
+	if reason != REASON_TARGET_DIED and not _clearing and _resolve_applies(entry.effect, entry.source):
+		_grant_resolve()
 
 
 func _notify_removed(source, effect_id: StringName, reason: StringName) -> void:
