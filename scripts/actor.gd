@@ -12,6 +12,11 @@ class_name Actor
 signal cue_triggered(cue: StringName, context: Dictionary)
 signal launched(target: Vector2)
 signal landed
+## Something moved this actor against its will: a status push or pull
+## (`distance` in px, after displacement_taken), a carry or an abduction
+## (distance INF). Launches from jump pads are not displacements. MoteCarrier
+## listens for Jostle.
+signal displaced(source: Node, distance: float)
 
 @onready var movement_component: MovementComponent = $Components/MovementComponent
 

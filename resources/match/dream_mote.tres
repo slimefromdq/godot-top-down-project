@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MoteData" format=3]
+
+[ext_resource type="Script" path="res://scripts/match/mote_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://scenes/match/mote_look.tscn" id="2_look"]
+
+[resource]
+script = ExtResource("1_data")
+id = &"dream_mote"
+value = 5
+is_dream = true
+magnet_radius = 130.0
+look_scene = ExtResource("2_look")
+size = 62.0

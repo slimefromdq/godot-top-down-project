@@ -128,6 +128,10 @@ For each slot in the definition's `abilities` dictionary, point at an
 | hold to raise a shield/cloak on your aim arc that eats projectiles and has its own HP | `BlockerData` + `BlockerAbility` (a `FrontalBlocker`: HP `ScalingValue`, regen, break, slots allowed while raised, raised/lowered statuses) | none |
 | lifesteal / a drain | `AbilityData.lifesteal` (share of this ability's damage dealt that heals the caster) | none |
 | a status only while dashing (untargetable swarm, barging armor) | `ChargeData.dash_status` | none |
+| read how many Motes someone carries (show a count, scale an effect) | `MoteCarrier.find_on(actor).get_mote_count()` / `get_mote_value()` / `changed` signal | a small script |
+| knock Motes loose (Jostle) | nothing: any enemy status push or pull of at least `MatchRules.jostle_min_distance`, a carry, or an abduction (`MinigameHost.play(game, source)`) already reports `Actor.displaced(source, distance)` | none |
+| can't be jostled (Iron Will) | `StatusEffect.DISPLACEMENT_TAKEN` 0 in `stat_multipliers` | none |
+| a fake Mote that pops when grabbed (a lure) | `MoteDirector.spawn_mote(at)` then `mote.is_decoy = true` | a small script |
 | an ally-targeted cast that still goes with no ally (dash anyway) | `AllyTargeting.optional` (`cast_ally` is null) | none |
 | a meter on the ability bar (hunger, heat) | override `Ability.get_hud_meter()` (0-1) | a small script |
 | a CC-only melee swing (no damage) | `MeleeAttackData` with no `damage` and an `on_hit_status` | none |

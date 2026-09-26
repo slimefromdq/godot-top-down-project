@@ -151,6 +151,7 @@ func apply(effect: StatusEffect, source: Node = null, direction: Vector2 = Vecto
 
 	if effect.carry_enabled and (is_new or previous_source != source):
 		entry.carry_offset = _carry_offset_for(effect, source)
+		_report_displaced(source, INF)
 	entry.source = source
 	if effect.tick_damage != null:
 		entry.tick_amount = effect.tick_damage.evaluate(StatsComponent.find_on(source))
@@ -562,10 +563,19 @@ func _displace(effect: StatusEffect, source: Node, direction: Vector2) -> void:
 			var gap := root.global_position.distance_to(source_2d.global_position)
 			var distance := minf(effect.displace_distance * scale, maxf(gap - effect.pull_stop_distance, 0.0))
 			movement_component.displace(-dir, distance, effect.displace_duration)
+			_report_displaced(source, distance)
 			return
 	if dir == Vector2.ZERO:
 		return
 	movement_component.displace(dir.normalized(), effect.displace_distance * scale, effect.displace_duration)
+	_report_displaced(source, effect.displace_distance * scale)
+
+
+# Actor.displaced, for anything that cares who pushed (Mote Jostle).
+func _report_displaced(source: Node, distance: float) -> void:
+	var root := _get_root()
+	if distance > 0.0 and root != null and root.has_signal(&"displaced"):
+		root.displaced.emit(source, distance)
 
 
 func _compel_entry() -> Entry:

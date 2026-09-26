@@ -11,7 +11,9 @@ extends CanvasLayer
 #                       received, damage taken
 #   Tools > Sight lines  line-of-sight overlay (SightLinesOverlay)
 #   Match               gold, XP, level, warmup skip, end the match, play
-#                       as either team (MatchManager)
+#                       as either team (MatchManager); Motes at the cursor,
+#                       give Motes, force a dreaming zone, clear Motes, and
+#                       the Mote spawn overlay on the M map view
 #
 # Everything here edits RUNTIME copies (each hero and ability owns a private
 # duplicate of its data), so nothing is written to .tres files and "Reset"
@@ -49,6 +51,9 @@ var dummy_can_die: bool = false
 # is re-added after a map switch while this is on.
 var sight_lines_enabled: bool = false
 var _sight_lines: SightLinesOverlay
+# Match > Mote spawns on the M map view.
+var mote_overlay_enabled: bool = false
+var _mote_overlay: MoteSpawnOverlay
 
 
 func _ready() -> void:
@@ -77,6 +82,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(delta: float) -> void:
 	_update_sight_lines()
+	_update_mote_overlay()
 	_inspect_timer -= delta
 	if _inspect_timer <= 0.0:
 		_inspect_timer = INSPECT_INTERVAL
@@ -279,6 +285,51 @@ func set_player_team(team: StringName) -> void:
 		hero.teleport_to(manager.get_spawn_point(team))
 	else:
 		hero.team = team
+
+
+func get_mote_director() -> MoteDirector:
+	return MoteDirector.find(get_tree())
+
+
+# A Mote (or Dream Mote) at the cursor.
+func spawn_mote_at_cursor(dream: bool = false) -> Mote:
+	var director := get_mote_director()
+	var hero := get_player()
+	if director == null or hero == null:
+		return null
+	return director.spawn_mote(hero.aim_point, dream)
+
+
+# Fill the player's stack with `count` small Motes (up to the cap).
+func give_player_motes(count: int) -> int:
+	var hero := get_player()
+	var director := get_mote_director()
+	var carrier := MoteCarrier.find_on(hero)
+	if carrier == null or director == null:
+		return 0
+	var added := 0
+	for i in count:
+		if not carrier.add_mote(director.small_data, director.small_data.value):
+			break
+		added += 1
+	return added
+
+
+func set_mote_overlay_enabled(enabled: bool) -> void:
+	mote_overlay_enabled = enabled
+	_update_mote_overlay()
+
+
+func _update_mote_overlay() -> void:
+	var scene := get_tree().current_scene
+	var wanted := mote_overlay_enabled and scene != null
+	if wanted and not is_instance_valid(_mote_overlay):
+		_mote_overlay = MoteSpawnOverlay.new()
+		_mote_overlay.name = "MoteSpawnOverlay"
+		scene.add_child(_mote_overlay)
+	elif not wanted and is_instance_valid(_mote_overlay):
+		_mote_overlay.queue_free()
+		_mote_overlay = null
 
 
 # Replace the local player with another hero, keeping position, team and level.
@@ -644,6 +695,25 @@ func _match_tab(hero: Hero) -> Control:
 		button.modulate = MatchManager.team_color(team)
 		teams.add_child(button)
 	box.add_child(teams)
+
+	box.add_child(_label("Motes", 15))
+	var motes := HFlowContainer.new()
+	motes.add_child(_button("Mote at cursor", func(): spawn_mote_at_cursor(false)))
+	motes.add_child(_button("Dream Mote at cursor", func(): spawn_mote_at_cursor(true)))
+	var give_count := _spin(3, 1, 10, 1)
+	motes.add_child(_button("Give Motes:", func(): give_player_motes(int(give_count.value))))
+	motes.add_child(give_count)
+	motes.add_child(_button("Force next zone", func():
+		var director := get_mote_director()
+		if director != null:
+			manager.start_playing()
+			director.force_next_zone()))
+	motes.add_child(_button("Clear all Motes", func():
+		var director := get_mote_director()
+		if director != null:
+			director.clear_motes()))
+	box.add_child(motes)
+	box.add_child(_check("Mote spawns on the M map view", mote_overlay_enabled, set_mote_overlay_enabled))
 
 	box.add_child(_label("MatchRules (live)", 15))
 	var editor := PropertyEditor.new()

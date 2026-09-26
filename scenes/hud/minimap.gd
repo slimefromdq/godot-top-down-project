@@ -13,7 +13,16 @@ class_name Minimap
 # you = white arrow, same team = ally, other team = enemy, no team = neutral.
 #
 # Objectives: add any Node2D to group "minimap_objectives" and it shows as a
-# diamond. Give it a `team` property to colour it by owner.
+# diamond. Give it a `team` property to colour it by owner, `minimap_fogged
+# = true` to show it only where your team can see (small Motes), and
+# `minimap_icon_scale` to size it.
+#
+# Fog (enemy_fog): an enemy shows only while someone on your team can see it
+# (line of sight within sight_range, bushes respected), it's revealed
+# (StatusEffect.reveals), or it's in the "minimap_revealed" group (a Mote
+# carrier over the top reveal step). add_ping(position, viewer_team) flashes
+# a spot for one team only (the lower reveal steps ping instead). A hero
+# carrying Motes gets a pip per Mote next to its dot.
 
 @export var width: float = 280.0
 @export var margin: float = 20.0
@@ -23,16 +32,30 @@ class_name Minimap
 @export var enemy_color := Color("f05252")
 @export var neutral_color := Color("c8c8c8")
 @export var objective_color := Color("fbbf24")
+@export_group("Fog")
+## Hide enemies your team can't see. Off = every unit always shows.
+@export var enemy_fog: bool = true
+@export var sight_range: float = 1400.0
+## Seconds between visibility refreshes (line-of-sight rays are not free).
+@export var fog_refresh: float = 0.1
+@export var ping_time: float = 1.6
+@export var mote_pip_color := Color("fde047")
 
 var _map: GameMap
 var _root: Control
 var _static: Control
 var _dynamic: Control
 var _scale: float = 1.0
+# Fog: node -> shown, rebuilt every fog_refresh.
+var _seen: Dictionary = {}
+var _fog_left: float = 0.0
+# [{position (map space), team, age, kind}]
+var _pings: Array[Dictionary] = []
 
 
 func _ready() -> void:
 	layer = 5
+	add_to_group(&"minimaps")
 	_setup.call_deferred()
 
 
@@ -67,9 +90,66 @@ func _make_layer(draw_callback: Callable) -> Control:
 	return control
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if _dynamic != null:
 		_dynamic.queue_redraw()
+	for ping in _pings:
+		ping.age += delta
+	_pings = _pings.filter(func(p): return p.age < ping_time)
+	_fog_left -= delta
+	if _fog_left <= 0.0:
+		_fog_left = fog_refresh
+		_refresh_fog()
+
+
+## Flash `world_position` on the minimap of `viewer_team`'s players only.
+func add_ping(world_position: Vector2, viewer_team: StringName, kind: StringName = &"") -> void:
+	if _map == null:
+		return
+	var local := _map.get_global_transform().affine_inverse() * world_position
+	_pings.append({"position": local, "team": viewer_team, "age": 0.0, "kind": kind})
+
+
+func get_pings() -> Array[Dictionary]:
+	return _pings
+
+
+## Would the local player's minimap show this unit or objective right now?
+func is_shown(node: Node2D) -> bool:
+	return _seen.get(node, true)
+
+
+func _my_team() -> StringName:
+	var player := get_tree().get_first_node_in_group(&"player") as Node2D
+	return CombatQueries.team_of(player) if player != null else &""
+
+
+func _refresh_fog() -> void:
+	_seen.clear()
+	var my_team := _my_team()
+	if not enemy_fog or my_team == &"":
+		return
+	var eyes: Array[Node2D] = []
+	for node in get_tree().get_nodes_in_group(&"minimap_units"):
+		if node is Node2D and CombatQueries.team_of(node) == my_team and node.is_visible_in_tree():
+			eyes.append(node)
+	for node in get_tree().get_nodes_in_group(&"minimap_units"):
+		var team := CombatQueries.team_of(node)
+		if node is Node2D and team != &"" and team != my_team:
+			_seen[node] = node.is_in_group(&"minimap_revealed") or CombatQueries.is_revealed(node) \
+				or _seen_by(eyes, node, true)
+	for node in get_tree().get_nodes_in_group(&"minimap_objectives"):
+		if node is Node2D and node.get(&"minimap_fogged") == true:
+			_seen[node] = _seen_by(eyes, node, false)
+
+
+func _seen_by(eyes: Array[Node2D], target: Node2D, bushes_hide: bool) -> bool:
+	for eye in eyes:
+		if eye.global_position.distance_to(target.global_position) > sight_range:
+			continue
+		if CombatQueries.has_line_of_sight(eye, target) if bushes_hide else CombatQueries.walls_clear(eye, target):
+			return true
+	return false
 
 
 # Map-local position -> minimap pixel.
@@ -141,16 +221,27 @@ func _draw_dynamic(canvas: Control) -> void:
 		canvas.draw_rect(Rect2(_to_minimap(center - view_size / 2.0), view_size * _scale), Color(1, 1, 1, 0.35), false, 1.0)
 
 	for node in get_tree().get_nodes_in_group(&"minimap_objectives"):
-		if node is Node2D and node.is_visible_in_tree():
+		if node is Node2D and node.is_visible_in_tree() and is_shown(node):
 			var point := _to_minimap(_to_map(node))
 			var owner_team = node.get("team")
 			var color := objective_color if owner_team == null or owner_team == &"" \
 				else (ally_color if owner_team == my_team else enemy_color)
-			canvas.draw_colored_polygon(PackedVector2Array([point + Vector2(0, -7), point + Vector2(7, 0),
-				point + Vector2(0, 7), point + Vector2(-7, 0)]), color)
+			var k: float = node.get(&"minimap_icon_scale") if node.get(&"minimap_icon_scale") != null else 1.0
+			var d := 7.0 * k
+			canvas.draw_colored_polygon(PackedVector2Array([point + Vector2(0, -d), point + Vector2(d, 0),
+				point + Vector2(0, d), point + Vector2(-d, 0)]), color)
+
+	for ping in _pings:
+		if ping.team != my_team:
+			continue
+		var k: float = ping.age / ping_time
+		var point := _to_minimap(ping.position)
+		var fade := 1.0 - k
+		canvas.draw_arc(point, 4.0 + 12.0 * k, 0.0, TAU, 20, Color(enemy_color, fade), 2.0)
+		canvas.draw_circle(point, 3.0, Color(enemy_color, fade))
 
 	for node in get_tree().get_nodes_in_group(&"minimap_units"):
-		if not node is Node2D or node == player or not node.is_visible_in_tree():
+		if not node is Node2D or node == player or not node.is_visible_in_tree() or not is_shown(node):
 			continue
 		var unit_team = node.get("team")
 		var color := neutral_color
@@ -159,6 +250,7 @@ func _draw_dynamic(canvas: Control) -> void:
 		var point := _to_minimap(_to_map(node))
 		canvas.draw_circle(point, 4.5, Color.BLACK)
 		canvas.draw_circle(point, 3.5, color)
+		_draw_mote_pips(canvas, node, point)
 
 	# You: an arrow pointing where you aim, drawn last so it's always on top.
 	if player != null and player.is_visible_in_tree():
@@ -168,3 +260,15 @@ func _draw_dynamic(canvas: Control) -> void:
 		var arrow := PackedVector2Array([point + aim * 8.0, point - aim * 5.0 + side * 5.0, point - aim * 5.0 - side * 5.0])
 		canvas.draw_colored_polygon(arrow, Color.WHITE)
 		canvas.draw_polyline(arrow + PackedVector2Array([arrow[0]]), Color.BLACK, 1.5)
+		_draw_mote_pips(canvas, player, point)
+
+
+# A pip per carried Mote, in an arc above the dot.
+func _draw_mote_pips(canvas: Control, node: Node, point: Vector2) -> void:
+	var carrier := MoteCarrier.find_on(node)
+	var n := carrier.get_mote_count() if carrier != null else 0
+	for i in n:
+		var a := -PI * 0.5 + (i - (n - 1) * 0.5) * 0.55
+		var at := point + Vector2.from_angle(a) * 8.0
+		canvas.draw_circle(at, 2.2, Color.BLACK)
+		canvas.draw_circle(at, 1.6, mote_pip_color)

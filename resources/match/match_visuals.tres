@@ -3,6 +3,12 @@
 [ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_cue"]
 [ext_resource type="PackedScene" path="res://effects/overdrive_burst.tscn" id="2_burst"]
 [ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="3_profile"]
+[ext_resource type="PackedScene" path="res://effects/spawn_puff.tscn" id="4_puff"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="5_ring"]
+[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="6_dash"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="7_death"]
+[ext_resource type="PackedScene" path="res://effects/feel/area_telegraph.tscn" id="8_tele"]
+[ext_resource type="PackedScene" path="res://effects/wall_puff.tscn" id="9_wall"]
 
 [sub_resource type="Resource" id="Cue_level_up"]
 script = ExtResource("1_cue")
@@ -14,8 +20,76 @@ tint = Color(1, 0.95, 0.55, 1)
 flash_color = Color(1, 0.95, 0.6, 0.8)
 flash_duration = 0.2
 
+[sub_resource type="Resource" id="Cue_mote_spawn"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("4_puff")
+align_to_direction = false
+scale = 0.6
+tint = Color(1, 0.9, 0.4, 1)
+
+[sub_resource type="Resource" id="Cue_mote_pickup"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("5_ring")
+align_to_direction = false
+scale = 0.35
+tint = Color(1, 0.92, 0.45, 1)
+
+[sub_resource type="Resource" id="Cue_mote_drop"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("6_dash")
+align_to_direction = false
+tint = Color(1, 0.9, 0.5, 1)
+
+[sub_resource type="Resource" id="Cue_mote_burst"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("7_death")
+align_to_direction = false
+tint = Color(1, 0.88, 0.3, 1)
+
+[sub_resource type="Resource" id="Cue_mote_fade"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("4_puff")
+align_to_direction = false
+scale = 0.4
+tint = Color(1, 1, 1, 0.6)
+
+[sub_resource type="Resource" id="Cue_dream_mote_spawn"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("2_burst")
+align_to_direction = false
+scale = 1.6
+tint = Color(0.9, 0.8, 1, 1)
+
+[sub_resource type="Resource" id="Cue_dream_mote_warning"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("8_tele")
+align_to_direction = false
+tint = Color(0.85, 0.75, 1, 1)
+
+[sub_resource type="Resource" id="Cue_zone_start"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("5_ring")
+align_to_direction = false
+scale = 3.0
+tint = Color(0.85, 0.7, 1, 1)
+
+[sub_resource type="Resource" id="Cue_mote_decoy_pop"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("9_wall")
+align_to_direction = false
+tint = Color(1, 0.8, 0.8, 1)
+
 [resource]
 script = ExtResource("3_profile")
 cues = Dictionary[StringName, ExtResource("1_cue")]({
-&"level_up": SubResource("Cue_level_up")
+&"dream_mote_spawn": SubResource("Cue_dream_mote_spawn"),
+&"dream_mote_warning": SubResource("Cue_dream_mote_warning"),
+&"level_up": SubResource("Cue_level_up"),
+&"mote_burst": SubResource("Cue_mote_burst"),
+&"mote_decoy_pop": SubResource("Cue_mote_decoy_pop"),
+&"mote_drop": SubResource("Cue_mote_drop"),
+&"mote_fade": SubResource("Cue_mote_fade"),
+&"mote_pickup": SubResource("Cue_mote_pickup"),
+&"mote_spawn": SubResource("Cue_mote_spawn"),
+&"zone_start": SubResource("Cue_zone_start")
 })

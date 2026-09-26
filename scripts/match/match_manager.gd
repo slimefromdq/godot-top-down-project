@@ -105,6 +105,10 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	if rules == null:
 		rules = MatchRules.current().duplicate()
+	if get_node_or_null(^"MoteDirector") == null:
+		var director := MoteDirector.new()
+		director.name = "MoteDirector"
+		add_child(director)
 	get_tree().node_added.connect(_on_node_added)
 	for node in get_tree().get_nodes_in_group(&"heroes"):
 		_try_register(node)
@@ -333,6 +337,27 @@ func set_level(hero: Hero, level: int) -> void:
 	if after > before:
 		level_up.emit(hero, after)
 		play_match_cue(hero, &"level_up", {"level": after})
+
+
+# A match cue in the world (Motes, zones ...): the match-wide look and sound
+# from MatchRules.cue_visuals / cue_audio. context.position says where.
+static func play_world_cue(from: Node, cue: StringName, context: Dictionary = {}) -> void:
+	if from == null or not from.is_inside_tree():
+		return
+	var manager := find(from.get_tree())
+	var r := manager.get_rules() if manager != null else MatchRules.current()
+	var at: Vector2 = context.get("position", (from as Node2D).global_position if from is Node2D else Vector2.ZERO)
+	context["position"] = at
+	if r.cue_visuals != null and r.cue_visuals.cues.has(cue):
+		var definition: VisualCue = r.cue_visuals.cues[cue]
+		context.merge({"align": definition.align_to_direction})
+		var effect := EffectSpawner.spawn(from, definition.effect_scene, context)
+		if effect is Node2D:
+			effect.position += definition.offset
+			effect.scale *= definition.scale
+			effect.modulate *= definition.tint
+	if r.cue_audio != null:
+		AudioManager.play_sfx(r.cue_audio.cues.get(cue), at, context.get("pitch", 1.0))
 
 
 # A match cue on a hero: its own profile's entry if it has one, else the

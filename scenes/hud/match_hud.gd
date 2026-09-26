@@ -5,6 +5,10 @@ class_name MatchHud
 # two wake meters), the local player's gold, level and XP bar to the left of
 # the ability bar, and a respawn countdown while they're dead.
 #
+# Off-screen arrows: every Node2D in the "offscreen_arrows" group (the Dream
+# Mote now, the Dreamers in M3) gets an arrow at the screen edge pointing to
+# it while it's off screen, in its `arrow_color`.
+#
 # Read-only: it listens to the MatchManager and polls the player each frame.
 # Hides itself when the scene has no MatchManager.
 
@@ -12,6 +16,8 @@ class_name MatchHud
 @export var wake_slot_width: float = 320.0
 @export var gold_color := Color("fbd34d")
 @export var xp_color := Color("a78bfa")
+## Arrows sit this far in from the screen edge.
+@export var arrow_margin: float = 46.0
 
 var match_manager: MatchManager
 
@@ -22,6 +28,8 @@ var _gold_label: Label
 var _xp_bar: ProgressBar
 var _xp_label: Label
 var _respawn_label: Label
+var _arrows: Control
+var _mote_label: Label
 ## Left/right of the clock, empty until the wake meters arrive.
 var wake_slot_a: Control
 var wake_slot_b: Control
@@ -45,6 +53,7 @@ func get_player() -> Hero:
 func _process(_delta: float) -> void:
 	if match_manager == null or not is_instance_valid(match_manager):
 		return
+	_arrows.queue_redraw()
 	_clock_label.text = clock_text()
 	match match_manager.state:
 		MatchManager.State.WARMUP:
@@ -66,9 +75,48 @@ func _process(_delta: float) -> void:
 		var need := match_manager.get_xp_to_next(hero)
 		_xp_bar.value = match_manager.get_xp(hero) / need if need > 0.0 else 1.0
 		_xp_label.text = "%d / %d" % [floori(match_manager.get_xp(hero)), roundi(need)]
+	var carrier := MoteCarrier.find_on(hero)
+	var count := carrier.get_mote_count() if carrier != null else 0
+	_mote_label.visible = count > 0
+	_mote_label.text = "Motes %d / %d  (value %d)" % [count, carrier.get_max(), carrier.get_mote_value()] if count > 0 else ""
 	var respawn := match_manager.get_respawn_left(hero)
 	_respawn_label.visible = hero.health_component.is_dead() and respawn > 0.0
 	_respawn_label.text = "Respawning in %d" % ceili(respawn)
+
+
+## Screen positions of the off-screen arrows (for tests and captures).
+func arrow_points() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	var view := get_viewport().get_visible_rect().size
+	var to_screen := get_viewport().get_canvas_transform()
+	var inner := Rect2(Vector2.ONE * arrow_margin, view - Vector2.ONE * arrow_margin * 2.0)
+	var center := view / 2.0
+	for node in get_tree().get_nodes_in_group(&"offscreen_arrows"):
+		if not node is Node2D or not node.is_visible_in_tree():
+			continue
+		var screen: Vector2 = to_screen * (node as Node2D).global_position
+		if Rect2(Vector2.ZERO, view).has_point(screen):
+			continue
+		var dir := (screen - center).normalized()
+		# Walk from the centre toward it and stop at the inner rect's edge.
+		var tx := (inner.size.x / 2.0) / maxf(absf(dir.x), 0.0001)
+		var ty := (inner.size.y / 2.0) / maxf(absf(dir.y), 0.0001)
+		var color = node.get(&"arrow_color")
+		result.append({"position": center + dir * minf(tx, ty), "direction": dir,
+			"color": color if color is Color else Color.WHITE, "node": node})
+	return result
+
+
+func _draw_arrows(canvas: Control) -> void:
+	for arrow in arrow_points():
+		var at: Vector2 = arrow.position
+		var dir: Vector2 = arrow.direction
+		var side := dir.orthogonal()
+		var tri := PackedVector2Array([at + dir * 22.0, at - dir * 10.0 + side * 16.0, at - dir * 10.0 - side * 16.0])
+		canvas.draw_colored_polygon(tri, arrow.color)
+		canvas.draw_polyline(tri + PackedVector2Array([tri[0]]), Color(0, 0, 0, 0.8), 2.0)
+		canvas.draw_circle(at - dir * 26.0, 9.0, arrow.color)
+		canvas.draw_arc(at - dir * 26.0, 9.0, 0.0, TAU, 16, Color(0, 0, 0, 0.8), 2.0)
 
 
 func clock_text() -> String:
@@ -109,7 +157,7 @@ func _build() -> void:
 	economy.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	economy.offset_left = -510
 	economy.offset_right = -300
-	economy.offset_top = -110
+	economy.offset_top = -140
 	economy.offset_bottom = -24
 	economy.alignment = BoxContainer.ALIGNMENT_END
 	add_child(economy)
@@ -141,6 +189,18 @@ func _build() -> void:
 	economy.add_child(_xp_bar)
 	_xp_label = _label(12)
 	economy.add_child(_xp_label)
+	_mote_label = _label(16)
+	_mote_label.modulate = Color("fde68a")
+	_mote_label.visible = false
+	economy.add_child(_mote_label)
+	economy.move_child(_mote_label, 0)
+
+	_arrows = Control.new()
+	_arrows.name = "OffscreenArrows"
+	_arrows.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_arrows.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_arrows.draw.connect(_draw_arrows.bind(_arrows))
+	add_child(_arrows)
 
 	_respawn_label = _label(40)
 	_respawn_label.set_anchors_preset(Control.PRESET_CENTER)

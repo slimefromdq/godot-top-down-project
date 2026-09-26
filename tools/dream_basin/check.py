@@ -8,6 +8,10 @@
   must reach every region; from the basin floor the Wilds must only be
   reachable through a stairwell or jump pad.
 * Spawn doors: longest clear line of sight into each door from outside.
+* Motes: every trickle point, dreaming-zone spawn and the Dream Mote spot is
+  reachable on foot from A spawn (no pads or teleporters), 180-degree
+  mirrored, and at least MOTE_DOOR_CLEARANCE from every spawn door; zone
+  spawns sit inside their own zone, and zones come in mirrored pairs.
 """
 
 import math
@@ -17,6 +21,7 @@ from layout import HX, HY, SCREEN_W, Y, build
 
 BODY = 52      # actor collision circle radius (50) plus a hair
 CELL = 25
+MOTE_DOOR_CLEARANCE = 1200   # about one screen from any spawn door
 
 
 def seg_hits_poly(a, b, pts):
@@ -135,6 +140,60 @@ def flood(m, grid, start, use_pads=True):
     return seen, cell_of
 
 
+def _mirrored(points, tol=1.0):
+    """Every point's 180-degree twin is in the list."""
+    return [p for p in points if not any(math.dist((-p[0], -p[1]), q) <= tol for q in points)]
+
+
+def check_motes(m, grid):
+    ok = True
+    print("== Motes ==")
+    trickle = [(mk["x"], mk["y"]) for mk in m["mote_spawns"]]
+    zone_spawns = [p for z in m["dream_zones"] for p in z["spawns"]]
+    dream = [(d["x"], d["y"]) for d in m["dream_point"]]
+    print(f"  {len(trickle)} trickle points, {len(m['dream_zones'])} zone halves, "
+          f"{len(zone_spawns)} zone spawns, {len(dream)} Dream Mote spot")
+    ok &= len(dream) == 1
+
+    unmatched = _mirrored(trickle) + _mirrored(zone_spawns) + _mirrored(dream)
+    for p in unmatched:
+        print(f"  NOT MIRRORED: {p}")
+    ok &= not unmatched
+
+    pairs = {}
+    for z in m["dream_zones"]:
+        pairs.setdefault(z["pair"], []).append(z)
+        for p in z["spawns"]:
+            if not point_in_poly(p, z["pts"]):
+                print(f"  OUTSIDE ITS ZONE: {z['pair']} spawn {p}")
+                ok = False
+    for pair, zones in pairs.items():
+        mirrored = len(zones) == 2 and all(
+            any(math.dist((-p[0], -p[1]), q) <= 1.0 for q in zones[1]["pts"]) for p in zones[0]["pts"])
+        if not mirrored:
+            print(f"  ZONE PAIR NOT MIRRORED: {pair} ({len(zones)} halves)")
+            ok = False
+
+    doors = []
+    for sign in (1, -1):
+        for door in ((0, Y(3300)), (-1400, Y(3650)), (1400, Y(3650))):
+            doors.append((door[0] * sign, door[1] * sign))
+    seen, cell_of = flood(m, grid, (-700, Y(3880)), use_pads=False)
+    bad = 0
+    for label, points in (("trickle", trickle), ("zone", zone_spawns), ("dream", dream)):
+        for p in points:
+            near = min(math.dist(p, d) for d in doors)
+            r, c = cell_of(*p)
+            if not seen[r][c]:
+                print(f"  UNREACHABLE on foot: {label} {p}")
+                bad += 1
+            if near < MOTE_DOOR_CLEARANCE:
+                print(f"  TOO CLOSE TO A SPAWN DOOR: {label} {p} ({near:.0f}px)")
+                bad += 1
+    print(f"  {bad} problems (reach on foot, >= {MOTE_DOOR_CLEARANCE}px from doors)")
+    return ok and bad == 0
+
+
 def main():
     m = build()
     ok = True
@@ -196,6 +255,8 @@ def main():
         reach = seen[r][c]
         print(f"  from A spawn -> {name:<13} {'ok' if reach else 'UNREACHABLE'}")
         ok &= reach
+    ok &= check_motes(m, grid)
+
     # Without pads/teleporters, from the Cradle, the only way up is stairs.
     # Block the stairwells too and the Wilds must become unreachable.
     blocked = grid[0]

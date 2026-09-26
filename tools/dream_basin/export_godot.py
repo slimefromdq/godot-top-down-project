@@ -213,6 +213,24 @@ def export_map(m):
         s.node(f"Team{mk['team']}_{counts[team]}", "SpawnPoints", "Marker2D", groups=[f"spawn_{team}"],
                position=v2((mk["x"], mk["y"])))
 
+    # --- motes: trickle points, dreaming zones, the Dream Mote spot ------------
+    zone_script = s.res("Script", "res://scripts/match/dream_zone.gd")
+    s.node("Motes", ".", "Node2D")
+    for i, mk in enumerate(m["mote_spawns"]):
+        s.node(f"MoteSpawn{i + 1}", "Motes", "Marker2D", groups=["mote_spawn"], position=v2((mk["x"], mk["y"])))
+    for d in m["dream_point"]:
+        s.node("DreamMoteSpawn", "Motes", "Marker2D", groups=["dream_mote_spawn"], position=v2((d["x"], d["y"])))
+    s.node("DreamZones", ".", "Node2D")
+    seen_pairs = {}
+    for z in m["dream_zones"]:
+        seen_pairs[z["pair"]] = seen_pairs.get(z["pair"], 0) + 1
+        name = f'{z["pair"].capitalize()}{seen_pairs[z["pair"]]}'
+        s.node(name, "DreamZones", "Area2D", script=zone_script, pair_id=f'&"{z["pair"]}"',
+               display_name=f'"{z["name"]}"', collision_layer="0", collision_mask="0")
+        s.node("Shape", f"DreamZones/{name}", "CollisionPolygon2D", polygon=pva(z["pts"]))
+        for i, p in enumerate(z["spawns"]):
+            s.node(f"Spawn{i + 1}", f"DreamZones/{name}", "Marker2D", position=v2(p))
+
     # --- overview overlay (shown by MapDebugView) ------------------------------
     s.node("Overview", ".", "Node2D", groups=["map_overview"], visible="false", z_index=100)
     for i, ln in enumerate(m["lanes"]):

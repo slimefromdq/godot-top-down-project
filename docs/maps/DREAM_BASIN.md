@@ -153,6 +153,22 @@ Natural pieces are drawn smaller than authored, controlled by `SHRINK` in `layou
   - Detaches the player's camera and tweens it to fit `GameMap.bounds`.
   - Shows the `map_overview` group: region names and sight lanes.
 
+## Motes
+
+The objective's markers come from `layout.py` like everything else (never
+hand-edit the scene):
+
+- **24 trickle points** (`mote_spawn` group, 12 authored + their rotations)
+  over the Wilds, the Lullaby Ruins, the Driftfields and the Cradle ring.
+- **6 dreaming-zone pairs** (`DreamZone`, `dream_zone` group): the Glades,
+  Stilt Ridges, Tangles, Lullaby Ruins, Driftfields and Orchards. Each half
+  has 4 spawn points; both halves of a pair always dream together.
+- **The Dream Mote spot** (`dream_mote_spawn`) at the Cradle centre.
+
+`check.py` confirms each is reachable on foot from A spawn, 180°-mirrored,
+at least 1200 px from every spawn door, and that zone spawns sit in their
+own zone.
+
 ## Where the layout comes from
 
 `tools/dream_basin/layout.py` is the source of truth. You hand-author one half, and it is rotated to make the other half.
