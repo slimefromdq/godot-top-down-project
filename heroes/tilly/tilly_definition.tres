@@ -12,6 +12,7 @@
 [ext_resource type="Resource" path="res://heroes/tilly/abilities/crumple_zone.tres" id="10_x"]
 [ext_resource type="Resource" path="res://heroes/tilly/tilly_feel.tres" id="11_x"]
 [ext_resource type="Resource" path="res://heroes/tilly/tilly_visuals.tres" id="12_x"]
+[ext_resource type="Resource" path="res://heroes/tilly/tilly_audio.tres" id="20_audio"]
 
 [sub_resource type="Resource" id="Sub_health"]
 script = ExtResource("3_x")
@@ -67,3 +68,4 @@ abilities = Dictionary[StringName, ExtResource("4_x")]({
 })
 feel_profile = ExtResource("11_x")
 visual_profile = ExtResource("12_x")
+audio_profile = ExtResource("20_audio")

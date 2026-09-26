@@ -8,6 +8,7 @@ extends Node2D
 # Exits with the number of failed checks (0 = all passed).
 
 const SAM := "res://heroes/sam/sam_hero.tscn"
+const AUDIO_COVERAGE := preload("res://tools/heroes/audio_coverage.gd")
 const OTHER := "res://tools/heroes/ranged_test/ranged_test_hero.tscn"
 const DUMMY := "res://scenes/training_dummy.tscn"
 
@@ -24,6 +25,7 @@ func _run() -> void:
 	sam = load(SAM).instantiate()
 	sam.team = &"a"
 	add_child(sam)
+	var audio = AUDIO_COVERAGE.new(sam)
 	await _physics_frames(3)
 	_test_assembled()
 	await _test_hello()
@@ -31,6 +33,7 @@ func _run() -> void:
 	await _test_tractor_beam()
 	await _test_bracelet()
 	await _test_close_encounter()
+	_test_audio(audio)
 
 	LocalView.clear_viewer()
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
@@ -393,6 +396,12 @@ func _clear() -> void:
 
 func _near(a: float, b: float, tolerance: float = 0.01) -> bool:
 	return absf(a - b) <= maxf(tolerance, absf(b) * 0.001)
+
+
+func _test_audio(audio) -> void:
+	print("\n-- Audio")
+	for c in audio.checks():
+		_check(c[0], c[1], c[2])
 
 
 func _check(label: String, ok: bool, detail: String) -> void:

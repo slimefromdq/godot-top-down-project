@@ -10,6 +10,7 @@ extends Node2D
 # Exits with the number of failed checks (0 = all passed).
 
 const NIMBUS := "res://heroes/nimbus/nimbus_hero.tscn"
+const AUDIO_COVERAGE := preload("res://tools/heroes/audio_coverage.gd")
 const AVERY := "res://heroes/avery/avery.tscn"
 const DUMMY := "res://scenes/training_dummy.tscn"
 const CARRIES := ["res://heroes/jose/jose_definition.tres", "res://heroes/cosmo/cosmo_definition.tres",
@@ -31,6 +32,7 @@ func _run() -> void:
 	nimbus = load(NIMBUS).instantiate()
 	nimbus.team = &"a"
 	add_child(nimbus)
+	var audio = AUDIO_COVERAGE.new(nimbus)
 	nimbus.cue_triggered.connect(func(cue, context): cues.append([cue, context]))
 	await _physics_frames(3)
 	_test_assembled()
@@ -41,6 +43,7 @@ func _run() -> void:
 	await _test_parry_melee()
 	await _test_descend()
 	await _test_overcast()
+	_test_audio(audio)
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
 	get_tree().quit(failures)
@@ -89,6 +92,16 @@ func _test_rifle() -> void:
 		"%.1f vs %.1f" % [_hits(a)[0].amount if not _hits(a).is_empty() else 0.0, _ratio() * weapon])
 	_check("pierces one target (hits two)", not _hits(b).is_empty() and _hits(c).is_empty(), "")
 	_check("no crit without a reason", not _hits(a)[0].has_tag(&"crit") if not _hits(a).is_empty() else false, "")
+
+	# The last round starts the reload by itself (so there's never a dry click).
+	cues.clear()
+	while rifle.get_ammo() > 0:
+		nimbus.request_slot(&"primary", Vector2(800, 0))
+		await _seconds(1.0 / rifle.get_ranged_data().shots_per_second + 0.05)
+	var fired := cues.map(func(entry): return entry[0])
+	var reloaded: bool = fired.has(&"umbrella_rifle_reload_start") and not fired.has(&"umbrella_rifle_empty")
+	_check("the last round starts a reload", reloaded, "" if reloaded else str(fired))
+	rifle.reload_instantly()
 	_clear()
 
 
@@ -388,6 +401,12 @@ func _clear() -> void:
 
 func _near(a: float, b: float, tolerance: float = 0.01) -> bool:
 	return absf(a - b) <= maxf(tolerance, absf(b) * 0.001)
+
+
+func _test_audio(audio) -> void:
+	print("\n-- Audio")
+	for c in audio.checks():
+		_check(c[0], c[1], c[2])
 
 
 func _check(label: String, ok: bool, detail: String) -> void:

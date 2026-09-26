@@ -64,6 +64,16 @@ gameplay ──trigger_cue("phase_dash")──►  cue_triggered signal
 **Find out which cue names fire**: tick **Print Cues** on either component
 and watch the Output panel while you play.
 
+**Check a hero's sounds in its test**: create
+`preload("res://tools/heroes/audio_coverage.gd").new(hero)` right after the
+hero spawns and report its `checks()` at the end (see `sam_test.gd`). It fails
+if a gun primary's `<id>_fire` has no Min Interval, the ultimate is silent, a
+sound has no stream, or a profile entry never fires during the test (a
+misspelt or dead cue name).
+
+Each hero's own placeholder sounds live in `audio/sfx/<hero>/`, next to the
+shared ones in `audio/sfx/`.
+
 ## Built-in cues
 
 | Cue | When | Useful context keys |
@@ -78,7 +88,7 @@ and watch the Output panel while you play.
 | `<id>_fire` | A RangedAttackAbility shot | position (muzzle), direction, muzzle_index, ammo, max_ammo, charge_ratio, perfect, extra (fired by another ability via fire_extra_shot) |
 | `<id>_perfect` | A perfect charged release fired | same as `<id>_fire` |
 | `<id>_hit` | One of its projectiles hit | position, target, damage |
-| `<id>_empty` | Tried to fire with too little ammo | |
+| `<id>_empty` | Tried to fire with too little ammo. Never fires on a gun with `auto_reload_when_empty` (the default): its last shot already started the reload | |
 | `<id>_reload_start` / `_reload_round` / `_reload_end` / `_reload_cancel` | Gun reload started / one round loaded (PER_ROUND) / full / stopped early | duration (start), ammo (round) |
 | `<id>_charge_start` / `_charge_full` / `_charge_release` / `_charge_cancel` | Hold-to-charge phases | charge_ratio, perfect |
 | `<id>_zone_start` / `_zone_end` | ZoneAbility channel began / ended | zone_duration |
