@@ -59,6 +59,8 @@ var _launch_target := Vector2.ZERO
 
 func _ready() -> void:
 	add_to_group(&"minimap_units")
+	# Ability walls (ContainmentRing) stop every character, launched or not.
+	collision_mask |= MapLayers.BARRIERS
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	health_component.died.connect(_on_died)
 	if weapon_component != null:
@@ -81,6 +83,18 @@ func trigger_cue(cue: StringName, context: Dictionary = {}) -> void:
 
 func _on_weapon_fired(muzzle_position: Vector2, direction: Vector2) -> void:
 	trigger_cue(&"fire", {"position": muzzle_position, "direction": direction})
+
+
+# Move instantly to `point` (a blink, a map teleporter, a rescue pull).
+# Refused (returns false, nothing moves) if it would cross a ContainmentRing:
+# "nobody in or out" includes teleports.
+func teleport_to(point: Vector2) -> bool:
+	if ContainmentRing.crosses_any(get_tree(), global_position, point):
+		return false
+	global_position = point
+	velocity = Vector2.ZERO
+	reset_physics_interpolation()
+	return true
 
 
 func is_airborne() -> bool:

@@ -157,6 +157,7 @@ debug_meter={
 2d_physics/layer_5="Enemy Hurtbox"
 2d_physics/layer_6="Low Cover"
 2d_physics/layer_7="Ledges"
+2d_physics/layer_8="Barriers"
 
 [physics]
 

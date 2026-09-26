@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/pike/abilities/beloved_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/pike/data/pike_heart.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/pike/data/pike_beloved.tres" id="4_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Damage"]
+script = ExtResource("9_v")
+base = 10.0
+per_level = 1.0
+weapon_ratio = 0.2
+
+[resource]
+script = ExtResource("1_a")
+projectile = ExtResource("3_a")
+muzzles = Array[Vector2]([Vector2(40, 0)])
+fire_mode = 1
+shots_per_second = 2.0
+id = &"beloved"
+display_name = "Beloved"
+description = "Throw a heart. The enemy hit becomes your Beloved; the old one is dropped."
+ability_script = ExtResource("2_a")
+cooldown = 4.0
+damage = SubResource("Damage")
+damage_type = 0
+on_hit_status = ExtResource("4_a")
+tags = Array[StringName]([&"ability"])
+meter_label = &"beloved"
+feel_preset = &"throw"

@@ -54,8 +54,9 @@ const DEFAULT_PATH := "res://resources/rules/game_rules.tres"
 ## "Player Hurtbox" / "Enemy Hurtbox" layers.)
 @export_flags_2d_physics var hurtbox_mask: int = 4 | 16
 ## Layers that stop projectiles and dashes. Low cover and ledges are left out on
-## purpose: projectiles fly over them.
-@export_flags_2d_physics var wall_mask: int = 1
+## purpose: projectiles fly over them. Barriers (8: a ContainmentRing) stop
+## shots too.
+@export_flags_2d_physics var wall_mask: int = 1 | 128
 ## Layers that block line of sight (CombatQueries.has_line_of_sight). Full
 ## cover only by default: you can see over low cover and ledges. Bushes block
 ## sight by their own rule, not by layer.

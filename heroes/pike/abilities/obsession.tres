@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="PikeObsessionData" format=3]
+
+[ext_resource type="Script" path="res://heroes/pike/abilities/obsession_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/pike/abilities/obsession.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/pike/data/pike_unseen.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/pike/data/pike_ambush_root.tres" id="4_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Cooldown"]
+script = ExtResource("9_v")
+base = 6.0
+
+[sub_resource type="Resource" id="Mult"]
+script = ExtResource("9_v")
+base = 2.0
+
+[resource]
+script = ExtResource("1_a")
+unseen_status = ExtResource("3_a")
+ambush_status = ExtResource("4_a")
+id = &"obsession"
+display_name = "Obsession"
+description = "While her Beloved can't see her, Pike moves 20% faster and fades. Her first knife after they see her again deals double damage and roots for 0.75 s (at most once per 6 s)."
+ability_script = ExtResource("2_a")
+cooldown = 0.0
+tags = Array[StringName]([&"passive"])
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"ambush_cooldown": SubResource("Cooldown"),
+&"ambush_damage_multiplier": SubResource("Mult")
+})

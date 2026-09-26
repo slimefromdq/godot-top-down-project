@@ -131,6 +131,8 @@ For each slot in the definition's `abilities` dictionary, point at an
 | an ally-targeted cast that still goes with no ally (dash anyway) | `AllyTargeting.optional` (`cast_ally` is null) | none |
 | a meter on the ability bar (hunger, heat) | override `Ability.get_hud_meter()` (0-1) | a small script |
 | a CC-only melee swing (no damage) | `MeleeAttackData` with no `damage` and an `on_hit_status` | none |
+| a ring nobody can cross for a while (walking, dashes, launches, teleports, projectiles) | `ContainmentRing.spawn(context, center, radius, duration, members)`; strangers inside are pushed out; ends if a member dies. Area damage centred outside can still reach in | a small script (decides when) |
+| a teleport / blink (through walls, but not through rings) | `actor.teleport_to(point)` (returns false if it would cross a `ContainmentRing`) | a small script |
 | hard CC that can't be chained forever | automatic: **Resolve** (`GameRules.resolve_duration` / `resolve_cc_multiplier`) halves a stun, root or taunt that lands within 2 s of the last one ending. Carries, self-applied CC, walk-out-able pulls and formations are exempt; `StatusEffect.ignores_resolve` exempts any other | none |
 | "can A see B?" (a stalker passive, a sight-gated autofire) | `CombatQueries.has_line_of_sight(from, to)`: walls on `GameRules.sight_mask`, and bushes (can't see in from outside; from inside you see out) | none |
 | hide in bushes / reveal someone | bushes hide their occupants automatically (`CombatQueries.is_hidden_from`, drawn per viewer by `VisualsComponent`); a `StatusEffect` with `reveals` shows them anyway | none |
@@ -372,6 +374,28 @@ FeelProfile, not the cue profiles.
   hero automatically.
 
 ---
+
+## What Pike took
+
+A TEMPO duelist (title: The Beloved's Shadow). Tools → New Hero from
+Template → "Pike", basic attack deleted, then:
+
+| Slot | Data | Script |
+|---|---|---|
+| passive | `obsession.tres` (`PikeObsessionData`): `unseen_status` (+20% speed, 0.4 alpha), `ambush_status` (0.75 s root), `values/ambush_cooldown` 6, `ambush_damage_multiplier` 2 | `obsession.gd`: the Beloved's line of sight to her (`CombatQueries`), readies the ambush knife |
+| primary | `juggled_knives.tres`: `RangedAttackData`, AUTO 4/s, 5 rounds, REGEN 0.5 s, 0.4 x Weapon, `values/max_hp_ratio` 0.005 | `juggled_knives.gd`: the max-HP part, the ambush knife; `vfx/knife_orbit.gd` shows the ammo |
+| ability_1 | `beloved.tres`: one-shot heart, `on_hit_status` = the Beloved mark (`stack_per_applier`, `ends_if_applier_dies`, `vfx/beloved_heart.tscn`) | `beloved_ability.gd`: one Beloved at a time, `get_beloved()` |
+| movement | `there_you_are.tres`: `ChargeData` 300 px (no Beloved), `values/teleport_range` 900, `behind_offset` | `there_you_are_ability.gd`: `teleport_to` behind the Beloved |
+| cc | `dont_go.tres`: one-shot knife, 1 s root; `values/beloved_root_duration` 1.5 | `dont_go_ability.gd`: the longer root on her Beloved |
+| ultimate | `only_us.tres`: `values/ring_radius` 450, `ring_duration` 4, `max_distance` 600 | `only_us_ability.gd`: a `ContainmentRing` around both |
+
+The heart draws big for the Beloved and Pike, small for the Beloved's allies
+and not at all for anyone else (`LocalView`); it beats faster as she gets
+closer and glows within her teleport range. Shared pieces added for her:
+`ContainmentRing` on the new BARRIERS physics layer (every character masks
+it; it's in `GameRules.wall_mask`) and `Actor.teleport_to` (map teleporters
+and Safety Net's pull use it). `tools/heroes/ranged_infra_test` covers the
+ring alone and `tools/heroes/pike_test` covers the kit.
 
 ## What Butler took
 

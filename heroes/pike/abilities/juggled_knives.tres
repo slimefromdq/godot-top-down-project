@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/pike/abilities/juggled_knives.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/pike/data/pike_knife.tres" id="3_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Damage"]
+script = ExtResource("9_v")
+weapon_ratio = 0.4
+
+[sub_resource type="Resource" id="MaxHp"]
+script = ExtResource("9_v")
+base = 0.005
+
+[resource]
+script = ExtResource("1_a")
+projectile = ExtResource("3_a")
+muzzles = Array[Vector2]([Vector2(40, 0)])
+fire_mode = 0
+shots_per_second = 4.0
+magazine_size = 5
+reload_style = 2
+regen_interval = 0.5
+id = &"juggled_knives"
+display_name = "Juggled Knives"
+description = "Fast thrown knives: 0.4 x Weapon + 0.5% of the target's max HP. Five orbit her; one comes back every 0.5 s."
+ability_script = ExtResource("2_a")
+cooldown = 0.0
+damage = SubResource("Damage")
+damage_type = 0
+tags = Array[StringName]([&"basic_attack"])
+meter_label = &"juggled_knives"
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"max_hp_ratio": SubResource("MaxHp")
+})
+feel_preset = &"throw"

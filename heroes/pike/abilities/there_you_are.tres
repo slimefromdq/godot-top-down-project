@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/pike/abilities/there_you_are_ability.gd" id="2_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Range"]
+script = ExtResource("9_v")
+base = 900.0
+
+[sub_resource type="Resource" id="Behind"]
+script = ExtResource("9_v")
+base = 90.0
+
+[resource]
+script = ExtResource("1_a")
+distance = 300.0
+speed = 1800.0
+carry_momentum = false
+id = &"there_you_are"
+display_name = "There You Are"
+description = "Blink to just behind your Beloved if they're within 900 px. No line of sight needed. With no Beloved, a short dash."
+ability_script = ExtResource("2_a")
+cooldown = 10.0
+tags = Array[StringName]([&"movement"])
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"teleport_range": SubResource("Range"),
+&"behind_offset": SubResource("Behind")
+})
+feel_preset = &"quick"

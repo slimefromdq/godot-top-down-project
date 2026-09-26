@@ -47,6 +47,7 @@ func _run() -> void:
 	await _test_zone_leftover_and_lob()
 	await _test_parry()
 	await _test_look_ahead_pierce_and_launch()
+	await _test_containment_ring()
 	_test_cooldown_api()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
@@ -915,6 +916,40 @@ func _test_look_ahead_pierce_and_launch() -> void:
 	await _until_landed()
 	_check("...and the actor lands there, on time", hero.global_position.distance_to(Vector2(600, 39400)) < 15.0,
 		str(hero.global_position))
+	await _physics_frames(2)
+
+
+# ContainmentRing (BARRIERS layer) + Actor.teleport_to.
+func _test_containment_ring() -> void:
+	hero.global_position = Vector2(0, 42000)
+	hero.status_component.clear()
+	var member := _spawn_dummy(Vector2(100, 42000))
+	var stranger := _spawn_dummy(Vector2(-100, 42000))
+	var outside := _spawn_dummy(Vector2(0, 42600))
+	await _physics_frames(2)
+	var ring := ContainmentRing.spawn(hero, Vector2(0, 42000), 300.0, 2.0, [hero, member])
+	await _physics_frames(2)
+	_check("a ring keeps its members in and pushes strangers out", ring.is_inside(hero.global_position)
+		and ring.is_inside(member.global_position) and not ring.is_inside(stranger.global_position), "")
+	_check("teleport_to refuses to cross it, both ways", not hero.teleport_to(Vector2(0, 42700))
+		and not ContainmentRing.crosses_any(get_tree(), Vector2(0, 42000), Vector2(50, 42000)), "")
+	_check("...but a teleport on one side is fine", hero.teleport_to(Vector2(50, 42000)), "")
+	hero.movement_component.displace(Vector2.DOWN, 700.0, 0.2)
+	await _seconds(0.3)
+	_check("dashing out is stopped at the edge", ring.is_inside(hero.global_position), str(hero.global_position))
+	var shot := ProjectileData.new()
+	shot.speed = 2000.0
+	shot.lifetime = 0.5
+	var hp := outside.health_component.current_health
+	Projectile.fire(hero, shot, Vector2(0, 42100), Vector2.DOWN, DamageInfo.create(10.0, hero))
+	await _seconds(0.4)
+	_check("projectiles stop at it", outside.health_component.current_health == hp, "")
+	member.queue_free()
+	await _physics_frames(3)
+	_check("it ends early when a member is gone", not is_instance_valid(ring) or ring.has_ended(), "")
+	stranger.queue_free()
+	outside.queue_free()
+	hero.global_position = Vector2(0, 42000)
 	await _physics_frames(2)
 
 

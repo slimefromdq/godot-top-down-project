@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"pike_unseen"
+display_name = "Unseen"
+duration = 0.3
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 1.2
+})
+body_alpha = 0.4
