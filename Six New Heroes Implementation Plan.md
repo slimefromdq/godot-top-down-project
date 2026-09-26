@@ -70,7 +70,7 @@ About two-thirds of what these six need already exists in the codebase. Nine sma
 8. **Placeable jump pad.** Spawn a `JumpPad` at runtime with a team filter, lifetime, charge count and a landing point set by drag. Tilly's trampolines.
 9. **Minigame instance.** A per-player overlay that takes over one hero's input for a few seconds, reports a result, and runs with a minimum and maximum duration. Sam's airlock. Design it so the rhythm system (`RhythmPerformer`) could run through it later.
 
-**One global rule: Resolve.** Several of these heroes add hard crowd control at once, so after any stun, root or taunt ends, the victim gets 2 seconds of 50% shorter hard CC. It sits in `game_rules.tres` so it's tunable in one place, and it keeps Sam, Pike, Hazmat and Tilly from chaining someone forever.
+**One global rule: Resolve.** Several of these heroes add hard crowd control at once, so after any stun, root or taunt ends, the victim gets 2 seconds of 50% shorter hard CC. It sits in `game_rules.tres` so it's tunable in one place, and it keeps Sam, Pike, Hazmat and Tilly from chaining someone forever. Built in Phase 0: carries (Tractor Beam, the UFO), self-applied CC (Butler's tie-straightening), pulls you can walk out of and formations are exempt, and `ignores_resolve` exempts anything else.
 
 ## Pike, The Beloved's Shadow (Tempo)
 
@@ -309,7 +309,7 @@ Full copy-ready prompts for every phase: Implementation prompts
 ## Open questions
 
 - [ ] Max level is 10 (already set in game\_rules). Stats stay authored over the code's 20-level range, and the L10 numbers above are set to sit beside same-role heroes at level 10 (Avery 1368 HP, Cpt. Yellow 2270, Jose 1008, Melody 1178). For linear growth, growth = (L10 − L1) ÷ 9.
-- [ ] Should bushes block line of sight? It makes Pike much scarier and Nimbus's Overcast reveal more valuable, but it's a map-wide change.
+- [x] Should bushes block line of sight? **Yes (Phase 0).** Bushes hide their occupants one way (from inside you see out), vision is shared by team, hidden enemies can still be hit blind, and a `reveals` status (Overcast) shows them. Still open: should attacking from a bush reveal you, and should AI see into bushes?
 - [ ] Should Butler's Hunger bar be visible to enemies, or only to his team?
 - [ ] Can enemies use Tilly's trampolines? This draft bounces them back instead; letting them use it would be funnier and riskier.
 - [ ] Is Jostle (displacement drops a Mote) too punishing for carriers, or should it need two displacements?

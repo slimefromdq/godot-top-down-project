@@ -10,6 +10,9 @@ class_name VisualsComponent
 #   * hit flash, damage numbers, target highlight
 #   * death effects, plus the killer's cosmetic kill effect
 #   * status-effect auras and tints
+#   * what the local player may see (LocalView): hides this actor while it's
+#     hidden in a bush from the viewer's team, and status auras whose
+#     StatusEffect.vfx_visible_to leaves the viewer out
 #   * any named cue the owner triggers (abilities, weapon, custom)
 #
 # Cues arrive from the owner's `cue_triggered(cue, context)` signal (Actor has
@@ -36,6 +39,8 @@ var _playing_one_shot := false
 var _is_highlighted := false
 var _status_vfx: Dictionary = {}    # status id -> Node
 var _status_tints: Array[StatusEffect] = []
+# True while this component hid the owner (a bush). Only ever undoes its own hide.
+var _concealed := false
 
 # Hitstop (see freeze()). All cosmetic: the body keeps moving underneath.
 var _freeze_left: float = 0.0
@@ -82,6 +87,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_update_freeze(delta)
+	_refresh_local_view()
 	if body == null or _is_dead:
 		return
 	var root := _get_root()
@@ -317,6 +323,7 @@ func _on_status_applied(effect: StatusEffect) -> void:
 		# status_component.get_fade_ratio(status_id) for a key unwinding.
 		_status_vfx[effect.id] = EffectSpawner.spawn(self, effect.attached_vfx, {
 			"align": false, "status_component": status_component, "status_id": effect.id}, self)
+		_refresh_local_view()
 	if effect.body_tint.a > 0.0:
 		_status_tints.append(effect)
 		_refresh_tint()
@@ -328,6 +335,34 @@ func _on_status_removed(effect: StatusEffect) -> void:
 	_status_tints.erase(effect)
 	_refresh_tint()
 	_refresh_alpha()
+
+
+# Viewer-dependent drawing (LocalView), re-checked every frame: the viewer,
+# the bushes and the appliers all change without telling us.
+func _refresh_local_view() -> void:
+	var root := _get_root()
+	if root is Node2D:
+		var hide_owner := not _is_dead and not LocalView.is_actor_shown(root)
+		if hide_owner != _concealed:
+			_concealed = hide_owner
+			root.visible = not hide_owner
+	if _status_vfx.is_empty() or status_component == null:
+		return
+	for effect in status_component.get_active_effects():
+		var node = _status_vfx.get(effect.id)
+		if node is CanvasItem and is_instance_valid(node):
+			node.visible = LocalView.can_see_status_vfx(root, effect, status_component)
+
+
+# True while the owner isn't drawn for the local player (hidden in a bush).
+func is_concealed() -> bool:
+	return _concealed
+
+
+# The attached VFX node currently shown for a status (null if none).
+func get_status_vfx(effect_id: StringName) -> Node:
+	var node = _status_vfx.get(effect_id)
+	return node if is_instance_valid(node) else null
 
 
 func _remove_status_vfx(effect_id: StringName) -> void:

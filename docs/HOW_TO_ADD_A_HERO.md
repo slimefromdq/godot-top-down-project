@@ -109,10 +109,16 @@ For each slot in the definition's `abilities` dictionary, point at an
 | a buff/shield on yourself that grows with enemies nearby | `SelfStatusData` + `SelfStatusAbility` (`strength_base` + `strength_per_enemy`) | none |
 | enemies swept up and carried along with you, then dropped | `StatusEffect.carry_enabled` as a dash's `on_hit_status` + `ChargeData.end_on_hit_status_on_arrival` / `arrival_status` | none |
 | a dash telegraph of its own length | `ChargeData.telegraph_time` | none |
+| hard CC that can't be chained forever | automatic: **Resolve** (`GameRules.resolve_duration` / `resolve_cc_multiplier`) halves a stun, root or taunt that lands within 2 s of the last one ending. Carries, self-applied CC, walk-out-able pulls and formations are exempt; `StatusEffect.ignores_resolve` exempts any other | none |
+| "can A see B?" (a stalker passive, a sight-gated autofire) | `CombatQueries.has_line_of_sight(from, to)`: walls on `GameRules.sight_mask`, and bushes (can't see in from outside; from inside you see out) | none |
+| hide in bushes / reveal someone | bushes hide their occupants automatically (`CombatQueries.is_hidden_from`, drawn per viewer by `VisualsComponent`); a `StatusEffect` with `reveals` shows them anyway | none |
+| a status VFX only some players see (a mark only its target and caster see) | `StatusEffect.vfx_visible_to`: EVERYONE, TARGET_ALLIES, TARGET_ENEMIES, TARGET_AND_APPLIER, or LISTED + `status_component.set_vfx_viewers(id, actors)` | none (LISTED: a small script) |
 | something new | extend `Ability` (or `MeleeAttackAbility` / `RangedAttackAbility`) | a small script |
 
-`tools/heroes/ranged_test/` is a test-only hero that uses every row above
-(pick it with **F1 → Play as → Ranged Test (test)**). Short recipes follow.
+`tools/heroes/ranged_test/` is a test-only hero that uses every ability row
+above (pick it with **F1 → Play as → Ranged Test (test)**). The rules and
+queries that aren't abilities (Resolve, line of sight, bushes, filtered VFX)
+are covered by `tools/heroes/shared_systems_test`. Short recipes follow.
 
 **A gun.** `RangedAttackData`: `projectile` (a `ProjectileData`), `damage`
 (per projectile), `fire_mode` AUTO (hold) or SEMI (click; early clicks within
@@ -197,6 +203,22 @@ performer.play(data.phrase, ability_id)   # cues <id>_note_perfect/_good/_miss
 While it plays, the player's presses of `input_action` go to
 `press_note()` instead of the slot (AI calls `press_note()` itself). The
 ring is drawn on the actor. A stun cancels it (graded notes still count).
+
+**Line of sight and bushes.** `CombatQueries.has_line_of_sight(from, to)`
+asks whether `from` can see `to`. Full walls block (`GameRules.sight_mask`;
+you see over low cover and ledges). Bushes block one way: nobody outside a
+bush sees anyone inside it, while those inside see out and see each other. A
+status with `reveals` ignores bushes. The local player's screen follows the
+same rule with team-shared vision: an enemy in a bush isn't drawn (body,
+health bar, minimap dot) unless you or a teammate shares the bush or it's
+revealed. Hidden enemies can still be hit; only drawing and sight-gated
+abilities (e.g. Jose's Weapons Free) respect it. F1 → Tools → Sight lines
+draws the player's lines to nearby enemies.
+
+**Resolve.** After someone else's stun, root or taunt ends on an actor, it
+gets `GameRules.resolve_status` for `resolve_duration` (2 s); new hard CC on it
+meanwhile lasts `resolve_cc_multiplier` (50%) as long. No hero code is
+involved: `StatusEffect.is_hard_cc()` decides what counts.
 
 **Shields.** `StatusEffect.shield_amount` (a ScalingValue from the
 applier's stats, times the application's strength) soaks damage after

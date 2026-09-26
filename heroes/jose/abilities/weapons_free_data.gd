@@ -17,7 +17,8 @@ class_name WeaponsFreeData
 ## Blocked slots that fail silently (manual fire is replaced by autofire).
 ## Every other slot is blocked with a "Channeling" message.
 @export var quiet_slots: Array[StringName] = [&"primary"]
-## Only shoot targets with a clear line to them (walls block).
+## Only shoot targets Jose can see (CombatQueries.has_line_of_sight:
+## walls block, and enemies hidden in a bush are skipped).
 @export var requires_line_of_sight: bool = true
 ## Pressing the ultimate again ends the channel early.
 @export var recast_ends_channel: bool = false

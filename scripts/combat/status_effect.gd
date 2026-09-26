@@ -50,6 +50,17 @@ enum DisplaceDirection {
 	TOWARD_SOURCE,      ## A pull.
 }
 
+## Who sees the attached_vfx on the local player's screen. Gameplay is
+## never affected; only the drawing is filtered (see LocalView).
+enum VfxVisibleTo {
+	EVERYONE,             ## Every player (default).
+	TARGET_ALLIES,        ## The target and its teammates.
+	TARGET_ENEMIES,       ## Everyone not on the target's team.
+	TARGET_AND_APPLIER,   ## Only the target and whoever applied the status.
+	LISTED,               ## Only the actors an ability script lists with
+	                      ## StatusEffectComponent.set_vfx_viewers().
+}
+
 ## Re-applying an effect with the same id follows stack_rule.
 @export var id: StringName = &"status"
 @export var display_name: String = "Status"
@@ -93,6 +104,14 @@ enum DisplaceDirection {
 ## Can't be hit or targeted at all (hits, zones and statuses skip the
 ## hurtbox) while active. Not invisibility: pair it with body_alpha.
 @export var untargetable: bool = false
+## Never shortened by Resolve and never grants it (see is_hard_cc()).
+## Carries, self-applied CC, pulls you can walk out of and formations are
+## already exempt without this.
+@export var ignores_resolve: bool = false
+
+@export_group("Vision")
+## Seen by everyone while active, even inside a bush (see CombatQueries).
+@export var reveals: bool = false
 
 @export_group("Displacement")
 ## Pixels pushed when the status lands. 0 = none. The push is a short forced
@@ -178,6 +197,9 @@ enum DisplaceDirection {
 ## Body opacity while active (a faded silhouette). 1 = unchanged; the
 ## lowest active value wins.
 @export_range(0.0, 1.0, 0.05) var body_alpha: float = 1.0
+## Who can see attached_vfx. Body tint, alpha and apply_sound are not
+## filtered.
+@export var vfx_visible_to: VfxVisibleTo = VfxVisibleTo.EVERYONE
 ## Played once when the effect is applied.
 @export var apply_sound: SoundCue
 
@@ -203,6 +225,17 @@ static func damage_taken_stat(damage_type: DamageInfo.Type) -> StringName:
 
 func is_crowd_control() -> bool:
 	return stuns or roots or silences or displace_distance > 0.0 or compel_enabled or carry_enabled
+
+
+# Hard crowd control for the Resolve rule (GameRules.resolve_*): a stun, a
+# root, or a compel that takes over the victim's input. Carries, pulls you
+# can walk out of (compel_overrides_input off) and formations
+# (compel_follow_trail) are movement, not hard CC. Self-applied CC is
+# excluded by StatusEffectComponent.
+func is_hard_cc() -> bool:
+	if ignores_resolve or carry_enabled:
+		return false
+	return stuns or roots or (compel_enabled and compel_overrides_input and not compel_follow_trail)
 
 
 func ends_with_applier() -> bool:

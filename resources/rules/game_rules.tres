@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/rules/game_rules.gd" id="1_rules"]
 [ext_resource type="Script" path="res://scripts/rules/slot_definition.gd" id="2_slot"]
+[ext_resource type="Resource" path="res://resources/status/resolve.tres" id="3_resolve"]
 
 [sub_resource type="Resource" id="Slot_primary"]
 script = ExtResource("2_slot")
@@ -50,5 +51,8 @@ required = false
 
 [resource]
 script = ExtResource("1_rules")
+resolve_duration = 2.0
+resolve_cc_multiplier = 0.5
+resolve_status = ExtResource("3_resolve")
 slots = Array[ExtResource("2_slot")]([SubResource("Slot_primary"), SubResource("Slot_ability_1"), SubResource("Slot_ability_2"), SubResource("Slot_movement"), SubResource("Slot_cc"), SubResource("Slot_ultimate"), SubResource("Slot_passive")])
 test_maps = PackedStringArray("res://scenes/dream_basin_world.tscn", "res://scenes/training_grounds_world.tscn")
