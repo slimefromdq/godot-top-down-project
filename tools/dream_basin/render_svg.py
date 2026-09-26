@@ -195,6 +195,12 @@ def render(m):
     for mk in m["mote_spawns"]:
         cx, cy = P(mk["x"], mk["y"])
         o.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>')
+    for d in m["dreamers"]:
+        cx, cy = P(d["x"], d["y"])
+        ink = TEAM_INK[d["team"]]
+        o.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{300 * S:.1f}" fill="none" stroke="{ink}" '
+                 f'stroke-width="1.5" stroke-dasharray="4 3"/>')
+        o.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{d["body"] * S:.1f}" fill="{ink}" fill-opacity="0.8"/>')
     for d in m["dream_point"]:
         cx, cy = P(d["x"], d["y"])
         o.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="11" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="3"/>')
@@ -233,6 +239,7 @@ def _legend(x0):
         ("mote", "", "Mote trickle point"),
         ("zone", "", "Dreaming zone (mirrored pairs)"),
         ("dream", "", "Dream Mote spot"),
+        ("dreamer", "", "Dreamer + deposit ring"),
     ]
     o = [f'<text x="{x}" y="70" font-size="30" font-weight="700" fill="#111">DREAM BASIN</text>',
          f'<text x="{x}" y="100" font-size="15" fill="#555">5 x 9 screens (9600 x 9720 px)</text>',
@@ -269,6 +276,9 @@ def _legend(x0):
             o.append(f'<rect x="{x}" y="{cy - 10}" width="30" height="20" fill="#c4b5fd" fill-opacity="0.25" stroke="#8b5cf6" stroke-dasharray="6 4"/>')
         elif kind == "dream":
             o.append(f'<circle cx="{x + 15}" cy="{cy}" r="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="3"/>')
+        elif kind == "dreamer":
+            o.append(f'<circle cx="{x + 15}" cy="{cy}" r="7" fill="#2f8f6a"/>'
+                     f'<circle cx="{x + 15}" cy="{cy}" r="12" fill="none" stroke="#2f8f6a" stroke-dasharray="3 2"/>')
         elif kind == "bellg":
             o.append(f'<rect x="{x + 6}" y="{cy - 9}" width="18" height="18" rx="3" fill="none" stroke="#2f8f6a" stroke-width="2" stroke-dasharray="3 2"/>')
         elif kind == "bellw":

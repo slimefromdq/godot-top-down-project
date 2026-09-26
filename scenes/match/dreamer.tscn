@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/match/dreamer.gd" id="1_dreamer"]
+[ext_resource type="Resource" path="res://resources/match/dreamer.tres" id="2_data"]
+
+[node name="Dreamer" type="Node2D"]
+script = ExtResource("1_dreamer")
+data = ExtResource("2_data")

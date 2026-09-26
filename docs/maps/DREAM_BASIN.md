@@ -169,6 +169,14 @@ hand-edit the scene):
 at least 1200 px from every spawn door, and that zone spawns sit in their
 own zone.
 
+**The Dreamers** sit in each Plaza at (0, ±3096): between the Cradle Steps
+choke and the Sundial (which still guards the spawn door's sight line),
+about 860 px from the spawn door, with a 300 px deposit ring and a 130 px
+body that blocks walking but not shots. There are three ways in: the choke
+(north) and both side gates (Lamplight Road). `check.py` proves the ring is
+reachable from the Cradle with either the choke or the gates blocked (and
+the spawn room closed), and unreachable with all of them blocked.
+
 ## Where the layout comes from
 
 `tools/dream_basin/layout.py` is the source of truth. You hand-author one half, and it is rotated to make the other half.

@@ -12,6 +12,11 @@
   reachable on foot from A spawn (no pads or teleporters), 180-degree
   mirrored, and at least MOTE_DOOR_CLEARANCE from every spawn door; zone
   spawns sit inside their own zone, and zones come in mirrored pairs.
+* Dreamers: one per team, mirrored, the deposit ring outside the spawn room,
+  and each ring reachable on foot from the Cradle with EITHER the Plaza's
+  north choke or its side gates blocked, the spawn room's north door closed
+  both times (two ways in besides the spawn room). With all three closed it
+  must be unreachable, proving the blockers really cut those routes.
 """
 
 import math
@@ -22,6 +27,7 @@ from layout import HX, HY, SCREEN_W, Y, build
 BODY = 52      # actor collision circle radius (50) plus a hair
 CELL = 25
 MOTE_DOOR_CLEARANCE = 1200   # about one screen from any spawn door
+DEPOSIT_RADIUS = 300         # MatchRules.deposit_radius
 
 
 def seg_hits_poly(a, b, pts):
@@ -194,8 +200,54 @@ def check_motes(m, grid):
     return ok and bad == 0
 
 
+def _circle(x, y, r, n=16):
+    return [(x + r * math.cos(2 * math.pi * i / n), y + r * math.sin(2 * math.pi * i / n)) for i in range(n)]
+
+
+def _rect(x0, y0, x1, y1):
+    return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+
+
+def check_dreamers(m):
+    ok = True
+    print("== Dreamers ==")
+    ds = m["dreamers"]
+    ok &= sorted(d["team"] for d in ds) == ["A", "B"]
+    if len(ds) == 2 and math.dist((ds[0]["x"], ds[0]["y"]), (-ds[1]["x"], -ds[1]["y"])) > 1.0:
+        print("  NOT MIRRORED")
+        ok = False
+    # Routes into each Plaza, as blockers (authored for A, rotated for B).
+    choke = _rect(-500, Y(2130), 500, Y(2420))
+    gates = [_rect(-1750, Y(2380), -1450, Y(2820)), _rect(1450, Y(2380), 1750, Y(2820))]
+    door = _rect(-350, Y(3230), 350, Y(3380))    # the spawn room's north door
+    for d in ds:
+        sign = 1 if d["team"] == "A" else -1
+        centre = (d["x"], d["y"])
+        door_point = (0, sign * Y(3300))
+        print(f"  {d['team']} Dreamer at ({d['x']:.0f}, {d['y']:.0f}): {math.dist(centre, door_point):.0f}px from its spawn door")
+        ok &= abs(d["y"]) < Y(3300) - DEPOSIT_RADIUS    # ring stays out of the spawn room
+        for label, blocks, want in (("north choke blocked", [choke, door], True),
+                                    ("side gates blocked", gates + [door], True),
+                                    ("all routes blocked", [choke, door] + gates, False)):
+            rotated = [[(x * sign, y * sign) for x, y in b] for b in blocks]
+            mm = {**m, "low": m["low"] + [{"pts": b, "kind": "block"} for b in rotated]}
+            seen, cell_of = flood(mm, build_grid(mm), (0, 0), use_pads=False)
+            reach = False
+            for i in range(24):
+                p = (centre[0] + math.cos(i * math.pi / 12) * DEPOSIT_RADIUS * 0.8,
+                     centre[1] + math.sin(i * math.pi / 12) * DEPOSIT_RADIUS * 0.8)
+                r, c = cell_of(*p)
+                reach |= seen[r][c]
+            print(f"    {label} (spawn door closed): {'reachable' if reach else 'cut off'}"
+                  f"{'' if reach == want else '  <- WRONG'}")
+            ok &= reach == want
+    return ok
+
+
 def main():
     m = build()
+    # Dreamer bodies block walking like low cover.
+    m["low"] = m["low"] + [{"pts": _circle(d["x"], d["y"], d["body"]), "kind": "dreamer"} for d in m["dreamers"]]
     ok = True
     solid = [o["pts"] for o in m["full"]]
 
@@ -256,6 +308,7 @@ def main():
         print(f"  from A spawn -> {name:<13} {'ok' if reach else 'UNREACHABLE'}")
         ok &= reach
     ok &= check_motes(m, grid)
+    ok &= check_dreamers(m)
 
     # Without pads/teleporters, from the Cradle, the only way up is stairs.
     # Block the stairwells too and the Wilds must become unreachable.

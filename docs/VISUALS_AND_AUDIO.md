@@ -122,10 +122,21 @@ until M4.
 | `mote_fade` | A dropped Mote ran out of time | position |
 | `mote_decoy_pop` | A decoy was grabbed | source (who grabbed it) |
 | `zone_start` | A dreaming zone pair starts | position (one half) |
+| `deposit_tick` | One Mote goes into a Dreamer | source (depositor), index (1, 2, 3 ... within the visit), pitch (rises with index), delivered |
+| `bank_complete` / `deliver_complete` | A visit to your own / the enemy's Dreamer ends having deposited | source, total |
+| `sweet_dreams` | A team earns the Sweet Dreams buff | position (their Dreamer) |
+| `wake_quarter` | A wake meter passes 25 / 50 / 75% | mark |
+| `stir_start` | A Dreamer starts stirring | duration |
+| `lullaby_tick` | Once a second while a Lullaby fills | pct |
+| `settle` | A stir ends without a win | how (`lullaby` / `timeout`) |
+| `wake` | A Dreamer wakes: the match is won | position |
 
 The Mote's body is `MoteData.look_scene` (`scenes/match/mote_look.tscn`, a
 procedural dream-bug); carried Motes are drawn by `MoteOrbit` with the same
-look. Dreaming zones tint themselves (`DreamZone`).
+look. Dreaming zones tint themselves (`DreamZone`). The Dreamer's body is
+`DreamerData.look_scene` (`scenes/match/dreamer_look.tscn`: a sleeping blob,
+Zzz, a sun or moon badge per team, its rings and wake arc); the HUD's
+`WakeMeter` draws each team's meter.
 
 Every cue also gets `position`, `direction`, `source` and `visuals` filled in
 automatically. Custom scripts can trigger anything with

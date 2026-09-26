@@ -3,14 +3,16 @@
 [ext_resource type="Script" path="res://tools/heroes/ranged_test/reload_dash.gd" id="1_xmxbp"]
 [ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="2_akj0h"]
 [ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_olqwe"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_regen.tres" id="4_regen"]
 
 [resource]
 script = ExtResource("2_akj0h")
 distance = 300.0
+self_status = ExtResource("4_regen")
 speed = 1800.0
 id = &"ranged_test_reload_dash"
 display_name = "Reload Dash"
-description = "Dash; refills the gun."
+description = "Dash; refills the gun and regenerates 2% max HP every 0.5 s for 2 s (StatusEffect.tick_heal_ratio)."
 ability_script = ExtResource("1_xmxbp")
 cooldown = 7.0
 tags = Array[StringName]([&"movement"])

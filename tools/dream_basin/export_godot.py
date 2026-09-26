@@ -220,6 +220,11 @@ def export_map(m):
         s.node(f"MoteSpawn{i + 1}", "Motes", "Marker2D", groups=["mote_spawn"], position=v2((mk["x"], mk["y"])))
     for d in m["dream_point"]:
         s.node("DreamMoteSpawn", "Motes", "Marker2D", groups=["dream_mote_spawn"], position=v2((d["x"], d["y"])))
+    dreamer_scene = s.res("PackedScene", "res://scenes/match/dreamer.tscn")
+    s.node("Dreamers", ".", "Node2D")
+    for d in m["dreamers"]:
+        s.node("Dawn" if d["team"] == "A" else "Dusk", "Dreamers", instance=dreamer_scene,
+               position=v2((d["x"], d["y"])), team=f'&"{d["team"].lower()}"')
     s.node("DreamZones", ".", "Node2D")
     seen_pairs = {}
     for z in m["dream_zones"]:

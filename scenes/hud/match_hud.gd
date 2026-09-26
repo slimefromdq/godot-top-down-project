@@ -5,9 +5,14 @@ class_name MatchHud
 # two wake meters), the local player's gold, level and XP bar to the left of
 # the ability bar, and a respawn countdown while they're dead.
 #
+# Wake meters: a WakeMeter for each Dreamer in the slots either side of the
+# clock (Dawn left, Dusk right).
+#
 # Off-screen arrows: every Node2D in the "offscreen_arrows" group (the Dream
-# Mote now, the Dreamers in M3) gets an arrow at the screen edge pointing to
-# it while it's off screen, in its `arrow_color`.
+# Mote, the Dreamers) gets an arrow at the screen edge pointing to it while
+# it's off screen, in its `arrow_color`. A node with offscreen_arrow_for(
+# viewer) decides per viewer instead: {} hides it, else {color, scale} (a
+# Dreamer shows only while you carry Motes, bold for the enemy's).
 #
 # Read-only: it listens to the MatchManager and polls the player each frame.
 # Hides itself when the scene has no MatchManager.
@@ -16,8 +21,12 @@ class_name MatchHud
 @export var wake_slot_width: float = 320.0
 @export var gold_color := Color("fbd34d")
 @export var xp_color := Color("a78bfa")
-## Arrows sit this far in from the screen edge.
+## Arrows sit this far in from the left and right edges...
 @export var arrow_margin: float = 46.0
+## ...and this far from the top and bottom, clear of the wake meters and
+## the ability bar.
+@export var arrow_margin_top: float = 130.0
+@export var arrow_margin_bottom: float = 170.0
 
 var match_manager: MatchManager
 
@@ -44,6 +53,13 @@ func _ready() -> void:
 func _bind() -> void:
 	match_manager = MatchManager.find(get_tree())
 	visible = match_manager != null
+	for slot_team in [[wake_slot_a, &"a", true], [wake_slot_b, &"b", false]]:
+		var meter := WakeMeter.new()
+		meter.name = "WakeMeter"
+		meter.team = slot_team[1]
+		meter.icon_on_left = slot_team[2]
+		meter.set_anchors_preset(Control.PRESET_FULL_RECT)
+		slot_team[0].add_child(meter)
 
 
 func get_player() -> Hero:
@@ -89,11 +105,18 @@ func arrow_points() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	var view := get_viewport().get_visible_rect().size
 	var to_screen := get_viewport().get_canvas_transform()
-	var inner := Rect2(Vector2.ONE * arrow_margin, view - Vector2.ONE * arrow_margin * 2.0)
-	var center := view / 2.0
+	var inner := Rect2(Vector2(arrow_margin, arrow_margin_top),
+		view - Vector2(arrow_margin * 2.0, arrow_margin_top + arrow_margin_bottom))
+	var center := inner.get_center()
+	var player := get_player()
 	for node in get_tree().get_nodes_in_group(&"offscreen_arrows"):
 		if not node is Node2D or not node.is_visible_in_tree():
 			continue
+		var style := {}
+		if node.has_method(&"offscreen_arrow_for"):
+			style = node.offscreen_arrow_for(player)
+			if style.is_empty():
+				continue
 		var screen: Vector2 = to_screen * (node as Node2D).global_position
 		if Rect2(Vector2.ZERO, view).has_point(screen):
 			continue
@@ -101,9 +124,9 @@ func arrow_points() -> Array[Dictionary]:
 		# Walk from the centre toward it and stop at the inner rect's edge.
 		var tx := (inner.size.x / 2.0) / maxf(absf(dir.x), 0.0001)
 		var ty := (inner.size.y / 2.0) / maxf(absf(dir.y), 0.0001)
-		var color = node.get(&"arrow_color")
+		var color = style.get("color", node.get(&"arrow_color"))
 		result.append({"position": center + dir * minf(tx, ty), "direction": dir,
-			"color": color if color is Color else Color.WHITE, "node": node})
+			"color": color if color is Color else Color.WHITE, "scale": style.get("scale", 1.0), "node": node})
 	return result
 
 
@@ -111,12 +134,14 @@ func _draw_arrows(canvas: Control) -> void:
 	for arrow in arrow_points():
 		var at: Vector2 = arrow.position
 		var dir: Vector2 = arrow.direction
+		var k: float = arrow.scale
 		var side := dir.orthogonal()
-		var tri := PackedVector2Array([at + dir * 22.0, at - dir * 10.0 + side * 16.0, at - dir * 10.0 - side * 16.0])
+		var tri := PackedVector2Array([at + dir * 22.0 * k, at - dir * 10.0 * k + side * 16.0 * k,
+			at - dir * 10.0 * k - side * 16.0 * k])
 		canvas.draw_colored_polygon(tri, arrow.color)
-		canvas.draw_polyline(tri + PackedVector2Array([tri[0]]), Color(0, 0, 0, 0.8), 2.0)
-		canvas.draw_circle(at - dir * 26.0, 9.0, arrow.color)
-		canvas.draw_arc(at - dir * 26.0, 9.0, 0.0, TAU, 16, Color(0, 0, 0, 0.8), 2.0)
+		canvas.draw_polyline(tri + PackedVector2Array([tri[0]]), Color(0, 0, 0, 0.8), 2.0 * k)
+		canvas.draw_circle(at - dir * 26.0 * k, 9.0 * k, arrow.color)
+		canvas.draw_arc(at - dir * 26.0 * k, 9.0 * k, 0.0, TAU, 16, Color(0, 0, 0, 0.8), 2.0)
 
 
 func clock_text() -> String:
@@ -214,7 +239,7 @@ func _build() -> void:
 func _slot(slot_name: String) -> Control:
 	var slot := Control.new()
 	slot.name = slot_name
-	slot.custom_minimum_size = Vector2(wake_slot_width, 48)
+	slot.custom_minimum_size = Vector2(wake_slot_width, 70)
 	slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return slot
 

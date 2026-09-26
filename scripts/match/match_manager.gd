@@ -29,6 +29,12 @@ signal roster_changed
 signal hero_killed(victim: Hero, killer: Hero, assisters: Array[Hero])
 signal hero_respawning(actor: Hero, seconds: float)
 signal hero_respawned(actor: Hero)
+## Relayed from the Dreamers (see Dreamer), with the Dreamer's team.
+signal wake_changed(team: StringName, value: float)
+signal stir_started(team: StringName)
+signal lullaby_changed(team: StringName, pct: float)
+signal settled(team: StringName, how: StringName)
+signal woke(team: StringName)
 
 enum State { WARMUP, PLAYING, ENDED }
 
@@ -79,6 +85,7 @@ var _passive_timer: float = 0.0
 var _respawn_mult: Dictionary = {}
 # The local player's record while the debug panel swaps heroes.
 var _swapped_player_record: Record
+var _dreamers: Dictionary = {}    # team -> Dreamer
 
 
 static func find(tree: SceneTree) -> MatchManager:
@@ -112,6 +119,8 @@ func _ready() -> void:
 	get_tree().node_added.connect(_on_node_added)
 	for node in get_tree().get_nodes_in_group(&"heroes"):
 		_try_register(node)
+	for node in get_tree().get_nodes_in_group(Dreamer.GROUP):
+		register_dreamer(node)
 	# Heroes placed in the scene after us enter the tree before we're ready,
 	# but join the "heroes" group in their own _ready: catch those too.
 	_register_all.call_deferred()
@@ -375,6 +384,29 @@ func play_match_cue(hero: Actor, cue: StringName, context: Dictionary = {}) -> v
 		visuals.play_definition(r.cue_visuals.cues[cue], context)
 	if not own_audio and audio != null and r.cue_audio != null:
 		audio.play_sound(r.cue_audio.cues.get(cue), context)
+
+
+# ---------------------------------------------------------------------------
+# Dreamers
+# ---------------------------------------------------------------------------
+
+## A Dreamer reports in (Dreamer._ready, or our own _ready for ones placed
+## first). Its signals are relayed with its team.
+func register_dreamer(dreamer: Dreamer) -> void:
+	if _dreamers.get(dreamer.team) == dreamer:
+		return
+	_dreamers[dreamer.team] = dreamer
+	var t := dreamer.team
+	dreamer.wake_changed.connect(func(value): wake_changed.emit(t, value))
+	dreamer.stir_started.connect(func(): stir_started.emit(t))
+	dreamer.lullaby_changed.connect(func(pct): lullaby_changed.emit(t, pct))
+	dreamer.settled.connect(func(how): settled.emit(t, how))
+	dreamer.woke.connect(func(_attackers): woke.emit(t))
+
+
+func get_dreamer(team: StringName) -> Dreamer:
+	var dreamer: Dreamer = _dreamers.get(team)
+	return dreamer if is_instance_valid(dreamer) else null
 
 
 # ---------------------------------------------------------------------------

@@ -190,7 +190,7 @@ enum VfxVisibleTo {
 ## never grants current HP).
 @export var stat_modifiers: Array[StatModifier] = []
 
-@export_group("Damage over time")
+@export_group("Over time (damage, regen)")
 ## Damage per tick, evaluated from the APPLIER's stats when applied (snapshot).
 ## Leave empty for no DoT.
 @export var tick_damage: ScalingValue
@@ -198,6 +198,9 @@ enum VfxVisibleTo {
 @export var tick_damage_type: DamageInfo.Type = DamageInfo.Type.MAGIC
 ## Damage-meter label for the ticks, e.g. "burn".
 @export var tick_label: StringName = &""
+## Heal over time (regen): each tick_interval, heal this share of the
+## target's max HP (0.01 = 1%), times stacks. Credited to the applier.
+@export var tick_heal_ratio: float = 0.0
 
 @export_group("Presentation")
 ## Scene attached to the affected actor for as long as the effect lasts.
@@ -265,6 +268,8 @@ func validate() -> PackedStringArray:
 	if duration < 0.0 or max_duration < 0.0 or displace_distance < 0.0 or displace_duration < 0.0 \
 			or pull_stop_distance < 0.0 or tick_interval < 0.0:
 		problems.append("status '%s' has negative timings/distances" % id)
+	if tick_heal_ratio < 0.0:
+		problems.append("status '%s' tick_heal_ratio is negative" % id)
 	if tick_damage != null and tick_damage.has_negative():
 		problems.append("status '%s' tick_damage has negative numbers" % id)
 	if compel_enabled and (compel_speed_multiplier <= 0.0 or compel_stop_distance < 0.0):
