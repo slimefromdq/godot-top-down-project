@@ -164,6 +164,13 @@ func get_balance_metrics(_level: int, _weapon: float, _magic: float) -> Dictiona
 	return {}
 
 
+# Hero-level derived numbers that combine several abilities (a burst combo,
+# a passive's scaling), for the balance CSV as source "derived". Only an
+# ability that owns such a calculation (usually a passive) overrides it.
+func get_hero_metrics(_definition: HeroDefinition, _level: int) -> Dictionary:
+	return {}
+
+
 # Problems a designer should fix. Empty = fine. Used by the editor validator.
 func validate() -> PackedStringArray:
 	var problems := PackedStringArray()

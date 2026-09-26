@@ -96,6 +96,14 @@ For each slot in the definition's `abilities` dictionary, point at an
 | a formation / parade line behind the caster | compel status with `compel_follow_trail` (+ `compel_breakable`) | none |
 | a charged dash that goes further and hits harder | `ChargeData` with `charge_enabled`, `min_distance`, `hit_shape` + `damage` / `values/damage_full` + `on_hit_status` | none |
 | a passive with stacks on the ability bar | the optional `passive` slot + `PassiveAbility` (override `get_hud_pips`) | a small script |
+| take more/less damage of one type (a magic amp, a weapon resist) | `StatusEffect.incoming_physical_multiplier` / `incoming_magic_multiplier` | none |
+| untargetable for a moment (a vanish), faded body | `StatusEffect.untargetable`, `body_alpha` | none |
+| a boomerang (out and back, optionally curved) | `ProjectileData.return_to_caster`, `curve_amount`; return hits carry `Projectile.TAG_RETURN` | none |
+| a blast with no projectile (ground-targeted, meteor) | `Projectile.explode_at(actor, data, at, dir, template, on_hit)` | a small script |
+| ammo that regenerates (no reloading) | `RangedAttackData.reload_style = REGEN` + `regen_interval`; `set_max_ammo()` / `set_regen_interval()` at runtime | none |
+| a pull you can slowly walk out of, toward a zone | compel with `compel_overrides_input = false` (strength = `compel_speed_multiplier`) as a zone status with `statuses_from_zone` | none |
+| a blink up to the cursor, then an effect on yourself | `ChargeData` with a high `speed`, `stop_at_target`, `self_status` | none |
+| a hero-level number in the CSV (a combo's burst) | override `AbilityData.get_hero_metrics(definition, level)` (source "derived") | a small data script |
 | something new | extend `Ability` (or `MeleeAttackAbility` / `RangedAttackAbility`) | a small script |
 
 `tools/heroes/ranged_test/` is a test-only hero that uses every row above

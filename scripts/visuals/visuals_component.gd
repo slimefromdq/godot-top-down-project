@@ -320,12 +320,14 @@ func _on_status_applied(effect: StatusEffect) -> void:
 	if effect.body_tint.a > 0.0:
 		_status_tints.append(effect)
 		_refresh_tint()
+	_refresh_alpha()
 
 
 func _on_status_removed(effect: StatusEffect) -> void:
 	_remove_status_vfx(effect.id)
 	_status_tints.erase(effect)
 	_refresh_tint()
+	_refresh_alpha()
 
 
 func _remove_status_vfx(effect_id: StringName) -> void:
@@ -389,6 +391,15 @@ func _play_body_loop(animation: StringName) -> void:
 		sprite.play(animation)
 	elif animation == &"move" and sprite.sprite_frames.has_animation(&"idle"):
 		_play_body_loop(&"idle")
+
+
+# Faded silhouettes (StatusEffect.body_alpha): the lowest active value.
+func _refresh_alpha() -> void:
+	var alpha := 1.0
+	if status_component != null:
+		for effect in status_component.get_active_effects():
+			alpha = minf(alpha, effect.body_alpha)
+	modulate.a = alpha
 
 
 func _refresh_tint() -> void:

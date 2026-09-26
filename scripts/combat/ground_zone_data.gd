@@ -25,6 +25,10 @@ class_name GroundZoneData
 ## tick_interval so it never flickers off between ticks.
 @export var status_while_inside: StatusEffect
 @export var meter_label: StringName = &"zone"
+## Apply `status` / `status_while_inside` as coming from the ZONE itself,
+## not its owner. A compel then pulls toward the zone's centre (a
+## whirlpool) and ends when the zone does. Damage is still the owner's.
+@export var statuses_from_zone: bool = false
 
 @export_group("Ownership")
 ## Stay centred on the owner (the actor that spawned it) every tick.

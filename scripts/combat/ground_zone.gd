@@ -152,7 +152,7 @@ func _update_inside() -> void:
 			# Auras apply on entry, not at the next tick; damage waits for it.
 			var hurtbox: HurtboxComponent = now[key]
 			if data.status_while_inside != null and hurtbox.status_component != null:
-				hurtbox.status_component.apply(data.status_while_inside, _owner_source(), direction)
+				hurtbox.status_component.apply(data.status_while_inside, _status_source(), direction)
 			target_entered.emit(hurtbox)
 
 
@@ -164,12 +164,19 @@ func _exit(key: int) -> void:
 		return
 	var hurtbox := node as HurtboxComponent
 	if data.status_while_inside != null and hurtbox.status_component != null:
-		hurtbox.status_component.remove_from(data.status_while_inside.id, _owner_source())
+		hurtbox.status_component.remove_from(data.status_while_inside.id, _status_source())
 	target_exited.emit(hurtbox)
+
+
+# Who the zone's statuses come from: its owner, or the zone itself
+# (statuses_from_zone: a pull toward the centre).
+func _status_source() -> Node:
+	return self if data.statuses_from_zone else _owner_source()
 
 
 func _tick() -> void:
 	var owner_source := _owner_source()
+	var status_source := _status_source()
 	for hurtbox in get_targets_inside():
 		if not hurtbox.is_valid_target():
 			continue
@@ -182,12 +189,14 @@ func _tick() -> void:
 			info.weight = 0.0
 			info.direction = direction
 			info.hit_position = hurtbox.global_position
-			info.add_status(data.status)
-			info.add_status(data.status_while_inside)
+			if not data.statuses_from_zone:
+				info.add_status(data.status)
+				info.add_status(data.status_while_inside)
 			hurtbox.take_hit(info)
-		elif hurtbox.status_component != null:
-			hurtbox.status_component.apply(data.status, owner_source, direction)
-			hurtbox.status_component.apply(data.status_while_inside, owner_source, direction)
+		if (not hittable or _tick_amount <= 0.0 or data.statuses_from_zone) \
+				and is_instance_valid(hurtbox) and hurtbox.status_component != null and hurtbox.is_valid_target():
+			hurtbox.status_component.apply(data.status, status_source, direction)
+			hurtbox.status_component.apply(data.status_while_inside, status_source, direction)
 		if is_instance_valid(hurtbox):
 			target_ticked.emit(hurtbox)
 

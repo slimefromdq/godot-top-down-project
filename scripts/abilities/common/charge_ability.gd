@@ -13,7 +13,8 @@ class_name ChargeAbility
 # telegraph or the dash cancels it.
 #
 # Hold-to-charge (charge_enabled): the dash length goes from min_distance to
-# distance with the charge ratio.
+# distance with the charge ratio. stop_at_target: never past the aim point.
+# self_status: applied to the hero on arrival.
 #
 # Bash (optional, data): with a hit_shape and damage on the data, enemies
 # the hero runs through are hit once each during the dash, for `damage`
@@ -46,6 +47,8 @@ func _get_cast_feel() -> AttackFeel:
 	# (used by other abilities) isn't changed.
 	var feel: AttackFeel = super().duplicate()
 	_distance = get_charge_data().distance
+	if get_charge_data().stop_at_target:
+		_distance = minf(_distance, actor.global_position.distance_to(cast_target))
 	feel.active = get_charge_data().get_dash_time(_distance)
 	feel.lunge_distance = 0.0
 	return feel
@@ -117,6 +120,9 @@ func _on_active_tick(_delta: float) -> void:
 
 func _on_active_end() -> void:
 	_end_bash()
+	var charge := get_charge_data()
+	if _dashing and is_instance_valid(actor) and charge.self_status != null:
+		actor.status_component.apply(charge.self_status, actor)
 	if _dashing and is_instance_valid(actor):
 		actor.trigger_cue(StringName(str(ability_id) + "_end"), {"direction": get_dash_direction()})
 
