@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Shield"]
+script = ExtResource("9_v")
+base = 120.0
+magic_ratio = 0.5
+
+[resource]
+script = ExtResource("1_s")
+id = &"sam_hug_shield"
+display_name = "Hug"
+duration = 3.0
+shield_amount = SubResource("Shield")
+body_tint = Color(0.8, 0.7, 1, 0.3)

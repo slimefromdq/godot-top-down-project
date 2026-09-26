@@ -73,6 +73,12 @@ func _test_data_and_roster() -> void:
 	bad.charge_enabled = true
 	bad.charge_time_max = 0.0
 	_check("validation catches bad ranged/charge data", bad.validate().size() >= 4, "\n  ".join(bad.validate()))
+	var no_damage: RangedAttackData = load("res://tools/heroes/ranged_test/ranged_test_revolver.tres").duplicate_deep()
+	no_damage.damage = null
+	var flagged := Array(no_damage.validate()).any(func(p): return "no damage" in p)
+	no_damage.on_hit_status = StatusEffect.new()
+	var allowed := not Array(no_damage.validate()).any(func(p): return "no damage" in p)
+	_check("a damage-less projectile is flagged, unless its hit applies a status", flagged and allowed, "")
 
 	var rows := BalanceExporter.build_rows([load(DEFINITION)] as Array[HeroDefinition], [1, 10, 20] as Array[int])
 	var burst := -1.0

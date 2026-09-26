@@ -250,7 +250,8 @@ involved: `StatusEffect.is_hard_cc()` decides what counts.
 
 **Minigames.** A `MinigameInstance` runs on physics ticks for one actor:
 `MinigameHost.find_or_create(actor).play(game)` puts the data's
-`occupied_status` on the actor (default: rooted and silenced), routes that
+`occupied_status` on the actor (default: silenced only, so a carry or a
+cruise can still move the body), routes that
 player's WASD to it (PlayerHeroInput; tests and network clients call
 `host.set_input(move)`), and opens a `MinigameView` overlay for the local
 viewer only, with a live inset of the real map. A tick with no input uses the
@@ -258,7 +259,13 @@ game's `bot_input()` (what an AI victim does). `finish(result)` never ends it
 before `min_duration`; `max_duration` ends it with `{"timeout": true}`. Key
 presses reach `_on_press(action)`, so a rhythm phrase can run inside one
 later. The airlock (`AirlockMinigame`, `resources/minigames/airlock.tres`) is
-the first: practise it from F1 → Tools → Airlock practice.
+the first: a short maze. Each run picks one of the data's `MazeLayout`s (a
+list of wall rects) at random; the player slides along walls and holds in
+the door for `door_hold` to get out. A perfect run takes about 1.5 s, the
+ship ejects them at 4 s, and `bot_input()` follows the shortest path at
+`bot_speed_scale` (75%), so AI victims get out in about 2 s. Add a maze by
+adding a `MazeLayout` to the list; `airlock_test` checks every layout is
+solvable in 1.4 - 1.7 s. Practise it from F1 → Tools → Airlock practice.
 
 **Shields.** `StatusEffect.shield_amount` (a ScalingValue from the
 applier's stats, times the application's strength) soaks damage after
@@ -390,6 +397,26 @@ FeelProfile, not the cue profiles.
   hero automatically.
 
 ---
+
+## What Sam took
+
+A TEMPO disabler (title: The Visitor). Tools → New Hero from Template →
+"Sam", basic attack deleted, then:
+
+| Slot | Data | Script |
+|---|---|---|
+| primary | `hello.tres`: `RangedAttackData`, AUTO 3/s, magic, 5 + 0.5/lvl + 12% Magic; `sam_hello` projectile with `wall_bounces` 1 | none (`RangedAttackAbility`) |
+| ability_1 | `hug.tres`: damage-less one-shot; `sam_hug_hand` projectile (`affects` BOTH, 650 px, `ally_hit_status` = 120 + 50% Magic shield, `vfx/hug_arm.tscn` draws the arm); `on_hit_status` = 1 s root | none (`RangedAttackAbility`) |
+| movement | `tractor_beam.tres` (`SamTractorData`, a `ChargeData` 400 px): `ally_targeting` accepts BOTH, optional; `enemy_status` (carry + stun), `ally_status` (carry + untargetable); `values/short_distance` 220 | `tractor_beam_ability.gd`: flies along the aim, the status by team, the short dash |
+| cc | `friendship_bracelet.tres`: damage-less one-shot, `sam_bracelet` (`affects` BOTH); `values/chain_range` 400, `leash_distance` 300, `heal_share` 0.5, `link_duration` 4 | `bracelet_ability.gd`: chains to the nearest teammate of whoever it hit, spawns an `ActorLink` |
+| ultimate | `close_encounter.tres` (`SamEncounterData`): `minigame` = the airlock, `abducted_status` (untargetable, `damage_taken` x0, `vfx/ufo.tscn`), `daze_status` 0.3 s; `values/telegraph` 0.4, `beam_radius` 90, `ufo_speed` 350 | `close_encounter_ability.gd`: telegraph, `MinigameHost`, `set_cruise` toward Sam's cursor, `lock_abilities` (primary allowed), the drop |
+
+The UFO (a status `attached_vfx`) is seen by everyone: the ship, its ground
+shadow and the victim's name. If Sam dies or is removed, the victim drops at
+once. Shared piece changed for him: a `RangedAttackData` may have no
+`damage` when its hit applies a status (`on_hit_status` or the projectile's
+`ally_hit_status`). `tools/heroes/airlock_test` covers the maze alone and
+`tools/heroes/sam_test` covers the kit.
 
 ## What Pike took
 

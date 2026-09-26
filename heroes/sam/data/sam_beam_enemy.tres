@@ -4,8 +4,10 @@
 
 [resource]
 script = ExtResource("1_s")
-id = &"minigame_occupied"
-display_name = "Busy"
-duration = 10.0
-silences = true
-ignores_resolve = true
+id = &"sam_beam_enemy"
+display_name = "Beamed Up"
+duration = 2.0
+stuns = true
+carry_enabled = true
+carry_max_offset = 160.0
+body_tint = Color(0.6, 1, 0.8, 0.35)

@@ -1,31 +1,32 @@
 extends MinigameInstance
 class_name AirlockMinigame
 
-# The airlock (Sam's Close Encounter): walk from the left of a small room to
-# the door on the right and stand in it for door_hold to escape, while Sam's
-# affection fills the room: slow hearts along lanes, "HI!!" bubbles sweeping
-# down columns, and a wobbly hug-arm reaching for you. Each hit pushes you
-# back knockback px. All numbers are in AirlockData; patterns are fixed.
+# The airlock (Sam's Close Encounter): a short maze. Find the way from the
+# left of the room, around the inner walls, to the door strip on the right,
+# and stand in it for door_hold to escape. The player slides along walls.
+# One of the data's layouts is picked per run (random, or `layout_index`).
 #
-# Result: {"escaped": true, "hits": n} or {"timeout": true} (at max_duration).
-# bot_input() (an AI victim) walks straight for the door without dodging.
+# Result: {"escaped": true} or {"timeout": true} (at max_duration).
+# bot_input() (an AI victim) follows the shortest way at bot_speed_scale.
+# The same shortest-way field (direction_home) is what tests use for a
+# flawless run.
 
-class Hazard:
-	var kind: StringName    # &"heart", &"bubble"
-	var position := Vector2.ZERO
-	var velocity := Vector2.ZERO
-
+const CELL := 10.0
 
 var player := Vector2.ZERO
-var hazards: Array[Hazard] = []
-var arm_hand := Vector2.ZERO
-var arm_out := false
-var hits: int = 0
 var door_time: float = 0.0
+var layout: MazeLayout
+var layout_index: int = -1
 
-var _hit_wait: float = 0.0
-var _hearts_sent: int = 0
-var _bubbles_sent: int = 0
+# Distance field (cells to the door) for the shortest way.
+var _field: PackedInt32Array
+var _cols: int = 0
+var _rows: int = 0
+
+
+func _init(minigame_data: MinigameData = null, index: int = -1) -> void:
+	super(minigame_data)
+	layout_index = index
 
 
 func get_airlock() -> AirlockData:
@@ -34,104 +35,123 @@ func get_airlock() -> AirlockData:
 
 func _on_start() -> void:
 	var room := get_airlock()
-	player = Vector2(room.start_x, room.room_size.y / 2.0)
-	arm_hand = Vector2(0.0, room.room_size.y / 2.0)
+	if layout_index < 0 or layout_index >= room.layouts.size():
+		layout_index = randi() % room.layouts.size()
+	layout = room.layouts[layout_index]
+	player = room.start
+	_build_field()
 
 
 func bot_input() -> Vector2:
-	return Vector2.RIGHT
+	return direction_home(player) * get_airlock().bot_speed_scale
 
 
 func _tick(delta: float, move: Vector2) -> void:
 	var room := get_airlock()
-	player += move * room.player_speed * delta
-	player.x = clampf(player.x, room.player_radius, room.room_size.x - room.player_radius)
-	player.y = clampf(player.y, room.player_radius, room.room_size.y - room.player_radius)
-	_spawn(room)
-	for hazard in hazards:
-		hazard.position += hazard.velocity * delta
-	hazards = hazards.filter(func(h): return h.position.x > -60.0 and h.position.y < room.room_size.y + 60.0)
-	_move_arm(room, delta)
-	_hit_wait = maxf(_hit_wait - delta, 0.0)
-	if _hit_wait <= 0.0 and _touching(room):
-		hits += 1
-		_hit_wait = room.hit_cooldown
-		player.x = maxf(player.x - room.knockback, room.player_radius)
-		door_time = 0.0
+	var step := move * room.player_speed * delta
+	# Slide along walls: each axis separately.
+	for axis in [Vector2(step.x, 0), Vector2(0, step.y)]:
+		var next: Vector2 = player + axis
+		if is_free(next):
+			player = next
 	if player.x >= room.door_x:
 		door_time += delta
 		if door_time >= room.door_hold:
-			finish({"escaped": true, "hits": hits})
+			finish({"escaped": true, "layout": layout_index})
 	else:
 		door_time = 0.0
 
 
-func _spawn(room: AirlockData) -> void:
-	while room.heart_lanes.size() > 0 and elapsed >= room.heart_first + _hearts_sent * room.heart_interval:
-		var heart := Hazard.new()
-		heart.kind = &"heart"
-		var lane := room.heart_lanes[_hearts_sent % room.heart_lanes.size()]
-		heart.position = Vector2(room.room_size.x + room.heart_radius, lane * room.room_size.y)
-		heart.velocity = Vector2.LEFT * room.heart_speed
-		hazards.append(heart)
-		_hearts_sent += 1
-	while room.bubble_columns.size() > 0 and elapsed >= room.bubble_first + _bubbles_sent * room.bubble_interval:
-		var bubble := Hazard.new()
-		bubble.kind = &"bubble"
-		var column := room.bubble_columns[_bubbles_sent % room.bubble_columns.size()]
-		bubble.position = Vector2(column * room.room_size.x, -room.bubble_size.y / 2.0)
-		bubble.velocity = Vector2.DOWN * room.bubble_speed
-		hazards.append(bubble)
-		_bubbles_sent += 1
-
-
-func _move_arm(room: AirlockData, delta: float) -> void:
-	arm_out = elapsed >= room.arm_delay
-	if not arm_out:
-		return
-	var wobble := Vector2(0.0, sin(elapsed * 9.0) * room.arm_wobble)
-	arm_hand = arm_hand.move_toward(player + wobble, room.arm_speed * delta)
-
-
-# Is anything touching the player right now?
-func _touching(room: AirlockData) -> bool:
-	if arm_out and arm_hand.distance_to(player) < room.arm_radius + room.player_radius:
-		return true
-	for hazard in hazards:
-		if hazard_hits(hazard, player, room.player_radius):
-			return true
-	return false
-
-
-# Would `hazard` touch a player of `radius` at `at`? (Also for bots and tests.)
-func hazard_hits(hazard: Hazard, at: Vector2, radius: float) -> bool:
+# Can the player stand at `at` (inside the room, clear of every wall)?
+func is_free(at: Vector2) -> bool:
 	var room := get_airlock()
-	if hazard.kind == &"heart":
-		return hazard.position.distance_to(at) < room.heart_radius + radius
-	var half := room.bubble_size / 2.0
-	var nearest := Vector2(clampf(at.x, hazard.position.x - half.x, hazard.position.x + half.x),
-		clampf(at.y, hazard.position.y - half.y, hazard.position.y + half.y))
-	return nearest.distance_to(at) < radius
+	var r := room.player_radius
+	if at.x < r or at.y < r or at.x > room.room_size.x - r or at.y > room.room_size.y - r:
+		return false
+	for wall in layout.walls:
+		var nearest := Vector2(clampf(at.x, wall.position.x, wall.end.x), clampf(at.y, wall.position.y, wall.end.y))
+		if nearest.distance_to(at) < r:
+			return false
+	return true
+
+
+# The unit direction of the shortest way to the door from `at`.
+func direction_home(at: Vector2) -> Vector2:
+	var cell := _cell_of(at)
+	var best := _dist(cell)
+	var best_dir := Vector2.ZERO
+	for dy in [-1, 0, 1]:
+		for dx in [-1, 0, 1]:
+			var n := cell + Vector2i(dx, dy)
+			var d := _dist(n)
+			if d >= 0 and (best < 0 or d < best):
+				best = d
+				best_dir = Vector2(dx, dy)
+	if best_dir == Vector2.ZERO:
+		return Vector2.RIGHT if at.x < get_airlock().door_x else Vector2.ZERO
+	return best_dir.normalized()
+
+
+# Length (px) of the shortest way from the start to the door, and the time a
+# flawless run takes (plus door_hold).
+func shortest_time() -> float:
+	var steps := _dist(_cell_of(get_airlock().start))
+	return steps * CELL / get_airlock().player_speed + get_airlock().door_hold if steps >= 0 else INF
+
+
+func _build_field() -> void:
+	var room := get_airlock()
+	_cols = int(ceil(room.room_size.x / CELL))
+	_rows = int(ceil(room.room_size.y / CELL))
+	_field = PackedInt32Array()
+	_field.resize(_cols * _rows)
+	_field.fill(-1)
+	var queue: Array[Vector2i] = []
+	for y in _rows:
+		for x in _cols:
+			var p := _center(Vector2i(x, y))
+			if p.x >= room.door_x and is_free(p):
+				_field[y * _cols + x] = 0
+				queue.append(Vector2i(x, y))
+	var head := 0
+	while head < queue.size():
+		var c := queue[head]
+		head += 1
+		var d := _field[c.y * _cols + c.x]
+		for off in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var n: Vector2i = c + off
+			if n.x < 0 or n.y < 0 or n.x >= _cols or n.y >= _rows or _field[n.y * _cols + n.x] >= 0:
+				continue
+			if not is_free(_center(n)):
+				continue
+			_field[n.y * _cols + n.x] = d + 1
+			queue.append(n)
+
+
+func _center(c: Vector2i) -> Vector2:
+	return Vector2((c.x + 0.5) * CELL, (c.y + 0.5) * CELL)
+
+
+func _cell_of(at: Vector2) -> Vector2i:
+	return Vector2i(clampi(int(at.x / CELL), 0, _cols - 1), clampi(int(at.y / CELL), 0, _rows - 1))
+
+
+func _dist(c: Vector2i) -> int:
+	if c.x < 0 or c.y < 0 or c.x >= _cols or c.y >= _rows:
+		return -1
+	return _field[c.y * _cols + c.x]
 
 
 func draw_view(canvas: CanvasItem, rect: Rect2) -> void:
 	var room := get_airlock()
 	var scale := minf(rect.size.x / room.room_size.x, rect.size.y / room.room_size.y)
 	var origin := rect.position + (rect.size - room.room_size * scale) / 2.0
-	var to_screen := func(p: Vector2) -> Vector2: return origin + p * scale
 	canvas.draw_rect(Rect2(origin, room.room_size * scale), Color(0.12, 0.08, 0.2))
-	# Door strip: glows as it opens.
-	var door := Rect2(to_screen.call(Vector2(room.door_x, 0)), Vector2(room.room_size.x - room.door_x, room.room_size.y) * scale)
+	var door := Rect2(origin + Vector2(room.door_x, 0) * scale, Vector2(room.room_size.x - room.door_x, room.room_size.y) * scale)
 	canvas.draw_rect(door, Color(0.3, 1.0, 0.7, 0.2 + 0.6 * clampf(door_time / maxf(room.door_hold, 0.01), 0.0, 1.0)))
-	for hazard in hazards:
-		if hazard.kind == &"heart":
-			canvas.draw_circle(to_screen.call(hazard.position), room.heart_radius * scale, Color(1.0, 0.45, 0.75))
-		else:
-			var half := room.bubble_size / 2.0
-			canvas.draw_rect(Rect2(to_screen.call(hazard.position - half), room.bubble_size * scale), Color(1, 1, 1, 0.9))
-	if arm_out:
-		canvas.draw_line(to_screen.call(Vector2(0, room.room_size.y / 2.0)), to_screen.call(arm_hand), Color(0.75, 0.65, 1.0), 10.0 * scale, true)
-		canvas.draw_circle(to_screen.call(arm_hand), room.arm_radius * scale, Color(0.8, 0.7, 1.0))
-	canvas.draw_circle(to_screen.call(player), room.player_radius * scale, Color(1, 0.95, 0.4))
+	if layout != null:
+		for wall in layout.walls:
+			canvas.draw_rect(Rect2(origin + wall.position * scale, wall.size * scale), Color(0.75, 0.8, 0.95))
+	canvas.draw_circle(origin + player * scale, room.player_radius * scale, Color(1, 0.95, 0.4))
 	var time_left := maxf(data.max_duration - elapsed, 0.0)
 	canvas.draw_rect(Rect2(origin + Vector2(0, -10), Vector2(room.room_size.x * scale * time_left / data.max_duration, 6)), Color(1, 0.5, 0.8))

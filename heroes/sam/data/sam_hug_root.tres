@@ -4,8 +4,8 @@
 
 [resource]
 script = ExtResource("1_s")
-id = &"minigame_occupied"
-display_name = "Busy"
-duration = 10.0
-silences = true
-ignores_resolve = true
+id = &"sam_hug"
+display_name = "Hugged"
+duration = 1.0
+roots = true
+body_tint = Color(0.8, 0.7, 1, 0.4)

@@ -153,8 +153,11 @@ func validate() -> PackedStringArray:
 	else:
 		for problem in projectile.validate():
 			problems.append("'%s' %s" % [id, problem])
-	if damage == null:
-		problems.append("'%s' has no damage" % id)
+	# A damage-less projectile is fine when a hit does something else (a
+	# status on enemies, or ally_hit_status on allies).
+	if damage == null and on_hit_status == null \
+			and (projectile == null or projectile.ally_hit_status == null):
+		problems.append("'%s' has no damage (and applies nothing on hit)" % id)
 	if shots_per_second <= 0.0:
 		problems.append("'%s' shots_per_second must be above 0" % id)
 	if projectiles_per_shot < 1:
