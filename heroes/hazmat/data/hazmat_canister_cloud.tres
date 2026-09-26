@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="GroundZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/ground_zone_data.gd" id="1_z"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_z"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_z"]
+
+[sub_resource type="Resource" id="Shape"]
+script = ExtResource("2_z")
+kind = 1
+radius = 250.0
+
+[sub_resource type="Resource" id="Tick"]
+script = ExtResource("3_z")
+base = 10.0
+magic_ratio = 0.2
+
+[resource]
+script = ExtResource("1_z")
+shape = SubResource("Shape")
+duration = 6.0
+tick_interval = 1.0
+tick_damage = SubResource("Tick")
+damage_type = 1
+meter_label = &"canister_cloud"
+ramp_per_tick = 0.5
+ramp_max = 3.0
+ramp_reset_after = 1.0
+ramp_key = &"contamination"
+ramp_starts_full = false
+follow_owner = false
+ends_if_owner_dies = false
+outlives_cast = true
+color = Color(0.72, 1, 0.18, 0.22)
+outline_color = Color(0.85, 1, 0.3, 0.95)
+outline_width = 5.0
+draw_z_index = -3

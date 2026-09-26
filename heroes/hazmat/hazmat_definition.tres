@@ -1,0 +1,69 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="3_x"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="4_x"]
+[ext_resource type="Resource" path="res://heroes/hazmat/abilities/sprayer.tres" id="5_x"]
+[ext_resource type="Resource" path="res://heroes/hazmat/abilities/canister.tres" id="6_x"]
+[ext_resource type="Resource" path="res://heroes/hazmat/abilities/seal_suit.tres" id="7_x"]
+[ext_resource type="Resource" path="res://heroes/hazmat/abilities/quarantine.tres" id="8_x"]
+[ext_resource type="Resource" path="res://heroes/hazmat/abilities/containment_breach.tres" id="9_x"]
+[ext_resource type="Resource" path="res://heroes/hazmat/abilities/contamination.tres" id="10_x"]
+[ext_resource type="Resource" path="res://heroes/hazmat/hazmat_feel.tres" id="11_x"]
+[ext_resource type="Resource" path="res://heroes/hazmat/hazmat_visuals.tres" id="12_x"]
+
+[sub_resource type="Resource" id="Sub_health"]
+script = ExtResource("3_x")
+base = 950.0
+growth = 100.0
+
+[sub_resource type="Resource" id="Sub_weapon"]
+script = ExtResource("3_x")
+base = 35.0
+growth = 3.8889
+
+[sub_resource type="Resource" id="Sub_magic"]
+script = ExtResource("3_x")
+base = 30.0
+growth = 5.5556
+
+[sub_resource type="Resource" id="Sub_armor"]
+script = ExtResource("3_x")
+base = 40.0
+growth = 3.8889
+
+[sub_resource type="Resource" id="Sub_mr"]
+script = ExtResource("3_x")
+base = 30.0
+growth = 2.7778
+
+[sub_resource type="Resource" id="Sub_stats"]
+script = ExtResource("2_x")
+health = SubResource("Sub_health")
+weapon = SubResource("Sub_weapon")
+magic = SubResource("Sub_magic")
+armor = SubResource("Sub_armor")
+magic_resist = SubResource("Sub_mr")
+
+[resource]
+script = ExtResource("1_x")
+hero_id = &"hazmat"
+display_name = "Hazmat"
+title = "The Contaminant"
+role = 0
+description = "A slow walking hazard in a yellow hazmat suit. His gas aura hurts more every second you stand in it; he sprays, lobs canisters and hooks people in to keep them there. Takes space rather than protecting allies."
+stats = SubResource("Sub_stats")
+move_speed = 460.0
+acceleration = 2200.0
+friction = 2600.0
+abilities = Dictionary[StringName, ExtResource("4_x")]({
+&"primary": ExtResource("5_x"),
+&"ability_1": ExtResource("6_x"),
+&"movement": ExtResource("7_x"),
+&"cc": ExtResource("8_x"),
+&"ultimate": ExtResource("9_x"),
+&"passive": ExtResource("10_x")
+})
+feel_profile = ExtResource("11_x")
+visual_profile = ExtResource("12_x")

@@ -115,6 +115,7 @@ godot --headless res://tools/heroes/jose_test.tscn
 godot --headless res://tools/heroes/melody_test.tscn
 godot --headless res://tools/heroes/cosmo_test.tscn
 godot --headless res://tools/heroes/cpt_yellow_test.tscn
+godot --headless res://tools/heroes/hazmat_test.tscn
 godot --headless res://tools/heroes/feel_test.tscn
 godot --headless res://tools/heroes/balance_tools_test.tscn
 godot --headless res://tools/heroes/map_switch_test.tscn

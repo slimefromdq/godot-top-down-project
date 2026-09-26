@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ZoneAbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/zone_ability_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/hazmat/abilities/containment_breach_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/hazmat/data/hazmat_breach.tres" id="3_a"]
+
+[resource]
+script = ExtResource("1_a")
+zone = ExtResource("3_a")
+zone_duration = 6.0
+id = &"containment_breach"
+display_name = "Containment Breach"
+description = "The aura swells to 500 px at full ramp for 6 s, then leaves an 8 s residue where it ends."
+ability_script = ExtResource("2_a")
+cooldown = 90.0
+tags = Array[StringName]([&"ultimate"])
+meter_label = &"containment_breach"
+feel_preset = &"rally"

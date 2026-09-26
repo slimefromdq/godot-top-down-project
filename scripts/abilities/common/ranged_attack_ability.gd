@@ -326,6 +326,8 @@ func _fire_shot(aim: Vector2, extra: bool, label: StringName) -> void:
 		template.feel = current_feel if not extra else null
 		template.add_status(ranged.on_hit_status)
 		var projectile := Projectile.fire(actor, projectile_data, origin, direction, template)
+		if projectile_data.lobbed:
+			projectile.lob_distance = origin.distance_to(actor.aim_point)
 		projectile.hit_modifier = _modify_hit
 		projectile.hit_landed.connect(_on_projectile_hit)
 		_on_projectile_fired(projectile, extra)

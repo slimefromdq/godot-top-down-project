@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/hazmat/data/hazmat_hose.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/hazmat/data/hazmat_quarantine.tres" id="4_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Damage"]
+script = ExtResource("9_v")
+base = 30.0
+per_level = 4.0
+weapon_ratio = 0.4
+
+[resource]
+script = ExtResource("1_a")
+projectile = ExtResource("3_a")
+muzzles = Array[Vector2]([Vector2(50, 0)])
+fire_mode = 1
+shots_per_second = 2.0
+id = &"quarantine"
+display_name = "Quarantine"
+description = "Fire the hose hook (500 px). The first enemy hit is pulled to Hazmat and stunned for 0.4 s."
+ability_script = ExtResource("2_a")
+cooldown = 11.0
+damage = SubResource("Damage")
+damage_type = 0
+on_hit_status = ExtResource("4_a")
+tags = Array[StringName]([&"ability", &"cc"])
+meter_label = &"quarantine"
+feel_preset = &"sting"

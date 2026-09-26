@@ -157,6 +157,8 @@ Hazmat is a slow walking hazard: his gas makes standing near him get worse every
 
 **Built from.** Aura: `ZoneAbilityData` with `follow_owner`, plus a small script tracking time-in-zone per target through the zone's `target_*` signals. Sprayer: `RangedAttackData` with many small projectiles and spread. Canister: an exploding `ProjectileData` that leaves a `GroundZoneData`. Quarantine: a skillshot with a pull `on_hit_status` (displacement toward caster) plus a stun. Breach: a script that resizes the aura and spawns the residue zone at the end.
 
+**Built in Phase 1.** Choices the table left open: the gas ticks once a second, so the ramp counts ticks (x1, x1.5 ... x3 on the fifth). All of his gas (aura, Canister cloud, Breach and its residue) shares one ramp per enemy, so standing in two clouds ramps twice as fast. Canister's burst deals 20 + 30% Magic, lands on the cursor up to 800 px away and flies over walls. Seal Suit's shove deals 20 + 30% Weapon and pushes enemies 160 px aside. The residue is 300 px. Move speed is 460, against Cpt. Yellow's 500. Breach is instant, so he keeps fighting while it runs.
+
 **Readability and counterplay.** The ramp is the counterplay: stepping in and out is always safe, standing in it is not. The edge ring must stay readable under every other effect, so draw it on a layer above other ground VFX. Cleanse items and Lucy's salt cleanse reset the ramp, and his low speed means kiting beats him.
 
 ## Sam, The Visitor (Tempo)
