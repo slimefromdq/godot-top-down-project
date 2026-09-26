@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="1_kuu8s"]
+[ext_resource type="PackedScene" path="res://heroes/cosmo/vfx/crescent_blade.tscn" id="2_c88dk"]
+
+[resource]
+script = ExtResource("1_kuu8s")
+speed = 1100.0
+lifetime = 0.55
+pierce = -1
+radius = 34.0
+return_to_caster = true
+curve_amount = 0.25
+visual_scene = ExtResource("2_c88dk")

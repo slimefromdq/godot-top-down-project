@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_3c58n"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_e4bts"]
+
+[resource]
+script = ExtResource("1_3c58n")
+id = &"cosmo_tide_pull"
+display_name = "Caught in the Tide"
+duration = 0.3
+compel_enabled = true
+compel_speed_multiplier = 0.55
+compel_stop_distance = 20.0
+compel_overrides_input = false

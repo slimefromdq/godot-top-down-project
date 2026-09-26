@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="1_ru33e"]
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="2_vo88q"]
+[ext_resource type="PackedScene" path="res://heroes/cosmo/vfx/moon.tscn" id="3_yfbxb"]
+
+[resource]
+script = ExtResource("2_vo88q")
+speed = 1300.0
+lifetime = 0.6
+radius = 16.0
+visual_scene = ExtResource("3_yfbxb")
+hit_effect = ExtResource("1_ru33e")

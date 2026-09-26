@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_600j0"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_cet0y"]
+
+[resource]
+script = ExtResource("1_600j0")
+id = &"cosmo_starfall_channel"
+display_name = "Calling the Stars"
+duration = 4.0
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 0.0
+})
+body_tint = Color(0.75, 0.85, 1, 0.4)

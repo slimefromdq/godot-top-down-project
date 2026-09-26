@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="GroundZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/ground_zone_data.gd" id="1_idxy4"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_uewgi"]
+[ext_resource type="Resource" path="res://heroes/cosmo/data/cosmo_tide_pull.tres" id="3_o5voa"]
+
+[sub_resource type="Resource" id="Resource_mdbug"]
+script = ExtResource("2_uewgi")
+kind = 1
+radius = 230.0
+
+[resource]
+script = ExtResource("1_idxy4")
+shape = SubResource("Resource_mdbug")
+duration = 1.3
+tick_interval = 0.1
+damage_type = 1
+status_while_inside = ExtResource("3_o5voa")
+meter_label = &"tide"
+statuses_from_zone = true
+follow_owner = false
+face_aim = false
+affects = 0
+ends_if_owner_dies = false
+max_duration = 0.0
+outlives_cast = true
+color = Color(0.45, 0.6, 1, 0.18)
+outline_color = Color(0.8, 0.88, 1, 0.9)
+outline_width = 4.0

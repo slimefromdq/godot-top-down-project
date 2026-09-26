@@ -201,8 +201,11 @@ func _hit_targets_between(from: Vector2, to: Vector2) -> void:
 
 
 func _can_hit(hurtbox: HurtboxComponent) -> bool:
-	return not _already_hit.has(hurtbox.get_instance_id()) \
-		and Hitbox.can_hit(damage_template.source, hurtbox)
+	# The shooter may be gone (a hero despawned with shots in flight).
+	var source = damage_template.source
+	if not is_instance_valid(source):
+		source = null
+	return not _already_hit.has(hurtbox.get_instance_id()) and Hitbox.can_hit(source, hurtbox)
 
 
 func _expire() -> void:

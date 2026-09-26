@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="CosmoStarfallData" format=3]
+
+[ext_resource type="Script" path="res://heroes/cosmo/abilities/starfall_ability.gd" id="1_p0p2d"]
+[ext_resource type="Resource" path="res://heroes/cosmo/data/cosmo_starfall_channel.tres" id="2_3s1gr"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_1o7mi"]
+[ext_resource type="Resource" path="res://heroes/cosmo/data/cosmo_meteor.tres" id="4_83t8f"]
+[ext_resource type="Resource" path="res://heroes/cosmo/data/cosmo_starfall_resist.tres" id="5_sa656"]
+[ext_resource type="Script" path="res://heroes/cosmo/abilities/starfall_data.gd" id="6_8ni61"]
+[ext_resource type="Resource" path="res://heroes/cosmo/data/cosmo_storm_edge.tres" id="7_bnmhn"]
+
+[sub_resource type="Resource" id="Resource_emq8e"]
+script = ExtResource("3_1o7mi")
+base = 60.0
+magic_ratio = 0.6
+
+[sub_resource type="Resource" id="Resource_kb23c"]
+script = ExtResource("3_1o7mi")
+base = 3.5
+
+[sub_resource type="Resource" id="Resource_4mexo"]
+script = ExtResource("3_1o7mi")
+base = 450.0
+
+[sub_resource type="Resource" id="Resource_unf8c"]
+script = ExtResource("3_1o7mi")
+base = 4.0
+
+[sub_resource type="Resource" id="Resource_8mieg"]
+script = ExtResource("3_1o7mi")
+base = 0.35
+
+[sub_resource type="Resource" id="Resource_jee0x"]
+script = ExtResource("3_1o7mi")
+base = 0.5
+
+[resource]
+script = ExtResource("6_8ni61")
+meteor = ExtResource("4_83t8f")
+storm_zone = ExtResource("7_bnmhn")
+channel_status = ExtResource("2_3s1gr")
+resist_status = ExtResource("5_sa656")
+id = &"starfall"
+display_name = "Starfall"
+description = "Channel a meteor storm around you: more moons, more meteors. You can't walk while channelling but take half weapon damage; New Moon, stuns and silences end it."
+ability_script = ExtResource("1_p0p2d")
+cooldown = 90.0
+damage = SubResource("Resource_emq8e")
+damage_type = 1
+tags = Array[StringName]([&"ability", &"area"])
+values = Dictionary[StringName, ExtResource("3_1o7mi")]({
+&"channel_duration": SubResource("Resource_kb23c"),
+&"impact_delay": SubResource("Resource_8mieg"),
+&"meteors_per_second": SubResource("Resource_unf8c"),
+&"starfall_weapon_resist": SubResource("Resource_jee0x"),
+&"storm_radius": SubResource("Resource_4mexo")
+})
+feel_preset = &"starfall"

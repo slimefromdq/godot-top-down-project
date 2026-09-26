@@ -93,7 +93,7 @@ func copy() -> DamageInfo:
 	var info := DamageInfo.new()
 	info.amount = amount
 	info.type = type
-	info.source = source
+	info.source = source if is_instance_valid(source) else null    # the attacker may be gone
 	info.tags = tags.duplicate()
 	info.attack_id = attack_id
 	info.label = label

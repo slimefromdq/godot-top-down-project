@@ -330,6 +330,29 @@ BASE of a named value times that strength, so they don't grow with Magic.
 The passive sits in the optional `passive` slot (GameRules), so its numbers
 show in F1/F2/CSV like any ability's.
 
+## What Cosmo took
+
+A back-loaded mage CARRY. Tools → New Hero from Template → "Cosmo", basic
+attack deleted, then:
+
+| Slot | Data | Script |
+|---|---|---|
+| passive | `waxing_moon.tres` (`CosmoWaxingMoonData`): `moon_breakpoints` [1,4,7,10], `regen_interval_by_moons`, orbit radius/speed | `waxing_moon.gd` (`PassiveAbility`): the moon count, `set_max_ammo` / `set_regen_interval` on the gun, the orbit, `moon_waxed` |
+| primary | `moonshot.tres`: `RangedAttackData`, SEMI, REGEN reload, MAGIC | `moonshot_ability.gd`: only `_get_shot_origin` (a moon launches from its orbit) |
+| ability_1 | `crescent.tres` (`CosmoCrescentData`): `return_to_caster`, `curve_amount`, `pierce -1`, `moonlit_amp` / `moonlit_amp_full` | `crescent_ability.gd`: applies Moonlit per pass |
+| cc | `tide.tres` (`CosmoTideData`): a `statuses_from_zone` pull zone, a detonation template | `tide_ability.gd`: the countdown and `Projectile.explode_at` |
+| movement | `new_moon.tres`: `ChargeData` with `stop_at_target` and an untargetable `self_status` | generic `ChargeAbility` |
+| ultimate | `starfall.tres` (`CosmoStarfallData`): meteor template, rate by moons, channel/resist statuses, end-on flags | `starfall_ability.gd`: the channel, meteor placement, warnings |
+
+Moonlit is an ordinary status whose `incoming_magic_multiplier` is 2.0,
+applied at strength `amp - 1`, so the amp lands in `HealthComponent.mitigate`
+for every magic source. Starfall's resist is the same trick with
+`incoming_physical_multiplier` 0.0 at strength 0.5. The shared pieces
+(per-type damage-taken, boomerangs, REGEN ammo, zone-sourced pulls,
+untargetable, `get_hero_metrics`) are in the generic systems;
+`tools/heroes/caster_infra_test` covers them and `tools/heroes/cosmo_test`
+covers the kit.
+
 ## What Jose took
 
 A CARRY with two revolvers. Tools → New Hero from Template → "Jose", then:

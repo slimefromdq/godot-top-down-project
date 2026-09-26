@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="CosmoTideData" format=3]
+
+[ext_resource type="Script" path="res://heroes/cosmo/abilities/tide_ability.gd" id="1_jfcvi"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_7emr8"]
+[ext_resource type="Resource" path="res://heroes/cosmo/data/cosmo_tide_detonation.tres" id="3_xn1wm"]
+[ext_resource type="Script" path="res://heroes/cosmo/abilities/tide_data.gd" id="4_2s2ww"]
+[ext_resource type="Resource" path="res://heroes/cosmo/data/cosmo_tide_zone.tres" id="5_llkfl"]
+
+[sub_resource type="Resource" id="Resource_wy3al"]
+script = ExtResource("2_7emr8")
+base = 60.0
+magic_ratio = 0.9
+
+[sub_resource type="Resource" id="Resource_2k71p"]
+script = ExtResource("2_7emr8")
+base = 800.0
+
+[sub_resource type="Resource" id="Resource_53bvh"]
+script = ExtResource("2_7emr8")
+base = 1.2
+
+[resource]
+script = ExtResource("4_2s2ww")
+zone = ExtResource("5_llkfl")
+detonation = ExtResource("3_xn1wm")
+id = &"tide"
+display_name = "Tide"
+description = "A whirlpool at the cursor pulls enemies toward its centre for 1.2 s, then crashes down."
+ability_script = ExtResource("1_jfcvi")
+cooldown = 11.0
+damage = SubResource("Resource_wy3al")
+damage_type = 1
+tags = Array[StringName]([&"ability", &"area"])
+values = Dictionary[StringName, ExtResource("2_7emr8")]({
+&"cast_range": SubResource("Resource_2k71p"),
+&"tide_duration": SubResource("Resource_53bvh")
+})
+feel_preset = &"tide"
