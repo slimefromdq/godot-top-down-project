@@ -127,6 +127,15 @@ func set_data(new_data: AbilityData) -> void:
 	cooldown = data.cooldown
 
 
+# The actor this cast picked (AllyTargeting; accepts may include enemies) is
+# on the caster's team.
+func is_cast_target_ally() -> bool:
+	if cast_ally == null or not is_instance_valid(cast_ally):
+		return false
+	var team := CombatQueries.team_of(actor)
+	return cast_ally == actor or (team != &"" and CombatQueries.team_of(cast_ally) == team)
+
+
 func set_dormant(dormant: bool) -> void:
 	_dormant = dormant
 

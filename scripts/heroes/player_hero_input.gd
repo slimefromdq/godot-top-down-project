@@ -14,7 +14,9 @@ class_name PlayerHeroInput
 # controller's buffer turns that into a smooth combo chain. Releases go to
 # hero.release_slot() for hold-to-charge abilities, and hero_reload
 # (R by default) calls hero.reload(). While a RhythmPhrase is playing, its
-# input action plays notes (RhythmPerformer.press_note) instead.
+# input action plays notes (RhythmPerformer.press_note) instead. While a
+# minigame is playing (MinigameHost), WASD drives the minigame, not the hero,
+# and slot keys go to it as presses.
 
 const RELOAD_ACTION := &"hero_reload"
 
@@ -29,7 +31,13 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	hero.move_direction = Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
+	var move := Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
+	var minigame := MinigameHost.find_on(hero)
+	if minigame != null and minigame.is_playing():
+		minigame.set_input(move)
+		hero.move_direction = Vector2.ZERO
+		return
+	hero.move_direction = move
 	_update_aim()
 	for slot in GameRules.current().slots:
 		var ability := hero.get_ability(slot.id)
@@ -77,6 +85,15 @@ func _update_ally_highlight() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# A running minigame owns the keys.
+	var minigame := MinigameHost.find_on(hero)
+	if minigame != null and minigame.is_playing():
+		for slot in GameRules.current().slots:
+			if slot.input_action != &"" and InputMap.has_action(slot.input_action) and event.is_action_pressed(slot.input_action):
+				minigame.press(slot.input_action)
+				get_viewport().set_input_as_handled()
+				return
+		return
 	# A running rhythm phrase owns its key: presses play notes, not slots.
 	var performer := RhythmPerformer.find_on(hero)
 	if performer != null and performer.is_playing():

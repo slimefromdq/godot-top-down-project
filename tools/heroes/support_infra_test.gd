@@ -38,6 +38,7 @@ func _run() -> void:
 	await _test_death_intercept()
 	await _test_charges_bounces_displacement()
 	await _test_forms_and_blocker()
+	await _test_either_team_and_link()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
 	get_tree().quit(failures)
@@ -858,6 +859,97 @@ func _test_forms_and_blocker() -> void:
 	await _until_flag(func(): return not ghost.is_casting(), 1.5)
 	_check("...and off when it ends", not h.status_component.has_status(&"test_ghost"), "")
 	controller.restore_slot(&"movement")
+	_clear()
+	await _physics_frames(2)
+
+
+# ProjectileData.affects + ally_hit_status, AllyTargeting.accepts,
+# Ability.is_cast_target_ally, ActorLink (leash, heal share).
+func _test_either_team_and_link() -> void:
+	var h := _hero(Vector2(0, 53000), &"a")
+	var friend := _hero(Vector2(300, 53000), &"a")
+	var foe := _hero(Vector2(0, 53300), &"b")
+	spawned.append(h)
+	spawned.append(friend)
+	spawned.append(foe)
+	await _physics_frames(2)
+	var hug := ProjectileData.new()
+	hug.speed = 2000.0
+	hug.lifetime = 0.4
+	hug.affects = Hitbox.Affects.BOTH
+	hug.on_hit_status = StatusEffect.new()
+	hug.on_hit_status.id = &"test_hug_root"
+	hug.on_hit_status.duration = 1.0
+	hug.on_hit_status.roots = true
+	hug.ally_hit_status = StatusEffect.new()
+	hug.ally_hit_status.id = &"test_hug_shield"
+	hug.ally_hit_status.duration = 2.0
+	var friend_hp := friend.health_component.current_health
+	var allies_hit := []
+	var shot := Projectile.fire(h, hug, Vector2(40, 53000), Vector2.RIGHT, DamageInfo.create(30.0, h))
+	shot.ally_hit.connect(func(hb): allies_hit.append(hb.owner))
+	Projectile.fire(h, hug, Vector2(-100, 53000), Vector2.RIGHT, DamageInfo.create(30.0, h))
+	await _seconds(0.3)
+	_check("either-team projectile: stops on the first ally, no damage, ally status", allies_hit == [friend]
+		and friend.health_component.current_health == friend_hp and friend.status_component.has_status(&"test_hug_shield")
+		and not friend.status_component.has_status(&"test_hug_root"), str(allies_hit))
+	_check("...never the shooter (a shot fired from behind passes through her)", not h.status_component.has_status(&"test_hug_shield")
+		and not h.status_component.has_status(&"test_hug_root"), "")
+	var foe_hp := foe.health_component.current_health
+	Projectile.fire(h, hug, Vector2(0, 53040), Vector2.DOWN, DamageInfo.create(30.0, h))
+	await _seconds(0.3)
+	_check("...and on an enemy: damage and the enemy status", foe.health_component.current_health < foe_hp
+		and foe.status_component.has_status(&"test_hug_root") and not foe.status_component.has_status(&"test_hug_shield"), "")
+
+	var targeting := AllyTargeting.new()
+	targeting.snap_radius = 150.0
+	targeting.accepts = Hitbox.Affects.BOTH
+	var picked_foe := targeting.find(h, foe.global_position)
+	var picked_friend := targeting.find(h, friend.global_position)
+	_check("AllyTargeting.accepts BOTH picks an enemy or an ally", picked_foe != null and picked_foe.owner == foe
+		and picked_friend != null and picked_friend.owner == friend, "")
+	targeting.accepts = Hitbox.Affects.ENEMIES
+	_check("...ENEMIES never picks an ally", targeting.find(h, friend.global_position) == null
+		and targeting.find(h, foe.global_position) != null, "")
+	var ability := h.get_ability(&"cc")
+	ability.cast_ally = friend
+	var ally_ok := ability.is_cast_target_ally()
+	ability.cast_ally = foe
+	_check("is_cast_target_ally tells them apart", ally_ok and not ability.is_cast_target_ally(), "")
+	ability.cast_ally = null
+
+	# Leash: the one walking away is held at the distance.
+	friend.status_component.clear()
+	foe.status_component.clear()
+	var foe2 := _hero(Vector2(250, 53300), &"b")
+	spawned.append(foe2)
+	await _physics_frames(2)
+	var link := ActorLink.spawn(h, foe, foe2, 1.5, h, 300.0)
+	foe2.move_direction = Vector2.RIGHT
+	await _seconds(1.0)
+	foe2.move_direction = Vector2.ZERO
+	var gap := foe.global_position.distance_to(foe2.global_position)
+	_check("a leash keeps two actors within its distance", gap <= 300.5, "%.1f px" % gap)
+	_check("...by pulling back the one moving away (the other stays put)", foe.global_position.distance_to(Vector2(0, 53300)) < 5.0,
+		str(foe.global_position))
+	await _seconds(0.7)
+	_check("...and ends at its duration", not is_instance_valid(link) or link.has_ended(), "")
+
+	# Heal share.
+	var share := ActorLink.spawn(h, h, friend, 5.0, h, 0.0, 0.5)
+	h.health_component.apply_damage(DamageInfo.create(200.0, foe))
+	friend.health_component.apply_damage(DamageInfo.create(200.0, foe))
+	var h_hp := h.health_component.current_health
+	var friend_hp2 := friend.health_component.current_health
+	h.health_component.heal(100.0, h)
+	_check("heal share: half of a heal on one also heals the other, and it doesn't bounce back",
+		absf(friend.health_component.current_health - friend_hp2 - 50.0) < 0.01
+		and absf(h.health_component.current_health - h_hp - 100.0) < 0.01,
+		"+%.1f / +%.1f" % [h.health_component.current_health - h_hp, friend.health_component.current_health - friend_hp2])
+	_check("(still linked while both live)", not share.has_ended(), "")
+	friend.health_component.apply_damage(DamageInfo.create(999999.0, foe2))
+	await _physics_frames(2)
+	_check("a link ends when either end dies", not is_instance_valid(share) or share.has_ended(), "")
 	_clear()
 	await _physics_frames(2)
 

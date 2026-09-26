@@ -26,6 +26,12 @@ class_name ProjectileData
 @export var knockback: float = 0.0
 ## Optional status applied to everything it hits.
 @export var on_hit_status: StatusEffect
+## Who it can hit. BOTH: it also stops on the first ALLY in its way (never
+## the shooter), dealing no damage and applying ally_hit_status instead (a
+## hug that shields a friend and roots a foe). Projectile.ally_hit fires.
+@export var affects: Hitbox.Affects = Hitbox.Affects.ENEMIES
+## Put on an ally it hits (affects BOTH or ALLIES). Enemies get on_hit_status.
+@export var ally_hit_status: StatusEffect
 
 @export_group("Return")
 ## Boomerang: fly to max range (speed x lifetime) along the aim, then home

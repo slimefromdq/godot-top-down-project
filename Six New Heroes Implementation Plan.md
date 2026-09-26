@@ -216,6 +216,17 @@ Sam doesn't understand teams, so most of his abilities work on anyone: allies ge
 
 **The airlock minigame.** A small top-down room, played with normal WASD. The victim starts on the left; the airlock door is on the right. Sam's affection fills the room: slow heart projectiles in simple patterns, "HI!!" speech bubbles that sweep across, and a wobbly hug-arm that grabs at the player's position. Each hit pushes the victim back 60 px. Reaching the door with a short 0.3 s hold opens it. Room length is tuned so a perfect run takes about 1.5 s; the ship forcibly ejects them at 4 s. Outside audio is muffled; inside, Sam chatters happily over a ship intercom.
 
+**Built in Phase 6a (systems and the airlock).**
+- **Hazard patterns** are fixed, not random: hearts every 0.22 s along lanes near the middle, bubbles every 0.3 s (one column right by the door), and the hug-arm from 0.6 s.
+- **Timings:**
+  - A clean run takes about 1.6 s.
+  - Walking straight at the door takes four hits and about 2.2 s.
+  - Standing still is ejected at 4 s.
+  - The minimum is 1.2 s.
+- **AI victims** walk straight for the door without dodging, so they get out in about 2.2 s.
+- **The leash** is a hard tether: whoever walks away is held at exactly 300 px, and it never pulls anyone through a containment ring.
+- **Healing share** doesn't bounce back.
+
 **Built from.** Hello!: `RangedAttackData` with bouncing `ProjectileData`. Hug: a skillshot projectile that stops on the first actor of either team and applies a root or a shield by team, with a stretchy arm drawn from Sam to the hand. Tractor Beam: `AllyTargeting` extended to accept either team, with different statuses per team; the beam uses `carry_enabled`. Bracelet: a projectile that chains to the nearest second target, then a small script enforcing the 300 px leash each tick. Close Encounter: `carry_enabled` + untargetable on the victim, the new minigame instance for their input, and `movement_component.set_cruise()` to fly the UFO. When multiplayer arrives, the minigame only needs to send the victim's movement input to the server; it can be simulated there like any other actor.
 
 **Readability.** While the UFO is flying, everyone sees a shadow on the ground under it and a small portrait of who's inside. The victim's teammates can follow the shadow to be ready at the drop point.

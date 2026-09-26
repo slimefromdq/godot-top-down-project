@@ -331,6 +331,7 @@ func _fire_shot(aim: Vector2, extra: bool, label: StringName) -> void:
 		projectile.hit_modifier = _modify_hit
 		projectile.free_pierce = _hit_is_free_pierce
 		projectile.hit_landed.connect(_on_projectile_hit)
+		projectile.ally_hit.connect(_on_projectile_ally_hit)
 		_on_projectile_fired(projectile, extra)
 
 	if has_magazine() and not extra:
@@ -447,6 +448,18 @@ func _build_hit(info: DamageInfo, _hurtbox: HurtboxComponent) -> DamageInfo:
 
 # Override to react after a hit landed (info.final_amount is set).
 func _on_target_hit(_info: DamageInfo, _hurtbox: HurtboxComponent) -> void:
+	pass
+
+
+func _on_projectile_ally_hit(hurtbox: HurtboxComponent) -> void:
+	if not is_instance_valid(actor) or not is_instance_valid(hurtbox):
+		return
+	actor.trigger_cue(StringName(str(ability_id) + "_ally_hit"), {"position": hurtbox.global_position, "target": hurtbox.owner})
+	_on_ally_hit(hurtbox)
+
+
+# Override: an ally was hit (ProjectileData.affects BOTH/ALLIES).
+func _on_ally_hit(_hurtbox: HurtboxComponent) -> void:
 	pass
 
 

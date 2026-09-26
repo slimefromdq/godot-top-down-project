@@ -20,6 +20,9 @@ enum Pass { OUTBOUND, RETURN }
 signal hit_landed(info: DamageInfo, hurtbox: HurtboxComponent)
 ## The projectile exploded (ProjectileData explosion) at `at`.
 signal exploded(at: Vector2)
+## An ally was hit (ProjectileData.affects BOTH/ALLIES): no damage, the
+## data's ally_hit_status was applied.
+signal ally_hit(hurtbox: HurtboxComponent)
 ## Like hit_landed, with which pass of a returning projectile it was.
 signal pass_hit(info: DamageInfo, hurtbox: HurtboxComponent, which_pass: Pass)
 ## A returning projectile turned around / got back to its caster.
@@ -212,6 +215,17 @@ func _hit_targets_between(from: Vector2, to: Vector2) -> void:
 	found.sort_custom(func(a, b): return from.distance_squared_to(a.global_position) < from.distance_squared_to(b.global_position))
 
 	for hurtbox in found:
+		if _is_friendly(hurtbox):
+			_already_hit[hurtbox.get_instance_id()] = true
+			if data.ally_hit_status != null and hurtbox.status_component != null:
+				hurtbox.status_component.apply(data.ally_hit_status, damage_template.source, direction)
+			ally_hit.emit(hurtbox)
+			_spawn_feedback(data.hit_effect, data.hit_sound, hurtbox.global_position)
+			_hits += 1
+			if data.pierce >= 0 and _hits > data.pierce:
+				queue_free()
+				return
+			continue
 		# A parry (StatusEffect.parries) catches the shot: it changes sides.
 		if hurtbox.status_component != null and not data.return_to_caster \
 				and hurtbox.status_component.try_parry(&"projectile", damage_template.source, damage_template):
@@ -277,7 +291,22 @@ func _can_hit(hurtbox: HurtboxComponent) -> bool:
 	var source = damage_template.source
 	if not is_instance_valid(source):
 		source = null
-	return not _already_hit.has(hurtbox.get_instance_id()) and Hitbox.can_hit(source, hurtbox)
+	if _already_hit.has(hurtbox.get_instance_id()):
+		return false
+	if data.affects != Hitbox.Affects.ALLIES and Hitbox.can_hit(source, hurtbox):
+		return true
+	return _is_friendly(hurtbox)
+
+
+# An ally this projectile may hit (affects BOTH/ALLIES), never the shooter.
+func _is_friendly(hurtbox: HurtboxComponent) -> bool:
+	if data.affects == Hitbox.Affects.ENEMIES:
+		return false
+	var source = damage_template.source
+	if not is_instance_valid(source):
+		return false
+	var root := hurtbox.owner if hurtbox.owner != null else hurtbox.get_parent()
+	return root != source and Hitbox.is_ally(source, hurtbox) and hurtbox.is_valid_target()
 
 
 func _expire() -> void:
