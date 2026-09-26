@@ -207,7 +207,7 @@ func _test_meter_and_inspector() -> void:
 func _test_panel_and_validation() -> void:
 	DebugTools.toggle_panel()
 	var tabs: TabContainer = DebugTools._tabs
-	_check("F1 panel builds its 5 tabs", tabs.get_child_count() == 5, str(tabs.get_child_count()))
+	_check("F1 panel builds its 6 tabs (Hero, Abilities, Dummies, Feel, Match, Tools)", tabs.get_child_count() == 6, str(tabs.get_child_count()))
 	var editors := tabs.find_children("*", "PropertyEditor", true, false)
 	var spins := tabs.find_children("*", "SpinBox", true, false)
 	_check("ability/stat editors have live number fields", editors.size() >= 5 and spins.size() > 40, "%d editors, %d fields" % [editors.size(), spins.size()])

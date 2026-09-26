@@ -10,6 +10,8 @@ extends CanvasLayer
 #   F4  Damage meter    total, rolling DPS, breakdown by source, healing
 #                       received, damage taken
 #   Tools > Sight lines  line-of-sight overlay (SightLinesOverlay)
+#   Match               gold, XP, level, warmup skip, end the match, play
+#                       as either team (MatchManager)
 #
 # Everything here edits RUNTIME copies (each hero and ability owns a private
 # duplicate of its data), so nothing is written to .tres files and "Reset"
@@ -23,6 +25,7 @@ const DUMMY_SCENE := "res://scenes/training_dummy.tscn"
 const SPAWNED_GROUP := &"debug_spawned_dummies"
 const PLAYER_LISTENERS := &"player_listeners"
 const AIRLOCK := "res://resources/minigames/airlock.tres"
+const MATCH_HUD := "res://scenes/hud/match_hud.tscn"
 
 var meter: DamageMeter
 
@@ -225,6 +228,59 @@ func validate_heroes() -> String:
 	return "\n".join(lines)
 
 
+# --- Match (F1 > Match) ------------------------------------------------------
+
+func get_match() -> MatchManager:
+	return MatchManager.find(get_tree())
+
+
+# Add a MatchManager (and its HUD) to a scene that has none, e.g. Training
+# Grounds. Returns the manager.
+func start_match_here() -> MatchManager:
+	var existing := get_match()
+	if existing != null:
+		return existing
+	var scene := get_tree().current_scene
+	var manager := MatchManager.new()
+	manager.name = "MatchManager"
+	scene.add_child(manager)
+	scene.add_child(load(MATCH_HUD).instantiate())
+	if scene.has_method(&"on_match_started"):
+		scene.on_match_started(manager)
+	return manager
+
+
+func give_player(gold: float, xp: float) -> void:
+	var manager := get_match()
+	var hero := get_player()
+	if manager != null and hero != null:
+		manager.grant_actor(hero, gold, xp, MatchManager.REASON_DEBUG)
+
+
+func set_player_match_level(level: int) -> void:
+	var manager := get_match()
+	var hero := get_player()
+	if hero == null:
+		return
+	if manager != null:
+		manager.set_level(hero, level)
+	else:
+		hero.stats_component.set_level(level)
+
+
+# Flip the local player to `team` and put them at that team's spawn.
+func set_player_team(team: StringName) -> void:
+	var hero := get_player()
+	if hero == null:
+		return
+	var manager := get_match()
+	if manager != null:
+		manager.set_hero_team(hero, team)
+		hero.teleport_to(manager.get_spawn_point(team))
+	else:
+		hero.team = team
+
+
 # Replace the local player with another hero, keeping position, team and level.
 func swap_player(definition: HeroDefinition) -> Hero:
 	var old := get_player()
@@ -375,6 +431,7 @@ func rebuild_panel() -> void:
 	_tabs.add_child(_scroll("Abilities", _abilities_tab(hero)))
 	_tabs.add_child(_scroll("Dummies", _dummies_tab()))
 	_tabs.add_child(_scroll("Feel", _feel_tab(hero)))
+	_tabs.add_child(_scroll("Match", _match_tab(hero)))
 	_tabs.add_child(_scroll("Tools", _tools_tab()))
 
 
@@ -522,6 +579,76 @@ func _feel_tab(hero: Hero) -> Control:
 		var feel_editor := PropertyEditor.new()
 		feel_editor.edit(hero.feel_profile)
 		box.add_child(feel_editor)
+	return box
+
+
+func _match_tab(hero: Hero) -> Control:
+	var box := VBoxContainer.new()
+	var manager := get_match()
+	if manager == null:
+		box.add_child(_label("No match in this scene (Dream Basin has one)."))
+		box.add_child(_button("Start a match here", func():
+			start_match_here()
+			rebuild_panel.call_deferred()))
+		return box
+	var status := _label("")
+	var refresh := func():
+		if not is_instance_valid(manager):
+			return
+		var lines := PackedStringArray()
+		lines.append("State %s   clock %s" % [MatchManager.State.keys()[manager.state],
+			"%d:%02d" % [int(manager.clock) / 60, int(manager.clock) % 60]])
+		for team in MatchManager.TEAMS:
+			var names := PackedStringArray()
+			for h in manager.get_roster(team):
+				names.append("%s L%d %dg" % [h.definition.display_name if h.definition else h.name,
+					h.get_level(), manager.get_gold(h)])
+			lines.append("%s: %s" % [MatchManager.team_name(team), ", ".join(names) if not names.is_empty() else "-"])
+		status.text = "\n".join(lines)
+	refresh.call()
+	var timer := Timer.new()
+	timer.wait_time = 0.5
+	timer.autostart = true
+	timer.timeout.connect(refresh)
+	box.add_child(timer)
+	box.add_child(status)
+
+	box.add_child(_label("Economy (local player)", 15))
+	var gold_amount := _labeled_spin("Gold", 500, 0, 100000, 50, func(_v): pass)
+	var xp_amount := _labeled_spin("XP", 500, 0, 100000, 50, func(_v): pass)
+	box.add_child(gold_amount)
+	box.add_child(xp_amount)
+	var give := HFlowContainer.new()
+	give.add_child(_button("Give gold", func(): give_player((gold_amount.get_child(1) as SpinBox).value, 0.0)))
+	give.add_child(_button("Give XP", func(): give_player(0.0, (xp_amount.get_child(1) as SpinBox).value)))
+	box.add_child(give)
+	if hero != null:
+		box.add_child(_labeled_spin("Set level (plays level-up)", hero.get_level(), 1, StatScaling.LEVEL_DOMAIN, 1,
+			func(v): set_player_match_level(int(v))))
+
+	box.add_child(_label("Match flow", 15))
+	var flow := HFlowContainer.new()
+	flow.add_child(_button("Skip warmup", manager.start_playing))
+	flow.add_child(_button("Dawn wins", func(): manager.end_match(&"a")))
+	flow.add_child(_button("Dusk wins", func(): manager.end_match(&"b")))
+	if hero != null:
+		flow.add_child(_button("Respawn now", func(): manager.respawn_now(hero)))
+	box.add_child(flow)
+
+	box.add_child(_label("Play as team", 15))
+	var teams := HFlowContainer.new()
+	for team in MatchManager.TEAMS:
+		var button := _button("%s (%s)" % [MatchManager.team_name(team), team], func():
+			set_player_team(team)
+			refresh.call())
+		button.modulate = MatchManager.team_color(team)
+		teams.add_child(button)
+	box.add_child(teams)
+
+	box.add_child(_label("MatchRules (live)", 15))
+	var editor := PropertyEditor.new()
+	editor.edit(manager.get_rules())
+	box.add_child(editor)
 	return box
 
 

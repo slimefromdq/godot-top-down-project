@@ -12,11 +12,18 @@ class_name Hero
 # That separation is what lets the same hero be played, botted or replicated.
 
 signal definition_applied
+## Back in play after a death (Hero.respawn).
+signal respawned
 
 @export var definition: HeroDefinition
 ## Adds a PlayerHeroInput and a camera, and joins the "player" group.
 @export var player_controlled: bool = false
 @export_range(1, 20) var start_level: int = 1
+
+## Stay in the tree when dead (hidden, not hittable) so something can call
+## respawn() later. The MatchManager sets it on every hero in its roster.
+## The local player always behaves this way.
+var respawns: bool = false
 
 ## The feel presets abilities read (from the definition).
 var feel_profile: FeelProfile
@@ -24,6 +31,7 @@ var feel_profile: FeelProfile
 @onready var hitbox: Hitbox = $Hitbox
 
 var _applied := false
+var _layer_before_death: int = 0
 
 
 # Runs BEFORE any child's _ready. Components like VisualsComponent and
@@ -160,18 +168,49 @@ func _setup_player_control() -> void:
 		camera.make_current()
 
 
-# The local player stays in the tree when dead (the camera is a child, and the
-# world shows the game-over screen). Other heroes use Actor's default.
+# The local player and respawning heroes stay in the tree when dead (the
+# camera is a child, and the world shows the game-over screen or the match
+# respawns them). Other heroes use Actor's default.
 func _on_died() -> void:
 	ability_controller.interrupt()
 	hitbox.end_all()
-	if not player_controlled:
+	if not player_controlled and not respawns:
 		super()
 		return
 	hide()
 	hurtbox.set_deferred("monitorable", false)
+	_layer_before_death = collision_layer
+	collision_layer = 0
 	set_physics_process(false)
+	_set_input_enabled(false)
+
+
+# Back to full health at `at`, with statuses cleared and ammo refilled.
+# Only for a hero that stayed in the tree (see `respawns`).
+func respawn(at: Vector2) -> void:
+	if not health_component.is_dead():
+		return
+	status_component.clear()
+	health_component.reset()
+	global_position = at
+	velocity = Vector2.ZERO
+	movement_component.stop_forced_move()
+	reset_physics_interpolation()
+	if _layer_before_death != 0:
+		collision_layer = _layer_before_death
+	hurtbox.set_deferred("monitorable", true)
+	set_physics_process(true)
+	_set_input_enabled(true)
+	var gun := get_reload_ability()
+	if gun != null:
+		gun.reload_instantly()
+	show()
+	visuals.revive()
+	respawned.emit()
+
+
+func _set_input_enabled(enabled: bool) -> void:
 	var input := get_node_or_null(^"PlayerHeroInput")
 	if input != null:
-		input.set_physics_process(false)
-		input.set_process_unhandled_input(false)
+		input.set_physics_process(enabled)
+		input.set_process_unhandled_input(enabled)

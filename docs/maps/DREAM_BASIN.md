@@ -161,7 +161,7 @@ Natural pieces are drawn smaller than authored, controlled by `SHRINK` in `layou
 |---|---|
 | `check.py` | Validates the layout: lanes are clear, pads have standable landings, 128 px bodies can reach everything, one-way cliffs only open via stairs or pads, spawn door exposure. |
 | `render_svg.py` | Redraws the blockout image. |
-| `export_godot.py` | Writes `scenes/maps/dream_basin.tscn` and `scenes/dream_basin_world.tscn`. **Re-exporting overwrites hand edits to the map scene.** |
+| `export_godot.py` | Writes `scenes/maps/dream_basin.tscn` and `scenes/dream_basin_world.tscn` (the map plus the player, HUD, `MatchManager` and match HUD). **Re-exporting overwrites hand edits to both scenes.** |
 | `smoke_test.tscn` | Runs the real player through ledges, pads, teleporters, strips and projectile layers. Run it with `godot --headless res://tools/dream_basin/smoke_test.tscn`. |
 | `screenshots.tscn` | Renders review shots. Needs a display. |
 

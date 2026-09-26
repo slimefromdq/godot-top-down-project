@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_cue"]
+[ext_resource type="PackedScene" path="res://effects/overdrive_burst.tscn" id="2_burst"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="3_profile"]
+
+[sub_resource type="Resource" id="Cue_level_up"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("2_burst")
+attach_to_actor = true
+align_to_direction = false
+scale = 1.2
+tint = Color(1, 0.95, 0.55, 1)
+flash_color = Color(1, 0.95, 0.6, 0.8)
+flash_duration = 0.2
+
+[resource]
+script = ExtResource("3_profile")
+cues = Dictionary[StringName, ExtResource("1_cue")]({
+&"level_up": SubResource("Cue_level_up")
+})

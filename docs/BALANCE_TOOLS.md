@@ -35,6 +35,15 @@ values.
 * **Feel**
   * Global comfort settings: shake intensity, trauma cap, shake speed, hitstop on/off and scale, nudge scale, flash on/off.
   * The hero's FeelProfile, editable live.
+* **Match** (maps with a `MatchManager`: Dream Basin; other maps get a
+  "Start a match here" button)
+  * The state, the clock and both rosters with each hero's level and gold.
+  * Give the player gold or XP, and set their level through the match (plays
+    the level-up cue).
+  * Skip the warmup, end the match for Dawn or Dusk, respawn now.
+  * **Play as team** flips the player between Dawn (`a`) and Dusk (`b`) and
+    moves them to that team's spawn, so you can test either side solo.
+  * The match's `MatchRules`, editable live (a private copy per match).
 * **Tools**: export the balance CSV, validate heroes, reset the meter, show or hide the overlays, switch maps. **Sight lines** draws a line from you to every nearby enemy: green if you can see it, red if a wall or a bush blocks it (`CombatQueries.has_line_of_sight`). **Airlock practice** plays Sam's airlock maze on you.
 
 ## F2 stat inspector
@@ -126,6 +135,7 @@ godot --headless res://tools/heroes/feel_test.tscn
 godot --headless res://tools/heroes/balance_tools_test.tscn
 godot --headless res://tools/heroes/map_switch_test.tscn
 godot --headless res://tools/dream_basin/smoke_test.tscn
+godot --headless res://tools/match/match_test.tscn
 ```
 
 Each exits with the number of failed checks (0 = all passed).

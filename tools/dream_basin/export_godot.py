@@ -244,17 +244,20 @@ def export_world(m):
     s = Scene()
     world = s.res("Script", "res://scripts/world.gd")
     game_map = s.res("PackedScene", "res://scenes/maps/dream_basin.tscn")
-    player = s.res("PackedScene", "res://scenes/player.tscn")
+    player = s.res("PackedScene", "res://heroes/avery/avery.tscn")
     over = s.res("PackedScene", "res://scenes/game_over_screen.tscn")
     dummy = s.res("PackedScene", "res://scenes/training_dummy.tscn")
     bar = s.res("PackedScene", "res://scenes/hud/ability_bar.tscn")
     minimap = s.res("PackedScene", "res://scenes/hud/minimap.tscn")
     music = s.res("Script", "res://scripts/audio/music_request.gd")
     debug = s.res("Script", "res://scripts/map/map_debug_view.gd")
+    match_manager = s.res("Script", "res://scripts/match/match_manager.gd")
+    match_hud = s.res("PackedScene", "res://scenes/hud/match_hud.tscn")
 
     s.node("World", type_="Node", script=world)
     s.node("DreamBasin", ".", instance=game_map)
-    s.node("Player", ".", instance=player, position=v2((spawn["x"], spawn["y"])))
+    s.node("Player", ".", instance=player, position=v2((spawn["x"], spawn["y"])),
+           team='&"a"', player_controlled="true")
     for i, d in enumerate(dummies):
         s.node(f"TrainingDummy{i + 1}", ".", instance=dummy, position=v2(d))
     s.node("GameOverScreen", ".", instance=over)
@@ -262,6 +265,10 @@ def export_world(m):
     s.node("Minimap", ".", instance=minimap)
     s.node("LevelMusic", ".", "Node", script=music)
     s.node("MapDebugView", ".", "Node", script=debug)
+    # The match ("Wake the Dreamer"): state, economy, respawns. Dream Basin
+    # only; Training Grounds stays a sandbox.
+    s.node("MatchManager", ".", "Node", script=match_manager)
+    s.node("MatchHud", ".", instance=match_hud)
     return s.text()
 
 
