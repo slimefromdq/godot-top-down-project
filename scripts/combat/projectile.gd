@@ -142,6 +142,21 @@ func _physics_process(delta: float) -> void:
 	var to := from + direction * data.speed * delta
 	_age += delta
 
+	# A raised enemy FrontalBlocker on the way eats the shot.
+	var block := FrontalBlocker.find_blocking(get_tree(), damage_template.source, from, to)
+	if not block.is_empty():
+		var point: Vector2 = block.point
+		var wall_first := data.stops_at_walls and not get_world_2d().direct_space_state.intersect_ray(
+			PhysicsRayQueryParameters2D.create(from, point, GameRules.current().wall_mask)).is_empty()
+		if not wall_first:
+			_hit_targets_between(from, point)
+			if is_queued_for_deletion():
+				return
+			global_position = point
+			block.blocker.absorb(damage_template)
+			_expire()
+			return
+
 	if data.stops_at_walls:
 		var ray := PhysicsRayQueryParameters2D.create(from, to, GameRules.current().wall_mask)
 		var wall := get_world_2d().direct_space_state.intersect_ray(ray)

@@ -30,6 +30,9 @@ enum DirectionMode {
 ## Applied to the hero when the dash arrives (a vanish after a blink, a
 ## speed burst). Empty = none.
 @export var self_status: StatusEffect
+## Kept on the hero for the whole dash and removed when it ends (untargetable
+## while flying as a swarm, damage resist while barging). Empty = none.
+@export var dash_status: StatusEffect
 ## charge_enabled only: the distance at zero charge; `distance` is reached at
 ## full charge (a wind-up dash that goes further the longer you hold).
 @export var min_distance: float = 0.0

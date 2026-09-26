@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"butler_bite"
+display_name = "Bitten"
+duration = 0.5
+stuns = true
+body_tint = Color(0.8, 0.05, 0.1, 0.4)

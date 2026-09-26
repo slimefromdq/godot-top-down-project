@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BlockerData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/blocker_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/abilities/common/blocker_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/butler/data/butler_cloak_up.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/butler/data/butler_flourish.tres" id="4_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Hp"]
+script = ExtResource("9_v")
+base = 400.0
+per_level = 77.7778
+
+[resource]
+script = ExtResource("1_a")
+blocker_hp = SubResource("Hp")
+radius = 110.0
+arc_degrees = 130.0
+regen_per_second = 0.15
+regen_delay = 1.5
+min_raise_ratio = 0.25
+raised_status = ExtResource("3_a")
+lowered_status = ExtResource("4_a")
+allowed_slots_while_raised = Array[StringName]([&"movement", &"ultimate"])
+quiet_slots_while_raised = Array[StringName]([&"primary"])
+color = Color(0.5, 0.04, 0.12, 0.6)
+id = &"vampiric_cloak"
+display_name = "Vampiric Cloak"
+description = "Hold: sweep the cloak up in front of you to block projectiles (-30% move speed). The cloak has its own HP (400 -> 1100) and regenerates while lowered. Letting go gives +20% speed for 1 s."
+ability_script = ExtResource("2_a")
+cooldown = 0.0
+tags = Array[StringName]([&"ability"])
+feel_preset = &"quick"

@@ -115,6 +115,16 @@ Butler is two heroes sharing one body: a protective tank while Composed, a lifes
 
 **Built from.** Hunger is a `PassiveAbility` listening to `damage_taken`, with a bar instead of pips. The form change uses the new `swap_slot`. Cloak: the new frontal blocker, plus a speed status on release. At Your Service: `AllyTargeting` + `ChargeData` + shield status. Bite: `MeleeAttackData` with a stun `on_hit_status` and a heal on hit. Bat swarm: `ChargeData` with an untargetable `self_status` and a drain status on every enemy hit.
 
+**Built in Phase 4.** Choices the table left open:
+- While the cloak is up, the cane and E are locked and he moves 30% slower. Shift and Q still work.
+- "In combat" means he dealt or took damage in the last 3 s.
+- Damage doesn't add Hunger while he's Starving.
+- If 8 s pass before three Bites land, he recovers anyway: tie-straightening, then armor.
+- A stashed form's cooldown keeps ticking while the other form is out.
+- The recovery is a 0.6 s root with 15% more damage taken, then +30 armor for 3 s.
+- The cloak comes back at 25% HP after breaking and regenerates 15% per second, starting 1.5 s after it's lowered.
+- Move speed is 510.
+
 **Readability and counterplay.** His Hunger bar shows to everyone, in both teams' colours, so allies know the cloak is about to come down and enemies know when to back off. Anti-heal counters his Starving form directly. The tie-straightening moment is the punish window.
 
 ## Nimbus, The Gentleman Spy (Carry)

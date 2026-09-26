@@ -93,11 +93,24 @@ var cast_ally: Node2D
 
 # The .tres this ability's runtime copy came from; reset_data() restores it.
 var _source_data: AbilityData
+# Swapped out of its slot (AbilityController.swap_slot): not castable, its
+# cooldown keeps ticking. Hook-driven scripts can check is_dormant().
+var _dormant := false
 
 
 func _ready() -> void:
 	if data != null and _source_data == null:
 		set_data(data)
+	if actor != null and actor.combat_hooks != null:
+		actor.combat_hooks.hit_dealt.connect(_on_hit_dealt_lifesteal)
+
+
+# AbilityData.lifesteal: heal off this ability's own hits.
+func _on_hit_dealt_lifesteal(info: DamageInfo, _target: Node) -> void:
+	if data == null or data.lifesteal <= 0.0 or info.final_amount <= 0.0 or info.label != data.get_label():
+		return
+	if actor != null and not actor.health_component.is_dead():
+		actor.health_component.heal(info.final_amount * data.lifesteal, actor, &"lifesteal")
 
 
 # Abilities work on a private COPY of their data, so the debug panel can edit
@@ -112,6 +125,19 @@ func set_data(new_data: AbilityData) -> void:
 	if data.icon != null:
 		icon = data.icon
 	cooldown = data.cooldown
+
+
+func set_dormant(dormant: bool) -> void:
+	_dormant = dormant
+
+
+func is_dormant() -> bool:
+	return _dormant
+
+
+# A 0-1 bar for the ability bar (a meter like hunger or heat). < 0 = none.
+func get_hud_meter() -> float:
+	return -1.0
 
 
 func reset_data() -> void:
@@ -274,6 +300,8 @@ func try_activate(target_position: Vector2) -> bool:
 func get_block_reason() -> String:
 	if actor == null or actor.health_component.is_dead():
 		return "Dead"
+	if _dormant:
+		return "Dormant"
 	if not is_ready():
 		return "Cooldown"
 	# Mid-air, a dash or pull would replace the launch arc.
@@ -306,11 +334,12 @@ func start_cast(target_position: Vector2) -> bool:
 	cast_ally = null
 	if data != null and data.ally_targeting != null:
 		var ally := find_ally_target(target_position)
-		if ally == null:
+		if ally == null and not data.ally_targeting.optional:
 			_fail("No ally")
 			return false
-		cast_ally = ally.owner as Node2D if ally.owner != null else ally.get_parent() as Node2D
-		target_position = ally.global_position
+		if ally != null:
+			cast_ally = ally.owner as Node2D if ally.owner != null else ally.get_parent() as Node2D
+			target_position = ally.global_position
 	if not _pay_cost():
 		_fail("Not enough %s" % data.cost_type)
 		return false
@@ -464,7 +493,7 @@ func _activate(_target_position: Vector2) -> String:
 # Reasons that fail quietly (no red flash, no "ability_failed" cue). Waiting
 # states aren't mistakes. Subclasses add their own (Reloading ...).
 func _is_silent_block(reason: String) -> bool:
-	return reason in ["Cooldown", "Dead", "Airborne", "Suppressed"]
+	return reason in ["Cooldown", "Dead", "Airborne", "Suppressed", "Dormant"]
 
 
 func _spend_cooldown() -> void:

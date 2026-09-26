@@ -1,0 +1,79 @@
+[gd_resource type="Resource" script_class="MeleeAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/melee_attack_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/abilities/common/melee_attack_ability.gd" id="2_a"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="8_h"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+[ext_resource type="Script" path="res://scripts/abilities/attack_step.gd" id="3_a"]
+[sub_resource type="Resource" id="Shape0"]
+script = ExtResource("8_h")
+kind = 0
+radius = 160
+arc_degrees = 110
+
+[sub_resource type="Resource" id="Dmg0"]
+script = ExtResource("9_v")
+base = 8.0
+per_level = 1.0
+weapon_ratio = 0.35
+
+[sub_resource type="Resource" id="Step0"]
+script = ExtResource("3_a")
+hit_shape = SubResource("Shape0")
+damage = SubResource("Dmg0")
+knockback = 120.0
+feel_preset = &"light"
+
+[sub_resource type="Resource" id="Shape1"]
+script = ExtResource("8_h")
+kind = 0
+radius = 160
+arc_degrees = 110
+
+[sub_resource type="Resource" id="Dmg1"]
+script = ExtResource("9_v")
+base = 8.0
+per_level = 1.0
+weapon_ratio = 0.35
+
+[sub_resource type="Resource" id="Step1"]
+script = ExtResource("3_a")
+hit_shape = SubResource("Shape1")
+damage = SubResource("Dmg1")
+knockback = 120.0
+feel_preset = &"light"
+
+[sub_resource type="Resource" id="Shape2"]
+script = ExtResource("8_h")
+kind = 0
+radius = 185
+arc_degrees = 150
+
+[sub_resource type="Resource" id="Dmg2"]
+script = ExtResource("9_v")
+base = 14.0
+per_level = 1.5
+weapon_ratio = 0.55
+
+[sub_resource type="Resource" id="Step2"]
+script = ExtResource("3_a")
+hit_shape = SubResource("Shape2")
+damage = SubResource("Dmg2")
+knockback = 320.0
+feel_preset = &"finisher"
+
+
+[resource]
+script = ExtResource("1_a")
+id = &"cane"
+display_name = "Cane"
+description = "A three-hit cane combo; the third is a sweeping finisher."
+cooldown = 0.0
+damage_type = 0
+tags = Array[StringName]([&"basic_attack"])
+meter_label = &"cane"
+feel_preset = &"light"
+ability_script = ExtResource("2_a")
+combo_steps = Array[ExtResource("3_a")]([SubResource("Step0"), SubResource("Step1"), SubResource("Step2")])
+combo_enabled = true
+combo_reset_time = 0.7

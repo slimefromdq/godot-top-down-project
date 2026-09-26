@@ -57,6 +57,10 @@ enum ChargeBelowMin {
 @export var knockback: float = 0.0
 ## Status applied on hit (stun, slow, burn, knockback, pull...).
 @export var on_hit_status: StatusEffect
+## Fraction of the damage this ability deals (after resistances and
+## shields) that heals the caster: 0.25 = 25% lifesteal, 1 = a full drain.
+## Counts hits carrying this ability's label (meter_label, else id).
+@export_range(0.0, 2.0, 0.05) var lifesteal: float = 0.0
 ## Tags added to every DamageInfo (melee, ability, basic_attack...).
 @export var tags: Array[StringName] = []
 ## Damage-meter label. Empty = the ability id.

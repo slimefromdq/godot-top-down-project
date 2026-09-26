@@ -21,10 +21,20 @@ class_name AbilityController
 # Abilities come from two places: Ability children placed in a scene (the
 # original rifle hero), or add_ability() calls from Hero, which builds them
 # from its HeroDefinition.
+#
+# Forms (swap_slot / restore_slot): a slot can be switched to another
+# AbilityData at runtime (a hero's second form). Each form's ability is its
+# own node, built on first use and kept: the one swapped out goes DORMANT
+# (out of `abilities`, not castable, its cooldown still ticking), so swapping
+# back and forth never resets or skips a cooldown. restore_slot() brings back
+# the ability the slot started with. abilities_changed fires, so the HUD
+# follows.
 
 signal abilities_changed
 ## A buffered press was dropped because its window ran out.
 signal buffer_expired(ability: Ability)
+## swap_slot/restore_slot put `ability` in `slot_id`.
+signal slot_swapped(slot_id: StringName, ability: Ability)
 
 var abilities: Array[Ability] = []
 ## The timed cast in progress, or null.
@@ -36,6 +46,10 @@ var _buffer_time_left: float = 0.0
 var _buffered_released := false
 # requester Ability -> Lock
 var _locks: Dictionary = {}
+# Forms: slot id -> the ability the slot started with, and slot id ->
+# {data id -> Ability} for every form built so far.
+var _original_forms: Dictionary = {}
+var _forms: Dictionary = {}
 
 
 class Lock:
@@ -177,6 +191,75 @@ func get_ability(ability_id: StringName) -> Ability:
 		if ability.ability_id == ability_id:
 			return ability
 	return null
+
+
+# --- Forms --------------------------------------------------------------------
+
+# Put the ability for `ability_data` in `slot_id` (built on first use, reused
+# after). The one it replaces goes dormant with its cooldown intact. Returns
+# the slot's new ability (or the current one if it's already that data).
+func swap_slot(slot_id: StringName, ability_data: AbilityData) -> Ability:
+	var current := get_ability_for_slot(slot_id)
+	if ability_data == null or ability_data.ability_script == null:
+		return current
+	if current != null and current.ability_id == ability_data.id:
+		return current
+	if current != null and not _original_forms.has(slot_id):
+		_original_forms[slot_id] = current
+	var forms: Dictionary = _forms.get(slot_id, {})
+	if current != null:
+		forms[current.ability_id] = current
+	var next: Ability = forms.get(ability_data.id)
+	if next == null:
+		next = ability_data.ability_script.new()
+		next.name = "%s_%s" % [str(slot_id).to_pascal_case(), str(ability_data.id).to_pascal_case()]
+		next.input_action = current.input_action if current != null else &""
+		next.set_data(ability_data)
+		next.actor = _get_actor() as Actor
+		next.controller = self
+		next.slot_id = slot_id
+		forms[ability_data.id] = next
+		add_child(next)
+	_forms[slot_id] = forms
+	_put_in_slot(slot_id, current, next)
+	return next
+
+
+# Back to the ability the slot started with (no-op if never swapped).
+func restore_slot(slot_id: StringName) -> Ability:
+	var original: Ability = _original_forms.get(slot_id)
+	var current := get_ability_for_slot(slot_id)
+	if original == null or current == original:
+		return current
+	_put_in_slot(slot_id, current, original)
+	return original
+
+
+func is_slot_swapped(slot_id: StringName) -> bool:
+	return _original_forms.has(slot_id) and get_ability_for_slot(slot_id) != _original_forms[slot_id]
+
+
+# Every form a slot has had (active or dormant), by data id.
+func get_slot_forms(slot_id: StringName) -> Dictionary:
+	return _forms.get(slot_id, {})
+
+
+func _put_in_slot(slot_id: StringName, out: Ability, into: Ability) -> void:
+	var index := abilities.size()
+	if out != null:
+		if current_cast == out:
+			interrupt()
+		if _buffered == out:
+			_buffered = null
+		if out.is_held():
+			out.release_hold(out.cast_target)
+		index = abilities.find(out)
+		abilities.erase(out)
+		out.set_dormant(true)
+	into.set_dormant(false)
+	abilities.insert(clampi(index, 0, abilities.size()), into)
+	abilities_changed.emit()
+	slot_swapped.emit(slot_id, into)
 
 
 func get_ability_for_slot(slot_id: StringName) -> Ability:

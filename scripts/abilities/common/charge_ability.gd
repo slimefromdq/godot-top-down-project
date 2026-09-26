@@ -110,6 +110,8 @@ func _hit_width() -> float:
 func _on_active_start() -> void:
 	var charge := get_charge_data()
 	_dashing = true
+	if charge.dash_status != null:
+		actor.status_component.apply(charge.dash_status, actor)
 	actor.movement_component.displace(get_dash_direction(), _distance, charge.get_dash_time(_distance), charge.carry_momentum)
 	if charge.invulnerable_duration > 0.0:
 		actor.health_component.set_invulnerable_for(charge.invulnerable_duration)
@@ -136,6 +138,7 @@ func _on_active_tick(_delta: float) -> void:
 func _on_active_end() -> void:
 	_end_bash()
 	_release_bashed()
+	_clear_dash_status()
 	var charge := get_charge_data()
 	if _dashing and is_instance_valid(actor) and charge.self_status != null:
 		actor.status_component.apply(charge.self_status, actor)
@@ -206,6 +209,7 @@ func _release_bashed() -> void:
 func _on_cast_end(interrupted: bool) -> void:
 	_end_bash()
 	_release_bashed()
+	_clear_dash_status()
 	# A stun mid-dash stops the body where it is.
 	if interrupted and _dashing and is_instance_valid(actor):
 		actor.movement_component.stop_forced_move()
@@ -216,3 +220,9 @@ func _drop_trail(point: Vector2) -> void:
 	var charge := get_charge_data()
 	if charge.trail_zone != null:
 		GroundZone.spawn(actor, charge.trail_zone, point, get_dash_direction(), actor)
+
+
+func _clear_dash_status() -> void:
+	var charge := get_charge_data()
+	if charge != null and charge.dash_status != null and is_instance_valid(actor):
+		actor.status_component.remove_from(charge.dash_status.id, actor)

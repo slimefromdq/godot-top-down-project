@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/butler/abilities/at_your_service_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/butler/data/butler_service_shield.tres" id="3_a"]
+[ext_resource type="Script" path="res://scripts/abilities/ally_targeting.gd" id="4_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Ally"]
+script = ExtResource("4_a")
+cast_range = 750.0
+snap_radius = 150.0
+optional = true
+
+[sub_resource type="Resource" id="Short"]
+script = ExtResource("9_v")
+base = 250.0
+
+[resource]
+script = ExtResource("1_a")
+distance = 750.0
+stop_at_target = true
+speed = 2200.0
+carry_momentum = false
+id = &"at_your_service"
+display_name = "At Your Service"
+description = "Dash to an ally near the cursor and shield them for 150 + 60% Magic. With no ally in reach, a short dash."
+ability_script = ExtResource("2_a")
+cooldown = 10.0
+on_hit_status = ExtResource("3_a")
+ally_targeting = SubResource("Ally")
+tags = Array[StringName]([&"movement"])
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"short_distance": SubResource("Short")
+})
+feel_preset = &"quick"

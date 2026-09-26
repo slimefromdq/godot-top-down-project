@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/butler/abilities/dinner_is_served_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/butler/data/butler_bats.tres" id="3_a"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="8_h"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Shape"]
+script = ExtResource("8_h")
+kind = 1
+radius = 130.0
+arc_degrees = 120.0
+
+[sub_resource type="Resource" id="Drain"]
+script = ExtResource("9_v")
+base = 60.0
+per_level = 8.0
+magic_ratio = 0.6
+
+[resource]
+script = ExtResource("1_a")
+distance = 900.0
+dash_status = ExtResource("3_a")
+speed = 1200.0
+carry_momentum = false
+id = &"dinner_is_served"
+display_name = "Dinner Is Served"
+description = "Hunger to full: Starving for the whole 8 s. Then burst into a bat swarm and fly 900 px, untargetable, draining every enemy you pass."
+ability_script = ExtResource("2_a")
+cooldown = 80.0
+hit_shape = SubResource("Shape")
+damage = SubResource("Drain")
+damage_type = 1
+lifesteal = 1.0
+tags = Array[StringName]([&"ultimate"])
+meter_label = &"dinner_is_served"
+feel_preset = &"quick"
