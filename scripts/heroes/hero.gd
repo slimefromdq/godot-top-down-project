@@ -72,6 +72,11 @@ func _ready() -> void:
 	if not problems.is_empty():
 		push_warning("HeroDefinition '%s':\n- %s" % [definition.hero_id, "\n- ".join(problems)])
 	_build_abilities()
+	if get_node_or_null(^"TeamIndicator") == null:
+		var indicator := TeamIndicator.new()
+		indicator.name = "TeamIndicator"
+		add_child(indicator)
+		move_child(indicator, 0)
 	if player_controlled:
 		_setup_player_control()
 	if bot_controlled:

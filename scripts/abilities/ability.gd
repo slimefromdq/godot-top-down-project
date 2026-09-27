@@ -172,6 +172,9 @@ func get_cooldown() -> float:
 
 
 func is_ready() -> bool:
+	var gate := UltimateCharge.for_ability(self)
+	if gate != null:
+		return gate.is_full()
 	if get_max_charges() > 1:
 		return get_charges() > 0
 	return cooldown_remaining <= 0.0
@@ -280,8 +283,19 @@ func reduce_cooldown(seconds: float) -> void:
 		reset_cooldown()
 
 
-# 0 when ready, 1 right after casting. Handy for cooldown sweeps.
+# In a match, an ultimate's charge 0..1 (UltimateCharge). -1 = this ability
+# uses its cooldown.
+func get_ultimate_charge() -> float:
+	var gate := UltimateCharge.for_ability(self)
+	return gate.get_ratio() if gate != null else -1.0
+
+
+# 0 when ready, 1 right after casting. Handy for cooldown sweeps. A
+# charge-gated ultimate reports the charge still missing.
 func get_cooldown_ratio() -> float:
+	var gate := UltimateCharge.for_ability(self)
+	if gate != null:
+		return 0.0 if gate.is_full() else 1.0 - gate.get_ratio()
 	if get_max_charges() > 1 and get_charges() > 0:
 		return 0.0    # usable; the pips show how many
 	var total := get_cooldown()
@@ -506,6 +520,12 @@ func _is_silent_block(reason: String) -> bool:
 
 
 func _spend_cooldown() -> void:
+	var gate := UltimateCharge.for_ability(self)
+	if gate != null:
+		# Charge-gated (a match ultimate): the charge is the only gate.
+		gate.spend()
+		cooldown_remaining = 0.0
+		return
 	if get_max_charges() > 1:
 		_charges = maxi(get_charges() - 1, 0)
 		if cooldowns_disabled:

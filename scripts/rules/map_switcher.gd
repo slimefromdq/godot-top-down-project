@@ -17,7 +17,7 @@ func _ready() -> void:
 	# Keep working on the (paused) game-over screen.
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_label = Label.new()
-	_label.position = Vector2(16, 12)
+	_label.position = Vector2(16, 120)    # below the match HUD's team bars
 	_label.add_theme_color_override(&"font_outline_color", Color.BLACK)
 	_label.add_theme_constant_override(&"outline_size", 5)
 	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE

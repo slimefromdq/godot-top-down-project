@@ -31,6 +31,7 @@ func _run() -> void:
 	await _test_statuses()
 	await _test_projectile_pierce()
 	await _test_team_filter()
+	await _test_ultimate_charge_gate()
 	_test_validation()
 	await _test_scaffold()
 
@@ -346,6 +347,36 @@ func _remove_dir(dir: String) -> void:
 
 
 # --- Helpers ------------------------------------------------------------------
+
+# A hero with an UltimateCharge (the MatchManager adds one in a match) casts
+# its ultimate slot off the charge, not the cooldown. Other slots are untouched.
+# Uses the data-only Ranged Test hero (the template has no ultimate).
+func _test_ultimate_charge_gate() -> void:
+	var tester: Hero = load("res://tools/heroes/ranged_test/ranged_test_hero.tscn").instantiate()
+	tester.team = &"a"
+	tester.position = Vector2(0, -900)
+	add_child(tester)
+	await _frames(2)
+	var ultimate := tester.get_ability(&"ultimate")
+	ultimate.cooldown_remaining = 0.0
+	_check("no charge: ultimate on its cooldown", UltimateCharge.for_ability(ultimate) == null
+		and ultimate.is_ready(), "")
+	var charge := UltimateCharge.new()
+	tester.add_child(charge)
+	_check("charge gates the ultimate slot only", UltimateCharge.for_ability(ultimate) == charge
+		and UltimateCharge.for_ability(tester.get_ability(&"primary")) == null, "")
+	_check("empty charge: not ready", not ultimate.is_ready(), "")
+	charge.add(charge.maximum)
+	_check("full charge: ready", ultimate.is_ready() and ultimate.get_ultimate_charge() == 1.0, "")
+	ultimate._spend_cooldown()
+	_check("a cast empties the charge and skips the cooldown",
+		charge.charge == 0.0 and ultimate.cooldown_remaining == 0.0, "")
+	tester.remove_child(charge)
+	charge.free()
+	_check("charge removed: back on the cooldown", UltimateCharge.find_on(tester) == null and ultimate.is_ready(), "")
+	tester.queue_free()
+	await _frames(1)
+
 
 func _check(label: String, ok: bool, detail: String) -> void:
 	if not ok:

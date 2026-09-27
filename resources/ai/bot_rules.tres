@@ -1,6 +1,54 @@
-[gd_resource type="Resource" script_class="BotRules" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="BotRules" format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/bot_rules.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/ai/roles/tank.tres" id="2_tank"]
+[ext_resource type="Resource" path="res://resources/ai/roles/carry.tres" id="3_carry"]
+[ext_resource type="Resource" path="res://resources/ai/roles/tempo.tres" id="4_tempo"]
+[ext_resource type="Resource" path="res://resources/ai/roles/flex.tres" id="5_flex"]
 
 [resource]
 script = ExtResource("1")
+team_size = 6
+spawn_spacing = 115.0
+navigation_cell_size = 150.0
+navigation_actor_radius = 50.0
+navigation_link_cost = 250.0
+strategy_interval = 0.5
+perception_interval = 0.2
+goal_commit_time = 1.5
+goal_reached_distance = 90.0
+default_attack_range = 450.0
+attack_range_fraction = 0.85
+too_close_range_fraction = 0.55
+wounded_ally_fraction = 0.75
+waypoint_reached_fraction = 0.6
+bank_health_fraction = 0.4
+mote_search_radius = 2400.0
+enemy_search_radius = 1700.0
+stuck_time = 1.0
+obstacle_probe_distance = 180.0
+obstacle_avoid_angle = 0.8
+aim_lead_seconds = 0.18
+dodge_scan_radius = 900.0
+dodge_horizon = 0.8
+dodge_margin = 25.0
+dodge_duration = 0.35
+dodge_memory_seconds = 2.0
+charge_fraction = 0.85
+held_duration = 0.7
+ability_range_fraction = 0.9
+mote_weight = 600.0
+dream_mote_bonus = 1000.0
+mote_distance_weight = 0.4
+target_distance_weight = 0.25
+target_low_health_weight = 350.0
+target_carrier_weight = 70.0
+team_composition = PackedInt32Array(0, 1, 2, 3, 1, 0)
+tank_plan = ExtResource("2_tank")
+carry_plan = ExtResource("3_carry")
+tempo_plan = ExtResource("4_tempo")
+flex_plan = ExtResource("5_flex")
+roam_seen_distance = 650.0
+roam_min_distance = 500.0
+self_defence_time = 3.0
+ally_fight_radius = 1200.0

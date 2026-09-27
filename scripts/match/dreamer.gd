@@ -199,6 +199,7 @@ func _deposit_one(manager: MatchManager, hero: Hero, carrier: MoteCarrier, visit
 	var xp := value * (rules.deliver_xp_per_value if delivered else rules.bank_xp_per_value)
 	manager.grant_team(hero.team, gold, xp, &"deliver" if delivered else &"bank")
 	manager.grant_actor(hero, gold * rules.depositor_bonus_pct, xp * rules.depositor_bonus_pct, &"depositor_bonus")
+	manager.add_ultimate_charge(hero, value * rules.ult_charge_per_mote_value)
 	deposit_ticked.emit(hero, value, delivered, int(visit.index))
 	MatchManager.play_world_cue(self, &"deposit_tick", {"position": hero.global_position, "source": hero,
 		"index": visit.index, "pitch": rules.chime_pitch(int(visit.index)), "delivered": delivered,

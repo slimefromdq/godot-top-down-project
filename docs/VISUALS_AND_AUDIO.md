@@ -74,6 +74,27 @@ misspelt or dead cue name).
 Each hero's own placeholder sounds live in `audio/sfx/<hero>/`, next to the
 shared ones in `audio/sfx/`.
 
+## Telling heroes and teams apart
+
+**Placeholder bodies**: each hero's VisualProfile `texture` is
+`sprites/heroes/<hero>.svg`, a flat badge until real art arrives: the
+silhouette is the role (tank hexagon, carry circle, tempo diamond, flex
+pentagon), the fill colour and the letter are the hero. They set
+`flip_to_face_aim = false` so the letter stays readable; replace the texture
+(or add SpriteFrames) and turn flipping back on when real art lands.
+
+**Team indicator** (`TeamIndicator`, added to every Hero): a ring on the
+ground in the team colour (more saturated than the HUD's, so it reads on the
+team's own pastel floor), a pointer on the ring toward the hero's aim, a
+nameplate over the health bar, and the health bar fill in the team colour.
+The local player's ring is thicker with a white rim and their name reads
+"(You)". Tuning is in the node's exports.
+
+**Team bars** (`TeamBar`, in the match HUD either side of the wake meters):
+every hero's portrait (its body texture) in a team-coloured frame, greyed with
+a respawn count while dead. Only your own team's cards show health and
+ultimate charge.
+
 ## Built-in cues
 
 | Cue | When | Useful context keys |
@@ -205,6 +226,25 @@ automatically. Custom scripts can trigger anything with
 | Body Animation | Play this animation on the body (SpriteFrames or AnimationPlayer). |
 | Flash Color / Duration | Hit-flash the body. Alpha = strength. |
 | Screen Shake | 0 to 1 trauma added to a `ShakeCamera`. |
+
+## A crowded mix (AudioMix)
+
+`resources/audio/audio_mix.tres` (`AudioMix`) keeps a 6 v 6 fight from
+clipping. Before `AudioManager.play_sfx` starts a sound it checks:
+
+| Field | Default | Effect |
+|---|---|---|
+| `max_sfx_voices` | 22 | SFX players at once, over every cue. Past it, other heroes' sounds are dropped; yours steal the oldest voice. |
+| `same_stream_window` | 0.05 | The same file started again this soon is skipped (a volley of identical hits plays once). |
+| `same_stream_max_voices` | 3 | Copies of one file ringing at once. |
+| `cull_distance` | 1900 | Positional sounds farther than this from the screen centre don't play. |
+| `max_distance` / `attenuation` | 2200 / 1.8 | Their `AudioStreamPlayer2D` falloff. |
+| `other_source_db` | -4 | Sounds made by anyone but the local player are this much quieter. |
+
+Your own sounds (pass `source`; `AudioComponent` and projectiles do) and flat
+UI sounds (the announcer) are never thinned. `AudioManager.skipped_sfx`
+counts what was dropped. The buses (`default_bus_layout.tres`) add a
+compressor on SFX (-16 dB, 4:1) and a hard limiter on Master (-0.5 dB).
 
 ## SoundCue fields
 

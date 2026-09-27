@@ -56,6 +56,22 @@ A full wake meter makes that Dreamer **stir** for 30 seconds.
 - If time runs out with no final Mote, it settles at 80%: defending actively
   pays off more than stalling. Defenders respawn faster during a stir.
 
+## Ultimate charge
+
+In a match nobody starts with their ultimate. It fills from 0 to
+`ult_charge_max` by playing, and casting it spends all of it (there is no
+cooldown on it in a match):
+
+- a trickle every second you're alive;
+- damage you deal to enemy heroes, and damage you take from them;
+- healing you do to teammates (a little for healing yourself);
+- kills and assists;
+- every Mote you deposit, banked or delivered.
+
+The ultimate's button fills with gold and shows the percentage; your team's
+cards in the top bar show each teammate's charge. On the training maps (no
+match) ultimates keep their cooldowns so they can be practised.
+
 ## MatchRules
 
 ### Match
@@ -85,6 +101,21 @@ A full wake meter makes that Dreamer **stir** for 30 seconds.
 |---|---|---|
 | `xp_level_base` | 300.0 | XP needed to go from level L to L+1 = base + growth x (L - 1). With 300 / 100, level 10 takes 6300 XP in total. |
 | `xp_level_growth` | 100.0 | As above. |
+
+### Ultimate
+
+| Value | Default | What it does |
+|---|---|---|
+| `ultimate_charge_enabled` | true | Ultimates (slots with `SlotDefinition.ultimate_charge`) run on charge instead of their cooldown. Off = cooldowns, as on the training maps. |
+| `ult_charge_max` | 100.0 | Charge that fills the ultimate. Every hero starts at 0. |
+| `ult_charge_per_second` | 0.35 | Earned by every living hero each second while PLAYING. |
+| `ult_charge_per_damage` | 0.03 | Per point of damage dealt to enemy heroes (after resistances). |
+| `ult_charge_per_damage_taken` | 0.015 | Per point of damage taken from enemy heroes, shields included. |
+| `ult_charge_per_heal` | 0.04 | Per point of healing done to a teammate... |
+| `ult_charge_self_heal_mult` | 0.25 | ...times this for healing yourself. |
+| `ult_charge_kill` | 12.0 | Flat charge for a kill. |
+| `ult_charge_assist` | 6.0 | Flat charge for an assist. |
+| `ult_charge_per_mote_value` | 1.5 | Per Mote value the depositor puts into either Dreamer. |
 
 ### Motes
 

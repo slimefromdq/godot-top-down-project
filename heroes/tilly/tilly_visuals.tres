@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="VisualProfile" format=3]
 
+[ext_resource type="Texture2D" path="res://sprites/heroes/tilly.svg" id="placeholder_body"]
 [ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="1_x"]
 [ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="2_x"]
 [ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="3_x"]
@@ -29,7 +30,10 @@ tint = Color(1, 0.95, 0.5, 1)
 
 [resource]
 script = ExtResource("1_x")
-body_tint = Color(0.98, 0.82, 0.1, 0.5)
+texture = ExtResource("placeholder_body")
+body_scale = Vector2(0.9, 0.9)
+body_tint = Color(1, 1, 1, 0)
+flip_to_face_aim = false
 cues = Dictionary[StringName, ExtResource("2_x")]({
 &"hurt": SubResource("Cue_hurt"),
 &"death": SubResource("Cue_death"),

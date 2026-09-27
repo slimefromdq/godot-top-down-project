@@ -2,7 +2,9 @@ extends Control
 class_name AbilitySlot
 
 # One ability button on the HUD: icon (or name), key prompt, cooldown shade
-# and a red flash when a cast fails. Guns (RangedAttackAbility with a
+# and a red flash when a cast fails. A match ultimate (UltimateCharge) shows
+# its charge instead: a gold fill rising from the bottom and a percentage,
+# and a glowing border once full. Guns (RangedAttackAbility with a
 # magazine) add an ammo count and a reload sweep; any ability that is
 # charging shows a charge bar above the slot, flashing in its perfect window.
 
@@ -13,6 +15,7 @@ const CHARGE_BAR_GAP := 6.0
 var ability: Ability
 var _fail_flash: float = 0.0
 var _ready_pulse: float = 0.0
+var _ult_was_full := false
 
 
 func setup(for_ability: Ability) -> void:
@@ -26,6 +29,11 @@ func setup(for_ability: Ability) -> void:
 func _process(delta: float) -> void:
 	_fail_flash = max(_fail_flash - delta * 4.0, 0.0)
 	_ready_pulse = max(_ready_pulse - delta * 3.0, 0.0)
+	if ability != null:
+		var full := ability.get_ultimate_charge() >= 1.0
+		if full and not _ult_was_full:
+			_ready_pulse = 1.0
+		_ult_was_full = full
 	queue_redraw()
 
 
@@ -54,12 +62,21 @@ func _draw() -> void:
 		draw_rect(Rect2(4, SIZE.y - 30, (SIZE.x - 8) * clampf(meter, 0.0, 1.0), 6), Color(0.85, 0.15, 0.25, 0.95))
 
 	var ratio := ability.get_cooldown_ratio()
-	if ratio > 0.0:
+	var ult := ability.get_ultimate_charge()
+	if ult >= 0.0 and ratio > 0.0:
+		draw_rect(Rect2(Vector2.ZERO, Vector2(SIZE.x, SIZE.y * ratio)), Color(0, 0, 0, 0.6))
+		var fill := SIZE.y * ult
+		draw_rect(Rect2(0, SIZE.y - fill, SIZE.x, fill), Color(1.0, 0.8, 0.3, 0.3))
+		_draw_centered("%d%%" % floori(ult * 100.0), center + Vector2(0, -14), 22, Color(1.0, 0.9, 0.6))
+	elif ratio > 0.0:
 		# Dark shade that drains downward as the ability comes back.
 		draw_rect(Rect2(Vector2.ZERO, Vector2(SIZE.x, SIZE.y * ratio)), Color(0, 0, 0, 0.6))
 		_draw_centered("%.1f" % ability.cooldown_remaining, center + Vector2(0, -14), 22, Color(1, 1, 1, 0.95))
 
 	var border := Color(0.5, 0.8, 1.0) if ratio <= 0.0 else Color(0.35, 0.35, 0.4)
+	if ult >= 1.0 or (ult >= 0.0 and ratio <= 0.0):
+		var glow := 0.5 + 0.5 * sin(Time.get_ticks_msec() / 180.0)
+		border = Color(1.0, 0.8, 0.3).lerp(Color.WHITE, glow * 0.5)
 	border = border.lerp(Color(1, 0.3, 0.3), _fail_flash).lerp(Color.WHITE, _ready_pulse)
 	draw_rect(rect, border, false, 3.0 + 3.0 * (_fail_flash + _ready_pulse))
 

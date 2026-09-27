@@ -41,6 +41,7 @@ script = ExtResource("2_slot")
 id = &"ultimate"
 display_name = "Ultimate"
 input_action = &"hero_ultimate"
+ultimate_charge = true
 
 [sub_resource type="Resource" id="Slot_passive"]
 script = ExtResource("2_slot")

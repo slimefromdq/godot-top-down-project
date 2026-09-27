@@ -8,6 +8,9 @@ class_name MatchHud
 # Wake meters: a WakeMeter for each Dreamer in the slots either side of the
 # clock (Dawn left, Dusk right).
 #
+# Team bars (TeamBar) on the outside of the wake meters: every hero on each
+# team; your own team's cards add health and ultimate charge.
+#
 # Off-screen arrows: every Node2D in the "offscreen_arrows" group (the Dream
 # Mote, the Dreamers) gets an arrow at the screen edge pointing to it while
 # it's off screen, in its `arrow_color`. A node with offscreen_arrow_for(
@@ -43,6 +46,8 @@ var _mote_label: Label
 ## Left/right of the clock, empty until the wake meters arrive.
 var wake_slot_a: Control
 var wake_slot_b: Control
+var team_bar_a: TeamBar
+var team_bar_b: TeamBar
 
 
 func _ready() -> void:
@@ -165,6 +170,11 @@ func _build() -> void:
 	top.alignment = BoxContainer.ALIGNMENT_CENTER
 	top.add_theme_constant_override(&"separation", 16)
 	add_child(top)
+	team_bar_a = TeamBar.new()
+	team_bar_a.name = "TeamBarA"
+	team_bar_a.team = &"a"
+	team_bar_a.align_right = true
+	top.add_child(team_bar_a)
 	wake_slot_a = _slot("WakeSlotA")
 	top.add_child(wake_slot_a)
 	var clock_box := VBoxContainer.new()
@@ -179,6 +189,11 @@ func _build() -> void:
 	top.add_child(clock_box)
 	wake_slot_b = _slot("WakeSlotB")
 	top.add_child(wake_slot_b)
+	team_bar_b = TeamBar.new()
+	team_bar_b.name = "TeamBarB"
+	team_bar_b.team = &"b"
+	team_bar_b.align_right = false
+	top.add_child(team_bar_b)
 
 	# Bottom, left of the ability bar (which spans -250..250 from centre).
 	var economy := VBoxContainer.new()

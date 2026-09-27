@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="VisualProfile" format=3]
 
+[ext_resource type="Texture2D" path="res://sprites/heroes/melody.svg" id="placeholder_body"]
 [ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_6h0jp"]
 [ext_resource type="PackedScene" path="res://effects/spawn_puff.tscn" id="2_r804j"]
 [ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="3_jgyp8"]
@@ -215,8 +216,10 @@ align_to_direction = false
 
 [resource]
 script = ExtResource("14_gw67x")
-body_scale = Vector2(0.78, 0.78)
-body_tint = Color(1, 0.75, 0.85, 0.55)
+texture = ExtResource("placeholder_body")
+body_scale = Vector2(0.9, 0.9)
+body_tint = Color(1, 1, 1, 0)
+flip_to_face_aim = false
 cues = Dictionary[StringName, ExtResource("1_6h0jp")]({
 &"ability_failed": SubResource("Resource_xg4fw"),
 &"death": SubResource("Resource_g4h7b"),

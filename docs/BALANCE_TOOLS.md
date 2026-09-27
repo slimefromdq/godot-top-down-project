@@ -40,7 +40,8 @@ values.
   * The state, the clock and both rosters with each hero's level and gold.
   * Give the player gold or XP, and set their level through the match (plays
     the level-up cue).
-  * Skip the warmup, end the match for Dawn or Dusk, respawn now.
+  * Skip the warmup, end the match for Dawn or Dusk, respawn now, fill
+    your ultimate charge.
   * **Play as team** flips the player between Dawn (`a`) and Dusk (`b`) and
     moves them to that team's spawn, so you can test either side solo.
   * **Motes**: a Mote or Dream Mote at the cursor, give the player N Motes,
@@ -146,8 +147,10 @@ godot --headless res://tools/match/match_test.tscn
 godot --headless res://tools/match/mote_test.tscn
 godot --headless res://tools/match/dreamer_test.tscn
 godot --headless res://tools/match/polish_test.tscn
+godot --headless res://tools/match/ultimate_test.tscn
 godot --headless res://tools/ai/bot_test.tscn
 godot --headless res://tools/ai/bot_nav_test.tscn
+godot --headless res://tools/ai/bot_role_test.tscn
 godot --headless res://tools/ai/bot_match_smoke_test.tscn
 ```
 
@@ -162,6 +165,10 @@ and 10, measured in-engine against a dummy with no resists
 `tools/match/capture_match.tscn` does the same for the match HUD, the F1
 Match tab, Motes (loose, carried, a dreaming zone, the spawn overlay) and
 the Dreamers (asleep with the wake meters, stirring with a Lullaby).
+`tools/ai/capture_bots.tscn -- <dir>` (run with `xvfb-run -a -s "-screen 0
+1920x1080x24"` so the HUD has its full width) saves a 6 v 6 bot match: the
+team rings, nameplates and placeholder bodies in a line-up, the team bars,
+and the map after the bots have spread out.
 `tools/match/capture_objective.tscn -- <dir> <prefix>` saves the objective's
 before/after set: an idle Dreamer, a stirring Dreamer, a full Mote stack,
 the Dream Mote telegraph and the HUD during a stir.

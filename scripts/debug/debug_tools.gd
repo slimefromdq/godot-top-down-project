@@ -507,7 +507,7 @@ func _build_meter() -> void:
 	_meter_panel.anchor_right = 1.0
 	_meter_panel.offset_left = -380
 	_meter_panel.offset_right = -20
-	_meter_panel.offset_top = 48
+	_meter_panel.offset_top = 150    # below the match HUD's team bars
 	_refresh_meter()
 
 
@@ -564,26 +564,16 @@ func fill_with_bots(difficulty: int = 1) -> int:
 	var added := 0
 	for team in MatchManager.TEAMS:
 		var roster := manager.get_roster(team)
+		# Dusk picks from the other end of the list, so mirror matches differ.
+		var pool := definitions.duplicate()
+		if team == &"b":
+			pool.reverse()
 		var used: Array[StringName] = []
-		var has_tank := false
 		for member in roster:
 			if member.definition != null:
 				used.append(member.definition.hero_id)
-				has_tank = has_tank or member.definition.role == HeroDefinition.Role.TANK
 		while roster.size() < BotRules.current().team_size:
-			var choice: HeroDefinition
-			for definition in definitions:
-				if definition.hero_id in used:
-					continue
-				if not has_tank and definition.role != HeroDefinition.Role.TANK:
-					continue
-				choice = definition
-				break
-			if choice == null:
-				for definition in definitions:
-					if definition.hero_id not in used:
-						choice = definition
-						break
+			var choice := _pick_bot_definition(pool, roster, used)
 			if choice == null:
 				choice = definitions[roster.size() % definitions.size()]
 			var scene: PackedScene = choice.scene_override if choice.scene_override != null else load(HERO_BASE)
@@ -607,9 +597,29 @@ func fill_with_bots(difficulty: int = 1) -> int:
 				+ Vector2.RIGHT.rotated(angle) * BotRules.current().spawn_spacing
 			roster.append(bot)
 			used.append(choice.hero_id)
-			has_tank = has_tank or choice.role == HeroDefinition.Role.TANK
 			added += 1
 	return added
+
+
+# The next bot for a team: the first role in BotRules.team_composition the
+# roster is still short of, else any hero not on the team yet.
+func _pick_bot_definition(pool: Array, roster: Array[Hero], used: Array[StringName]) -> HeroDefinition:
+	var have := {}
+	for member in roster:
+		if member.definition != null:
+			have[member.definition.role] = int(have.get(member.definition.role, 0)) + 1
+	var wanted := {}
+	for role in BotRules.current().team_composition:
+		wanted[role] = int(wanted.get(role, 0)) + 1
+		if int(have.get(role, 0)) >= int(wanted[role]):
+			continue
+		for definition in pool:
+			if definition.role == role and definition.hero_id not in used:
+				return definition
+	for definition in pool:
+		if definition.hero_id not in used:
+			return definition
+	return null
 
 
 func clear_bots() -> void:
@@ -845,6 +855,10 @@ func _match_tab(hero: Hero) -> Control:
 	flow.add_child(_button("Dusk wins", func(): manager.end_match(&"b")))
 	if hero != null:
 		flow.add_child(_button("Respawn now", func(): manager.respawn_now(hero)))
+		flow.add_child(_button("Fill ultimate", func():
+			var charge := UltimateCharge.find_on(hero)
+			if charge != null:
+				charge.set_charge(charge.maximum)))
 	box.add_child(flow)
 
 	box.add_child(_label("Play as team", 15))

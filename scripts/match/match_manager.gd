@@ -36,6 +36,8 @@ signal lullaby_changed(team: StringName, pct: float)
 signal settled(team: StringName, how: StringName)
 signal woke(team: StringName)
 signal wake_milestone(team: StringName, mark: float)
+## A hero's ultimate charge changed (UltimateCharge, 0..1).
+signal ultimate_charge_changed(actor: Hero, ratio: float)
 
 enum State { WARMUP, PLAYING, ENDED }
 
@@ -201,6 +203,8 @@ func _tick_passive(delta: float) -> void:
 		for hero in get_roster():
 			grant_actor(hero, r.passive_gold_per_second * r.passive_tick_interval,
 				r.passive_xp_per_second * r.passive_tick_interval, REASON_PASSIVE)
+			if not hero.health_component.is_dead():
+				add_ultimate_charge(hero, r.ult_charge_per_second * r.passive_tick_interval)
 
 
 # ---------------------------------------------------------------------------
@@ -248,7 +252,9 @@ func _try_register(node: Node) -> void:
 		record.respawn_left = -1.0
 	_records[hero] = record
 	hero.respawns = true
+	_attach_ultimate_charge(hero)
 	hero.health_component.damage_taken.connect(_on_hero_damaged.bind(hero))
+	hero.health_component.healed.connect(_on_hero_healed.bind(hero))
 	hero.health_component.died.connect(_on_hero_died.bind(hero))
 	hero.tree_exiting.connect(_unregister.bind(hero), CONNECT_ONE_SHOT)
 	roster_changed.emit()
@@ -257,6 +263,9 @@ func _try_register(node: Node) -> void:
 func _unregister(hero: Hero) -> void:
 	var record: Record = _records.get(hero)
 	_records.erase(hero)
+	var charge := UltimateCharge.find_on(hero)
+	if charge != null:
+		charge.queue_free()
 	if record != null and hero.player_controlled:
 		# The debug panel may be swapping this player for another hero: keep
 		# their gold and XP for whoever takes over (on_player_replaced).
@@ -408,6 +417,47 @@ func play_match_cue(hero: Actor, cue: StringName, context: Dictionary = {}) -> v
 
 
 # ---------------------------------------------------------------------------
+# Ultimate charge
+# ---------------------------------------------------------------------------
+
+func _attach_ultimate_charge(hero: Hero) -> void:
+	var r := get_rules()
+	if not r.ultimate_charge_enabled or UltimateCharge.find_on(hero) != null:
+		return
+	var charge := UltimateCharge.new()
+	charge.name = "UltimateCharge"
+	charge.maximum = r.ult_charge_max
+	charge.charge_changed.connect(func(value: float, most: float):
+		ultimate_charge_changed.emit(hero, value / most if most > 0.0 else 1.0))
+	hero.add_child(charge)
+
+
+## Add ultimate charge to a hero (only while PLAYING; nothing during the
+## warmup or after the end).
+func add_ultimate_charge(hero: Hero, amount: float) -> void:
+	if state != State.PLAYING or amount <= 0.0 or not _records.has(hero):
+		return
+	var charge := UltimateCharge.find_on(hero)
+	if charge != null:
+		charge.add(amount)
+
+
+## 0..1, or -1 when the match doesn't use ultimate charge.
+func get_ultimate_ratio(hero: Hero) -> float:
+	var charge := UltimateCharge.find_on(hero)
+	return charge.get_ratio() if charge != null else -1.0
+
+
+func _on_hero_healed(amount: float, source: Node, target: Hero) -> void:
+	var healer := _hero_of(source)
+	if healer == null or healer.team != target.team:
+		return
+	var r := get_rules()
+	var mult := r.ult_charge_self_heal_mult if healer == target else 1.0
+	add_ultimate_charge(healer, amount * r.ult_charge_per_heal * mult)
+
+
+# ---------------------------------------------------------------------------
 # Dreamers
 # ---------------------------------------------------------------------------
 
@@ -442,6 +492,9 @@ func _on_hero_damaged(info: DamageInfo, victim: Hero) -> void:
 	var record: Record = _records.get(victim)
 	if record != null:
 		record.damaged_by[attacker] = _time
+	var r := get_rules()
+	add_ultimate_charge(attacker, info.final_amount * r.ult_charge_per_damage)
+	add_ultimate_charge(victim, (info.final_amount + info.absorbed) * r.ult_charge_per_damage_taken)
 
 
 func _on_hero_died(victim: Hero) -> void:
@@ -464,9 +517,11 @@ func _on_hero_died(victim: Hero) -> void:
 		if killer != null:
 			(_records[killer] as Record).kills += 1
 			grant_actor(killer, r.kill_gold, r.kill_xp, REASON_KILL)
+			add_ultimate_charge(killer, r.ult_charge_kill)
 		for hero in assisters:
 			(_records[hero] as Record).assists += 1
 			grant_actor(hero, r.assist_gold, r.assist_xp, REASON_ASSIST)
+			add_ultimate_charge(hero, r.ult_charge_assist)
 	hero_killed.emit(victim, killer, assisters)
 	if state != State.ENDED:
 		record.respawn_left = get_respawn_time(victim)

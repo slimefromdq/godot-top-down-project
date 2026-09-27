@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="VisualProfile" format=3]
 
+[ext_resource type="Texture2D" path="res://sprites/heroes/jose.svg" id="placeholder_body"]
 [ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_ouf7a"]
 [ext_resource type="PackedScene" path="res://effects/spawn_puff.tscn" id="2_v63hb"]
 [ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="3_d0nt6"]
@@ -177,8 +178,10 @@ align_to_direction = false
 
 [resource]
 script = ExtResource("16_a0vmy")
-body_scale = Vector2(0.8, 0.8)
-body_tint = Color(0.9, 0.2, 0.35, 0.55)
+texture = ExtResource("placeholder_body")
+body_scale = Vector2(0.9, 0.9)
+body_tint = Color(1, 1, 1, 0)
+flip_to_face_aim = false
 cues = Dictionary[StringName, ExtResource("1_ouf7a")]({
 &"ability_failed": SubResource("Resource_wqxyo"),
 &"coin_execute": SubResource("Resource_0qvvx"),
