@@ -18,6 +18,8 @@ class_name BotRules
 @export var wounded_ally_fraction: float = 0.75
 @export var waypoint_reached_fraction: float = 0.6
 @export var bank_health_fraction: float = 0.4
+## A retreating bot stays in its spawn area until healed to this share.
+@export var retreat_until_fraction: float = 0.9
 @export var mote_search_radius: float = 2400.0
 @export var enemy_search_radius: float = 1700.0
 @export var stuck_time: float = 1.0

@@ -128,6 +128,36 @@ func _decisions() -> void:
 		and _bot(carry).intent == &"collect"))
 	mote.queue_free()
 
+	# Spawn areas heal their own team, not intruders; a hurt bot falls back there.
+	var sanctuary := manager.get_sanctuary(&"a")
+	_check("each team has a healing spawn area", sanctuary != null and manager.get_sanctuary(&"b") != null
+		and sanctuary.contains(manager.get_spawn_point(&"a")))
+	var spot := sanctuary.area.get_center()
+	tank.set_bot_controlled(false)
+	enemy.set_bot_controlled(false)
+	tank.global_position = spot
+	enemy.global_position = spot + Vector2(300, 0)
+	tank.health_component.apply_damage(DamageInfo.create(tank.health_component.max_health * 0.6, null, DamageInfo.Type.TRUE))
+	enemy.health_component.apply_damage(DamageInfo.create(enemy.health_component.max_health * 0.6, null, DamageInfo.Type.TRUE))
+	var tank_before := tank.health_component.current_health
+	var enemy_before := enemy.health_component.current_health
+	await get_tree().create_timer(1.6, true, true).timeout
+	_check("standing in your spawn heals fast", tank.health_component.current_health - tank_before
+		>= tank.health_component.max_health * 0.3)
+	_check("the enemy's spawn doesn't heal you", is_equal_approx(enemy.health_component.current_health, enemy_before))
+	enemy.global_position = carry.global_position + Vector2(500, 0)
+	carry.health_component.apply_damage(DamageInfo.create(carry.health_component.max_health * 0.8, null, DamageInfo.Type.TRUE))
+	await _frames(15)
+	_think(carry, manager)
+	_check("a hurt bot retreats to its spawn area", _bot(carry).intent == &"retreat"
+		and sanctuary.contains(_bot(carry).goal))
+	enemy.global_position = Vector2(3500, -1000)
+	carry.health_component.heal(carry.health_component.max_health * 0.2)
+	await _frames(15)
+	_think(carry, manager)
+	_check("and keeps going until healed, even with no enemy in sight", _bot(carry).intent == &"retreat")
+	carry.health_component.heal(carry.health_component.max_health)
+
 	var dawn := Dreamer.find_for(get_tree(), &"a")
 	dawn.start_stir()
 	_think(carry, manager)

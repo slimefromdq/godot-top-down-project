@@ -89,6 +89,8 @@ var _respawn_mult: Dictionary = {}
 # The local player's record while the debug panel swaps heroes.
 var _swapped_player_record: Record
 var _dreamers: Dictionary = {}    # team -> Dreamer
+var _sanctuaries: Dictionary = {}    # team -> SpawnSanctuary
+var _sanctuary_map: GameMap
 
 
 static func find(tree: SceneTree) -> MatchManager:
@@ -182,6 +184,7 @@ func is_playing() -> bool:
 
 func _physics_process(delta: float) -> void:
 	_time += delta
+	_make_sanctuaries()
 	match state:
 		State.WARMUP:
 			warmup_left -= delta
@@ -564,6 +567,34 @@ func respawn_now(hero: Hero) -> void:
 		record.respawn_left = -1.0
 	hero.respawn(get_spawn_point(hero.team))
 	hero_respawned.emit(hero)
+
+
+## The healing spawn area of `team` (null on a map without spawn markers).
+func get_sanctuary(team: StringName) -> SpawnSanctuary:
+	var sanctuary: SpawnSanctuary = _sanctuaries.get(team)
+	return sanctuary if is_instance_valid(sanctuary) else null
+
+
+# One SpawnSanctuary per team, around the map's spawn markers, made once per
+# map (the map may load after us, or be switched: F3).
+func _make_sanctuaries() -> void:
+	if is_instance_valid(_sanctuary_map):
+		return
+	var map := get_tree().get_first_node_in_group(&"game_map") as GameMap
+	if map == null:
+		return
+	_sanctuary_map = map
+	_sanctuaries.clear()
+	for team in TEAMS:
+		var points := map.get_spawn_points(team)
+		if points.is_empty():
+			continue
+		var sanctuary := SpawnSanctuary.new()
+		sanctuary.name = "SpawnSanctuary_%s" % team
+		sanctuary.team = team
+		sanctuary.area = SpawnSanctuary.area_around(points, get_rules().spawn_area_margin, map.bounds)
+		map.add_child(sanctuary)
+		_sanctuaries[team] = sanctuary
 
 
 ## A spawn marker for `team` (random among the map's spawn_<team> points),

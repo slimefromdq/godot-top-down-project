@@ -197,7 +197,7 @@ It also shows toasts for your own banks and deliveries (with the gold) and
 pings the minimap for a stir and a Dream Mote. **FeelSettings.announcer_text**
 off hides the text and keeps the sounds.
 
-**Minimap**: a Dream Mote star, Dreamer rings that fill with the wake meter
+**Minimap** (448 px wide, `Minimap.width`): a Dream Mote star, Dreamer rings that fill with the wake meter
 (sun or moon inside, flashing while stirring), tinted dreaming zones, carrier
 pips, and big pulsing pings for a stir or a Dream Mote. Objectives draw
 their own icon with `draw_minimap_icon(canvas, point, viewer_team)`; areas

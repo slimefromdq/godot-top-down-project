@@ -329,9 +329,18 @@ func _choose_goal(manager: MatchManager) -> void:
 			# Stand in their ring: it pauses the Lullaby.
 			_set_goal(&"attack", &"aggressive", enemy_dreamer.global_position, true)
 			return
-	if health_fraction <= plan.retreat_health_fraction and home != null and target != null:
-		_set_goal(&"retreat", &"avoid", home.global_position, true)
-		return
+	# Low with an enemy in sight: fall back to the spawn area, which heals, and
+	# stay there until healed (a reset). Without one, fall back to the Dreamer.
+	var sanctuary := manager.get_sanctuary(hero.team) if manager != null else null
+	var healing := intent == &"retreat" and health_fraction < rules.retreat_until_fraction
+	if (health_fraction <= plan.retreat_health_fraction and target != null) or healing:
+		if sanctuary != null:
+			var inside := sanctuary.contains(hero.global_position)
+			_set_goal(&"retreat", &"avoid", hero.global_position if inside else sanctuary.area.get_center(), true)
+			return
+		if home != null and target != null:
+			_set_goal(&"retreat", &"avoid", home.global_position, true)
+			return
 	# Hurt with Motes: secure them at home, unless the enemy Dreamer is nearer.
 	if carried > 0 and home != null and health_fraction <= rules.bank_health_fraction \
 			and (enemy_dreamer == null or hero.global_position.distance_to(home.global_position)
