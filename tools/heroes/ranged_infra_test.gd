@@ -1059,6 +1059,16 @@ func _test_aim_part() -> void:
 	_check("aim pivot follows the idle bob frame by frame", want != 0.0
 			and is_equal_approx(rise[6] - rise[0], want), "%s want %.2f" % [rise, want])
 	sprite.play()
+	# Aiming up (away from the camera) tucks the arm behind the body.
+	var order := {}
+	for aim: Vector2 in [Vector2.RIGHT, Vector2(0.2, -1).normalized(), Vector2(-1, -0.3).normalized(), Vector2.DOWN]:
+		hero.aim_direction = aim
+		await _frames(1)
+		var drawn_behind: bool = part.get_parent().get_index() < visuals.body.get_index()
+		order[aim] = drawn_behind == visuals.is_aim_part_behind() and drawn_behind
+	_check("aim part draws behind the body only when aiming up",
+			not order[Vector2.RIGHT] and order[Vector2(0.2, -1).normalized()]
+			and not order[Vector2(-1, -0.3).normalized()] and not order[Vector2.DOWN], str(order))
 	_check("aim part shares the body's flash/tint material",
 			part.get_parent().material == visuals.body.material and part.use_parent_material, "")
 	hero.aim_direction = saved

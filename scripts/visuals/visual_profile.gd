@@ -35,6 +35,11 @@ class_name VisualProfile
 @export_range(-180.0, 180.0, 1.0, "degrees") var aim_part_rest_angle: float = 0.0
 ## Draw the part behind the body instead of in front.
 @export var aim_part_behind_body: bool = false
+## Also draw it behind the body while aiming up (away from the camera).
+@export var aim_part_behind_when_aiming_up: bool = true
+## How far up counts as "aiming up": the aim's upward component, 0 = level,
+## 1 = straight up (0.5 = 30 degrees above level).
+@export_range(0.0, 1.0, 0.05) var aim_part_up_threshold: float = 0.5
 
 @export_group("Cues")
 ## Cue name -> what to show. Built-in names: hurt, heal, death, spawn, fire,

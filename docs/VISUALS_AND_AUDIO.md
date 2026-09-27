@@ -126,7 +126,10 @@ with the body. On a baked body the pivot also rides the animation: the bake
 records how far the shoulder moved from rest on every frame (idle bob, walk
 bounce, hurt recoil) and the component adds that to **Aim Part Pivot**, so
 re-bake after changing the animations. It shares the body's material, so hit flashes and status tints
-reach it; **Aim Part Behind Body** draws it under the body. It hides on death
+reach it; **Aim Part Behind Body** draws it under the body always; **Aim Part Behind
+When Aiming Up** (on by default) tucks it under the body only while the aim
+points up past **Aim Part Up Threshold** (0.5 = 30 degrees above level), as
+if the arm were reaching away from the camera. It hides on death
 (the baked death has no arm) and returns on revive. The test hero
 (F1 > Play as > Ranged Test) uses the template bake with its sword arm.
 

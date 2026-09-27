@@ -34,6 +34,7 @@ var body: CanvasItem
 ## The live aim part (profile.aim_part), rotated toward the aim; null if none.
 var aim_part: Node2D
 var _aim_holder: Node2D
+var _aim_part_behind := false
 var _animation_player: AnimationPlayer
 var _body_material: ShaderMaterial
 var _flash_tween: Tween
@@ -442,7 +443,7 @@ func _setup_aim_part() -> void:
 	_aim_holder.scale = profile.body_scale
 	add_child(_aim_holder)
 	_aim_holder.add_child(aim_part)
-	move_child(_aim_holder, body.get_index() if profile.aim_part_behind_body else body.get_index() + 1)
+	_set_aim_part_behind(profile.aim_part_behind_body)
 	# Flashes, tints and highlights reach the part through the body's material.
 	_aim_holder.material = body.material
 	aim_part.use_parent_material = true
@@ -455,10 +456,27 @@ func _setup_aim_part() -> void:
 	_update_aim_part(_get_root())
 
 
+## True while the aim part draws behind the body.
+func is_aim_part_behind() -> bool:
+	return _aim_part_behind
+
+
+# Reorders only on a change, so the node tree isn't touched every frame.
+# move_child to the body's index lands just before it when coming from after,
+# and just after it when coming from before.
+func _set_aim_part_behind(behind: bool) -> void:
+	_aim_part_behind = behind
+	var is_behind := _aim_holder.get_index() < body.get_index()
+	if is_behind != behind:
+		move_child(_aim_holder, body.get_index())
+
+
 func _update_aim_part(root: Node) -> void:
 	if _aim_holder == null:
 		return
 	var aim: Vector2 = root.aim_direction if "aim_direction" in root else Vector2.RIGHT
+	_set_aim_part_behind(profile.aim_part_behind_body or (profile.aim_part_behind_when_aiming_up
+			and aim.normalized().y < -profile.aim_part_up_threshold))
 	var flipped: bool = "flip_h" in body and body.flip_h
 	var side := -1.0 if flipped else 1.0
 	var pivot := profile.aim_part_pivot
