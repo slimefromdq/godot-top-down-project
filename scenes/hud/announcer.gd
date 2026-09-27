@@ -38,6 +38,7 @@ class Banner:
 	var age: float = 0.0
 	var leaving: float = -1.0    # >= 0 once it's sliding out
 
+var _was_busy := false
 var match_manager: MatchManager
 var current: Banner
 var queue: Array[Banner] = []
@@ -177,7 +178,11 @@ func _process(delta: float) -> void:
 	for t in _toasts:
 		t.age += delta
 	_toasts = _toasts.filter(func(t): return t.age < TOAST_TIME)
-	_canvas.queue_redraw()
+	# Idle (nothing showing): one last redraw to clear, then none.
+	var busy := current != null or not _toasts.is_empty()
+	if busy or _was_busy:
+		_canvas.queue_redraw()
+	_was_busy = busy
 
 
 func _play_sound(cue: StringName) -> void:

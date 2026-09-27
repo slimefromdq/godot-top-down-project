@@ -44,6 +44,8 @@ class_name Minimap
 @export var sight_range: float = 1400.0
 ## Seconds between visibility refreshes (line-of-sight rays are not free).
 @export var fog_refresh: float = 0.1
+## Seconds between redraws of the moving dots (not every frame).
+@export var dots_refresh: float = 1.0 / 30.0
 @export var ping_time: float = 1.6
 ## Pings of the match's key moments (a stir, the Dream Mote) last this long.
 @export var big_ping_time: float = 4.0
@@ -59,6 +61,7 @@ var _scale: float = 1.0
 # Fog: node -> shown, rebuilt every fog_refresh.
 var _seen: Dictionary = {}
 var _fog_left: float = 0.0
+var _dots_left: float = 0.0
 # [{position (map space), team, age, kind}]
 var _pings: Array[Dictionary] = []
 
@@ -101,7 +104,9 @@ func _make_layer(draw_callback: Callable) -> Control:
 
 
 func _process(delta: float) -> void:
-	if _dynamic != null:
+	_dots_left -= delta
+	if _dynamic != null and _dots_left <= 0.0:
+		_dots_left = dots_refresh
 		_dynamic.queue_redraw()
 	for ping in _pings:
 		ping.age += delta
@@ -185,6 +190,14 @@ func _descendants(type: Variant) -> Array[Node]:
 
 func _draw_static(canvas: Control) -> void:
 	AeroDraw.gloss_rect(canvas, Rect2(Vector2.ZERO, canvas.size), background, 12.0)
+	# The map's shapes go into one mesh (a draw call instead of hundreds).
+	var batch := ShapeBatch.new()
+	_draw_static_shapes(batch)
+	batch.draw_on(canvas)
+	canvas.draw_rect(Rect2(Vector2.ZERO, canvas.size), frame_color, false, 2.0)
+
+
+func _draw_static_shapes(canvas: ShapeBatch) -> void:
 	# From here on, draw in map coordinates.
 	canvas.draw_set_transform(-_map.bounds.position * _scale, 0.0, Vector2.ONE * _scale)
 	var to_map := _map.get_global_transform().affine_inverse()
@@ -216,12 +229,17 @@ func _draw_static(canvas: Control) -> void:
 		canvas.draw_circle(_to_map(node), 110.0, (node as JumpPad).color)
 	for node in _descendants(Teleporter):
 		canvas.draw_circle(_to_map(node), 120.0, (node as Teleporter).color)
-
 	canvas.draw_set_transform(Vector2.ZERO)
-	canvas.draw_rect(Rect2(Vector2.ZERO, canvas.size), frame_color, false, 2.0)
 
 
+# The moving layer: every dot and ring into one mesh per redraw.
 func _draw_dynamic(canvas: Control) -> void:
+	var batch := ShapeBatch.new()
+	_draw_dynamic_shapes(batch)
+	batch.draw_on(canvas)
+
+
+func _draw_dynamic_shapes(canvas: ShapeBatch) -> void:
 	var player := get_tree().get_first_node_in_group(&"player") as Node2D
 	var my_team: StringName = player.get("team") if player != null and player.get("team") != null else &""
 
@@ -296,7 +314,7 @@ func _draw_dynamic(canvas: Control) -> void:
 
 
 # A pip per MOTES_PER_PIP carried Motes (rounded up), in an arc above the dot.
-func _draw_mote_pips(canvas: Control, node: Node, point: Vector2) -> void:
+func _draw_mote_pips(canvas: ShapeBatch, node: Node, point: Vector2) -> void:
 	var carrier := MoteCarrier.find_on(node)
 	var n := ceili(carrier.get_mote_count() / float(motes_per_pip)) if carrier != null else 0
 	for i in n:

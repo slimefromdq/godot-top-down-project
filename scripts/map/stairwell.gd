@@ -22,13 +22,18 @@ const STEP := 40.0
 func _draw() -> void:
 	var half_w := width / 2.0
 	var steps := maxi(2, int(depth / STEP))
+	# All the steps, then all the step edges in one call: grouping like
+	# shapes lets the renderer batch them.
+	var edges := PackedVector2Array()
 	for i in steps:
 		# Lighter toward the top so the slope direction reads without the arrow.
 		var t := float(i) / (steps - 1)
 		var x := -depth / 2.0 + depth * i / steps
 		var step_color := color.darkened(0.3 * (1.0 - t))
 		draw_rect(Rect2(x, -half_w, depth / steps, width), step_color)
-		draw_line(Vector2(x, -half_w), Vector2(x, half_w), color.darkened(0.45), 3.0)
+		edges.append(Vector2(x, -half_w))
+		edges.append(Vector2(x, half_w))
+	draw_multiline(edges, color.darkened(0.45), 3.0)
 	var ink := color.darkened(0.55)
 	draw_rect(Rect2(-depth / 2.0, -half_w, depth, width), ink, false, 4.0)
 	var tail := Vector2(-depth * 0.3, 0)

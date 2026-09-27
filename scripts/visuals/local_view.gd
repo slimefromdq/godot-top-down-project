@@ -12,13 +12,21 @@ class_name LocalView
 
 static var _viewer_override: Node2D
 static var _has_override := false
+# The group lookup is cached for one frame: every drawn actor asks.
+static var _cached_viewer: Node2D
+static var _cached_frame: int = -1
 
 
 static func get_viewer() -> Node2D:
 	if _has_override:
 		return _viewer_override if is_instance_valid(_viewer_override) else null
-	var tree := Engine.get_main_loop() as SceneTree
-	return tree.get_first_node_in_group(&"player") as Node2D if tree != null else null
+	var frame := Engine.get_process_frames()
+	if frame != _cached_frame or not is_instance_valid(_cached_viewer) \
+			or not _cached_viewer.is_in_group(&"player"):
+		var tree := Engine.get_main_loop() as SceneTree
+		_cached_viewer = tree.get_first_node_in_group(&"player") as Node2D if tree != null else null
+		_cached_frame = frame
+	return _cached_viewer
 
 
 # Look through `viewer`'s eyes instead of the local player's. null = nobody

@@ -125,6 +125,22 @@ bottom of its inspector. It checks for:
 
 Problems are also printed when you save a definition or ability, and by **Tools → Validate Heroes**. Heroes log a warning when they spawn with problems.
 
+## Performance benches
+
+Not tests (they always exit 0); run them before and after a performance
+change.
+
+```
+godot --headless --fixed-fps 60 res://tools/perf/match_bench.tscn -- 3600
+xvfb-run -a godot --rendering-driver opengl3 res://tools/perf/render_cost.tscn
+```
+
+* `match_bench` plays the real Dream Basin world with 12 bots for N frames
+  and prints the average wall time per frame (game logic only when headless).
+* `render_cost` needs a real renderer. It hides one kind of drawn node at a
+  time (by script, or class for plain nodes) and prints the frame time, draw
+  calls and primitives each kind costs.
+
 ## Headless test suites
 
 ```

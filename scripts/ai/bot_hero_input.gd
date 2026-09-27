@@ -73,6 +73,7 @@ var _navigation: BotNavigation
 var _path := PackedVector2Array()
 var _path_goal: Vector2
 var _path_index: int = 0
+var _repath_at: float = 0.0
 var _dodge_start: float = INF
 var _dodge_until: float = -INF
 var _dodge_direction: Vector2
@@ -298,12 +299,29 @@ func _all_heroes() -> Array[Hero]:
 	return result
 
 
+# Vision is shared by team, so teammates perceiving on the same physics frame
+# reuse one answer per enemy instead of redoing every ally's sight check.
+static var _team_vision: Dictionary = {}    # team -> [physics frame, {enemy id: bool}]
+
+
 func _team_can_see(enemy: Hero, actors: Array[Hero]) -> bool:
+	var frame := Engine.get_physics_frames()
+	var entry: Array = _team_vision.get(hero.team, [])
+	if entry.is_empty() or entry[0] != frame:
+		entry = [frame, {}]
+		_team_vision[hero.team] = entry
+	var id := enemy.get_instance_id()
+	var cached = entry[1].get(id)
+	if cached != null:
+		return cached
+	var seen := false
 	for ally in actors:
 		if ally.team == hero.team and not ally.health_component.is_dead() \
 				and CombatQueries.has_line_of_sight(ally, enemy):
-			return true
-	return false
+			seen = true
+			break
+	entry[1][id] = seen
+	return seen
 
 
 # Only enemies this bot should fight: inside the plan's engage radius, the
@@ -1022,11 +1040,16 @@ func _path_destination(wanted: Vector2) -> Vector2:
 		_navigation = BotNavigation.for_actor(hero)
 	if _navigation == null:
 		return wanted
-	var cell := BotRules.current().navigation_cell_size
-	if _path.is_empty() or wanted.distance_to(_path_goal) > cell:
+	var rules := BotRules.current()
+	var cell := rules.navigation_cell_size
+	# A goal that drifts (a moving ally, a chased carrier) re-paths at most
+	# every repath_interval; a new goal far away re-paths at once.
+	var moved := wanted.distance_to(_path_goal)
+	if (_path.is_empty() or moved > cell) and (_time >= _repath_at or moved > cell * rules.repath_now_cells):
 		_path = _navigation.path(hero.global_position, wanted)
 		_path_goal = wanted
 		_path_index = 0
+		_repath_at = _time + rules.repath_interval
 	if _path.is_empty():
 		return wanted
 	# Skipping to a nearby later point handles arrival from a directed map
@@ -1070,4 +1093,5 @@ func _update_stuck(delta: float, direction: Vector2) -> void:
 	if _stuck_elapsed >= BotRules.current().stuck_time:
 		_avoid_side *= -1.0
 		_path.clear()
+		_repath_at = 0.0
 		_stuck_elapsed = 0.0

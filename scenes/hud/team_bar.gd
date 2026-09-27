@@ -23,6 +23,9 @@ class_name TeamBar
 @export var ult_color := Color("fbbf24")
 
 var match_manager: MatchManager
+# Cards redraw this often, not every frame (health and charge bars only).
+const REDRAW_INTERVAL := 1.0 / 15.0
+var _redraw_left: float = 0.0
 
 
 func _ready() -> void:
@@ -30,10 +33,13 @@ func _ready() -> void:
 	custom_minimum_size = Vector2(card_size.x * max_cards + card_gap * (max_cards - 1), card_size.y + 36)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if match_manager == null or not is_instance_valid(match_manager):
 		match_manager = MatchManager.find(get_tree())
-	queue_redraw()
+	_redraw_left -= delta
+	if _redraw_left <= 0.0:
+		_redraw_left = REDRAW_INTERVAL
+		queue_redraw()
 
 
 ## The heroes shown, in a stable order (the local player first on its team).
@@ -62,14 +68,22 @@ func _draw() -> void:
 	var step := card_size.x + card_gap
 	var width := step * heroes.size() - card_gap
 	var x0 := size.x - width if align_right else 0.0
+	# Drawn in passes (every card's panel, then portraits, then bars and
+	# text) so the renderer can batch like with like; the panels are one mesh.
+	var panels := ShapeBatch.new()
 	for i in heroes.size():
-		var hero := heroes[i]
-		_draw_card(hero, Rect2(Vector2(x0 + step * i, 0.0), card_size), color, details, font)
+		var dead := heroes[i].health_component.is_dead()
+		AeroDraw.gloss_rect_shapes(panels, Rect2(Vector2(x0 + step * i, 0.0), card_size),
+			Color(color.darkened(0.2), 0.85) if not dead else Color(0.3, 0.36, 0.42, 0.85), 8.0)
+	panels.draw_on(self)
+	for i in heroes.size():
+		_draw_portrait(heroes[i], Rect2(Vector2(x0 + step * i, 0.0), card_size), color)
+	for i in heroes.size():
+		_draw_card(heroes[i], Rect2(Vector2(x0 + step * i, 0.0), card_size), color, details, font)
 
 
-func _draw_card(hero: Hero, rect: Rect2, color: Color, details: bool, font: Font) -> void:
+func _draw_portrait(hero: Hero, rect: Rect2, color: Color) -> void:
 	var dead := hero.health_component.is_dead()
-	AeroDraw.gloss_rect(self, rect, Color(color.darkened(0.2), 0.85) if not dead else Color(0.3, 0.36, 0.42, 0.85), 8.0)
 	var profile := hero.definition.visual_profile if hero.definition != null else null
 	var texture := profile.texture if profile != null else null
 	var tint := Color(0.35, 0.35, 0.4) if dead else Color.WHITE
@@ -77,6 +91,10 @@ func _draw_card(hero: Hero, rect: Rect2, color: Color, details: bool, font: Font
 		draw_texture_rect(texture, rect.grow(-6), false, tint)
 	else:
 		draw_circle(rect.get_center(), rect.size.x * 0.36, Color(color, 0.8) * tint)
+
+
+func _draw_card(hero: Hero, rect: Rect2, color: Color, details: bool, font: Font) -> void:
+	var dead := hero.health_component.is_dead()
 	var own := hero.is_in_group(&"player") and not hero.bot_controlled
 	draw_rect(rect, Color.WHITE if own else color, false, 3.0 if own else 2.0)
 	if dead and match_manager != null:

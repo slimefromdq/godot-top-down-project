@@ -42,7 +42,8 @@ func get_radius() -> float:
 
 func _process(delta: float) -> void:
 	_t += delta
-	queue_redraw()
+	if ScreenCull.is_near(self, get_radius()):
+		queue_redraw()
 
 
 func _draw() -> void:

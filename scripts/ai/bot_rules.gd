@@ -8,6 +8,10 @@ class_name BotRules
 @export var navigation_cell_size: float = 150.0
 @export var navigation_actor_radius: float = 50.0
 @export var navigation_link_cost: float = 250.0
+## A bot whose goal drifts more than a cell re-paths at most this often...
+@export var repath_interval: float = 0.25
+## ...unless the goal jumped more than this many cells (a new errand).
+@export var repath_now_cells: float = 4.0
 @export var strategy_interval: float = 0.5
 @export var perception_interval: float = 0.2
 @export var goal_commit_time: float = 1.5

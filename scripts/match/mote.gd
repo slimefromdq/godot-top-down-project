@@ -107,7 +107,7 @@ func _ready() -> void:
 
 
 ## The minimap's icon: a star for the Dream Mote, a small dot otherwise.
-func draw_minimap_icon(canvas: CanvasItem, at: Vector2, _viewer_team: StringName) -> void:
+func draw_minimap_icon(canvas: Object, at: Vector2, _viewer_team: StringName) -> void:
 	if is_dream():
 		var spin := Time.get_ticks_msec() / 600.0
 		var points := PackedVector2Array()

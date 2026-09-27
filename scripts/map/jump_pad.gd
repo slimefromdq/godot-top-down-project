@@ -119,7 +119,8 @@ func _rebuild() -> void:
 func _process(delta: float) -> void:
 	_time += delta
 	_bounce = maxf(0.0, _bounce - delta * 3.0)
-	queue_redraw()
+	if ScreenCull.is_near(self, radius * 2.0):
+		queue_redraw()
 
 
 func _physics_process(delta: float) -> void:

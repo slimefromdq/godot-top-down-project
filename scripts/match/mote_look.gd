@@ -33,7 +33,8 @@ func setup_mote(owner_mote: Node2D) -> void:
 
 func _process(delta: float) -> void:
 	_t += delta
-	queue_redraw()
+	if ScreenCull.is_near(self, 60.0):
+		queue_redraw()
 
 
 func _draw() -> void:
@@ -55,9 +56,12 @@ func _draw() -> void:
 ## the body (pops and pulls); `rainbow` draws a rainbow rim (a full stack).
 static func draw_mote(canvas: CanvasItem, at: Vector2, size: float, t: float, look: Vector2 = Vector2.ZERO,
 		alpha: float = 1.0, dream: bool = false, wiggle: float = 0.0, lift: float = 0.0,
-		squash: Vector2 = Vector2.ONE, rainbow: bool = false) -> void:
+		squash: Vector2 = Vector2.ONE, rainbow: bool = false, simple: bool = false) -> void:
 	var r := size * 0.5
 	var tilt := sin(t * 9.0) * 0.12 * wiggle
+	if simple:
+		_draw_simple_mote(canvas, at, r, alpha, dream, rainbow)
+		return
 
 	# Shadow on the ground, below the floating body.
 	canvas.draw_set_transform(at + Vector2(0, r * 0.95 - lift), 0.0, Vector2(squash.x, 0.35))
@@ -129,6 +133,22 @@ static func draw_mote(canvas: CanvasItem, at: Vector2, size: float, t: float, lo
 		canvas.draw_circle(Vector2(side * r * 0.58, r * 0.36), r * 0.13, _a(CHEEK, alpha))
 	canvas.draw_arc(Vector2(0, r * 0.32), r * 0.2, PI * 0.15, PI * 0.85, 10, _a(INK, alpha), maxf(r * 0.07, 1.5))
 	canvas.draw_set_transform(Vector2.ZERO)
+
+
+# A far-away or crowded Mote (a carrier's outer orbit rings): the glossy
+# body, one shine and two eyes, a fraction of the full drawing's shapes.
+static func _draw_simple_mote(canvas: CanvasItem, at: Vector2, r: float, alpha: float, dream: bool,
+		rainbow: bool) -> void:
+	if dream:
+		canvas.draw_circle(at, r * 1.5, _a(Color(1, 1, 1, 0.3), alpha))
+	var rim := BODY_DARK
+	if rainbow:
+		rim = Color.from_hsv(fmod(at.x * 0.002 + at.y * 0.001, 1.0), 0.6, 1.0)
+	canvas.draw_circle(at, r * 1.04, _a(rim, alpha))
+	canvas.draw_circle(at + Vector2(0, -r * 0.04), r * 0.96, _a(BODY, alpha))
+	canvas.draw_circle(at + Vector2(-r * 0.38, -r * 0.42), r * 0.22, _a(Color(1, 1, 1, 0.6), alpha))
+	canvas.draw_circle(at + Vector2(-r * 0.33, r * 0.02), r * 0.2, _a(PUPIL, alpha))
+	canvas.draw_circle(at + Vector2(r * 0.33, r * 0.02), r * 0.2, _a(PUPIL, alpha))
 
 
 static func _a(color: Color, alpha: float) -> Color:

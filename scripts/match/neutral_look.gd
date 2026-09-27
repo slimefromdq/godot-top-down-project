@@ -22,7 +22,8 @@ func setup_neutral(owner_monster: NeutralMonster) -> void:
 
 func _process(delta: float) -> void:
 	_t += delta
-	queue_redraw()
+	if ScreenCull.is_near(self, 250.0):
+		queue_redraw()
 
 
 func _draw() -> void:

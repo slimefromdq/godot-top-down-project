@@ -33,6 +33,9 @@ var _label: Label
 var _bar_fill: StyleBoxFlat
 var _team: StringName = &"?"
 var _local := false
+# The aim pointer is its own node, drawn once and turned each frame: the
+# ring itself only redraws when the team or "You" changes.
+var _pointer: Node2D
 
 
 func _ready() -> void:
@@ -50,6 +53,10 @@ func _ready() -> void:
 	_label.z_index = 2    # above other heroes' bodies
 	_label.z_as_relative = false
 	add_child(_label)
+	_pointer = Node2D.new()
+	_pointer.name = "AimPointer"
+	_pointer.draw.connect(_draw_pointer)
+	add_child(_pointer)
 	var bar := hero.get_node_or_null(^"HealthBar") as ProgressBar
 	if bar != null:
 		_bar_fill = StyleBoxFlat.new()
@@ -68,7 +75,10 @@ func _process(_delta: float) -> void:
 	var local := hero.is_in_group(&"player") and not hero.bot_controlled
 	if hero.team != _team or local != _local:
 		_refresh()
-	queue_redraw()    # the aim pointer turns every frame
+	var aim := hero.aim_direction
+	_pointer.visible = aim.length_squared() > 0.01
+	if _pointer.visible:
+		_pointer.rotation = aim.angle()
 
 
 func get_color() -> Color:
@@ -85,6 +95,8 @@ func _refresh() -> void:
 	if _bar_fill != null:
 		_bar_fill.bg_color = color
 	queue_redraw()
+	if _pointer != null:
+		_pointer.queue_redraw()
 
 
 func get_ring_color() -> Color:
@@ -99,12 +111,13 @@ func _draw() -> void:
 		draw_arc(Vector2.ZERO, ring_radius + local_ring_width * 0.5 + 2.0, 0.0, TAU, 64, Color(1, 1, 1, 0.9), 3.0, true)
 	draw_arc(Vector2.ZERO, ring_radius, 0.0, TAU, 64, Color(0, 0, 0, 0.55), (local_ring_width if _local else ring_width) + 3.0, true)
 	draw_arc(Vector2.ZERO, ring_radius, 0.0, TAU, 64, color, local_ring_width if _local else ring_width, true)
-	var aim := hero.aim_direction
-	if aim.length_squared() > 0.01:
-		aim = aim.normalized()
-		var side := aim.orthogonal()
-		var base := aim * (ring_radius + 2.0)
-		var tip := aim * (ring_radius + 2.0 + pointer_size)
-		var tri := PackedVector2Array([tip, base + side * pointer_size * 0.7, base - side * pointer_size * 0.7])
-		draw_colored_polygon(tri, color)
-		draw_polyline(tri + PackedVector2Array([tri[0]]), Color(0, 0, 0, 0.7), 2.0, true)
+
+
+# Pointing along +X; _process turns the node to the aim.
+func _draw_pointer() -> void:
+	var base := Vector2(ring_radius + 2.0, 0.0)
+	var tip := Vector2(ring_radius + 2.0 + pointer_size, 0.0)
+	var side := Vector2(0.0, pointer_size * 0.7)
+	var tri := PackedVector2Array([tip, base + side, base - side])
+	_pointer.draw_colored_polygon(tri, get_ring_color())
+	_pointer.draw_polyline(tri + PackedVector2Array([tri[0]]), Color(0, 0, 0, 0.7), 2.0, true)

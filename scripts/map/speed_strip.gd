@@ -63,7 +63,8 @@ func _on_body_exited(body: Node2D) -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
-	queue_redraw()
+	if ScreenCull.is_near(self, size.length() * 0.5):
+		queue_redraw()
 
 
 func _draw() -> void:
