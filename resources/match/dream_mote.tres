@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("1_data")
 id = &"dream_mote"
-value = 5
+value = 10
 is_dream = true
 magnet_radius = 130.0
 look_scene = ExtResource("2_look")

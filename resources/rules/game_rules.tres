@@ -50,11 +50,18 @@ display_name = "Passive"
 input_action = &""
 required = false
 
+[sub_resource type="Resource" id="Slot_item"]
+script = ExtResource("2_slot")
+id = &"item"
+display_name = "Active Item"
+input_action = &"hero_item"
+required = false
+
 [resource]
 script = ExtResource("1_rules")
 resolve_duration = 2.0
 resolve_cc_multiplier = 0.5
 resolve_status = ExtResource("3_resolve")
 wall_mask = 129
-slots = Array[ExtResource("2_slot")]([SubResource("Slot_primary"), SubResource("Slot_ability_1"), SubResource("Slot_ability_2"), SubResource("Slot_movement"), SubResource("Slot_cc"), SubResource("Slot_ultimate"), SubResource("Slot_passive")])
+slots = Array[ExtResource("2_slot")]([SubResource("Slot_primary"), SubResource("Slot_ability_1"), SubResource("Slot_ability_2"), SubResource("Slot_movement"), SubResource("Slot_cc"), SubResource("Slot_ultimate"), SubResource("Slot_passive"), SubResource("Slot_item")])
 test_maps = PackedStringArray("res://scenes/dream_basin_world.tscn", "res://scenes/training_grounds_world.tscn")

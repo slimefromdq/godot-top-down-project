@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"nightmare_bane"
+display_name = "Nightmare's Bane"
+duration = 120.0
+stat_multipliers = Dictionary[StringName, float]({
+&"damage": 1.15,
+&"damage_taken": 0.9,
+&"move_speed": 1.05
+})
+body_tint = Color(0.75, 0.45, 1, 0.18)

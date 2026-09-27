@@ -76,6 +76,23 @@ func add_ability(ability: Ability, slot_id: StringName = &"") -> void:
 	abilities_changed.emit()
 
 
+# Take one ability out (an active item that was sold). Stops its cast and
+# any buffered press of it first.
+func remove_ability(ability: Ability) -> void:
+	if ability == null or not abilities.has(ability):
+		return
+	if current_cast == ability:
+		interrupt()
+	if _buffered == ability:
+		_buffered = null
+	if ability.is_held():
+		ability.release_hold(ability.cast_target)
+	_locks.erase(ability)
+	abilities.erase(ability)
+	ability.queue_free()
+	abilities_changed.emit()
+
+
 func remove_all() -> void:
 	interrupt()
 	for ability in abilities:

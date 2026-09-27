@@ -20,9 +20,12 @@ one and it flies to you.
   - every couple of minutes a pair of mirrored regions (both Glades, both
     Orchards ...) starts **dreaming**: it's announced a few seconds early,
     the ground tints and petals drift, and Motes pour in there for a while;
-  - the big **Dream Mote** (worth 5) appears in the Cradle every few
+  - the big **Dream Mote** (worth 10) appears in the Cradle every few
     minutes, announced with a pillar of light. Whoever carries it is shown
     to everyone, with a beam of light over them.
+  - slain **neutral objectives** burst into Motes that only the killing
+    team can grab for a few seconds: a couple from a jungle camp, a big
+    pile from the Nightmare (see below).
   - After 15 minutes, new Motes are worth double.
 - **Carrying:** you can hold up to 25; they circle you. The more you carry,
   the more the enemy sees of you on their minimap (pings, then always).
@@ -55,6 +58,37 @@ A full wake meter makes that Dreamer **stir** for 30 seconds.
   there. A finished Lullaby puts it back to sleep at 60%.
 - If time runs out with no final Mote, it settles at 80%: defending actively
   pays off more than stalling. Defenders respawn faster during a stir.
+
+## Neutral objectives
+
+Neutral monsters live around the map. They leave you alone until someone
+hits them, then fight whoever hit them last; walk them out of their leash
+(or stop hitting them for a few seconds) and they go home and heal to full.
+Every number is in the camp's `NeutralData`
+(`resources/match/neutrals/*.tres`); the full rules are in
+`docs/ITEMS_AND_SHOPS.md`.
+
+- **Jungle camps** (8 on Dream Basin, in mirrored pairs): a
+  **Sleepwalker** in each Glade and on each Stilt Ridge, a pack of three
+  **Dream Wisps** in each Tangle and Driftfield. They come back a minute or
+  so after they're cleared, and pay a little: gold and XP for the killer and
+  their team, a pinch of ultimate charge, and a Mote or two.
+- **The Nightmare** wakes once per match, at 10:00, in the middle of the
+  Cradle. Everyone is warned 30 seconds early (banner, minimap ping, an
+  off-screen arrow while it's up). It's tough and fights back with volleys
+  and a ring of bolts. The team that slays it gets a big gold and XP
+  payout, ultimate charge, **12 Motes worth 5 each** (theirs alone for 12
+  seconds), and **Nightmare's Bane** for 2 minutes: +15% damage, 10% less
+  damage taken, a little faster (teammates who are dead at the time get
+  the rest of it when they respawn).
+
+## Shops
+
+Each base has a shop stall in its spawn room. Press **B** to open the shop:
+you can buy and sell anywhere in your base (near the stall or in your spawn
+area), or from anywhere while you wait to respawn. You hold up to 6 items
+plus one **active item**, whose ability goes on **G**. See
+`docs/ITEMS_AND_SHOPS.md`.
 
 ## Spawn areas
 
@@ -198,6 +232,25 @@ match) ultimates keep their cooldowns so they can be practised.
 | `sweet_dreams_threshold` | 25.0 | Every this much banked value gives the whole team the Sweet Dreams buff. |
 | `sweet_dreams_status` | (resource | The buff; its own duration is replaced by sweet_dreams_duration. |
 | `sweet_dreams_duration` | 30.0 | As above. |
+
+### Objectives
+
+| Value | Default | What it does |
+|---|---|---|
+| `objectives_enabled` | true | Neutral camps (jungle camps and the Nightmare) spawn on the match clock. Their own numbers live in each camp's NeutralData. |
+| `objective_motes_use_late_mult` | true | Motes dropped by a slain neutral get the late-match multiplier too. |
+
+### Shop
+
+| Value | Default | What it does |
+|---|---|---|
+| `shop_catalog` | (resource) | What the shop sells (`resources/items/shop_catalog.tres`). |
+| `item_slots` | 6 | Passive items a hero can hold. |
+| `max_active_items` | 1 | Active items a hero can hold. |
+| `active_item_slot` | item | The GameRules slot an active item's ability fills (key G). |
+| `sell_refund_pct` | 0.6 | Selling refunds this share of the item's full cost. |
+| `shop_radius` | 700.0 | Heroes within this of their own Shop, or anywhere in their spawn area, are in base and can shop. |
+| `shop_while_dead` | true | Dead heroes can shop from anywhere. |
 
 ### Late match
 

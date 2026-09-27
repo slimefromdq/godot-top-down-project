@@ -138,6 +138,10 @@ For each slot in the definition's `abilities` dictionary, point at an
 | read how many Motes someone carries (show a count, scale an effect) | `MoteCarrier.find_on(actor).get_mote_count()` / `get_mote_value()` / `changed` signal | a small script |
 | knock Motes loose (Jostle) | nothing: any enemy status push or pull of at least `MatchRules.jostle_min_distance`, a carry, or an abduction (`MinigameHost.play(game, source)`) already reports `Actor.displaced(source, distance)` | none |
 | can't be jostled (Iron Will) | `StatusEffect.DISPLACEMENT_TAKEN` 0 in `stat_multipliers` | none |
+| an always-on multiplier that survives death and cleanses (an item's fire rate) | `status_component.set_persistent_multipliers(source_id, {stat: mult})` / `remove_persistent_multipliers(source_id)` | a small script |
+| faster (or slower) cooldowns | `StatusEffect.COOLDOWN_RATE` (`cooldown_rate`) in `stat_multipliers`, or persistent (items): 1.2 = 20% faster | none |
+| an ability added to a slot at runtime and taken away again | `ability_controller.add_ability(ability, slot_id)` / `remove_ability(ability)` (the active-item slot works this way) | a small script |
+| a shop item (stats, fire rate, an active ability) | not hero data: an `ItemData` in `resources/items/`, listed in the `ShopCatalog`. See `docs/ITEMS_AND_SHOPS.md` | none |
 | react to Motes going into a Dreamer (a banking buff, a delivery trick) | `Dreamer.deposit_ticked(hero, value, delivered, index)` / `deposit_finished`; find one with `Dreamer.find_for(tree, team)` | a small script |
 | a fake Mote that pops when grabbed (a lure) | `MoteDirector.spawn_mote(at)` then `mote.is_decoy = true` | a small script |
 | an ally-targeted cast that still goes with no ally (dash anyway) | `AllyTargeting.optional` (`cast_ally` is null) | none |

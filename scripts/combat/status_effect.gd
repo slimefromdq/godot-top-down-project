@@ -29,6 +29,8 @@ const MOVE_SPEED := &"move_speed"
 const FIRE_RATE := &"fire_rate"
 const DAMAGE := &"damage"
 const DAMAGE_TAKEN := &"damage_taken"
+## How fast ability cooldowns tick (1.2 = 20% faster). Items use it.
+const COOLDOWN_RATE := &"cooldown_rate"
 ## Incoming damage of one type only ("weapon" damage is PHYSICAL here).
 ## Set them with the incoming_*_multiplier fields below, or as keys in
 ## stat_multipliers. TRUE damage has no per-type multiplier.

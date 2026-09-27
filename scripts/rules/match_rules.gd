@@ -11,7 +11,7 @@ class_name MatchRules
 # F1 > Match tab edits live.
 #
 # Groups: Match, Economy, Leveling, Ultimate, Motes, Spawning, Dreamers,
-# Wake, Buffs, Late match, Cues.
+# Wake, Buffs, Objectives, Shop, Late match, Cues.
 
 const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 
@@ -174,6 +174,31 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 ## The buff; its own duration is replaced by sweet_dreams_duration.
 @export var sweet_dreams_status: StatusEffect
 @export var sweet_dreams_duration: float = 30.0
+
+@export_group("Objectives")
+## Neutral camps (jungle camps and the Nightmare) run on the match clock;
+## their own numbers live in each camp's NeutralData. Off = no camp spawns.
+@export var objectives_enabled: bool = true
+## Mote value dropped by a slain neutral is multiplied by the late-match
+## multiplier too, like every other new Mote.
+@export var objective_motes_use_late_mult: bool = true
+
+@export_group("Shop")
+## What the shop sells.
+@export var shop_catalog: ShopCatalog
+## Passive items a hero can hold.
+@export var item_slots: int = 6
+## Active items a hero can hold (each one's ability goes in active_item_slot).
+@export var max_active_items: int = 1
+## The GameRules slot an active item's ability fills.
+@export var active_item_slot: StringName = &"item"
+## Selling refunds this share of the item's full cost.
+@export_range(0.0, 1.0, 0.05) var sell_refund_pct: float = 0.6
+## Heroes within this of their own team's Shop, or anywhere in their spawn
+## area, are "in base" and can buy and sell.
+@export var shop_radius: float = 700.0
+## Dead heroes (waiting to respawn) can shop from anywhere.
+@export var shop_while_dead: bool = true
 
 @export_group("Late match")
 ## After late_match_time, new Motes spawn worth late_match_value_mult times

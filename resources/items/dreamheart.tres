@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/item_data.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Resource" path="res://resources/items/pillow_fort.tres" id="3_from"]
+
+[sub_resource type="Resource" id="Mod_0"]
+script = ExtResource("2_mod")
+stat = &"health"
+flat = 600.0
+percent = 0.1
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = &"armor"
+flat = 30.0
+percent = 0.0
+
+[sub_resource type="Resource" id="Mod_2"]
+script = ExtResource("2_mod")
+stat = &"magic_resist"
+flat = 25.0
+percent = 0.0
+
+[resource]
+script = ExtResource("1_item")
+id = &"dreamheart"
+display_name = "Dreamheart"
+description = "Beats slow and steady, even in a nightmare."
+tier = 2
+family = &"health"
+cost = 2200
+builds_from = ExtResource("3_from")
+stat_modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_0"), SubResource("Mod_1"), SubResource("Mod_2")])
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 1.03
+})
+color = Color(0.1, 0.7, 0.45, 1)
+glyph = "+++"

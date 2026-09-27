@@ -148,6 +148,8 @@ godot --headless res://tools/match/mote_test.tscn
 godot --headless res://tools/match/dreamer_test.tscn
 godot --headless res://tools/match/polish_test.tscn
 godot --headless res://tools/match/ultimate_test.tscn
+godot --headless res://tools/match/items_test.tscn
+godot --headless res://tools/match/objectives_test.tscn
 godot --headless res://tools/ai/bot_test.tscn
 godot --headless res://tools/ai/bot_nav_test.tscn
 godot --headless res://tools/ai/bot_role_test.tscn

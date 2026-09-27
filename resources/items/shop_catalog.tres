@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ShopCatalog" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/shop_catalog.gd" id="1_cat"]
+[ext_resource type="Script" path="res://scripts/items/item_data.gd" id="2_item"]
+[ext_resource type="Resource" path="res://resources/items/cozy_blanket.tres" id="3_cozy_blanket"]
+[ext_resource type="Resource" path="res://resources/items/pillow_fort.tres" id="4_pillow_fort"]
+[ext_resource type="Resource" path="res://resources/items/dreamheart.tres" id="5_dreamheart"]
+[ext_resource type="Resource" path="res://resources/items/sugar_rush.tres" id="6_sugar_rush"]
+[ext_resource type="Resource" path="res://resources/items/night_owl_espresso.tres" id="7_night_owl_espresso"]
+[ext_resource type="Resource" path="res://resources/items/insomnia_engine.tres" id="8_insomnia_engine"]
+[ext_resource type="Resource" path="res://resources/items/stardust_pouch.tres" id="9_stardust_pouch"]
+[ext_resource type="Resource" path="res://resources/items/moonlit_tome.tres" id="10_moonlit_tome"]
+[ext_resource type="Resource" path="res://resources/items/crown_of_reverie.tres" id="11_crown_of_reverie"]
+[ext_resource type="Resource" path="res://resources/items/dream_bubble.tres" id="12_dream_bubble"]
+[ext_resource type="Resource" path="res://resources/items/pocket_overdrive.tres" id="13_pocket_overdrive"]
+
+[resource]
+script = ExtResource("1_cat")
+items = Array[ExtResource("2_item")]([ExtResource("3_cozy_blanket"), ExtResource("4_pillow_fort"), ExtResource("5_dreamheart"), ExtResource("6_sugar_rush"), ExtResource("7_night_owl_espresso"), ExtResource("8_insomnia_engine"), ExtResource("9_stardust_pouch"), ExtResource("10_moonlit_tome"), ExtResource("11_crown_of_reverie"), ExtResource("12_dream_bubble"), ExtResource("13_pocket_overdrive")])
+families = Dictionary[StringName, String]({
+&"health": "Vitality",
+&"fire_rate": "Swiftness",
+&"magic": "Reverie",
+&"active": "Active"
+})
