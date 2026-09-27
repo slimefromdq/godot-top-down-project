@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[node name="ArmFront" type="Polygon2D" unique_id=1157395114]
+color = Color(0.93, 0.97, 0.96, 1)
+polygon = PackedVector2Array(-4, 0, 4, 0, 4, 24, -4, 24)
+
+[node name="Sword" type="Polygon2D" parent="." unique_id=1937108040]
+position = Vector2(0, 24)
+color = Color(0.3, 0.85, 0.85, 1)
+polygon = PackedVector2Array(-3, 0, 3, 0, 3, 44, 0, 52, -3, 44)

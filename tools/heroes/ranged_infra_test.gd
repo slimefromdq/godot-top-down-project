@@ -48,6 +48,7 @@ func _run() -> void:
 	await _test_parry()
 	await _test_look_ahead_pierce_and_launch()
 	await _test_containment_ring()
+	await _test_aim_part()
 	_test_cooldown_api()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
@@ -1022,6 +1023,55 @@ func _fire_until_empty(h: Hero, slot: StringName, timeout: float) -> void:
 			return
 		h.request_slot(slot, h.aim_point)
 		await get_tree().physics_frame
+
+
+# --- Live aim part (VisualProfile.aim_part) ---------------------------------
+
+func _test_aim_part() -> void:
+	var visuals := VisualsComponent.find_on(hero)
+	var part := visuals.aim_part
+	_check("test hero has a live aim part from its baked rig", part != null and visuals.body is AnimatedSprite2D, "")
+	if part == null:
+		return
+	var profile := visuals.profile
+	var rest := Vector2.from_angle(deg_to_rad(profile.aim_part_rest_angle))
+	var saved: Vector2 = hero.aim_direction
+	for aim: Vector2 in [Vector2.RIGHT, Vector2.LEFT, Vector2(-1, -1).normalized(), Vector2(0.3, 1).normalized()]:
+		hero.aim_direction = aim
+		await _frames(2)
+		var points: Vector2 = part.global_transform.basis_xform(rest).normalized()
+		_check("aim part points along aim %s" % aim, points.dot(aim) > 0.99, "points %s" % points)
+		var holder := part.get_parent() as Node2D
+		var want_x: float = profile.aim_part_pivot.x * profile.body_scale.x * (-1.0 if aim.x < 0.0 else 1.0)
+		_check("aim part pivot mirrors with facing %s" % aim,
+				is_equal_approx(holder.position.x - visuals.body.position.x, want_x), str(holder.position))
+	# The pivot rides the baked frame (idle bob at the shoulder).
+	var sprite := visuals.body as AnimatedSprite2D
+	hero.aim_direction = Vector2.RIGHT
+	sprite.play(&"idle")
+	sprite.pause()
+	var rise := {}
+	for f in [0, 6]:
+		sprite.frame = f
+		await _frames(1)
+		rise[f] = (part.get_parent() as Node2D).position.y
+	var want: float = RigBaker.aim_pivot_offset(sprite.sprite_frames, &"idle", 6).y * profile.body_scale.y
+	_check("aim pivot follows the idle bob frame by frame", want != 0.0
+			and is_equal_approx(rise[6] - rise[0], want), "%s want %.2f" % [rise, want])
+	sprite.play()
+	# Aiming up (away from the camera) tucks the arm behind the body.
+	var order := {}
+	for aim: Vector2 in [Vector2.RIGHT, Vector2(0.2, -1).normalized(), Vector2(-1, -0.3).normalized(), Vector2.DOWN]:
+		hero.aim_direction = aim
+		await _frames(1)
+		var drawn_behind: bool = part.get_parent().get_index() < visuals.body.get_index()
+		order[aim] = drawn_behind == visuals.is_aim_part_behind() and drawn_behind
+	_check("aim part draws behind the body only when aiming up",
+			not order[Vector2.RIGHT] and order[Vector2(0.2, -1).normalized()]
+			and not order[Vector2(-1, -0.3).normalized()] and not order[Vector2.DOWN], str(order))
+	_check("aim part shares the body's flash/tint material",
+			part.get_parent().material == visuals.body.material and part.use_parent_material, "")
+	hero.aim_direction = saved
 
 
 func _check(label: String, ok: bool, detail: String) -> void:

@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="9_y8w1b"]
 [ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="10_wh6ak"]
 [ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="11_jeokd"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/ranged_test_visuals.tres" id="12_visuals"]
 
 [sub_resource type="Resource" id="Resource_88rmx"]
 script = ExtResource("10_wh6ak")
@@ -61,3 +62,4 @@ abilities = Dictionary[StringName, ExtResource("1_aij2k")]({
 &"ultimate": ExtResource("7_x5xpq")
 })
 feel_profile = ExtResource("8_kj483")
+visual_profile = ExtResource("12_visuals")
