@@ -1,5 +1,9 @@
 # How to add a hero
 
+After adding a hero, try it as a bot through F1 > Bots. Check that it can
+move, use its slots, and take part in a match; bot control reads the hero's
+`AbilityData` and has no hero-specific script.
+
 A hero is **data plus a few small scripts**. The systems (health, damage,
 hitboxes, projectiles, statuses, the cast state machine, movement, game feel,
 HUD, debug tools, balance export) are shared and never need editing for a new

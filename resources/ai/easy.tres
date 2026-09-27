@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BotSkill" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/bot_skill.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+reaction_time = 0.45
+aim_error_degrees = 10.0
+memory_time = 0.5
+dodge_chance = 0.2
+ability_timing_accuracy = 0.35

@@ -30,6 +30,7 @@ const SPAWNED_GROUP := &"debug_spawned_dummies"
 const PLAYER_LISTENERS := &"player_listeners"
 const AIRLOCK := "res://resources/minigames/airlock.tres"
 const MATCH_HUD := "res://scenes/hud/match_hud.tscn"
+const BOT_GROUP := &"debug_bots"
 
 var meter: DamageMeter
 
@@ -56,6 +57,9 @@ var _sight_lines: SightLinesOverlay
 # Match > Mote spawns on the M map view.
 var mote_overlay_enabled: bool = false
 var _mote_overlay: MoteSpawnOverlay
+var _bot_difficulty: int = 1
+var bot_overlay_enabled: bool = false
+var _bot_overlay: BotOverlay
 
 
 func _ready() -> void:
@@ -85,6 +89,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	_update_sight_lines()
 	_update_mote_overlay()
+	_update_bot_overlay()
 	_inspect_timer -= delta
 	if _inspect_timer <= 0.0:
 		_inspect_timer = INSPECT_INTERVAL
@@ -371,6 +376,23 @@ func _update_mote_overlay() -> void:
 		_mote_overlay = null
 
 
+func set_bot_overlay_enabled(enabled: bool) -> void:
+	bot_overlay_enabled = enabled
+	_update_bot_overlay()
+
+
+func _update_bot_overlay() -> void:
+	var scene := get_tree().current_scene
+	var wanted := bot_overlay_enabled and scene != null
+	if wanted and not is_instance_valid(_bot_overlay):
+		_bot_overlay = BotOverlay.new()
+		_bot_overlay.name = "BotOverlay"
+		scene.add_child(_bot_overlay)
+	elif not wanted and is_instance_valid(_bot_overlay):
+		_bot_overlay.queue_free()
+		_bot_overlay = null
+
+
 # Replace the local player with another hero, keeping position, team and level.
 func swap_player(definition: HeroDefinition) -> Hero:
 	var old := get_player()
@@ -522,7 +544,107 @@ func rebuild_panel() -> void:
 	_tabs.add_child(_scroll("Dummies", _dummies_tab()))
 	_tabs.add_child(_scroll("Feel", _feel_tab(hero)))
 	_tabs.add_child(_scroll("Match", _match_tab(hero)))
+	_tabs.add_child(_scroll("Bots", _bots_tab()))
 	_tabs.add_child(_scroll("Tools", _tools_tab()))
+
+
+func fill_with_bots(difficulty: int = 1) -> int:
+	var manager := get_match()
+	if manager == null:
+		manager = start_match_here()
+	var definitions := HeroScaffold.find_definitions()
+	definitions = definitions.filter(func(definition: HeroDefinition):
+		return definition.hero_id != &"template" and definition.validate().is_empty())
+	definitions.sort_custom(func(a: HeroDefinition, b: HeroDefinition):
+		return str(a.hero_id) < str(b.hero_id))
+	if definitions.is_empty():
+		return 0
+	var skill_paths := ["res://resources/ai/easy.tres", "res://resources/ai/normal.tres", "res://resources/ai/hard.tres"]
+	var skill: BotSkill = load(skill_paths[clampi(difficulty, 0, skill_paths.size() - 1)])
+	var added := 0
+	for team in MatchManager.TEAMS:
+		var roster := manager.get_roster(team)
+		var used: Array[StringName] = []
+		var has_tank := false
+		for member in roster:
+			if member.definition != null:
+				used.append(member.definition.hero_id)
+				has_tank = has_tank or member.definition.role == HeroDefinition.Role.TANK
+		while roster.size() < BotRules.current().team_size:
+			var choice: HeroDefinition
+			for definition in definitions:
+				if definition.hero_id in used:
+					continue
+				if not has_tank and definition.role != HeroDefinition.Role.TANK:
+					continue
+				choice = definition
+				break
+			if choice == null:
+				for definition in definitions:
+					if definition.hero_id not in used:
+						choice = definition
+						break
+			if choice == null:
+				choice = definitions[roster.size() % definitions.size()]
+			var scene: PackedScene = choice.scene_override if choice.scene_override != null else load(HERO_BASE)
+			var bot: Hero = scene.instantiate()
+			bot.definition = choice
+			bot.team = team
+			bot.bot_controlled = true
+			bot.bot_skill = skill
+			bot.bot_seed = 1 + added
+			bot.name = "Bot_%s_%d" % [team, roster.size() + 1]
+			bot.add_to_group(BOT_GROUP)
+			get_tree().current_scene.add_child(bot)
+			var angle := TAU * float(roster.size()) / maxf(BotRules.current().team_size, 1)
+			var map := get_tree().get_first_node_in_group(&"game_map") as GameMap
+			var spawn := Vector2.ZERO
+			if map != null:
+				var points := map.get_spawn_points(team)
+				if not points.is_empty():
+					spawn = points[roster.size() % points.size()].global_position
+			bot.global_position = spawn \
+				+ Vector2.RIGHT.rotated(angle) * BotRules.current().spawn_spacing
+			roster.append(bot)
+			used.append(choice.hero_id)
+			has_tank = has_tank or choice.role == HeroDefinition.Role.TANK
+			added += 1
+	return added
+
+
+func clear_bots() -> void:
+	for node in get_tree().get_nodes_in_group(BOT_GROUP):
+		if is_instance_valid(node):
+			node.queue_free()
+
+
+func _bots_tab() -> Control:
+	var box := VBoxContainer.new()
+	box.add_child(_label("Fill both teams to 6 for match playtesting.", 15))
+	var difficulty := OptionButton.new()
+	for label in ["Easy", "Normal", "Hard"]:
+		difficulty.add_item(label)
+	difficulty.selected = _bot_difficulty
+	var skill_paths := ["res://resources/ai/easy.tres", "res://resources/ai/normal.tres", "res://resources/ai/hard.tres"]
+	var skill_editor := PropertyEditor.new()
+	skill_editor.edit(load(skill_paths[_bot_difficulty]))
+	difficulty.item_selected.connect(func(index: int):
+		_bot_difficulty = index
+		skill_editor.edit(load(skill_paths[index])))
+	box.add_child(difficulty)
+	var result := _label("")
+	box.add_child(_button("Fill with bots", func(): result.text = "Added %d bots" % fill_with_bots(_bot_difficulty)))
+	box.add_child(_button("Remove bots", func():
+		clear_bots()
+		result.text = "Bots removed"))
+	box.add_child(result)
+	box.add_child(_label("BotRules (live)", 15))
+	var editor := PropertyEditor.new()
+	editor.edit(BotRules.current())
+	box.add_child(editor)
+	box.add_child(_label("BotSkill (selected difficulty)", 15))
+	box.add_child(skill_editor)
+	return box
 
 
 func _hero_tab(hero: Hero) -> Control:
@@ -789,6 +911,7 @@ func _tools_tab() -> Control:
 	box.add_child(_check("Stat inspector (F2)", _inspector.visible, func(on): _inspector.visible = on))
 	box.add_child(_check("Damage meter (F4)", _meter_panel.visible, func(on): _meter_panel.visible = on))
 	box.add_child(_check("Sight lines (green seen, red blocked)", sight_lines_enabled, set_sight_lines_enabled))
+	box.add_child(_check("Bot overlay (paths, goals, targets)", bot_overlay_enabled, set_bot_overlay_enabled))
 	box.add_child(_button("Airlock practice (Sam's minigame)", func(): result.text = start_airlock_practice()))
 	box.add_child(_label("Maps (F3 cycles)", 15))
 	for path in GameRules.current().test_maps:

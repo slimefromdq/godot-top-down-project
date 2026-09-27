@@ -72,6 +72,7 @@ static func spawn(context: Node, zone_data: GroundZoneData, at: Vector2, dir: Ve
 
 
 func _ready() -> void:
+	add_to_group(&"bot_zones")
 	if data.visual_scene != null:
 		var visual := data.visual_scene.instantiate()
 		add_child(visual)
