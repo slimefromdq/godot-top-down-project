@@ -33,7 +33,7 @@ values.
   * Remove the ones you spawned.
   * A toggle makes every dummy fight back.
 * **Feel**
-  * Global comfort settings: shake intensity, trauma cap, shake speed, hitstop on/off and scale, nudge scale, flash on/off.
+  * Global comfort settings: shake intensity, trauma cap, shake speed, hitstop on/off and scale, nudge scale, flash on/off, announcer text on/off.
   * The hero's FeelProfile, editable live.
 * **Match** (maps with a `MatchManager`: Dream Basin; other maps get a
   "Start a match here" button)
@@ -145,6 +145,7 @@ godot --headless res://tools/dream_basin/smoke_test.tscn
 godot --headless res://tools/match/match_test.tscn
 godot --headless res://tools/match/mote_test.tscn
 godot --headless res://tools/match/dreamer_test.tscn
+godot --headless res://tools/match/polish_test.tscn
 ```
 
 Each exits with the number of failed checks (0 = all passed).
@@ -158,3 +159,6 @@ and 10, measured in-engine against a dummy with no resists
 `tools/match/capture_match.tscn` does the same for the match HUD, the F1
 Match tab, Motes (loose, carried, a dreaming zone, the spawn overlay) and
 the Dreamers (asleep with the wake meters, stirring with a Lullaby).
+`tools/match/capture_objective.tscn -- <dir> <prefix>` saves the objective's
+before/after set: an idle Dreamer, a stirring Dreamer, a full Mote stack,
+the Dream Mote telegraph and the HUD during a stir.

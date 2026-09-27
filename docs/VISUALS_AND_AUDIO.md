@@ -108,35 +108,86 @@ The match objective isn't an actor, so its cues live in two match-wide
 profiles, `MatchRules.cue_visuals` and `cue_audio`
 (`resources/match/match_visuals.tres`, `match_audio.tres`), played with
 `MatchManager.play_world_cue(from, cue, context)`. A hero cue (`level_up`)
-uses the hero's own profile entry instead when it has one. All placeholders
-until M4.
+uses the hero's own profile entry instead when it has one. A world cue's
+VisualCue `screen_shake` reaches the local camera only when it happened
+near the screen (and ShakeCamera applies the shake settings). Its sound
+plays once per pitch in `context.chord` if given (a deposit's closing
+chord), else at `context.pitch`. The chime pitches (`MatchRules.chime_scale`,
+a major pentatonic over two octaves via `chime_pitch(n)`) and the two chords
+(`bank_chord`, `deliver_chord`, brighter) are in MatchRules > Cues.
 
 | Cue | When | Context |
 |---|---|---|
 | `level_up` | A hero gains a level (MatchManager) | level |
 | `mote_spawn` / `dream_mote_spawn` | A Mote / the Dream Mote appears | position |
 | `dream_mote_warning` | The Dream Mote is coming (ground telegraph) | position, radius, duration |
-| `mote_pickup` | A Mote attaches to its carrier | count, pitch (rises with the stack) |
-| `mote_drop` | A jostled Mote pops out | position |
+| `mote_pickup` | A Mote attaches to its carrier | count, pitch (up the pentatonic scale with the stack) |
+| `mote_drop` | Jostled Motes pop out (a "boing") | position, count |
 | `mote_burst` | A carrier died: every Mote bursts out | count, radius |
 | `mote_fade` | A dropped Mote ran out of time | position |
 | `mote_decoy_pop` | A decoy was grabbed | source (who grabbed it) |
 | `zone_start` | A dreaming zone pair starts | position (one half) |
-| `deposit_tick` | One Mote goes into a Dreamer | source (depositor), index (1, 2, 3 ... within the visit), pitch (rises with index), delivered |
-| `bank_complete` / `deliver_complete` | A visit to your own / the enemy's Dreamer ends having deposited | source, total |
+| `deposit_tick` | One Mote goes into a Dreamer | source (depositor), index (1, 2, 3 ... within the visit), pitch (up the pentatonic scale), delivered, target_position, team |
+| `bank_complete` / `deliver_complete` | A visit to your own / the enemy's Dreamer ends having deposited | source, total, chord (bank: resolving; deliver: brighter) |
 | `sweet_dreams` | A team earns the Sweet Dreams buff | position (their Dreamer) |
 | `wake_quarter` | A wake meter passes 25 / 50 / 75% | mark |
 | `stir_start` | A Dreamer starts stirring | duration |
 | `lullaby_tick` | Once a second while a Lullaby fills | pct |
 | `settle` | A stir ends without a win | how (`lullaby` / `timeout`) |
 | `wake` | A Dreamer wakes: the match is won | position |
+| `dreamer_mumble` | A sleeping Dreamer mumbles now and then (sound) | position |
+| `gold_gain` | The local player's deposit visit ends: floating "+gold" at them | text, color |
+| `banner` / `banner_major` | An announcer banner appears (sound only; `banner_major` for a stir) | |
 
-The Mote's body is `MoteData.look_scene` (`scenes/match/mote_look.tscn`, a
-procedural dream-bug); carried Motes are drawn by `MoteOrbit` with the same
-look. Dreaming zones tint themselves (`DreamZone`). The Dreamer's body is
-`DreamerData.look_scene` (`scenes/match/dreamer_look.tscn`: a sleeping blob,
-Zzz, a sun or moon badge per team, its rings and wake arc); the HUD's
-`WakeMeter` draws each team's meter.
+Effect scenes made for these (`effects/match/`, scripts in
+`scripts/match/fx/`): `sparkle_ring` (spawn / pickup / deposit / Sweet
+Dreams), `bubble_pop` (fades, decoys), `light_pillar` (the Dream Mote
+telegraph; context duration, radius). `DreamShimmer` is the full-screen
+transition into the victory screen.
+
+**Motes** (`MoteLook`): glossy bubbles with a turning shine and a rim; the
+Mote squashes through `get_look_squash()` (a wobbly pop when it spawns or
+lands, a stretch when pulled). Dropped ones blink faster and faster, then
+pop. **Carried** (`MoteOrbit`): up to three counter-turning rings, soft
+sparkle trails, the newest squashes as it arrives, a full stack gets rainbow
+rims, and carrying the Dream Mote raises a beam of light over the hero. The
+**Dream Mote** has a slow iridescent swirl. **Dreaming zones** (`DreamZone`)
+fade in over the warning, then tint the ground, shimmer at the edges and
+drift petals; they fade out when they end.
+
+**Dreamers** (`DreamerLook`): breathe (one breath every ~3 s, faster as they
+wake), blow Zzz bubbles, and now and then twitch, turn over or mumble. At
+25 / 50 / 75% the breath quickens, the eyes flutter, the Zzz thin out and,
+past 75%, the ring trembles. Stirring: glowing eyes, rocking, a ground ripple
+and a light pulse each second of the countdown. The Lullaby drifts moons and
+stars down onto it; settling is a big exhale and closed eyes; waking opens
+the eyes wide. Each deposited Mote arcs into its mouth: a gulp and a glow
+when banked, a flinch and a burst of the depositor's colour when delivered.
+The body fades while a hero stands behind it (the rings never do).
+
+**The win**: when a Dreamer wakes, `world.gd` plays a slow-motion beat
+(`wake_slowmo_scale` / `_time`), one hit-stop frame (skipped with hitstop off,
+scaled by `hitstop_scale`), then the `DreamShimmer`, then the victory screen.
+
+**Announcer** (`scenes/hud/announcer.gd`, added by the match HUD): glossy
+banners that slide in at top centre, queue, and cut each other short by
+priority (a stir interrupts a zone). Each plays `banner` / `banner_major`.
+It also shows toasts for your own banks and deliveries (with the gold) and
+pings the minimap for a stir and a Dream Mote. **FeelSettings.announcer_text**
+off hides the text and keeps the sounds.
+
+**Minimap**: a Dream Mote star, Dreamer rings that fill with the wake meter
+(sun or moon inside, flashing while stirring), tinted dreaming zones, carrier
+pips, and big pulsing pings for a stir or a Dream Mote. Objectives draw
+their own icon with `draw_minimap_icon(canvas, point, viewer_team)`; areas
+join `minimap_areas` with `get_minimap_polygon()` / `get_presence()`.
+
+**Wake meters** (`WakeMeter`): glossy tubes that ease toward the value, with
+a highlight sweeping along the fill; from 75% they glow and crack.
+
+The Mote's body is `MoteData.look_scene` (`scenes/match/mote_look.tscn`) and
+the Dreamer's is `DreamerData.look_scene` (`scenes/match/dreamer_look.tscn`):
+swap either for a sprite scene and gameplay doesn't change.
 
 Every cue also gets `position`, `direction`, `source` and `visuals` filled in
 automatically. Custom scripts can trigger anything with
@@ -233,8 +284,28 @@ Music keeps playing while the game is paused. Put music files in
 `audio/music/` and enable **Loop** in the file's Import settings. The manager
 also restarts tracks that end.
 
+### Layered (adaptive) music
+
+Alongside the priority requests, `AudioManager` can play a `MusicLayerSet`:
+synced stems (`MusicLayer`: a stream, the `tier` it joins at, a volume)
+that all start together and loop, faded in and out by volume.
+
+- `AudioManager.play_layers(set)`, `set_music_tier(tier)` (each stem plays
+  while tier >= its own; crossfades over the set's `crossfade_time`),
+  `play_sting(stream)`, `stop_layers()`.
+- The match's `MatchMusic` (a child of the MatchManager) picks the tier:
+  CALM, TENSE (a wake meter at 50%+, or a Dream Mote on the map), STIRRING
+  (any Dreamer stirring), and on the win fades the stems and plays the
+  set's `victory_sting`. It rises at once and falls one tier at a time, at
+  most once per `min_seconds_per_drop` (8 s).
+- `resources/match/match_music.tres` has six empty stems: with no streams it
+  all runs silently. What each stem should be is in `docs/MUSIC_STEMS.md`.
+
 ## Accessibility hooks
 
-- Screen shake: `ShakeCamera.shake_strength` (0 turns it off).
+- Screen shake: `ShakeCamera.shake_strength` (0 turns it off). Every match
+  shake and the wake's hit-stop go through the same settings.
+- Announcer banners: `FeelSettings.announcer_text` hides the text (sounds
+  stay).
 - Damage numbers: VisualProfile > Feedback > Show Damage Numbers.
 - Volume: the `Music` and `SFX` buses.

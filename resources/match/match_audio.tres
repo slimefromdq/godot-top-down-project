@@ -26,9 +26,9 @@ min_interval = 0.04
 [sub_resource type="Resource" id="Sound_mote_drop"]
 script = ExtResource("1_sound")
 streams = Array[AudioStream]([ExtResource("5_dash")])
-volume_db = -6.0
-pitch_min = 1.4
-pitch_max = 1.6
+volume_db = -4.0
+pitch_min = 1.8
+pitch_max = 2.0
 
 [sub_resource type="Resource" id="Sound_mote_burst"]
 script = ExtResource("1_sound")
@@ -137,13 +137,41 @@ pitch_min = 0.4
 pitch_max = 0.4
 positional = false
 
+[sub_resource type="Resource" id="Sound_dreamer_mumble"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("4_chime")])
+volume_db = -10.0
+pitch_min = 0.45
+pitch_max = 0.55
+
+[sub_resource type="Resource" id="Sound_banner"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("4_chime")])
+volume_db = -6.0
+pitch_min = 1.0
+pitch_max = 1.0
+positional = false
+min_interval = 0.1
+
+[sub_resource type="Resource" id="Sound_banner_major"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("2_wav")])
+volume_db = -3.0
+pitch_min = 0.7
+pitch_max = 0.7
+positional = false
+min_interval = 0.1
+
 [resource]
 script = ExtResource("3_profile")
 cues = Dictionary[StringName, ExtResource("1_sound")]({
 &"bank_complete": SubResource("Sound_bank_complete"),
 &"deliver_complete": SubResource("Sound_deliver_complete"),
 &"deposit_tick": SubResource("Sound_deposit_tick"),
+&"banner": SubResource("Sound_banner"),
+&"banner_major": SubResource("Sound_banner_major"),
 &"dream_mote_spawn": SubResource("Sound_dream_mote_spawn"),
+&"dreamer_mumble": SubResource("Sound_dreamer_mumble"),
 &"dream_mote_warning": SubResource("Sound_dream_mote_warning"),
 &"level_up": SubResource("Sound_level_up"),
 &"lullaby_tick": SubResource("Sound_lullaby_tick"),

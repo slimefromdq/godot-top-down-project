@@ -35,6 +35,7 @@ signal stir_started(team: StringName)
 signal lullaby_changed(team: StringName, pct: float)
 signal settled(team: StringName, how: StringName)
 signal woke(team: StringName)
+signal wake_milestone(team: StringName, mark: float)
 
 enum State { WARMUP, PLAYING, ENDED }
 
@@ -116,6 +117,10 @@ func _ready() -> void:
 		var director := MoteDirector.new()
 		director.name = "MoteDirector"
 		add_child(director)
+	if get_node_or_null(^"MatchMusic") == null:
+		var music := MatchMusic.new()
+		music.name = "MatchMusic"
+		add_child(music)
 	get_tree().node_added.connect(_on_node_added)
 	for node in get_tree().get_nodes_in_group(&"heroes"):
 		_try_register(node)
@@ -365,8 +370,24 @@ static func play_world_cue(from: Node, cue: StringName, context: Dictionary = {}
 			effect.position += definition.offset
 			effect.scale *= definition.scale
 			effect.modulate *= definition.tint
+		_shake_near(from, at, definition.screen_shake)
 	if r.cue_audio != null:
-		AudioManager.play_sfx(r.cue_audio.cues.get(cue), at, context.get("pitch", 1.0))
+		# context.chord: several pitches at once (a deposit's closing chord).
+		var pitches: Array = Array(context.get("chord", [context.get("pitch", 1.0)]))
+		for pitch in pitches:
+			AudioManager.play_sfx(r.cue_audio.cues.get(cue), at, pitch)
+
+
+# A world cue's screen shake reaches the local camera only when it happened
+# on screen (roughly), and ShakeCamera applies the player's shake settings.
+static func _shake_near(from: Node, at: Vector2, amount: float) -> void:
+	if amount <= 0.0:
+		return
+	var camera := from.get_viewport().get_camera_2d()
+	if camera == null or not camera.has_method(&"add_trauma"):
+		return
+	if camera.get_screen_center_position().distance_to(at) < 1200.0:
+		camera.add_trauma(amount)
 
 
 # A match cue on a hero: its own profile's entry if it has one, else the
@@ -402,6 +423,7 @@ func register_dreamer(dreamer: Dreamer) -> void:
 	dreamer.lullaby_changed.connect(func(pct): lullaby_changed.emit(t, pct))
 	dreamer.settled.connect(func(how): settled.emit(t, how))
 	dreamer.woke.connect(func(_attackers): woke.emit(t))
+	dreamer.wake_milestone.connect(func(mark): wake_milestone.emit(t, mark))
 
 
 func get_dreamer(team: StringName) -> Dreamer:

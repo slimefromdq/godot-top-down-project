@@ -25,6 +25,8 @@ const GROUP := &"motes"
 const SCENE := "res://scenes/match/mote.tscn"
 const LOOK_RANGE := 500.0
 const LAND_TIME := 0.35
+## Cosmetic: how long the spawn / landing pop wobbles.
+const POP_TIME := 0.45
 
 enum State { IDLE, LANDING, MAGNET }
 
@@ -99,6 +101,23 @@ func _ready() -> void:
 		director.on_mote_appeared(self)
 
 
+## The minimap's icon: a star for the Dream Mote, a small dot otherwise.
+func draw_minimap_icon(canvas: CanvasItem, at: Vector2, _viewer_team: StringName) -> void:
+	if is_dream():
+		var spin := Time.get_ticks_msec() / 600.0
+		var points := PackedVector2Array()
+		for i in 10:
+			points.append(at + Vector2.from_angle(spin + TAU * i / 10.0) * (9.0 if i % 2 == 0 else 4.0))
+		canvas.draw_colored_polygon(points, Color.BLACK)
+		var inner := PackedVector2Array()
+		for p in points:
+			inner.append(at + (p - at) * 0.78)
+		canvas.draw_colored_polygon(inner, Color.from_hsv(fmod(spin * 0.1, 1.0), 0.3, 1.0))
+	else:
+		canvas.draw_circle(at, 2.8, Color.BLACK)
+		canvas.draw_circle(at, 2.0, Color("fde047"))
+
+
 func is_dream() -> bool:
 	return data != null and data.is_dream
 
@@ -157,6 +176,22 @@ func _process(_delta: float) -> void:
 # Cosmetic, for the look scene.
 func get_look_direction() -> Vector2:
 	return _look
+
+
+# Cosmetic, for the look scene: a squash-and-stretch. Spawning (or landing)
+# grows it in with a wobbly pop; a magnet pull stretches it toward the hero.
+func get_look_squash() -> Vector2:
+	match state:
+		State.MAGNET:
+			var k := minf(_move_t, 1.0)
+			return Vector2(1.0 - 0.25 * k, 1.0 + 0.3 * k)
+		State.LANDING:
+			return Vector2(0.9, 1.12)
+	if age < POP_TIME:
+		var grow := minf(age / 0.12, 1.0)
+		var wobble := 0.35 * sin(age * 22.0) * exp(-age * 9.0)
+		return Vector2(grow * (1.0 + wobble), grow * (1.0 - wobble))
+	return Vector2.ONE
 
 
 func get_look_alpha() -> float:

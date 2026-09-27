@@ -275,14 +275,14 @@ func _begin_warning() -> void:
 		return
 	_zone_pair = choices.pick_random()
 	_zone_phase = DreamZone.ZoneState.WARNING
-	_set_pair_state(DreamZone.ZoneState.WARNING)
+	_set_pair_state(DreamZone.ZoneState.WARNING, maxf(_next_zone_time - get_clock(), 0.1))
 	zone_warning.emit(_zone_pair, _pair_name(), maxf(_next_zone_time - get_clock(), 0.0))
 
 
-func _set_pair_state(state: DreamZone.ZoneState) -> void:
+func _set_pair_state(state: DreamZone.ZoneState, fade_in: float = 1.0) -> void:
 	_zone_phase = state
 	for zone in _pair_zones():
-		zone.set_zone_state(state)
+		zone.set_zone_state(state, fade_in)
 
 
 func _pair_zones() -> Array:

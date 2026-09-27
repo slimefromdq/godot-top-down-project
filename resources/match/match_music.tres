@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="MusicLayerSet" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/music_layer_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scripts/audio/music_layer.gd" id="2_layer"]
+
+[sub_resource type="Resource" id="Layer_calm_bed"]
+script = ExtResource("2_layer")
+layer_name = "calm_bed"
+
+[sub_resource type="Resource" id="Layer_calm_melody"]
+script = ExtResource("2_layer")
+layer_name = "calm_melody"
+
+[sub_resource type="Resource" id="Layer_tense_drive"]
+script = ExtResource("2_layer")
+layer_name = "tense_drive"
+tier = 1
+
+[sub_resource type="Resource" id="Layer_tense_counter"]
+script = ExtResource("2_layer")
+layer_name = "tense_counter"
+tier = 1
+
+[sub_resource type="Resource" id="Layer_stir_full"]
+script = ExtResource("2_layer")
+layer_name = "stir_full"
+tier = 2
+
+[sub_resource type="Resource" id="Layer_stir_pulse"]
+script = ExtResource("2_layer")
+layer_name = "stir_heartbeat"
+tier = 2
+
+[resource]
+script = ExtResource("1_set")
+layers = Array[ExtResource("2_layer")]([SubResource("Layer_calm_bed"), SubResource("Layer_calm_melody"), SubResource("Layer_tense_drive"), SubResource("Layer_tense_counter"), SubResource("Layer_stir_full"), SubResource("Layer_stir_pulse")])

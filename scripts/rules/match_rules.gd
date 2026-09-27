@@ -151,6 +151,13 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 ## the same cue name plays its own instead.
 @export var cue_visuals: VisualProfile
 @export var cue_audio: AudioProfile
+## Cosmetic pitch steps (a major pentatonic): Mote pickups and deposit ticks
+## climb it, an octave higher on the second pass.
+@export var chime_scale: PackedFloat32Array = PackedFloat32Array([1.0, 1.125, 1.25, 1.5, 1.667])
+## Pitches played together when a deposit visit ends: a resolving chord for
+## banking, a brighter one for a delivery.
+@export var bank_chord: PackedFloat32Array = PackedFloat32Array([1.0, 1.25, 1.5])
+@export var deliver_chord: PackedFloat32Array = PackedFloat32Array([1.5, 1.875, 2.25, 3.0])
 
 static var _current: MatchRules
 
@@ -195,6 +202,15 @@ func reveal_interval_for(value: int) -> float:
 ## How many Motes a jostle knocks loose from a stack of `count`.
 func jostle_drop_count(count: int) -> int:
 	return mini(count, maxi(1, ceili(count * jostle_drop_fraction)))
+
+
+## The n-th chime (1 = first) up the pentatonic scale, over two octaves,
+## then round again.
+func chime_pitch(n: int) -> float:
+	if chime_scale.is_empty():
+		return 1.0
+	var i := maxi(n - 1, 0) % (chime_scale.size() * 2)
+	return chime_scale[i % chime_scale.size()] * (2.0 if i >= chime_scale.size() else 1.0)
 
 
 func respawn_time(level: int) -> float:

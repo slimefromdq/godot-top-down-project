@@ -44,6 +44,8 @@ signal deposit_ticked(hero: Hero, value: int, delivered: bool, index: int)
 ## A visit that deposited something ended. total = value deposited.
 signal deposit_finished(hero: Hero, total: int, delivered: bool)
 signal sweet_changed(value: float)
+## The wake meter passed 25 / 50 / 75% (mark 0.25, 0.5, 0.75).
+signal wake_milestone(mark: float)
 signal sweet_dreams_granted
 
 enum State { SLEEPING, STIRRING }
@@ -68,6 +70,8 @@ var stir_left: float = 0.0
 var grace_left: float = 0.0
 ## Minimap: a bigger diamond in the team's colour (`team`).
 var minimap_icon_scale: float = 1.6
+## Set when it wakes: the team that woke it (the winners).
+var woken_by: StringName = &""
 
 var _visits: Dictionary = {}    # Hero -> {timer, gap, index, total}
 var _lullaby_cue_left: float = 0.0
@@ -176,8 +180,10 @@ func _end_visit(hero: Hero) -> void:
 		return
 	var delivered := hero.team != team
 	deposit_finished.emit(hero, int(visit.total), delivered)
+	var rules := get_rules()
 	MatchManager.play_world_cue(self, &"deliver_complete" if delivered else &"bank_complete",
-		{"position": global_position, "source": hero, "total": int(visit.total)})
+		{"position": global_position, "source": hero, "total": int(visit.total),
+		"chord": rules.deliver_chord if delivered else rules.bank_chord})
 
 
 func _deposit_one(manager: MatchManager, hero: Hero, carrier: MoteCarrier, visit: Dictionary) -> void:
@@ -195,7 +201,8 @@ func _deposit_one(manager: MatchManager, hero: Hero, carrier: MoteCarrier, visit
 	manager.grant_actor(hero, gold * rules.depositor_bonus_pct, xp * rules.depositor_bonus_pct, &"depositor_bonus")
 	deposit_ticked.emit(hero, value, delivered, int(visit.index))
 	MatchManager.play_world_cue(self, &"deposit_tick", {"position": hero.global_position, "source": hero,
-		"index": visit.index, "pitch": 1.0 + 0.06 * mini(int(visit.index) - 1, 12), "delivered": delivered})
+		"index": visit.index, "pitch": rules.chime_pitch(int(visit.index)), "delivered": delivered,
+		"target_position": global_position, "team": hero.team})
 	if delivered:
 		_on_delivered(manager, hero, value)
 	else:
@@ -206,6 +213,7 @@ func _on_delivered(manager: MatchManager, hero: Hero, value: int) -> void:
 	if is_stirring():
 		# Past the grace (deposits are refused during it): it wakes.
 		state = State.SLEEPING
+		woken_by = hero.team
 		woke.emit(hero.team)
 		MatchManager.play_world_cue(self, &"wake", {"position": global_position})
 		manager.set_respawn_multiplier(team, 1.0)
@@ -251,6 +259,7 @@ func set_wake(value: float) -> void:
 	for mark in [0.25, 0.5, 0.75]:
 		if before < mark and after >= mark:
 			MatchManager.play_world_cue(self, &"wake_quarter", {"position": global_position, "mark": mark})
+			wake_milestone.emit(mark)
 	wake_changed.emit(wake)
 	if wake >= rules.wake_meter_max and not is_stirring():
 		start_stir()
@@ -345,3 +354,18 @@ func offscreen_arrow_for(viewer: Node) -> Dictionary:
 	var color := MatchManager.team_color(team)
 	var own := CombatQueries.team_of(viewer) == team
 	return {"color": Color(color, 0.55) if own else color, "scale": 0.8 if own else 1.25}
+
+
+## The minimap's icon: a ring in the team's colour that fills with the wake
+## meter, with a sun (Dawn) or moon (Dusk) inside, flashing while stirring.
+func draw_minimap_icon(canvas: CanvasItem, at: Vector2, _viewer_team: StringName) -> void:
+	var color := MatchManager.team_color(team)
+	var flash := 0.5 + 0.5 * sin(Time.get_ticks_msec() / 90.0) if is_stirring() else 0.0
+	canvas.draw_circle(at, 10.0, Color.BLACK)
+	canvas.draw_circle(at, 8.5, Color(0.1, 0.1, 0.12).lerp(Color.WHITE, flash * 0.6))
+	canvas.draw_arc(at, 7.0, -PI / 2, -PI / 2 + TAU * get_wake_ratio(), 20, color, 3.0)
+	if team == &"a":
+		canvas.draw_circle(at, 2.5, color)
+	else:
+		canvas.draw_circle(at, 3.0, color)
+		canvas.draw_circle(at + Vector2(1.3, -1.0), 2.4, Color(0.1, 0.1, 0.12))
