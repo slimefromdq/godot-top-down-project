@@ -62,7 +62,7 @@ func _test_assembled() -> void:
 	_check("slower than Cpt. Yellow", definition.move_speed < yellow.move_speed,
 		"%d vs %d" % [definition.move_speed, yellow.move_speed])
 	var stats := definition.stats
-	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 950.0) and _near(stats.health.value_at(10), 1850.0)
+	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 855.0) and _near(stats.health.value_at(10), 1665.0)
 		and _near(stats.weapon.value_at(10), 70.0) and _near(stats.magic.value_at(10), 80.0)
 		and _near(stats.armor.value_at(10), 75.0) and _near(stats.magic_resist.value_at(10), 55.0),
 		"HP %.0f, W %.1f, M %.1f, A %.1f, MR %.1f" % [stats.health.value_at(10), stats.weapon.value_at(10),

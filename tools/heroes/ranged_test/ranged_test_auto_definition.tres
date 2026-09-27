@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="9_fxdd2"]
 [ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="10_xkw20"]
 [ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="11_hvyvr"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/ranged_test_cloak.tres" id="12_cloak"]
 
 [sub_resource type="Resource" id="Resource_88rmx"]
 script = ExtResource("10_xkw20")
@@ -50,12 +51,13 @@ script = ExtResource("9_fxdd2")
 hero_id = &"ranged_test_auto"
 display_name = "Ranged Test (auto)"
 title = "the Harness"
-description = "TEST ONLY (tools/heroes). Exercises guns, hold-to-charge, compel, stat-modifier marks and owned zones."
+description = "TEST ONLY (tools/heroes). Exercises guns, hold-to-charge, compel, stat-modifier marks, owned zones and an invisibility Cloak (item key)."
 stats = SubResource("Resource_21h6w")
 abilities = Dictionary[StringName, ExtResource("1_ykb0v")]({
 &"ability_1": ExtResource("2_o4i0h"),
 &"ability_2": ExtResource("3_5y3nv"),
 &"cc": ExtResource("4_0c8gx"),
+&"item": ExtResource("12_cloak"),
 &"movement": ExtResource("5_ha2wx"),
 &"primary": ExtResource("6_cf5mk"),
 &"ultimate": ExtResource("7_2vjge")

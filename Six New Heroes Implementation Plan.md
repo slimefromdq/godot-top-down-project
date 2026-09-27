@@ -99,7 +99,7 @@ Pike wins by choosing one enemy and making every fight a 1v1 with them. Her whol
 - **Known limitation, left as is:** area damage centred outside the ring can still reach inside, just as it ignores walls today.
 - The ring is centred between Pike and her Beloved.
 - There You Are is a teleport: 90 px behind the Beloved, opposite their facing, or beside them if that spot is inside a wall. It fails beyond 900 px.
-- Obsession only fades Pike (40% opacity); she's never invisible.
+- Obsession only fades Pike (40% opacity); she's never invisible. (Changed later: breaking her Beloved's sight makes her invisible to every enemy until she attacks or casts anything but There You Are; her first knife out of hiding is the ambush.)
 - Move speed is 560, the same as Jose.
 
 **Why the max-HP damage.** 0.4% per knife is about 8 extra damage per hit on a 2000 HP tank, around 30 per second at full speed. Small on carries, meaningful on tanks: it's what lets her win duels she otherwise shouldn't.

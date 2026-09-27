@@ -16,8 +16,8 @@
 
 [sub_resource type="Resource" id="Sub_health"]
 script = ExtResource("3_x")
-base = 900.0
-growth = 94.4444
+base = 810.0
+growth = 85.0
 
 [sub_resource type="Resource" id="Sub_weapon"]
 script = ExtResource("3_x")
@@ -55,7 +55,7 @@ title = "The Composed"
 role = 0
 description = "Two heroes in one body: a protective tank while Composed, a lifestealing bruiser while Starving. Hunger fills as he tanks; at the top, the gloves come off."
 stats = SubResource("Sub_stats")
-move_speed = 510.0
+move_speed = 459.0
 acceleration = 2400.0
 friction = 2800.0
 abilities = Dictionary[StringName, ExtResource("4_x")]({

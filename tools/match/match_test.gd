@@ -64,9 +64,17 @@ func _test_basics() -> void:
 	var def_rules := MatchRules.current()
 	_check("match_rules.tres loads with cue profiles", def_rules.cue_visuals != null and def_rules.cue_audio != null
 		and def_rules.cue_visuals.cues.has(&"level_up") and def_rules.cue_audio.cues.has(&"level_up"), "")
-	_check("XP curve: 300 to reach L2, 6300 in total to reach L10",
-		_near(def_rules.xp_to_next_level(1), 300.0) and _near(def_rules.total_xp_for_level(10), 6300.0),
-		str(def_rules.total_xp_for_level(10)))
+	_check("XP curve: 300 to reach L2, 7668 to reach L10, 14292 to reach L13",
+		_near(def_rules.xp_to_next_level(1), 300.0) and _near(def_rules.total_xp_for_level(10), 7668.0)
+		and _near(def_rules.total_xp_for_level(13), 14292.0),
+		"%.0f / %.0f" % [def_rules.total_xp_for_level(10), def_rules.total_xp_for_level(13)])
+	_check("XP per level grows steeper", def_rules.xp_to_next_level(12) - def_rules.xp_to_next_level(11)
+		> def_rules.xp_to_next_level(3) - def_rules.xp_to_next_level(2), "")
+	_check("respawns grow with the match clock, up to +4 s",
+		_near(def_rules.respawn_time(5, 0.0), def_rules.respawn_base + def_rules.respawn_per_level * 5)
+		and _near(def_rules.respawn_time(5, def_rules.respawn_growth_time * 0.5) - def_rules.respawn_time(5, 0.0), 2.0)
+		and _near(def_rules.respawn_time(5, 99999.0) - def_rules.respawn_time(5, 0.0), 4.0), "")
+	_check("match level cap is 13", GameRules.current().max_level == 13, str(GameRules.current().max_level))
 	_check("found through the match_manager group", MatchManager.find(get_tree()) == manager, "")
 	_check("roster: 2 Dawn, 1 Dusk", manager.get_roster(&"a").size() == 2 and manager.get_roster(&"b").size() == 1,
 		"%d / %d" % [manager.get_roster(&"a").size(), manager.get_roster(&"b").size()])
@@ -110,11 +118,11 @@ func _test_leveling() -> void:
 	var on_level := func(actor, level): if actor == a2: levels.append(level)
 	manager.level_up.connect(on_level)
 	var start := a2.get_level()
-	# L1->2 300, L2->3 400, L3->4 500: 1200 gets to L4, plus 50 spare.
+	# L1->2 300, L2->3 382, L3->4 488: 1170 gets to L4, plus 80 spare.
 	manager.add_xp(a2, 1250.0, &"test")
 	_check("1250 XP from L1 reaches L4", start == 1 and a2.get_level() == 4, "L%d" % a2.get_level())
 	_check("level-up signal per level", levels == [2, 3, 4], str(levels))
-	_check("50 XP left toward L5", _near(manager.get_xp(a2), 50.0), str(manager.get_xp(a2)))
+	_check("80 XP left toward L5", _near(manager.get_xp(a2), 80.0), str(manager.get_xp(a2)))
 	_check("stats follow the level", _near(a2.stats_component.get_health(),
 		a2.stats_component.stat_block.value_at(StatBlock.HEALTH, 4)), "")
 	manager.add_xp(a2, 1000000.0, &"test")

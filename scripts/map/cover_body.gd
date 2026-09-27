@@ -61,18 +61,21 @@ func _draw() -> void:
 	var is_full := height == Height.FULL
 	var shadow_offset := Vector2(10, 16) if is_full else Vector2(5, 7)
 	var edge := fill_color.darkened(0.5)
+	# Everything as one mesh: one draw call per piece of cover.
+	var batch := ShapeBatch.new()
 	for polygon: PackedVector2Array in _polygons():
 		var shadow := PackedVector2Array()
 		for point in polygon:
 			shadow.append(point + shadow_offset)
-		draw_colored_polygon(shadow, SHADOW)
-		draw_colored_polygon(polygon, fill_color)
-		AeroDraw.gloss_polygon(self, polygon, fill_color)
+		batch.draw_colored_polygon(shadow, SHADOW)
+		batch.draw_colored_polygon(polygon, fill_color)
+		AeroDraw.gloss_polygon(batch, polygon, fill_color)
 
 		var outline := polygon.duplicate()
 		outline.append(polygon[0])
 		if is_full:
-			draw_polyline(outline, edge, 5.0, true)
+			batch.draw_polyline(outline, edge, 5.0, true)
 		else:
 			for i in polygon.size():
-				draw_dashed_line(outline[i], outline[i + 1], edge, 4.0, 14.0)
+				batch.draw_dashed_line(outline[i], outline[i + 1], edge, 4.0, 14.0)
+	batch.draw_on(self)

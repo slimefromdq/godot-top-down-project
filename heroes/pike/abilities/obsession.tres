@@ -10,6 +10,10 @@
 script = ExtResource("9_v")
 base = 6.0
 
+[sub_resource type="Resource" id="Restealth"]
+script = ExtResource("9_v")
+base = 1.5
+
 [sub_resource type="Resource" id="Mult"]
 script = ExtResource("9_v")
 base = 2.0
@@ -20,11 +24,13 @@ unseen_status = ExtResource("3_a")
 ambush_status = ExtResource("4_a")
 id = &"obsession"
 display_name = "Obsession"
-description = "While her Beloved can't see her, Pike moves 20% faster and fades. Her first knife after they see her again deals double damage and roots for 0.75 s (at most once per 6 s)."
+description = "When Pike breaks her Beloved's line of sight she vanishes: invisible to every enemy and 20% faster, even back in plain view, until she attacks or casts anything but There You Are. Her first knife out of hiding deals double damage and roots for 0.75 s (at most once per 6 s)."
 ability_script = ExtResource("2_a")
 cooldown = 0.0
 tags = Array[StringName]([&"passive"])
 values = Dictionary[StringName, ExtResource("9_v")]({
 &"ambush_cooldown": SubResource("Cooldown"),
-&"ambush_damage_multiplier": SubResource("Mult")
+&"ambush_damage_multiplier": SubResource("Mult"),
+&"restealth_delay": SubResource("Restealth")
 })
+keeps_stealth_slots = Array[StringName]([&"movement"])

@@ -156,6 +156,7 @@ For each slot in the definition's `abilities` dictionary, point at an
 | hard CC that can't be chained forever | automatic: **Resolve** (`GameRules.resolve_duration` / `resolve_cc_multiplier`) halves a stun, root or taunt that lands within 2 s of the last one ending. Carries, self-applied CC, walk-out-able pulls and formations are exempt; `StatusEffect.ignores_resolve` exempts any other | none |
 | "can A see B?" (a stalker passive, a sight-gated autofire) | `CombatQueries.has_line_of_sight(from, to)`: walls on `GameRules.sight_mask`, and bushes (can't see in from outside; from inside you see out) | none |
 | hide in bushes / reveal someone | bushes hide their occupants automatically (`CombatQueries.is_hidden_from`, drawn per viewer by `VisualsComponent`); a `StatusEffect` with `reveals` shows them anyway | none |
+| turn invisible to enemies (a cloak, a stalker's stealth) | a `StatusEffect` with `invisible` (pair it with `body_alpha` so the team sees a ghost): enemies' sight fails and they don't draw it, even in the open; `reveals` beats it. Test hero: Ranged Test (auto)'s Cloak on the item key | none, or a small script to decide when it ends (Pike's Obsession) |
 | a status VFX only some players see (a mark only its target and caster see) | `StatusEffect.vfx_visible_to`: EVERYONE, TARGET_ALLIES, TARGET_ENEMIES, TARGET_AND_APPLIER, or LISTED + `status_component.set_vfx_viewers(id, actors)` | none (LISTED: a small script) |
 | something new | extend `Ability` (or `MeleeAttackAbility` / `RangedAttackAbility`) | a small script |
 
@@ -256,7 +257,9 @@ status with `reveals` ignores bushes. The local player's screen follows the
 same rule with team-shared vision: an enemy in a bush isn't drawn (body,
 health bar, minimap dot) unless you or a teammate shares the bush or it's
 revealed. Hidden enemies can still be hit; only drawing and sight-gated
-abilities (e.g. Jose's Weapons Free) respect it. F1 → Tools → Sight lines
+abilities (e.g. Jose's Weapons Free) respect it. A status with `invisible`
+hides its actor from every enemy the same way, in the open too, until a
+`reveals` status shows it (Pike's Obsession). F1 → Tools → Sight lines
 draws the player's lines to nearby enemies.
 
 **Resolve.** After someone else's stun, root or taunt ends on an actor, it
@@ -442,7 +445,7 @@ Template → "Pike", basic attack deleted, then:
 
 | Slot | Data | Script |
 |---|---|---|
-| passive | `obsession.tres` (`PikeObsessionData`): `unseen_status` (+20% speed, 0.4 alpha), `ambush_status` (0.75 s root), `values/ambush_cooldown` 6, `ambush_damage_multiplier` 2 | `obsession.gd`: the Beloved's line of sight to her (`CombatQueries`), readies the ambush knife |
+| passive | `obsession.tres` (`PikeObsessionData`): `unseen_status` (`invisible`, +20% speed, 0.4 alpha), `ambush_status` (0.75 s root), `values/ambush_cooldown` 6, `ambush_damage_multiplier` 2, `restealth_delay` 1.5, `keeps_stealth_slots` [movement] | `obsession.gd`: breaking the Beloved's line of sight (`CombatQueries`) hides her until she attacks or casts; the knife out of hiding is the ambush |
 | primary | `juggled_knives.tres`: `RangedAttackData`, AUTO 4/s, 5 rounds, REGEN 0.5 s, 0.4 x Weapon, `values/max_hp_ratio` 0.005 | `juggled_knives.gd`: the max-HP part, the ambush knife; `vfx/knife_orbit.gd` shows the ammo |
 | ability_1 | `beloved.tres`: one-shot heart, `on_hit_status` = the Beloved mark (`stack_per_applier`, `ends_if_applier_dies`, `vfx/beloved_heart.tscn`) | `beloved_ability.gd`: one Beloved at a time, `get_beloved()` |
 | movement | `there_you_are.tres`: `ChargeData` 300 px (no Beloved), `values/teleport_range` 900, `behind_offset` | `there_you_are_ability.gd`: `teleport_to` behind the Beloved |

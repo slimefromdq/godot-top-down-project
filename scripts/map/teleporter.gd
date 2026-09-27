@@ -143,7 +143,8 @@ func _send(actor: Actor) -> void:
 func _process(delta: float) -> void:
 	_time += delta
 	_incoming = maxf(0.0, _incoming - delta * 2.0)
-	queue_redraw()
+	if ScreenCull.is_near(self, radius * 2.5):
+		queue_redraw()
 
 
 func _draw() -> void:

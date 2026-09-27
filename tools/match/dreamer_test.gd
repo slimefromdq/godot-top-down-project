@@ -241,14 +241,15 @@ func _test_stir_and_grace() -> void:
 	_check("filling the meter starts a stir", dreamer_b.is_stirring() and relayed.any(func(e): return e == ["stir", &"b"]), "")
 	_check("the filling deposit stops (the rest stays carried)", carrier.get_mote_count() == 3, str(carrier.get_mote_count()))
 	_check("defenders respawn faster while it stirs", _near(manager.get_respawn_time(b1),
-		rules.respawn_time(b1.get_level()) * rules.stir_defender_respawn_mult), "")
+		rules.respawn_time(b1.get_level(), manager.clock) * rules.stir_defender_respawn_mult), "")
 	await _seconds(rules.stir_grace * 0.6)
 	_check("no deposits during the grace, even standing in the ring", carrier.get_mote_count() == 3
 		and manager.state == MatchManager.State.PLAYING, "")
 	a1.global_position = FAR
 	carrier.clear()
 	dreamer_b.settle(Dreamer.SETTLE_TIMEOUT)
-	_check("settling restores the respawn time", _near(manager.get_respawn_time(b1), rules.respawn_time(b1.get_level())), "")
+	_check("settling restores the respawn time", _near(manager.get_respawn_time(b1),
+		rules.respawn_time(b1.get_level(), manager.clock)), "")
 	dreamer_b.set_wake(0.0)
 	await _frames(2)
 

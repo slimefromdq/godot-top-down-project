@@ -21,8 +21,8 @@ growth = 2.0
 
 [sub_resource type="Resource" id="Resource_i3ivf"]
 script = ExtResource("3_scaling")
-base = 620.0
-growth = 62.0
+base = 558.0
+growth = 55.8
 
 [sub_resource type="Resource" id="Resource_og122"]
 script = ExtResource("3_scaling")
@@ -54,6 +54,7 @@ display_name = "Melody"
 title = "Living Doll"
 description = "A ball-jointed doll brought to life by passion: a marching-band girl with a huge contra tuba. Playing winds the key in her back, and the wound spring powers her encores."
 stats = SubResource("Resource_wcjd1")
+move_speed = 486.0
 abilities = Dictionary[StringName, ExtResource("4_ability")]({
 &"ability_1": ExtResource("3_m1e2x"),
 &"cc": ExtResource("5_eum32"),

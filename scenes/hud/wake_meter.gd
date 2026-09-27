@@ -22,6 +22,11 @@ var _t := 0.0
 ## The fill shown (eases toward the Dreamer's wake ratio).
 var shown: float = 0.0
 var _lullaby_shown: float = 0.0
+# The shapes of the redraw in progress (see _draw).
+var _batch: ShapeBatch
+# Redrawn this often rather than every frame.
+const REDRAW_INTERVAL := 1.0 / 30.0
+var _redraw_left: float = 0.0
 
 
 func _ready() -> void:
@@ -40,7 +45,10 @@ func _process(delta: float) -> void:
 		var ease_k := 1.0 - exp(-6.0 * delta)
 		shown = lerpf(shown, dreamer.get_wake_ratio(), ease_k)
 		_lullaby_shown = lerpf(_lullaby_shown, dreamer.lullaby if dreamer.is_stirring() else 0.0, ease_k)
-	queue_redraw()
+	_redraw_left -= delta
+	if _redraw_left <= 0.0:
+		_redraw_left = REDRAW_INTERVAL
+		queue_redraw()
 
 
 func _draw() -> void:
@@ -53,6 +61,8 @@ func _draw() -> void:
 	var icon_x := ICON + 2.0 if icon_on_left else size.x - ICON - 2.0
 	var bar := Rect2(ICON * 2 + 10, 8, size.x - ICON * 2 - 20, 22) if icon_on_left \
 		else Rect2(10, 8, size.x - ICON * 2 - 20, 22)
+	# Shapes go into one batch (one draw call); the rim and text go on top.
+	_batch = ShapeBatch.new()
 	_draw_face(Vector2(icon_x, 24), color, stirring)
 
 	# The wake bar: a glossy bubble tube.
@@ -76,23 +86,10 @@ func _draw() -> void:
 		var sweep := fmod(_t * 0.45, 1.6) - 0.3
 		var sx := fill.position.x + fill.size.x * sweep
 		if sweep > 0.0 and sweep < 1.0:
-			draw_colored_polygon(PackedVector2Array([Vector2(sx, fill.position.y), Vector2(sx + 14, fill.position.y),
+			_batch.draw_colored_polygon(PackedVector2Array([Vector2(sx, fill.position.y), Vector2(sx + 14, fill.position.y),
 				Vector2(sx + 4, fill.end.y), Vector2(sx - 10, fill.end.y)]), Color(1, 1, 1, 0.4))
 	if high:
 		_draw_cracks(bar, color)
-	var rim := StyleBoxFlat.new()
-	rim.draw_center = false
-	rim.border_color = Color(1, 1, 1, 0.8)
-	rim.set_border_width_all(2)
-	rim.set_corner_radius_all(int(bar.size.y / 2.0))
-	draw_style_box(rim, bar)
-	var font := ThemeDB.fallback_font
-	var label := "STIRRING  %d" % ceili(dreamer.stir_left) if stirring \
-		else "%d / %d" % [floori(dreamer.wake), roundi(rules.wake_meter_max)]
-	draw_string_outline(font, bar.position + Vector2(0, 17), label, HORIZONTAL_ALIGNMENT_CENTER, bar.size.x, 15, 4,
-		Color(0, 0, 0, 0.9))
-	draw_string(font, bar.position + Vector2(0, 17), label, HORIZONTAL_ALIGNMENT_CENTER, bar.size.x, 15, Color.WHITE)
-
 	var below := Rect2(bar.position.x, bar.end.y + 6, bar.size.x, 10)
 	if stirring:
 		# The Lullaby as a second bar (red while contested, dim during grace).
@@ -109,16 +106,27 @@ func _draw() -> void:
 		var filled := floori(dreamer.sweet / per_pip) if per_pip > 0.0 else 0
 		for i in PIPS:
 			var at := below.position + Vector2(8 + i * 18, 5)
-			draw_circle(at, 6.0, Color(0, 0, 0, 0.6))
-			draw_circle(at, 4.5, Color("fde68a") if i < filled else Color(1, 1, 1, 0.15))
+			_batch.draw_circle(at, 6.0, Color(0, 0, 0, 0.6))
+			_batch.draw_circle(at, 4.5, Color("fde68a") if i < filled else Color(1, 1, 1, 0.15))
+	_batch.draw_on(self)
+	_batch = null
+	var rim := StyleBoxFlat.new()
+	rim.draw_center = false
+	rim.border_color = Color(1, 1, 1, 0.8)
+	rim.set_border_width_all(2)
+	rim.set_corner_radius_all(int(bar.size.y / 2.0))
+	draw_style_box(rim, bar)
+	var font := ThemeDB.fallback_font
+	var label := "STIRRING  %d" % ceili(dreamer.stir_left) if stirring \
+		else "%d / %d" % [floori(dreamer.wake), roundi(rules.wake_meter_max)]
+	draw_string_outline(font, bar.position + Vector2(0, 17), label, HORIZONTAL_ALIGNMENT_CENTER, bar.size.x, 15, 4,
+		Color(0, 0, 0, 0.9))
+	draw_string(font, bar.position + Vector2(0, 17), label, HORIZONTAL_ALIGNMENT_CENTER, bar.size.x, 15, Color.WHITE)
 
 
 # A rounded (pill) rect.
 func _pill(rect: Rect2, color: Color) -> void:
-	var box := StyleBoxFlat.new()
-	box.bg_color = color
-	box.set_corner_radius_all(int(rect.size.y / 2.0))
-	draw_style_box(box, rect)
+	_batch.draw_rounded_rect(rect, color, floorf(rect.size.y / 2.0))
 
 
 # Hairline cracks across the tube from 75%: the Dreamer is close to waking.
@@ -126,28 +134,28 @@ func _draw_cracks(bar: Rect2, color: Color) -> void:
 	var c := Color(1, 1, 1, 0.75)
 	for x in [0.3, 0.55, 0.8]:
 		var at := bar.position + Vector2(bar.size.x * x, 0)
-		draw_polyline(PackedVector2Array([at, at + Vector2(5, 7), at + Vector2(-2, 13), at + Vector2(6, bar.size.y)]),
+		_batch.draw_polyline(PackedVector2Array([at, at + Vector2(5, 7), at + Vector2(-2, 13), at + Vector2(6, bar.size.y)]),
 			c, 1.5)
-	draw_circle(bar.position + Vector2(bar.size.x * 0.55 + 3, 10), 3.0, Color(color.lightened(0.5), 0.9))
+	_batch.draw_circle(bar.position + Vector2(bar.size.x * 0.55 + 3, 10), 3.0, Color(color.lightened(0.5), 0.9))
 
 
 func _draw_face(at: Vector2, color: Color, stirring: bool) -> void:
-	draw_circle(at, ICON, Color(0, 0, 0, 0.6))
-	draw_circle(at, ICON - 3, color.lightened(0.35))
+	_batch.draw_circle(at, ICON, Color(0, 0, 0, 0.6))
+	_batch.draw_circle(at, ICON - 3, color.lightened(0.35))
 	var ink := Color(0.2, 0.18, 0.28)
 	for side in [-1.0, 1.0]:
 		var eye := at + Vector2(side * 8, 1)
 		if stirring:
-			draw_circle(eye, 4, Color(1, 0.95, 0.6))
-			draw_circle(eye, 2, ink)
+			_batch.draw_circle(eye, 4, Color(1, 0.95, 0.6))
+			_batch.draw_circle(eye, 2, ink)
 		else:
-			draw_arc(eye, 4.5, PI * 0.1, PI * 0.9, 8, ink, 2.0)
+			_batch.draw_arc(eye, 4.5, PI * 0.1, PI * 0.9, 8, ink, 2.0)
 	var badge := at + Vector2(0, -ICON + 4)
 	if team == &"a":
 		for i in 8:
 			var a := TAU * i / 8.0
-			draw_line(badge + Vector2.from_angle(a) * 5, badge + Vector2.from_angle(a) * 9, color.darkened(0.35), 2.0)
-		draw_circle(badge, 4.5, color.darkened(0.2))
+			_batch.draw_line(badge + Vector2.from_angle(a) * 5, badge + Vector2.from_angle(a) * 9, color.darkened(0.35), 2.0)
+		_batch.draw_circle(badge, 4.5, color.darkened(0.2))
 	else:
-		draw_circle(badge, 7, color.darkened(0.3))
-		draw_circle(badge + Vector2(3, -2), 6, color.lightened(0.35))
+		_batch.draw_circle(badge, 7, color.darkened(0.3))
+		_batch.draw_circle(badge + Vector2(3, -2), 6, color.lightened(0.35))

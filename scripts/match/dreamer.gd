@@ -359,7 +359,7 @@ func offscreen_arrow_for(viewer: Node) -> Dictionary:
 
 ## The minimap's icon: a ring in the team's colour that fills with the wake
 ## meter, with a sun (Dawn) or moon (Dusk) inside, flashing while stirring.
-func draw_minimap_icon(canvas: CanvasItem, at: Vector2, _viewer_team: StringName) -> void:
+func draw_minimap_icon(canvas: Object, at: Vector2, _viewer_team: StringName) -> void:
 	var color := MatchManager.team_color(team)
 	var flash := 0.5 + 0.5 * sin(Time.get_ticks_msec() / 90.0) if is_stirring() else 0.0
 	canvas.draw_circle(at, 10.0, Color.BLACK)

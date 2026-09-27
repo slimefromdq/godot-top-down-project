@@ -126,6 +126,12 @@ enum VfxVisibleTo {
 @export_group("Vision")
 ## Seen by everyone while active, even inside a bush (see CombatQueries).
 @export var reveals: bool = false
+## Enemies can't see this actor at all while active, even in the open: it
+## isn't drawn on their screens, their line of sight to it fails (bots and
+## sight-gated abilities), and it drops off their minimap. Teammates still
+## see it (pair it with body_alpha). A `reveals` status beats it. It can
+## still be hit.
+@export var invisible: bool = false
 
 @export_group("Displacement")
 ## Pixels pushed when the status lands. 0 = none. The push is a short forced

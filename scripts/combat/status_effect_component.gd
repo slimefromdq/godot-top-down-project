@@ -416,6 +416,11 @@ func is_revealed() -> bool:
 	return _any(func(e: StatusEffect): return e.reveals)
 
 
+# Unseen by enemies (StatusEffect.invisible; see CombatQueries).
+func is_invisible() -> bool:
+	return _any(func(e: StatusEffect): return e.invisible)
+
+
 func is_silenced() -> bool:
 	return _any(func(e: StatusEffect): return e.silences or e.stuns)
 
@@ -645,6 +650,8 @@ static func _hooks_of(node) -> CombatHooks:
 
 
 func _any(predicate: Callable) -> bool:
+	if _active.is_empty():
+		return false
 	for entry in _active.values():
 		if predicate.call(entry.effect):
 			return true

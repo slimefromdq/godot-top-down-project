@@ -58,7 +58,7 @@ func _test_assembled() -> void:
 	_check("listed in hero selection (F1 > Play as)",
 		HeroScaffold.find_definitions().any(func(d): return d.hero_id == &"tilly"), "")
 	var stats := definition.stats
-	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 580.0) and _near(stats.health.value_at(10), 1120.0)
+	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 522.0) and _near(stats.health.value_at(10), 1008.0, 0.1)
 		and _near(stats.weapon.value_at(10), 60.0) and _near(stats.magic.value_at(10), 100.0)
 		and _near(stats.armor.value_at(10), 38.0) and _near(stats.magic_resist.value_at(10), 40.0), "")
 	_check("Trampoline is the shared PlacePadAbility, Safety Net the generic ZoneAbility (data only)",

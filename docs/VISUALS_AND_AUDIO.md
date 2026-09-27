@@ -88,6 +88,18 @@ glassy highlights, rounded shapes, sky-blue surroundings.
   `gloss_rect` (glass panel), `gloss_circle` (bubble/orb) and
   `gloss_polygon` (highlight on a shape). HUD slots, team cards, the minimap,
   cover and bushes all go through it, so restyle there first.
+- **Keep draw calls down.** Every `draw_circle` and `draw_colored_polygon`
+  is its own draw call (only rects and short lines batch), and the glossy
+  look stacks several per object. Draw many shapes into a `ShapeBatch`
+  (`scripts/visuals/shape_batch.gd`: same calls as a CanvasItem, plus
+  `draw_rounded_rect`; `gloss_circle`, `gloss_polygon` and
+  `gloss_rect_shapes` accept it) and finish with `batch.draw_on(self)`: one
+  draw call. Bushes, cover, the minimap and the team cards do this.
+- **Don't redraw what nobody sees.** Animated decorations ask
+  `ScreenCull.is_near(self, radius)` before `queue_redraw()`, HUD widgets
+  redraw at 15-30 Hz instead of every frame, and short-lived world effects
+  (`lifetime` 3 s or less) aren't spawned far off-screen
+  (`EffectSpawner`). A carrier's outer orbit rings draw simple Motes.
 - **Maps**: sky-blue void and clear colour, a white floor grid, saturated
   floor zones and cover (dark boundary walls are deep navy-teal).
 - **Hero badges** carry a radial body gradient and a gloss highlight

@@ -16,13 +16,18 @@ var ability: Ability
 var _fail_flash: float = 0.0
 var _ready_pulse: float = 0.0
 var _ult_was_full := false
+# Redrawn this often rather than every frame; a failed cast redraws at once.
+const REDRAW_INTERVAL := 1.0 / 30.0
+var _redraw_left: float = 0.0
 
 
 func setup(for_ability: Ability) -> void:
 	ability = for_ability
 	custom_minimum_size = SIZE
 	tooltip_text = "%s\n%s" % [ability.display_name, ability.description]
-	ability.activation_failed.connect(func(_reason): _fail_flash = 1.0)
+	ability.activation_failed.connect(func(_reason):
+		_fail_flash = 1.0
+		_redraw_left = 0.0)
 	ability.cooldown_finished.connect(func(): _ready_pulse = 1.0)
 
 
@@ -34,7 +39,10 @@ func _process(delta: float) -> void:
 		if full and not _ult_was_full:
 			_ready_pulse = 1.0
 		_ult_was_full = full
-	queue_redraw()
+	_redraw_left -= delta
+	if _redraw_left <= 0.0:
+		_redraw_left = REDRAW_INTERVAL
+		queue_redraw()
 
 
 func _draw() -> void:

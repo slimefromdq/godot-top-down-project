@@ -91,8 +91,9 @@ func _process(delta: float) -> void:
 		_ripples[i] += delta
 	_ripples = _ripples.filter(func(a): return a < 1.4)
 	_update_behind_fade(delta)
-	queue_redraw()
-	_rings.queue_redraw()
+	if ScreenCull.is_near(self, 900.0):
+		queue_redraw()
+		_rings.queue_redraw()
 
 
 func _update_state(delta: float) -> void:

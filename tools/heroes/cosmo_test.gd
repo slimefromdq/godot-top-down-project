@@ -45,7 +45,8 @@ func _test_assembled() -> void:
 	_check("definition validates", cosmo.definition.validate().is_empty(), "\n".join(cosmo.definition.validate()))
 	_check("title Moon Witch, role Carry", cosmo.definition.title == "Moon Witch"
 		and cosmo.definition.get_role_name() == "Carry", "")
-	_check("the match caps at level 10 (her data is built for 1-10)", GameRules.current().max_level == 10, "")
+	_check("the match caps at level 13 (her last moon comes at 10)", GameRules.current().max_level == 13
+		and cosmo.get_ability(&"passive").data.get_moon_count(13) == cosmo.get_ability(&"passive").data.get_moon_count(10), "")
 	var stats := cosmo.definition.stats
 	_check("Magic is back-loaded (steeper after level 5 than before)",
 		stats.value_at(StatBlock.MAGIC, 10) - stats.value_at(StatBlock.MAGIC, 5)
@@ -295,8 +296,8 @@ func _test_starfall() -> void:
 	var outside := impacts.filter(func(p): return p.distance_to(center) > storm_radius)
 	_check("meteors land only inside storm_radius", not impacts.is_empty() and outside.is_empty(),
 		"%d impacts, %d outside" % [impacts.size(), outside.size()])
-	# 8 moons (+4 over base): 5.5 meteors/s over a 3.5 s channel.
-	_check("8 moons: ~5.5 meteors per second", impacts.size() >= 17 and impacts.size() <= 21, str(impacts.size()))
+	# 8 moons (+4 over base): 12 meteors/s over a 3.5 s channel.
+	_check("8 moons: ~12 meteors per second", impacts.size() >= 38 and impacts.size() <= 46, str(impacts.size()))
 	_check("each meteor is warned by a shadow first", _cue_count(&"starfall_meteor_warn") == impacts.size(),
 		"%d warns, %d impacts" % [_cue_count(&"starfall_meteor_warn"), impacts.size()])
 	var physical_after := DamageInfo.create(100.0, null, DamageInfo.Type.PHYSICAL)
@@ -310,14 +311,14 @@ func _test_starfall() -> void:
 	cosmo.request_slot(&"ultimate", center)
 	await _seconds(4.0)
 	var few := _cue_count(&"starfall_impact")
-	_check("base 4 moons: ~3.5 meteors per second", few >= 10 and few <= 14, str(few))
+	_check("base 4 moons: ~8 meteors per second", few >= 25 and few <= 31, str(few))
 	starfall.data.scale_with_moons = false
 	_reset(Vector2(0, 8000), 1)
 	cues.clear()
 	cosmo.request_slot(&"ultimate", center)
 	await _seconds(4.0)
-	_check("scale_with_moons off: meteors_per_second (4)", _cue_count(&"starfall_impact") >= 12
-		and _cue_count(&"starfall_impact") <= 16, str(_cue_count(&"starfall_impact")))
+	_check("scale_with_moons off: meteors_per_second (9)", _cue_count(&"starfall_impact") >= 28
+		and _cue_count(&"starfall_impact") <= 35, str(_cue_count(&"starfall_impact")))
 	starfall.reset_data()
 
 	# Moonlit targets take the amp from meteors.

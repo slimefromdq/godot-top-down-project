@@ -12,12 +12,17 @@ class_name CombatQueries
 #                                 see out, and two actors in the same bush
 #                                 see each other. A revealed actor
 #                                 (StatusEffect.reveals) ignores the bush rule.
-#   is_hidden_from(actor, viewer) What the viewer's screen hides: `actor` is in
-#                                 a bush, not revealed, not on the viewer's
-#                                 team, and neither the viewer nor any of its
-#                                 teammates shares that bush (vision is shared
-#                                 by team).
+#                                 An invisible actor is never seen by its
+#                                 enemies.
+#   is_hidden_from(actor, viewer) What the viewer's screen hides: `actor` is
+#                                 not on the viewer's team and is either
+#                                 invisible, or in a bush that neither the
+#                                 viewer nor any of its teammates shares
+#                                 (vision is shared by team); a revealed
+#                                 actor is never hidden.
 #   is_revealed(actor)            A StatusEffect.reveals status is on it.
+#   is_invisible(actor)           A StatusEffect.invisible status is on it
+#                                 and no reveals status.
 #   team_of(node)                 The node's `team` (&"" = neutral).
 
 
@@ -26,8 +31,11 @@ static func has_line_of_sight(from: Node2D, to: Node2D) -> bool:
 		return false
 	if from == to:
 		return true
-	if not is_revealed(to) and not _shares_bush_if_inside(from, to):
-		return false
+	if not is_revealed(to):
+		if is_invisible(to) and _are_enemies(from, to):
+			return false
+		if not _shares_bush_if_inside(from, to):
+			return false
 	return walls_clear(from, to)
 
 
@@ -49,11 +57,19 @@ static func walls_clear(from: Node2D, to: Node2D) -> bool:
 static func is_hidden_from(actor: Node2D, viewer: Node2D) -> bool:
 	if not is_instance_valid(actor) or not is_instance_valid(viewer) or actor == viewer:
 		return false
-	var bushes := Bush.bushes_of(actor)
-	if bushes.is_empty() or is_revealed(actor):
-		return false
 	var viewer_team := team_of(viewer)
 	if viewer_team != &"" and team_of(actor) == viewer_team:
+		return false
+	var bushes := Bush.bushes_of(actor)
+	var status := status_of(actor)
+	if status == null:
+		if bushes.is_empty():
+			return false
+	elif status.is_revealed():
+		return false
+	elif status.is_invisible():
+		return true
+	elif bushes.is_empty():
 		return false
 	for bush in bushes:
 		for other in bush.get_occupants():
@@ -70,6 +86,11 @@ static func is_revealed(actor: Node) -> bool:
 	return status != null and status.is_revealed()
 
 
+static func is_invisible(actor: Node) -> bool:
+	var status := status_of(actor)
+	return status != null and status.is_invisible() and not status.is_revealed()
+
+
 static func team_of(node: Node) -> StringName:
 	if not is_instance_valid(node):
 		return &""
@@ -84,6 +105,13 @@ static func status_of(node: Node) -> StatusEffectComponent:
 	if status is StatusEffectComponent:
 		return status
 	return node.get_node_or_null(^"Components/StatusComponent") as StatusEffectComponent
+
+
+# On different teams, or either one neutral.
+static func _are_enemies(a: Node, b: Node) -> bool:
+	var team_a := team_of(a)
+	var team_b := team_of(b)
+	return team_a != team_b or team_a == &""
 
 
 # True unless `to` is in a bush that `from` isn't in.

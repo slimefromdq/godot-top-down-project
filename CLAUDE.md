@@ -31,7 +31,7 @@ its phase prompts in `Implementation prompts.md`.
 ## Stats
 
 - Stats are authored on the 20-level `StatScaling` range while matches cap
-  at level 10 (`GameRules.max_level`).
+  at level 13 (`GameRules.max_level`).
 - Linear growth = (L10 value - L1 value) / 9.
 - Check every new hero in the balance CSV against a hero of the same role.
 

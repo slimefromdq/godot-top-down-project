@@ -21,8 +21,8 @@ growth = 2.0
 
 [sub_resource type="Resource" id="Resource_odxm4"]
 script = ExtResource("3_scaling")
-base = 480.0
-growth = 44.0
+base = 432.0
+growth = 39.6
 
 [sub_resource type="Curve" id="Curve_uauxk"]
 _data = [Vector2(0, 0), 0.0, 0.3, 0, 0, Vector2(0.21052632, 0.117), 1.0, 1.6, 0, 0, Vector2(0.47368422, 0.772), 1.9, 0.4, 0, 0, Vector2(1, 1), 0.45, 0.0, 0, 0]
@@ -60,7 +60,7 @@ title = "Moon Witch"
 role = 1
 description = "A moon witch whose power waxes over the match. One fragile moon early; by the end, a full ring and the sky itself."
 stats = SubResource("Resource_gvhxw")
-move_speed = 520.0
+move_speed = 468.0
 abilities = Dictionary[StringName, ExtResource("4_ability")]({
 &"ability_1": ExtResource("3_542al"),
 &"cc": ExtResource("5_6kh5w"),

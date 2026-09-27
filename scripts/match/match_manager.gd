@@ -600,7 +600,7 @@ func _on_hero_died(victim: Hero) -> void:
 
 
 func get_respawn_time(hero: Hero) -> float:
-	return get_rules().respawn_time(hero.get_level()) * float(_respawn_mult.get(hero.team, 1.0))
+	return get_rules().respawn_time(hero.get_level(), clock) * float(_respawn_mult.get(hero.team, 1.0))
 
 
 ## Seconds until `hero` respawns, or 0 if they're not waiting.

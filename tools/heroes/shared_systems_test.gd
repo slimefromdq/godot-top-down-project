@@ -5,6 +5,9 @@ extends Node2D
 #   S2 line of sight (CombatQueries.has_line_of_sight): walls, low cover,
 #      bushes (one-way), reveals; the F1 sight-lines overlay
 #   S3 bush concealment: what the local player's screen hides (LocalView)
+#   S3c ShapeBatch: shapes recorded into one triangle list
+#   S3b invisibility (StatusEffect.invisible): sight, drawing, reveals; the
+#       test hero's Cloak (Ranged Test (auto), item key)
 #   S4 viewer-filtered status VFX (StatusEffect.vfx_visible_to)
 #
 #   godot --headless res://tools/heroes/shared_systems_test.tscn
@@ -33,6 +36,8 @@ func _run() -> void:
 	await _test_resolve()
 	await _test_line_of_sight()
 	await _test_concealment()
+	await _test_invisibility()
+	_test_shape_batch()
 	await _test_vfx_filter()
 
 	LocalView.clear_viewer()
@@ -186,6 +191,80 @@ func _test_line_of_sight() -> void:
 	await _frames(2)
 	_check("turning it off removes the overlay", not is_instance_valid(overlay), "")
 	hero.global_position = Vector2.ZERO
+	_clear()
+	await _physics_frames(3)
+
+
+# --- S3c ShapeBatch -----------------------------------------------------------------
+
+func _test_shape_batch() -> void:
+	print("\n-- S3c ShapeBatch")
+	var batch := ShapeBatch.new()
+	_check("starts empty", batch.is_empty(), "")
+	batch.draw_rect(Rect2(0, 0, 10, 10), Color.RED)
+	_check("a rect is two triangles", batch.get_triangle_count() == 2, str(batch.get_triangle_count()))
+	batch.draw_colored_polygon(PackedVector2Array([Vector2(0, 0), Vector2(10, 0), Vector2(10, 10), Vector2(0, 10)]), Color.BLUE)
+	_check("a four-point polygon is two more", batch.get_triangle_count() == 4, str(batch.get_triangle_count()))
+	batch.draw_circle(Vector2.ZERO, 10.0, Color.WHITE)
+	_check("a circle is a fan of at least 12", batch.get_triangle_count() >= 16, str(batch.get_triangle_count()))
+	var before := batch.get_triangle_count()
+	AeroDraw.gloss_circle(batch, Vector2.ZERO, 30.0, Color.GREEN)
+	AeroDraw.gloss_rect_shapes(batch, Rect2(0, 0, 80, 40), Color.GREEN, 8.0)
+	_check("AeroDraw draws into a batch", batch.get_triangle_count() > before, "")
+	var moved := ShapeBatch.new()
+	moved.draw_set_transform(Vector2(100, 0), 0.0, Vector2(2, 2))
+	moved.draw_rect(Rect2(0, 0, 10, 10), Color.RED)
+	_check("draw_set_transform applies", moved._vertices[2].is_equal_approx(Vector2(120, 20)), str(moved._vertices[2]))
+	batch.clear()
+	_check("clear empties it", batch.is_empty(), "")
+
+
+# --- S3b Invisibility ---------------------------------------------------------------
+
+func _test_invisibility() -> void:
+	print("\n-- S3b Invisibility")
+	hero.global_position = Vector2.ZERO
+	LocalView.set_viewer(hero)
+	var enemy := _dummy(Vector2(500, 0))
+	enemy.team = &"b"
+	var ally := _dummy(Vector2(-500, 0))
+	ally.team = &"a"
+	var cloak := _status(&"test_cloak", 2.0)
+	cloak.invisible = true
+	enemy.status_component.apply(cloak, enemy)
+	await _physics_frames(2)
+	await _frames(2)
+	_check("an invisible enemy in the open is unseen", not CombatQueries.has_line_of_sight(hero, enemy)
+		and CombatQueries.is_invisible(enemy), "")
+	_check("...and not drawn for the viewer", not enemy.visible, "")
+	_check("it still sees out", CombatQueries.has_line_of_sight(enemy, hero), "")
+	_check("its own team still sees it", CombatQueries.has_line_of_sight(hero, ally) and not CombatQueries.is_hidden_from(enemy,
+		enemy), "")
+	var reveal := _status(&"test_reveal", 1.0)
+	reveal.reveals = true
+	enemy.status_component.apply(reveal, hero)
+	await _frames(2)
+	_check("reveals beats invisible", CombatQueries.has_line_of_sight(hero, enemy) and enemy.visible, "")
+	enemy.status_component.remove(&"test_reveal")
+	enemy.status_component.remove(&"test_cloak")
+	await _frames(2)
+	_check("visible again when it ends", CombatQueries.has_line_of_sight(hero, enemy) and enemy.visible, "")
+
+	# The test hero's Cloak (Ranged Test (auto), item key): a SelfStatusData
+	# whose status is invisible.
+	var cloaked: Hero = load("res://scenes/heroes/hero_base.tscn").instantiate()
+	cloaked.definition = load("res://tools/heroes/ranged_test/ranged_test_auto_definition.tres")
+	cloaked.team = &"b"
+	add_child(cloaked)
+	cloaked.global_position = Vector2(0, 600)
+	spawned.append(cloaked)
+	await _physics_frames(2)
+	cloaked.request_slot(&"item", Vector2(300, 600))
+	await _until(func(): return CombatQueries.is_invisible(cloaked), 1.0)
+	await _frames(2)
+	_check("the test hero's Cloak makes it invisible", CombatQueries.is_invisible(cloaked)
+		and not CombatQueries.has_line_of_sight(hero, cloaked) and not cloaked.visible, "")
+	LocalView.clear_viewer()
 	_clear()
 	await _physics_frames(3)
 

@@ -65,7 +65,7 @@ func _test_assembled() -> void:
 	_check("the lowest move speed of any Carry", definition.move_speed < slowest,
 		"%d vs %d" % [definition.move_speed, slowest])
 	var stats := definition.stats
-	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 500.0) and _near(stats.health.value_at(10), 950.0)
+	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 450.0) and _near(stats.health.value_at(10), 855.0)
 		and _near(stats.weapon.value_at(10), 110.0) and _near(stats.magic.value_at(10), 18.0)
 		and _near(stats.armor.value_at(10), 30.0) and _near(stats.magic_resist.value_at(10), 24.0), "")
 	_check("Scope and Parry are the shared SelfStatusAbility", nimbus.get_ability(&"ability_1").get_script() == SelfStatusAbility

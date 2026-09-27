@@ -24,7 +24,7 @@ class_name CosmoStarfallData
 ## Meteors per second scale with her moons gained (index 0 = her base
 ## moons, 1 = one Waxing Moon breakpoint reached, ...).
 @export var scale_with_moons: bool = true
-@export var meteors_per_second_by_moons: Array[float] = [3.5, 4.0, 4.5, 5.0, 5.5]
+@export var meteors_per_second_by_moons: Array[float] = [8.0, 9.0, 10.0, 11.0, 12.0]
 
 @export_group("Interrupts")
 @export var ends_on_stun: bool = true

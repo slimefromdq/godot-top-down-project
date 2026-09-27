@@ -16,8 +16,8 @@
 
 [sub_resource type="Resource" id="Sub_health"]
 script = ExtResource("3_x")
-base = 580.0
-growth = 60.0
+base = 522.0
+growth = 54.0
 
 [sub_resource type="Resource" id="Sub_weapon"]
 script = ExtResource("3_x")
@@ -55,7 +55,7 @@ title = "The Crash Test Acrobat"
 role = 3
 description = "A crash-test dummy with a performer's grace. Supports by moving her team, not healing it: trampolines send allies over walls, a dazzling spin makes enemies come to her, and her safety net catches anyone who would die."
 stats = SubResource("Sub_stats")
-move_speed = 540.0
+move_speed = 486.0
 acceleration = 2600.0
 friction = 2800.0
 abilities = Dictionary[StringName, ExtResource("4_x")]({

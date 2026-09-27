@@ -88,7 +88,8 @@ func _process(delta: float) -> void:
 			if not _bounds.has_point(petal[0]):
 				petal[0] = Vector2(_bounds.position.x + randf() * _bounds.size.x * 0.5, _bounds.position.y + randf() * _bounds.size.y) \
 					if randf() < 0.5 else Vector2(_bounds.position.x + randf() * _bounds.size.x, _bounds.position.y)
-	queue_redraw()
+	if ScreenCull.is_near(self, _bounds.get_center().length() + _bounds.size.length()):
+		queue_redraw()
 
 
 ## The minimap tints this area while it dreams (group "minimap_areas").

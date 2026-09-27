@@ -2,24 +2,24 @@ extends RefCounted
 class_name BotNavigation
 
 ## One obstacle graph per map, shared by every bot. Ordinary edges are
-## walkable grid segments. Map jump pads and teleporters add directed edges.
-
-class RouteGraph extends AStar2D:
-	var special_costs: Dictionary = {}
-
-	func _compute_cost(from_id: int, to_id: int) -> float:
-		return special_costs.get(Vector2i(from_id, to_id), get_point_position(from_id).distance_to(get_point_position(to_id)))
-
-	func _estimate_cost(_from_id: int, _end_id: int) -> float:
-		# Zero keeps long teleports admissible: a Euclidean heuristic would
-		# overestimate the remaining cost across a shortcut.
-		return 0.0
+## walkable grid segments. Map jump pads and teleporters add directed edges
+## that cost BotRules.navigation_link_cost.
+##
+## The search runs entirely in the engine (no script cost callbacks: those
+## made every path ~15x slower). Costs are distance x the target point's
+## weight_scale. Every point weighs `cost_scale`, and a link's exit point is
+## weighted so crossing the link costs navigation_link_cost x cost_scale.
+## cost_scale is large enough that the engine's straight-line heuristic
+## never overestimates, even across the longest shortcut, so routes are
+## still the cheapest ones.
 
 
 static var _shared: Dictionary = {}
 
 var map: GameMap
-var graph := RouteGraph.new()
+var graph := AStar2D.new()
+## Multiplies every cost (see above).
+var cost_scale: float = 1.0
 var cells: Dictionary = {}  # Vector2i -> graph point id
 var teleport_entries: Dictionary = {}  # entrance position -> exit position
 var origin: Vector2
@@ -92,6 +92,25 @@ func _build() -> void:
 			if portal.can_send():
 				_add_link(portal.global_position, portal.partner.global_position)
 				teleport_entries[portal.global_position] = portal.partner.global_position
+	_apply_weights()
+
+
+# [entry id, exit id] of every link, for _apply_weights.
+var _links: Array[Vector2i] = []
+
+
+func _apply_weights() -> void:
+	var link_cost := maxf(BotRules.current().navigation_link_cost, 1.0)
+	cost_scale = 1.0
+	for link in _links:
+		var span := graph.get_point_position(link.x).distance_to(graph.get_point_position(link.y))
+		cost_scale = maxf(cost_scale, span / link_cost)
+	for id in graph.get_point_ids():
+		graph.set_point_weight_scale(id, cost_scale)
+	for link in _links:
+		var span := graph.get_point_position(link.x).distance_to(graph.get_point_position(link.y))
+		if span > 0.0:
+			graph.set_point_weight_scale(link.y, link_cost * cost_scale / span)
 
 
 func _point(cell: Vector2i) -> Vector2:
@@ -141,6 +160,7 @@ func _add_link(entry: Vector2, exit: Vector2) -> void:
 	var entry_id := _add_point(entry)
 	var exit_id := _add_point(exit)
 	graph.connect_points(start, entry_id)
-	graph.connect_points(exit_id, finish)
+	# One way, so only the link itself pays the exit point's weight.
+	graph.connect_points(exit_id, finish, false)
 	graph.connect_points(entry_id, exit_id, false)
-	graph.special_costs[Vector2i(entry_id, exit_id)] = BotRules.current().navigation_link_cost
+	_links.append(Vector2i(entry_id, exit_id))

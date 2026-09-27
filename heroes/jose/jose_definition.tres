@@ -20,8 +20,8 @@ growth = 2.0
 
 [sub_resource type="Resource" id="Resource_yubw8"]
 script = ExtResource("3_scaling")
-base = 540.0
-growth = 52.0
+base = 486.0
+growth = 46.8
 
 [sub_resource type="Resource" id="Resource_2s40a"]
 script = ExtResource("3_scaling")
@@ -54,7 +54,7 @@ title = "Smiling Assassin"
 role = 1
 description = "A feared, famous assassin who found freedom in the work. Twin revolvers, a coin that marks for death, and a flip that reloads. Rewards aim, timing and target selection."
 stats = SubResource("Resource_sjg0i")
-move_speed = 560.0
+move_speed = 504.0
 abilities = Dictionary[StringName, ExtResource("4_ability")]({
 &"ability_1": ExtResource("3_mgaln"),
 &"cc": ExtResource("5_4usqw"),

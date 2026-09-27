@@ -59,6 +59,7 @@ required = false
 
 [resource]
 script = ExtResource("1_rules")
+max_level = 13
 resolve_duration = 2.0
 resolve_cc_multiplier = 0.5
 resolve_status = ExtResource("3_resolve")

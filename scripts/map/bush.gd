@@ -22,6 +22,11 @@ var _shape_node: CollisionShape2D
 var _player_inside := 0
 # Every character body currently inside.
 var _occupants: Array[Node2D] = []
+# Body instance id -> the bushes it's in, kept by _on_body so bushes_of()
+# (asked for every sight check and every drawn actor, every frame) doesn't
+# scan every bush on the map.
+static var _by_body: Dictionary = {}
+static var _none: Array[Bush] = []
 
 
 func _ready() -> void:
@@ -56,23 +61,44 @@ func get_occupants() -> Array[Node2D]:
 	return _occupants.filter(func(n): return is_instance_valid(n))
 
 
-# Every bush `node` is standing in (usually zero or one).
+# Every bush `node` is standing in (usually zero or one). Read-only: don't
+# change the array.
 static func bushes_of(node: Node) -> Array[Bush]:
-	var result: Array[Bush] = []
 	if not is_instance_valid(node) or not node.is_inside_tree():
-		return result
-	for bush in node.get_tree().get_nodes_in_group(GROUP):
-		if bush is Bush and bush.has_occupant(node):
-			result.append(bush)
-	return result
+		return _none
+	return _by_body.get(node.get_instance_id(), _none)
+
+
+func _exit_tree() -> void:
+	if Engine.is_editor_hint():
+		return
+	for body in _occupants:
+		if is_instance_valid(body):
+			_unindex(body)
+	_occupants.clear()
+	_player_inside = 0
+
+
+func _unindex(body: Node) -> void:
+	var id := body.get_instance_id()
+	var list: Array = _by_body.get(id, [])
+	list.erase(self)
+	if list.is_empty():
+		_by_body.erase(id)
 
 
 func _on_body(body: Node2D, change: int) -> void:
 	if change > 0:
 		if not _occupants.has(body):
 			_occupants.append(body)
+			var id := body.get_instance_id()
+			if not _by_body.has(id):
+				var list: Array[Bush] = []
+				_by_body[id] = list
+			_by_body[id].append(self)
 	else:
 		_occupants.erase(body)
+		_unindex(body)
 	if body.is_in_group("player"):
 		_player_inside = maxi(0, _player_inside + change)
 		queue_redraw()
@@ -84,7 +110,10 @@ func _draw() -> void:
 	var dark := Color(color.darkened(0.35), alpha)
 	# Three overlapping blobs read as a clump rather than a perfect circle.
 	var lobes := [Vector2(-0.35, 0.1), Vector2(0.3, -0.2), Vector2(0.15, 0.35)]
+	# Fifteen circles as one mesh: one draw call per bush.
+	var batch := ShapeBatch.new()
 	for lobe: Vector2 in lobes:
-		draw_circle(lobe * radius, radius * 0.72, dark)
+		batch.draw_circle(lobe * radius, radius * 0.72, dark)
 	for lobe: Vector2 in lobes:
-		AeroDraw.gloss_circle(self, lobe * radius + Vector2(-6, -8), radius * 0.62, fill)
+		AeroDraw.gloss_circle(batch, lobe * radius + Vector2(-6, -8), radius * 0.62, fill)
+	batch.draw_on(self)

@@ -15,8 +15,8 @@
 
 [sub_resource type="Resource" id="Sub_health"]
 script = ExtResource("3_x")
-base = 1100.0
-growth = 130.0
+base = 990.0
+growth = 117.0
 
 [sub_resource type="Resource" id="Sub_weapon"]
 script = ExtResource("3_x")
@@ -54,7 +54,7 @@ title = "Yellow Army"
 role = 0
 description = "A small commander riding an army of yellow bugs. Dive tank: ride the swarm in, rally the army into a shield when focused, sting a target to stick to it, and sound the CHARGE! to sweep a whole team away. High health and health growth."
 stats = SubResource("Sub_stats")
-move_speed = 500.0
+move_speed = 450.0
 acceleration = 2400.0
 friction = 2600.0
 abilities = Dictionary[StringName, ExtResource("4_x")]({

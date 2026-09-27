@@ -110,7 +110,7 @@ func offscreen_arrow_for(_viewer: Node) -> Dictionary:
 	return {"color": arrow_color, "scale": 1.3}
 
 
-func draw_minimap_icon(canvas: CanvasItem, at: Vector2, _viewer_team: StringName) -> void:
+func draw_minimap_icon(canvas: Object, at: Vector2, _viewer_team: StringName) -> void:
 	if state != CampState.ALIVE and state != CampState.WARNING:
 		return
 	var big := data != null and data.announce
@@ -130,7 +130,8 @@ func draw_minimap_icon(canvas: CanvasItem, at: Vector2, _viewer_team: StringName
 
 func _process(delta: float) -> void:
 	_t += delta
-	queue_redraw()
+	if ScreenCull.is_near(self, 600.0):
+		queue_redraw()
 
 
 # A faint ring on the ground where the camp is (brighter while it's up, and
