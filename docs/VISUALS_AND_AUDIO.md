@@ -352,6 +352,15 @@ compressor on SFX (-16 dB, 4:1) and a hard limiter on Master (-0.5 dB).
 | Min Interval | Rate limit, which keeps rapid-fire weapons from turning into noise. |
 | Max Voices | Cap on overlapping copies; the oldest is cut. |
 
+**Textured swing trails.** A melee hero's swing trail comes from its
+FeelProfile's **Slash Trail Scene** (`effects/feel/slash_trail.tscn`,
+`SlashTrail`). Give a copy of it a **Texture** to sweep art along the arc
+instead of the flat band: the image's top is the old end of the trail, its
+bottom rides the blade, left is the inner rim and right the outer rim.
+**Tint Texture** colours it with the attack's `trail_color`; **Texture
+Modulate** tints it further. Avery's `heroes/avery/vfx/sun_flame_trail.tscn`
+sweeps the flame cut from her sword art.
+
 ## Making effect scenes
 
 `effects/` holds the placeholder effects. Duplicate one as a starting point.

@@ -7,7 +7,7 @@
 [ext_resource type="Resource" path="res://resources/audio/sfx/feel/fire_whoomp.tres" id="5_x"]
 [ext_resource type="Resource" path="res://resources/audio/sfx/feel/fire_crackle.tres" id="6_x"]
 [ext_resource type="Resource" path="res://resources/audio/sfx/feel/impact_light.tres" id="7_x"]
-[ext_resource type="PackedScene" path="res://effects/feel/slash_trail.tscn" id="8_x"]
+[ext_resource type="PackedScene" path="res://heroes/avery/vfx/sun_flame_trail.tscn" id="8_x"]
 [ext_resource type="Resource" path="res://resources/audio/sfx/feel/swing_light.tres" id="9_x"]
 
 [sub_resource type="Resource" id="Sub_1"]

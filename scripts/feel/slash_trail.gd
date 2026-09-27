@@ -10,6 +10,10 @@ class_name SlashTrail
 #
 # Context (setup_cue): radius, arc_degrees, step (even steps sweep the other
 # way), duration (active time), color, width, particles, visuals.
+#
+# Set `texture` to sweep art (a flame, a smear) along the band instead of the
+# flat colour: the image's top is the old end of the trail, its bottom rides
+# the blade; its left edge is the inner rim, its right edge the outer rim.
 
 @export var inner_ratio: float = 0.55
 @export var fade_time: float = 0.16
@@ -17,6 +21,13 @@ class_name SlashTrail
 @export var segments: int = 28
 @export var edge_color: Color = Color(1.0, 1.0, 0.92, 1.0)
 @export var ember_gradient: Gradient
+## Art stretched along the band in place of the flat fill (see above).
+@export var texture: Texture2D
+## Multiplied into the texture. The attack's trail colour tints it when this
+## is left white and tint_texture is on.
+@export var texture_modulate: Color = Color.WHITE
+## Tint the texture with the attack's trail colour (AttackFeel.trail_color).
+@export var tint_texture: bool = false
 
 var radius: float = 150.0
 var arc_degrees: float = 120.0
@@ -89,13 +100,20 @@ func _draw() -> void:
 	var rev := inner.duplicate()
 	rev.reverse()
 	band.append_array(rev)
+	var uvs: PackedVector2Array = []
 	for i in band.size():
-		var k := float(i if i <= segments else band.size() - 1 - i) / segments
+		var on_outer := i <= segments
+		var k := float(i if on_outer else band.size() - 1 - i) / segments
 		var c := color
-		c.a *= fade * lerpf(0.15, 1.0, k)
+		if texture != null:
+			c = texture_modulate * (color if tint_texture else Color.WHITE)
+			c.a *= fade * lerpf(0.7, 1.0, k)
+			uvs.append(Vector2(1.0 if on_outer else 0.0, k))
+		else:
+			c.a *= fade * lerpf(0.15, 1.0, k)
 		colors.append(c)
 	if band.size() >= 3 and to != a.x:
-		draw_polygon(band, colors)
+		draw_polygon(band, colors, uvs, texture)
 	var e := edge_color
 	e.a *= fade
 	draw_polyline(outer, e, 2.0 + 2.5 * width, true)
