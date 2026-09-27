@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="SheetSpec" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/sheet_spec.gd" id="1_spec"]
+
+[resource]
+script = ExtResource("1_spec")
+source_path = "res://heroes/avery/art/sheet/avery_sheet.webp"
+column_edges = PackedInt32Array(78, 161, 246, 330, 416, 502, 587, 673, 760)
+row_edges = PackedInt32Array(165, 282, 399, 535, 687, 810, 962, 1113, 1290)
+column_names = PackedStringArray("down", "down_left", "left", "up_left", "up", "up_right", "right", "down_right")
+row_names = PackedStringArray("head", "torso", "cape", "wings", "legs", "free_arm", "sword_arm", "sword")
+export_columns = PackedStringArray("down", "down_right", "right", "up_right", "up")
+out_dir = "res://heroes/avery/art/directions"
+restore_enclosed_rows = PackedStringArray("sword")

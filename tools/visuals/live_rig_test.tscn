@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tools/visuals/live_rig_test.gd" id="1_test"]
+
+[node name="LiveRigTest" type="Node2D"]
+script = ExtResource("1_test")
