@@ -89,8 +89,8 @@ func _test_basics() -> void:
 	print("\n-- Setup")
 	_check("every hero has a MoteCarrier", MoteCarrier.find_on(a1) != null and MoteCarrier.find_on(b1) != null, "")
 	_check("the MatchManager made a MoteDirector", director != null and MoteDirector.find(get_tree()) == director, "")
-	_check("MoteData: small worth 1, Dream Mote worth 5", director.small_data.value == 1
-		and director.dream_data.value == 5 and director.dream_data.is_dream, "")
+	_check("MoteData: small worth 1, Dream Mote worth 10", director.small_data.value == 1
+		and director.dream_data.value == 10 and director.dream_data.is_dream, "")
 	_check("playing", manager.is_playing(), "")
 
 
@@ -495,7 +495,7 @@ func _test_late_match() -> void:
 	var late := director.spawn_mote(Vector2(3000, -3200))
 	var late_dream := director.spawn_mote(Vector2(3000, -3400), true)
 	_check("values x%.0f after late_match_time" % rules.late_match_value_mult,
-		early.value == 1 and late.value == 2 and late_dream.value == 10,
+		early.value == 1 and late.value == 2 and late_dream.value == 20,
 		"%d %d %d" % [early.value, late.value, late_dream.value])
 	manager.clock = saved
 	director.clear_motes()

@@ -54,7 +54,7 @@ func _test_assembled() -> void:
 	_check("listed in hero selection (F1 > Play as)",
 		HeroScaffold.find_definitions().any(func(d): return d.hero_id == &"pike"), "")
 	var stats := definition.stats
-	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 560.0) and _near(stats.health.value_at(10), 1050.0)
+	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 504.0) and _near(stats.health.value_at(10), 945.0, 0.1)
 		and _near(stats.weapon.value_at(10), 95.0) and _near(stats.magic.value_at(10), 18.0)
 		and _near(stats.armor.value_at(10), 34.0) and _near(stats.magic_resist.value_at(10), 28.0), "")
 	var knives := pike.get_ranged_ability()
@@ -158,38 +158,87 @@ func _test_obsession() -> void:
 	print("\n-- Obsession")
 	_reset(Vector2(0, 6000))
 	var target := _dummy(Vector2(500, 6000), &"b")
+	var bystander := _dummy(Vector2(-400, 6000), &"b")
 	await _physics_frames(2)
 	await _mark(target)
 	var obsession := pike.get_ability(&"passive")
-	await _physics_frames(2)
+	var delay: float = obsession.data.get_value(&"restealth_delay", pike.stats_component)
+	await _seconds(delay)    # earlier tests may have just revealed her
 	_check("seen: no bonus", not obsession.is_unseen() and not pike.status_component.has_status(&"pike_unseen"), "")
+	_check("seen: enemies can see her", CombatQueries.has_line_of_sight(bystander, pike)
+		and not CombatQueries.is_invisible(pike), "")
 	var wall := _wall(Vector2(250, 6000))
 	await _physics_frames(3)
 	_check("Obsession's bonus is on while a wall blocks the Beloved's sight", obsession.is_unseen()
 		and _near(pike.status_component.get_multiplier(StatusEffect.MOVE_SPEED), 1.2)
 		and pike.visuals.modulate.a < 0.5, "")
+	_check("hidden, she's invisible to every enemy, even one with a clear view",
+		CombatQueries.is_invisible(pike) and not CombatQueries.has_line_of_sight(bystander, pike), "")
+	LocalView.set_viewer(bystander)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check("...and isn't drawn on an enemy's screen", not pike.visible, "")
+	LocalView.set_viewer(pike)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check("...but her own team still sees her", pike.visible, "")
 	wall.queue_free()
 	await _physics_frames(3)
-	_check("...and off as soon as they see her", not obsession.is_unseen()
-		and not pike.status_component.has_status(&"pike_unseen"), "")
-	_check("being seen again readies an ambush knife", obsession.is_ambush_ready(), "")
+	_check("she stays hidden when her Beloved could see her again", obsession.is_unseen()
+		and pike.status_component.has_status(&"pike_unseen")
+		and not CombatQueries.has_line_of_sight(target, pike), "")
+
+	# There You Are keeps her hidden.
+	pike.get_ability(&"movement").cooldown_remaining = 0.0
+	pike.request_slot(&"movement", target.global_position)
+	await _seconds(0.4)
+	_check("There You Are doesn't reveal her", obsession.is_unseen(), "")
 
 	hits_log.clear()
 	_aim(target.global_position)
 	pike.request_slot(&"primary", target.global_position)
 	await _seconds(0.5)
+	_check("a knife reveals her", not obsession.is_unseen() and not pike.status_component.has_status(&"pike_unseen")
+		and CombatQueries.has_line_of_sight(target, pike), "")
 	var hits := hits_log.filter(func(i): return i.target == target and i.label == &"juggled_knives")
 	var single := _knife_damage(target)
-	_check("the ambush knife deals double damage", not hits.is_empty() and _near(hits[0].amount, single * 2.0, 0.1),
+	_check("the knife out of hiding is an ambush: double damage", not hits.is_empty() and _near(hits[0].amount, single * 2.0, 0.1),
 		"%.1f vs %.1f" % [hits[0].amount if not hits.is_empty() else 0.0, single * 2.0])
 	_check("...and roots for 0.75 s", target.status_component.has_status(&"pike_ambush_root"), "")
 	_check("...only the first knife", hits.size() < 2 or _near(hits[1].amount, single, 0.1), "")
+	pike.ability_controller.interrupt()
 
-	var wall2 := _wall(Vector2(250, 6000))
+	# Breaking sight right away: she can't vanish again for restealth_delay.
+	pike.global_position = target.global_position - Vector2(500, 0)
+	var wall2 := _wall(pike.global_position.lerp(target.global_position, 0.5))
 	await _physics_frames(3)
+	_check("no vanishing again within restealth_delay", not obsession.is_unseen(), "")
+	await _seconds(delay)
+	_check("...then she vanishes again", obsession.is_unseen(), "")
+	_check("the ambush is on cooldown (at most one per 6 s)", not obsession.is_ambush_ready(), "")
+	pike.get_ability(&"cc").cooldown_remaining = 0.0
+	pike.request_slot(&"cc", target.global_position)
+	await _physics_frames(2)
+	_check("casting another ability reveals her too", not obsession.is_unseen(), "")
+	_check("...with no ambush while it's on cooldown", not obsession.is_ambush_ready(), "")
 	wall2.queue_free()
+
+	# A reveals status beats the invisibility.
+	await _seconds(delay + 0.1)
+	var wall3 := _wall(pike.global_position.lerp(target.global_position, 0.5))
 	await _physics_frames(3)
-	_check("at most one ambush per 6 s", not obsession.is_ambush_ready(), "")
+	var reveal := StatusEffect.new()
+	reveal.id = &"test_reveal"
+	reveal.duration = 1.0
+	reveal.reveals = true
+	pike.status_component.apply(reveal, target)
+	_check("revealed, enemies see her", not CombatQueries.is_invisible(pike)
+		and CombatQueries.has_line_of_sight(bystander, pike), "")
+	wall3.queue_free()
+	await _physics_frames(3)
+	_check("revealed in her Beloved's view: she drops out of hiding", not obsession.is_unseen(), "")
+	pike.status_component.remove(&"test_reveal")
+	LocalView.clear_viewer()
 	_clear()
 	await _physics_frames(2)
 

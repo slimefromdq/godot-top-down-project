@@ -16,8 +16,8 @@
 
 [sub_resource type="Resource" id="Sub_health"]
 script = ExtResource("3_x")
-base = 560.0
-growth = 54.4444
+base = 504.0
+growth = 49.0
 
 [sub_resource type="Resource" id="Sub_weapon"]
 script = ExtResource("3_x")
@@ -55,7 +55,7 @@ title = "The Beloved's Shadow"
 role = 2
 description = "Picks one enemy and makes sure it's just the two of them. She can reach her Beloved from almost anywhere, and hits hardest when they can't see her coming."
 stats = SubResource("Sub_stats")
-move_speed = 560.0
+move_speed = 504.0
 acceleration = 2800.0
 friction = 3000.0
 abilities = Dictionary[StringName, ExtResource("4_x")]({

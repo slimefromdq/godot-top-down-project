@@ -58,7 +58,7 @@ func _test_assembled() -> void:
 	_check("listed in hero selection (F1 > Play as)",
 		HeroScaffold.find_definitions().any(func(d): return d.hero_id == &"butler"), "")
 	var stats := definition.stats
-	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 900.0) and _near(stats.health.value_at(10), 1750.0)
+	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 810.0) and _near(stats.health.value_at(10), 1575.0, 0.1)
 		and _near(stats.weapon.value_at(10), 78.0) and _near(stats.magic.value_at(10), 45.0)
 		and _near(stats.armor.value_at(10), 70.0) and _near(stats.magic_resist.value_at(10), 52.0), "")
 	_check("Composed kit: Cane, Vampiric Cloak, At Your Service, Polite Refusal", _ids() == [&"cane", &"vampiric_cloak",

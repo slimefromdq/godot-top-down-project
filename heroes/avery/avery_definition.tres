@@ -15,8 +15,8 @@
 
 [sub_resource type="Resource" id="Sub_1"]
 script = ExtResource("3_x")
-base = 720.0
-growth = 72.0
+base = 648.0
+growth = 64.8
 
 [sub_resource type="Resource" id="Sub_2"]
 script = ExtResource("3_x")
@@ -54,7 +54,7 @@ title = "the Sunblade"
 role = 0
 description = "A valiant knight with a flaming sword. Consistent at every level, with strong late-game sustain. Blade damage scales with Weapon; fire and healing scale with Magic."
 stats = SubResource("Sub_6")
-move_speed = 540.0
+move_speed = 486.0
 acceleration = 2600.0
 friction = 2800.0
 abilities = Dictionary[StringName, ExtResource("4_x")]({

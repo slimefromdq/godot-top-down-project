@@ -19,11 +19,11 @@ base = 3.5
 
 [sub_resource type="Resource" id="Resource_4mexo"]
 script = ExtResource("3_1o7mi")
-base = 450.0
+base = 850.0
 
 [sub_resource type="Resource" id="Resource_unf8c"]
 script = ExtResource("3_1o7mi")
-base = 4.0
+base = 9.0
 
 [sub_resource type="Resource" id="Resource_8mieg"]
 script = ExtResource("3_1o7mi")
@@ -55,3 +55,4 @@ values = Dictionary[StringName, ExtResource("3_1o7mi")]({
 &"storm_radius": SubResource("Resource_4mexo")
 })
 feel_preset = &"starfall"
+meteors_per_second_by_moons = Array[float]([8.0, 9.0, 10.0, 11.0, 12.0])

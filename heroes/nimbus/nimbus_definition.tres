@@ -16,8 +16,8 @@
 
 [sub_resource type="Resource" id="Sub_health"]
 script = ExtResource("3_x")
-base = 500.0
-growth = 50.0
+base = 450.0
+growth = 45.0
 
 [sub_resource type="Resource" id="Sub_weapon"]
 script = ExtResource("3_x")
@@ -55,7 +55,7 @@ title = "The Gentleman Spy"
 role = 1
 description = "An unhurried gentleman with a rifle in his umbrella. Slow, heavy, precise shots from further away than anyone can see; his one escape is a steerable umbrella glide, so positioning is his whole defence."
 stats = SubResource("Sub_stats")
-move_speed = 490.0
+move_speed = 441.0
 acceleration = 2400.0
 friction = 2800.0
 abilities = Dictionary[StringName, ExtResource("4_x")]({

@@ -119,8 +119,10 @@ match) ultimates keep their cooldowns so they can be practised.
 | Value | Default | What it does |
 |---|---|---|
 | `warmup_time` | 10.0 | Countdown before the match starts. Heroes can move, nobody earns anything. |
-| `respawn_base` | 5.0 | Seconds a dead hero waits before respawning: base + per_level x level. |
+| `respawn_base` | 5.0 | Seconds a dead hero waits before respawning: base + per_level x level + the match-time growth. |
 | `respawn_per_level` | 0.8 | As above. |
+| `respawn_growth_max` | 4.0 | Respawns grow by up to this many seconds as the match goes on... |
+| `respawn_growth_time` | 1200.0 | ...rising linearly over this many seconds of play (full at 20 minutes). |
 
 ### Spawn
 
@@ -147,8 +149,9 @@ match) ultimates keep their cooldowns so they can be practised.
 
 | Value | Default | What it does |
 |---|---|---|
-| `xp_level_base` | 300.0 | XP needed to go from level L to L+1 = base + growth x (L - 1). With 300 / 100, level 10 takes 6300 XP in total. |
-| `xp_level_growth` | 100.0 | As above. |
+| `xp_level_base` | 300.0 | XP needed to go from level L to L+1 = base + growth x (L - 1) + accel x (L - 1)². With 300 / 70 / 12, level 10 takes 7668 XP in total and level 13 (the cap) 14292. |
+| `xp_level_growth` | 70.0 | As above. |
+| `xp_level_accel` | 12.0 | As above: makes each level cost more than the last. |
 
 ### Ultimate
 

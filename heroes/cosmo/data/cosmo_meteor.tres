@@ -7,7 +7,7 @@
 [sub_resource type="Resource" id="Resource_12knn"]
 script = ExtResource("2_a1p58")
 kind = 1
-radius = 120.0
+radius = 160.0
 
 [resource]
 script = ExtResource("3_kkmw2")

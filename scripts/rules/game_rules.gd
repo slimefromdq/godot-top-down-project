@@ -15,7 +15,7 @@ const DEFAULT_PATH := "res://resources/rules/game_rules.tres"
 ## Highest level a hero can reach in a match. Stat formulas are defined for
 ## levels 1-20 regardless, so the cap can be raised for playtests without
 ## touching any hero data.
-@export_range(1, 20) var max_level: int = 10
+@export_range(1, 20) var max_level: int = 13
 
 @export_group("Resistances")
 ## Damage multiplier = K / (K + resistance). With K = 100, 100 armor halves

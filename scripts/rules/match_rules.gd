@@ -18,9 +18,15 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 @export_group("Match")
 ## Countdown before the match starts. Heroes can move, nobody earns anything.
 @export var warmup_time: float = 10.0
-## Seconds a dead hero waits before respawning: base + per_level x level.
+## Seconds a dead hero waits before respawning:
+## base + per_level x level + the match-time growth below.
 @export var respawn_base: float = 5.0
 @export var respawn_per_level: float = 0.8
+## Respawns get longer as the match goes on: + up to respawn_growth_max
+## seconds, rising linearly over the first respawn_growth_time seconds of
+## PLAYING. Late deaths cost more, so late fights decide matches.
+@export var respawn_growth_max: float = 4.0
+@export var respawn_growth_time: float = 1200.0
 
 @export_group("Spawn")
 ## Each team's spawn area (the bounding box of its spawn markers grown by
@@ -48,10 +54,13 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 @export var assist_window: float = 10.0
 
 @export_group("Leveling")
-## XP needed to go from level L to L+1 = base + growth x (L - 1).
-## With 300 / 100, level 10 takes 6300 XP in total.
+## XP needed to go from level L to L+1
+##   = base + growth x (L - 1) + accel x (L - 1)^2,
+## so each level costs more than the last, and the late levels much more.
+## With 300 / 70 / 12: 7668 XP in total to reach L10, 14292 to reach L13.
 @export var xp_level_base: float = 300.0
-@export var xp_level_growth: float = 100.0
+@export var xp_level_growth: float = 70.0
+@export var xp_level_accel: float = 12.0
 
 @export_group("Ultimate")
 ## In a match, charge-gated slots (SlotDefinition.ultimate_charge: the
@@ -240,7 +249,8 @@ static func override(rules: MatchRules) -> void:
 
 
 func xp_to_next_level(level: int) -> float:
-	return xp_level_base + xp_level_growth * (level - 1)
+	var steps := float(level - 1)
+	return xp_level_base + xp_level_growth * steps + xp_level_accel * steps * steps
 
 
 # Total XP from level 1 to reach `level`.
@@ -275,5 +285,13 @@ func chime_pitch(n: int) -> float:
 	return chime_scale[i % chime_scale.size()] * (2.0 if i >= chime_scale.size() else 1.0)
 
 
-func respawn_time(level: int) -> float:
-	return respawn_base + respawn_per_level * level
+## `clock`: seconds of PLAYING so far (MatchManager.clock).
+func respawn_time(level: int, clock: float = 0.0) -> float:
+	return respawn_base + respawn_per_level * level + respawn_growth(clock)
+
+
+## The match-time part of the respawn timer at `clock`.
+func respawn_growth(clock: float) -> float:
+	if respawn_growth_time <= 0.0:
+		return respawn_growth_max
+	return respawn_growth_max * clampf(clock / respawn_growth_time, 0.0, 1.0)

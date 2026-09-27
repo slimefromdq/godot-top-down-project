@@ -16,8 +16,8 @@
 
 [sub_resource type="Resource" id="Sub_health"]
 script = ExtResource("3_x")
-base = 950.0
-growth = 100.0
+base = 855.0
+growth = 90.0
 
 [sub_resource type="Resource" id="Sub_weapon"]
 script = ExtResource("3_x")
@@ -55,7 +55,7 @@ title = "The Contaminant"
 role = 0
 description = "A slow walking hazard in a yellow hazmat suit. His gas aura hurts more every second you stand in it; he sprays, lobs canisters and hooks people in to keep them there. Takes space rather than protecting allies."
 stats = SubResource("Sub_stats")
-move_speed = 460.0
+move_speed = 414.0
 acceleration = 2200.0
 friction = 2600.0
 abilities = Dictionary[StringName, ExtResource("4_x")]({
