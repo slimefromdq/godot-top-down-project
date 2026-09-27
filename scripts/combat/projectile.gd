@@ -73,6 +73,17 @@ var _hits: int = 0
 var _already_hit: Dictionary = {}
 var _sweep_shape := RectangleShape2D.new()
 var _circle_shape := CircleShape2D.new()
+# Reused every tick instead of allocating a query per projectile per frame.
+var _hit_query := PhysicsShapeQueryParameters2D.new()
+
+# Loaded once; fire() runs for every shot in a teamfight.
+static var _scene: PackedScene
+
+
+static func _get_scene() -> PackedScene:
+	if _scene == null:
+		_scene = load(SCENE_PATH)
+	return _scene
 
 
 # Spawns a projectile into the current scene and returns it.
@@ -80,7 +91,7 @@ var _circle_shape := CircleShape2D.new()
 # pierce never hits the same target twice.
 static func fire(context: Node, projectile_data: ProjectileData, origin: Vector2,
 		dir: Vector2, template: DamageInfo) -> Projectile:
-	var projectile: Projectile = load(SCENE_PATH).instantiate()
+	var projectile: Projectile = _get_scene().instantiate()
 	projectile.data = projectile_data
 	projectile.direction = dir.normalized()
 	projectile.damage_template = template
@@ -101,7 +112,7 @@ static func fire(context: Node, projectile_data: ProjectileData, origin: Vector2
 # hooks see every target.
 static func explode_at(context: Node, projectile_data: ProjectileData, at: Vector2, dir: Vector2,
 		template: DamageInfo, on_hit: Callable = Callable()) -> Projectile:
-	var projectile: Projectile = load(SCENE_PATH).instantiate()
+	var projectile: Projectile = _get_scene().instantiate()
 	projectile._detonation_only = true
 	projectile.data = projectile_data
 	projectile.direction = dir.normalized() if dir != Vector2.ZERO else Vector2.RIGHT
@@ -193,7 +204,7 @@ func _physics_process(delta: float) -> void:
 
 func _hit_targets_between(from: Vector2, to: Vector2) -> void:
 	var space := get_world_2d().direct_space_state
-	var query := PhysicsShapeQueryParameters2D.new()
+	var query := _hit_query
 	query.collide_with_areas = true
 	query.collide_with_bodies = false
 	query.collision_mask = GameRules.current().hurtbox_mask

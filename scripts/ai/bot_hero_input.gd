@@ -217,12 +217,13 @@ func _perceive_threats() -> void:
 		var shooter = projectile.damage_template.source
 		if is_instance_valid(shooter) and CombatQueries.team_of(shooter) == hero.team:
 			continue
-		if projectile.global_position.distance_to(hero.global_position) > rules.dodge_scan_radius:
+		if projectile.global_position.distance_squared_to(hero.global_position) > rules.dodge_scan_radius * rules.dodge_scan_radius:
 			continue
-		if not CombatQueries.walls_clear(hero, projectile):
-			continue
+		# Cheap checks before the wall raycast.
 		var id := projectile.get_instance_id()
 		if _seen_threats.has(id):
+			continue
+		if not CombatQueries.walls_clear(hero, projectile):
 			continue
 		var relative_velocity := projectile.direction * projectile.data.speed - hero.velocity
 		var approach := hero.global_position - projectile.global_position
@@ -243,10 +244,11 @@ func _perceive_threats() -> void:
 		if zone == null or zone.data == null or zone.data.shape == null:
 			continue
 		var owner_node = zone.source
-		if (is_instance_valid(owner_node) and CombatQueries.team_of(owner_node) == hero.team) \
-				or not CombatQueries.walls_clear(hero, zone):
+		if is_instance_valid(owner_node) and CombatQueries.team_of(owner_node) == hero.team:
 			continue
 		if zone.global_position.distance_to(hero.global_position) > zone.data.shape.get_reach() + rules.navigation_actor_radius:
+			continue
+		if not CombatQueries.walls_clear(hero, zone):
 			continue
 		var away := (hero.global_position - zone.global_position).normalized()
 		if away != Vector2.ZERO:
