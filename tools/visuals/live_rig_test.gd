@@ -2,6 +2,7 @@ extends Node2D
 
 # Headless checks for the 8-direction live rig pipeline:
 #   SheetCutter / SheetSpec   cutting a character sheet into part PNGs
+#   VisualsComponent          a hero whose profile has a live_rig (Avery)
 #   LiveRig                   picking directions (with hysteresis), the legs
 #                             rule (strafe / backpedal / 90-degree clamp),
 #                             mirroring, the aim part, idle/walk/sway/stride,
@@ -27,6 +28,7 @@ func _run() -> void:
 	_test_direction_of()
 	_test_pick_legs()
 	await _test_rig()
+	await _test_in_game()
 	print("live_rig_test: %d failed" % failures)
 	get_tree().quit(failures)
 
@@ -274,6 +276,45 @@ func _test_rig() -> void:
 	rig.get_lower().get_node(^"Up").free()
 	_check("a missing facing set is refused", not rig.validate().is_empty(), "")
 	rig.queue_free()
+
+
+# --- Wired into a hero (Avery's profile has live_rig) ---------------------------------
+
+func _test_in_game() -> void:
+	var hero: Hero = load("res://heroes/avery/avery.tscn").instantiate()
+	hero.team = &"a"
+	add_child(hero)
+	await get_tree().process_frame
+	var visuals := VisualsComponent.find_on(hero)
+	var rig := visuals.body as LiveRig
+	_check("Avery's body is her live rig", rig != null and rig.validate().is_empty(), "")
+	if rig == null:
+		hero.queue_free()
+		return
+	_check("rig parts share the body's flash material", rig.material != null
+			and rig.find_children("*", "Sprite2D", true, false).all(func(p): return p.use_parent_material), "")
+	var ok := true
+	for d in [LiveRig.UP, LiveRig.LEFT, LiveRig.DOWN_RIGHT]:
+		hero.aim_direction = Vector2.from_angle(d * PI / 4.0)
+		for i in 3:
+			await get_tree().process_frame
+		ok = ok and rig.direction == d and _aim_points(rig, hero.aim_direction)
+	_check("the rig follows the hero's aim, arm on target", ok, "")
+	visuals.play_body_animation(&"hurt")
+	for i in 6:
+		await get_tree().process_frame
+	_check("the hurt animation tilts the rig", absf(rig.rotation) > 0.01, str(rig.rotation))
+	var ghost := visuals.make_body_snapshot()
+	_check("afterimages copy the rig", ghost != null and ghost.get_node_or_null(^"Upper") != null, "")
+	if ghost != null:
+		ghost.free()
+	visuals.play_body_animation(&"death")
+	_check("death lasts the rig's tip and fade", is_equal_approx(visuals.get_death_duration(),
+			maxf(visuals.profile.death_linger_time, rig.motion.death_time + rig.motion.death_fade_time)), "")
+	_check("death plays on the rig", rig.is_dead(), "")
+	visuals.revive()
+	_check("revive brings it back", not rig.is_dead(), "")
+	hero.queue_free()
 
 
 func _check(label: String, ok: bool, detail: String) -> void:

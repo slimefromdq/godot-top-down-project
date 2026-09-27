@@ -6,6 +6,9 @@ class_name VisualProfile
 # that character's VisualsComponent. See docs/VISUALS_AND_AUDIO.md.
 
 @export_group("Body")
+## An 8-direction LiveRig scene drawn live as the body (see
+## docs/VISUALS_AND_AUDIO.md). Takes the place of Sprite Frames / Texture.
+@export var live_rig: PackedScene
 ## Animated body. Animations named idle, move, hurt, death are used
 ## automatically; any other name can be triggered from a VisualCue.
 @export var sprite_frames: SpriteFrames
