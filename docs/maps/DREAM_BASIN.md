@@ -28,6 +28,22 @@ Blockout with legend: [dream_basin_blockout.svg](dream_basin_blockout.svg)
 | **Cloister** | Base outskirts, Tangle side | Walled tunnel (**close-quarters**) that opens into a colonnade. |
 | **Orchard** | Base outskirts, Ridge side | Open scattered trees. |
 
+## Shops and neutral camps
+
+Placed by `tools/dream_basin/layout.py` (and checked by `check.py`: clear of
+cover, reachable on foot, mirrored).
+
+| What | Where |
+|---|---|
+| **Shop** (one per team) | In the spawn room, behind the spawn points. |
+| **The Nightmare's lair** | The Cradle's centre (the Dream Mote spot too; the Nightmare's body is small enough to reach a Mote under it). |
+| **Sleepwalker** ×4 | Each Glade and each Stilt Ridge. |
+| **Dream Wisps** ×4 | Each Tangle and each Driftfield. |
+
+The exporter's colours have drifted from the hand-tuned ones in
+`scenes/maps/dream_basin.tscn`, so these nodes were spliced into the scene
+rather than re-exporting the whole file.
+
 ## Sight lanes
 
 All lanes are verified clear by `check.py`.

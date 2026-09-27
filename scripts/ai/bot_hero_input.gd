@@ -13,6 +13,16 @@ class_name BotHeroInput
 ##   teammates' fights), the Dream Mote, the nearest unclaimed Mote, and
 ##   otherwise ROAM: scout the Mote spawns the team hasn't seen for longest,
 ##   spread away from teammates' roam goals.
+## Neutrals: with nothing more pressing, a bot clears a jungle camp within
+## plan.jungle_radius (at most BotRules.jungle_bots_per_camp per team), and
+## the whole team goes for the Nightmare while it's up and enough of them
+## are alive. At the camp it fights the nearest monster (neutral_target);
+## an enemy hero in range always comes first. A neutral that attacks the bot
+## is fought back like a hero would be.
+## Items: the plan's item_build is bought in order whenever the bot can
+## shop (on death, on respawn, and every shop_interval while in base); with
+## plan.shop_trip_gold set, a bot with that much gold and nothing better to
+## do walks home to shop. Active items are cast like any other slot.
 ## Teammates' bots share their `goal_key` so two bots don't chase the same
 ## Mote, roam point, carrier or hunt target.
 ##
@@ -37,6 +47,9 @@ var goal: Vector2
 ## "escort:567", "hunt:890"); &"" = nothing exclusive.
 var goal_key: StringName = &""
 var target: Hero
+## The neutral monster being fought when no enemy hero is (jungling, the
+## Nightmare, or one that attacked us).
+var neutral_target: NeutralMonster
 var visible_enemies: Array[Hero] = []
 var last_seen_position: Vector2
 var last_seen_time: float = -INF
@@ -76,6 +89,10 @@ var _attacked_time: float = -INF
 # Enemy carriers the team knows about: Hero -> [position, time]. Revealed
 # carriers update at their minimap ping rate.
 var _known_carriers: Dictionary = {}
+var _shop_left: float = 0.0
+# The camp being cleared (intent jungle / nightmare), and a neutral that hit us.
+var _camp: NeutralCamp
+var _neutral_attacker: NeutralMonster
 
 
 func _ready() -> void:
@@ -86,6 +103,10 @@ func _ready() -> void:
 	var role := hero.definition.role if hero.definition != null else HeroDefinition.Role.FLEX
 	plan = BotRules.current().plan_for(role)
 	hero.health_component.damage_taken.connect(_on_damage_taken)
+	# Dead heroes can shop from anywhere, and a respawn lands in base (the
+	# bot doesn't tick while dead).
+	hero.health_component.died.connect(try_shopping, CONNECT_DEFERRED)
+	hero.respawned.connect(try_shopping)
 	# Spread expensive sight and strategy work across physics frames.
 	_strategy_left = _rng.randf_range(0.0, BotRules.current().strategy_interval)
 	_perception_left = _rng.randf_range(0.0, BotRules.current().perception_interval)
@@ -122,6 +143,10 @@ func _physics_process(delta: float) -> void:
 		stop()
 		return
 	_time += delta
+	_shop_left -= delta
+	if _shop_left <= 0.0:
+		_shop_left = rules.shop_interval
+		try_shopping()
 	_perception_left -= delta
 	if _perception_left <= 0.0:
 		_perception_left = BotRules.current().perception_interval
@@ -140,6 +165,10 @@ func _on_damage_taken(info: DamageInfo) -> void:
 	var node := info.source
 	while node != null and is_instance_valid(node) and not node is Hero:
 		node = node.get_parent()
+	if node == null and info.source is NeutralMonster:
+		_neutral_attacker = info.source
+		_attacked_time = _time
+		return
 	var attacker := node as Hero
 	if attacker != null and attacker.team != hero.team:
 		_attacker = attacker
@@ -359,9 +388,16 @@ func _choose_goal(manager: MatchManager) -> void:
 			and hero.global_position.distance_to(goal) > rules.goal_reached_distance \
 			and _claim_still_valid():
 		return
+	if _wants_shop_trip(manager, carried) and sanctuary != null:
+		_set_goal(&"shop", &"travel", sanctuary.area.get_center())
+		return
+	if _choose_nightmare(manager, health_fraction):
+		return
 	if _choose_job():
 		return
 	if _choose_dream_mote(manager):
+		return
+	if _choose_jungle(health_fraction):
 		return
 	var mote := _best_mote(manager, carrier)
 	if mote != null:
@@ -373,6 +409,112 @@ func _choose_goal(manager: MatchManager) -> void:
 			_set_goal(&"deliver" if deposit == enemy_dreamer else &"bank", &"travel", deposit.global_position)
 			return
 	_choose_roam(home, enemy_dreamer)
+
+
+# --- Neutrals -----------------------------------------------------------------
+
+func _living_camps() -> Array[NeutralCamp]:
+	var camps: Array[NeutralCamp] = []
+	for node in get_tree().get_nodes_in_group(NeutralCamp.GROUP):
+		var camp := node as NeutralCamp
+		if camp != null and camp.data != null and camp.is_alive() and not camp.get_living_monsters().is_empty():
+			camps.append(camp)
+	return camps
+
+
+# The whole team goes when the Nightmare is up, if enough of it is alive.
+func _choose_nightmare(manager: MatchManager, health_fraction: float) -> bool:
+	var rules := BotRules.current()
+	if manager == null or not plan.fights_nightmare or health_fraction < rules.nightmare_min_health:
+		return false
+	var alive := 0
+	for ally in manager.get_roster(hero.team):
+		if not ally.health_component.is_dead():
+			alive += 1
+	if alive < rules.nightmare_min_team_alive:
+		return false
+	for camp in _living_camps():
+		if camp.data.announce and hero.global_position.distance_to(camp.global_position) <= plan.nightmare_radius:
+			_camp = camp
+			_set_goal(&"nightmare", &"aggressive", _camp_point(camp), true, _key(&"nightmare", camp))
+			return true
+	return false
+
+
+# The nearest jungle camp in reach that isn't full of teammates already.
+func _choose_jungle(health_fraction: float) -> bool:
+	if plan.jungle_radius <= 0.0 or health_fraction < plan.jungle_min_health or target != null:
+		return false
+	var best: NeutralCamp
+	var best_distance := plan.jungle_radius
+	var cap := BotRules.current().jungle_bots_per_camp
+	for camp in _living_camps():
+		if camp.data.announce:
+			continue
+		var key := _key(&"camp", camp)
+		if goal_key != key and _claim_count(key) >= cap:
+			continue
+		var distance := hero.global_position.distance_to(camp.global_position)
+		if distance < best_distance:
+			best_distance = distance
+			best = camp
+	if best == null:
+		return false
+	_camp = best
+	_set_goal(&"jungle", &"neutral", _camp_point(best), true, _key(&"camp", best))
+	return true
+
+
+# Where to stand to fight a camp: its centre, pulled back toward us by our
+# preferred range so ranged heroes don't walk into the pack.
+func _camp_point(camp: NeutralCamp) -> Vector2:
+	var away := hero.global_position - camp.global_position
+	var back := minf(_preferred_range() * 0.7, away.length())
+	return camp.global_position + (away.normalized() * back if away.length() > 1.0 else Vector2.ZERO)
+
+
+# The neutral to fight this tick: one that hit us recently, else (jungling
+# or on the Nightmare, once near the camp) the camp's nearest monster.
+func _pick_neutral_target() -> NeutralMonster:
+	var rules := BotRules.current()
+	if _neutral_attacker != null and (not is_instance_valid(_neutral_attacker)
+			or _neutral_attacker.health_component.is_dead()):
+		_neutral_attacker = null
+	if _neutral_attacker != null and _time - _attacked_time <= rules.self_defence_time \
+			and hero.global_position.distance_to(_neutral_attacker.global_position) <= plan.chase_radius:
+		return _neutral_attacker
+	if _camp == null or not is_instance_valid(_camp) or intent not in [&"jungle", &"nightmare"]:
+		_camp = null
+		return null
+	var best: NeutralMonster
+	var best_distance := maxf(plan.chase_radius, _preferred_range() * 1.5)
+	for monster in _camp.get_living_monsters():
+		var distance := hero.global_position.distance_to(monster.global_position)
+		if distance < best_distance:
+			best_distance = distance
+			best = monster
+	return best
+
+
+# Buy down the plan's item_build as far as the gold goes. Returns what was
+# bought (nothing when the bot can't shop right now).
+func try_shopping() -> Array[ItemData]:
+	var inventory := ItemInventory.find_on(hero)
+	if inventory == null or plan == null or plan.item_build.is_empty() or not inventory.can_shop():
+		return []
+	return inventory.buy_from_build(plan.item_build)
+
+
+# Worth walking home for: enough gold, the next item affordable, nothing
+# carried and nobody to fight.
+func _wants_shop_trip(manager: MatchManager, carried: int) -> bool:
+	if manager == null or plan.shop_trip_gold <= 0.0 or carried > 0 or target != null:
+		return false
+	var inventory := ItemInventory.find_on(hero)
+	if inventory == null or inventory.get_gold() < plan.shop_trip_gold:
+		return false
+	var next := inventory.get_next_in_build(plan.item_build)
+	return next != null and inventory.get_gold() >= inventory.price_of(next)
 
 
 # Bank or deliver: the plan's preference, the enemy's wake meter, and how
@@ -710,23 +852,26 @@ func _run_tactics(delta: float) -> void:
 		return  # MinigameHost uses its own bot_input() when no input is supplied.
 	_play_rhythm()
 	_follow_focus()
-	var fight := target != null and _time >= _reaction_until and not rules.strategy_only
-	var can_attack := fight and CombatQueries.has_line_of_sight(hero, target)
+	neutral_target = _pick_neutral_target() if target == null else null
+	# An enemy hero always comes first; otherwise a neutral.
+	var foe: Node2D = target if target != null else neutral_target
+	var fight := foe != null and _time >= _reaction_until and not rules.strategy_only
+	var can_attack := fight and CombatQueries.has_line_of_sight(hero, foe)
 	# Travelling bots (deliver, bank, retreat) shoot on the move; an escort
 	# only turns to fight near its carrier.
 	var chase := can_attack and stance != &"avoid" and stance != &"travel"
 	if chase and intent == &"escort" and _focus != null:
-		chase = target.global_position.distance_to(_focus.global_position) <= plan.escort_distance * 3.0
+		chase = foe.global_position.distance_to(_focus.global_position) <= plan.escort_distance * 3.0
 	var destination := goal
 	var desired_range := _preferred_range()
 	if chase:
-		destination = target.global_position
+		destination = foe.global_position
 		var distance := hero.global_position.distance_to(destination)
 		if distance <= desired_range * rules.attack_range_fraction:
 			# Keep spacing, especially when using a ranged primary.
 			destination = hero.global_position
 			if distance < desired_range * rules.too_close_range_fraction:
-				destination = hero.global_position + (hero.global_position - target.global_position).normalized() * desired_range
+				destination = hero.global_position + (hero.global_position - foe.global_position).normalized() * desired_range
 	else:
 		destination = _path_destination(destination)
 	var to_goal := destination - hero.global_position
@@ -739,7 +884,8 @@ func _run_tactics(delta: float) -> void:
 	_update_stuck(delta, direction)
 	hero.move_direction = direction
 	if can_attack:
-		var aim := target.global_position + target.velocity * rules.aim_lead_seconds
+		var foe_velocity: Vector2 = foe.get(&"velocity") if foe.get(&"velocity") != null else Vector2.ZERO
+		var aim := foe.global_position + foe_velocity * rules.aim_lead_seconds
 		_set_aim(aim)
 		_use_abilities(chase)
 		action = &"dodge" if dodging else (&"fight" if chase else &"shoot")

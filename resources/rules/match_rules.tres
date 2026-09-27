@@ -4,12 +4,14 @@
 [ext_resource type="Resource" path="res://resources/match/match_visuals.tres" id="2_visuals"]
 [ext_resource type="Resource" path="res://resources/match/match_audio.tres" id="3_audio"]
 [ext_resource type="Resource" path="res://resources/status/sweet_dreams.tres" id="4_sweet"]
+[ext_resource type="Resource" path="res://resources/items/shop_catalog.tres" id="5_shop"]
 
 [resource]
 script = ExtResource("1_rules")
 cue_visuals = ExtResource("2_visuals")
 cue_audio = ExtResource("3_audio")
 sweet_dreams_status = ExtResource("4_sweet")
+shop_catalog = ExtResource("5_shop")
 spawn_area_margin = 450.0
 spawn_heal_pct_per_second = 0.3
 spawn_heal_interval = 0.5

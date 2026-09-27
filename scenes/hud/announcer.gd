@@ -12,6 +12,10 @@ class_name Announcer
 # and deliveries (with the gold they earned), floating "+gold" text at the
 # depositor, and minimap pings for a stir and a Dream Mote spawn.
 #
+# Neutral objectives (ObjectiveDirector): announced ones (the Nightmare)
+# get banners for their warning, spawn and death; any camp the local
+# player's team clears gets a toast with the gold they got.
+#
 # Read-only: listens to the MatchManager, its MoteDirector and the Dreamers.
 # The MatchHud adds one; say(text, priority) works from anywhere for tests.
 
@@ -87,6 +91,14 @@ func bind(manager: MatchManager) -> void:
 			say("%s has the Dream Mote!" % MatchManager.team_name(actor.team), NORMAL, MatchManager.team_color(actor.team)))
 		director.dream_mote_spawned.connect(func(mote):
 			get_tree().call_group(&"minimaps", &"add_ping", mote.global_position, &"", &"dream_mote"))
+	var objectives := manager.get_node_or_null(^"ObjectiveDirector") as ObjectiveDirector
+	if objectives != null:
+		objectives.objective_warning.connect(func(camp: NeutralCamp, seconds: float):
+			say("%s stirs in %d s!" % [camp.get_display_name(), ceili(seconds)], MAJOR, camp.data.icon_color, &"banner_major"))
+		objectives.objective_spawned.connect(func(camp: NeutralCamp):
+			if camp.data.announce:
+				say("%s has awoken!" % camp.get_display_name(), MAJOR, camp.data.icon_color, &"banner_major"))
+		objectives.objective_cleared.connect(_on_objective_cleared)
 
 
 func get_player() -> Hero:
@@ -119,6 +131,19 @@ func _on_sweet_dreams(team: StringName) -> void:
 	var player := get_player()
 	var own := player != null and player.team == team
 	say("Sweet Dreams!" if own else "%s has Sweet Dreams" % MatchManager.team_name(team), MINOR, Color("fbcfe8"))
+
+
+func _on_objective_cleared(camp: NeutralCamp, team: StringName, _killer: Hero) -> void:
+	if camp.data.announce:
+		if team == &"":
+			say("%s fades away" % camp.get_display_name(), MAJOR, camp.data.icon_color)
+		else:
+			say("%s slays %s!" % [MatchManager.team_name(team), camp.get_display_name()], CRITICAL,
+				MatchManager.team_color(team), &"banner_major")
+		return
+	var player := get_player()
+	if player != null and player.team == team:
+		toast("%s cleared" % camp.get_display_name(), camp.data.icon_color)
 
 
 func _on_gold(actor: Hero, amount: float, reason: StringName) -> void:

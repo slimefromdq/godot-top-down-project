@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AttackFeel" format=3]
+
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="1_feel"]
+
+[resource]
+script = ExtResource("1_feel")
+windup = 0.0
+active = 0.05
+recovery = 0.05
+move_multiplier = 1.0
+lunge_distance = 0.0
+lock_aim = false
+windup_lean = 0.0
+release_snap = 0.0
+hitstop_attacker = false
+camera_nudge = 0.0

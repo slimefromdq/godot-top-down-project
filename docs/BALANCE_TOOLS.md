@@ -48,6 +48,12 @@ values.
     force the next dreaming zone, clear every Mote (loose and carried), and
     **Mote spawns on the M map view** (trickle points, zones and their spawn
     points, the Dream Mote spot; press M to see them).
+  * **Neutral objectives**: spawn the jungle camps now, the Nightmare now,
+    start the Nightmare's 30 s warning now (watch the whole announce), clear
+    every neutral, and an **Objectives on** switch.
+  * **Items**: pick any catalog item and **Give free** or **Buy** it (buying
+    follows the shop rules), clear your items, open the shop, make every bot
+    shop now, and **Shop anywhere** (lifts the in-base rule).
   * **Dreamers**: for each team, set the wake meter, force a stir, finish
     or fail its Lullaby, grant Sweet Dreams now, and a **Deposit / Lullaby
     rings** overlay.
@@ -148,9 +154,12 @@ godot --headless res://tools/match/mote_test.tscn
 godot --headless res://tools/match/dreamer_test.tscn
 godot --headless res://tools/match/polish_test.tscn
 godot --headless res://tools/match/ultimate_test.tscn
+godot --headless res://tools/match/items_test.tscn
+godot --headless res://tools/match/objectives_test.tscn
 godot --headless res://tools/ai/bot_test.tscn
 godot --headless res://tools/ai/bot_nav_test.tscn
 godot --headless res://tools/ai/bot_role_test.tscn
+godot --headless res://tools/ai/bot_neutral_test.tscn
 godot --headless res://tools/ai/bot_match_smoke_test.tscn
 ```
 

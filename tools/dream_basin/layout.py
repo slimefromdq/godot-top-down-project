@@ -49,6 +49,9 @@ L = {
     "dream_zones": [],  # {pair, name, pts, spawns: [(x, y)]}
     "dream_point": [],  # the Dream Mote spot {x, y} (self-symmetric: centre)
     "dreamers": [],     # {x, y, team, body} one per team, in its Plaza
+    # Items and neutral objectives
+    "shops": [],        # {x, y, team} one per team, in its spawn room
+    "camps": [],        # neutral camps {x, y, kind, name}; kind = a NeutralData file
 }
 
 
@@ -186,6 +189,12 @@ def dream_zone(pair, name, pts, spawns):
     authored points."""
     L["dream_zones"].append({"pair": pair, "name": name, "pts": pts,
                              "spawns": [(x, Y(y)) for x, y in spawns]})
+
+
+def camp(x, y, kind, name):
+    """A neutral camp (resources/match/neutrals/<kind>.tres). The rotation
+    makes its twin, except for a camp on the centre."""
+    L["camps"].append({"x": x, "y": Y(y), "kind": kind, "name": name})
 
 
 def lane(a, b, text):
@@ -473,6 +482,21 @@ L["dream_point"].append({"x": 0, "y": 0})
 # 130 px low-cover circle (blocks walking, not shots).
 L["dreamers"].append({"x": 0, "y": Y(2580), "team": "A", "body": 130})
 
+# ==========================================================================
+# ITEMS AND NEUTRAL OBJECTIVES
+#   A Shop in each spawn room (heroes can also buy anywhere in their spawn
+#   area, or while dead). The Nightmare's lair is the Cradle's centre
+#   (self-symmetric). Jungle camps: a Sleepwalker in each Glade and on each
+#   Stilt Ridge, Dream Wisps in each Tangle and Driftfield (check.py keeps
+#   them clear of cover, reachable on foot and mirrored).
+# ==========================================================================
+L["shops"].append({"x": 0, "y": Y(3960), "team": "A"})
+camp(0, 0, "nightmare", "the Nightmare")
+camp(-4000, 300, "sleepwalker", "Glade Sleepwalker")
+camp(-3750, -1850, "sleepwalker", "Ridge Sleepwalker")
+camp(-4100, 1600, "dream_wisps", "Tangle Wisps")
+camp(1500, 1150, "dream_wisps", "Driftfield Wisps")
+
 # Region labels (authored half only; rotated copies get B names below)
 label(-3750, 1450, "THE TANGLE", 150)
 label(-3750, 0, "THE GLADE", 130)
@@ -528,6 +552,12 @@ def build():
         out["mote_spawns"].append({"x": -mk["x"], "y": -mk["y"]})
     for d in L["dreamers"]:
         out["dreamers"].append({**d, "x": -d["x"], "y": -d["y"], "team": _swap(d["team"])})
+    for sh in L["shops"]:
+        out["shops"].append({**sh, "x": -sh["x"], "y": -sh["y"], "team": _swap(sh["team"])})
+    for cp in L["camps"]:
+        if cp["x"] == 0 and cp["y"] == 0:
+            continue  # the centre is its own twin
+        out["camps"].append({**cp, "x": -cp["x"], "y": -cp["y"]})
     for z in L["dream_zones"]:
         out["dream_zones"].append({**z, "pts": [_rot(p) for p in z["pts"]],
                                    "spawns": [_rot(p) for p in z["spawns"]]})

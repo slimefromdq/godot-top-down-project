@@ -1,6 +1,13 @@
 [gd_resource type="Resource" script_class="BotRolePlan" format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/bot_role_plan.gd" id="1_plan"]
+[ext_resource type="Script" path="res://scripts/items/item_data.gd" id="item_script"]
+[ext_resource type="Resource" path="res://resources/items/sugar_rush.tres" id="item_sugar_rush"]
+[ext_resource type="Resource" path="res://resources/items/cozy_blanket.tres" id="item_cozy_blanket"]
+[ext_resource type="Resource" path="res://resources/items/stardust_pouch.tres" id="item_stardust_pouch"]
+[ext_resource type="Resource" path="res://resources/items/pocket_overdrive.tres" id="item_pocket_overdrive"]
+[ext_resource type="Resource" path="res://resources/items/night_owl_espresso.tres" id="item_night_owl_espresso"]
+[ext_resource type="Resource" path="res://resources/items/pillow_fort.tres" id="item_pillow_fort"]
 
 [resource]
 script = ExtResource("1_plan")
@@ -25,3 +32,5 @@ hunt_radius = 2500.0
 hunt_min_value = 5
 max_hunters = 2
 dream_mote_radius = 5000.0
+jungle_radius = 2200.0
+item_build = Array[ExtResource("item_script")]([ExtResource("item_sugar_rush"), ExtResource("item_cozy_blanket"), ExtResource("item_stardust_pouch"), ExtResource("item_pocket_overdrive"), ExtResource("item_night_owl_espresso"), ExtResource("item_pillow_fort")])

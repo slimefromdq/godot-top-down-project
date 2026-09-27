@@ -1,7 +1,8 @@
 extends Node
 
 # Headless checks for the hero infrastructure (stats, damage pipeline, hitbox,
-# projectiles, statuses, ability state machine, hooks).
+# projectiles, statuses, ability state machine, hooks, and the item hooks:
+# persistent multipliers, cooldown_rate and runtime ability slots).
 #
 #   godot --headless res://tools/heroes/infrastructure_test.tscn
 #
@@ -32,6 +33,7 @@ func _run() -> void:
 	await _test_projectile_pierce()
 	await _test_team_filter()
 	await _test_ultimate_charge_gate()
+	await _test_item_hooks()
 	_test_validation()
 	await _test_scaffold()
 
@@ -374,6 +376,47 @@ func _test_ultimate_charge_gate() -> void:
 	tester.remove_child(charge)
 	charge.free()
 	_check("charge removed: back on the cooldown", UltimateCharge.find_on(tester) == null and ultimate.is_ready(), "")
+	tester.queue_free()
+	await _frames(1)
+
+
+# The shared pieces items build on, without a match: always-on multipliers
+# that survive clear(), the cooldown_rate stat, and an ability added to and
+# removed from a slot at runtime (the active-item slot).
+func _test_item_hooks() -> void:
+	var tester: Hero = load("res://tools/heroes/ranged_test/ranged_test_hero.tscn").instantiate()
+	tester.team = &"a"
+	tester.position = Vector2(0, -900)
+	add_child(tester)
+	await _frames(2)
+	var status := tester.status_component
+	status.set_persistent_multipliers(&"test_item", {StatusEffect.FIRE_RATE: 1.5})
+	_check("persistent multiplier applies", is_equal_approx(status.get_multiplier(StatusEffect.FIRE_RATE), 1.5), "")
+	status.clear()
+	_check("and survives clear()", is_equal_approx(status.get_multiplier(StatusEffect.FIRE_RATE), 1.5), "")
+	status.remove_persistent_multipliers(&"test_item")
+	_check("removed by source id", is_equal_approx(status.get_multiplier(StatusEffect.FIRE_RATE), 1.0), "")
+	var ability := tester.get_ability(&"ability_1")
+	ability.cooldown_remaining = 5.0
+	await _physics_frames(60)
+	var plain := 5.0 - ability.cooldown_remaining
+	status.set_persistent_multipliers(&"test_item", {StatusEffect.COOLDOWN_RATE: 2.0})
+	ability.cooldown_remaining = 5.0
+	await _physics_frames(60)
+	var fast := 5.0 - ability.cooldown_remaining
+	_check("cooldown_rate 2: cooldowns tick twice as fast", absf(fast / plain - 2.0) < 0.1, "%.3f vs %.3f" % [fast, plain])
+	status.remove_persistent_multipliers(&"test_item")
+	var data: AbilityData = load("res://resources/items/active/dream_bubble_active.tres")
+	var extra: Ability = data.ability_script.new()
+	extra.set_data(data)
+	var count := tester.ability_controller.abilities.size()
+	tester.ability_controller.add_ability(extra, &"item")
+	_check("a runtime ability fills a slot", tester.get_ability(&"item") == extra
+		and tester.ability_controller.abilities.size() == count + 1, "")
+	tester.ability_controller.remove_ability(extra)
+	await _frames(1)
+	_check("remove_ability empties it again", tester.get_ability(&"item") == null
+		and tester.ability_controller.abilities.size() == count and not is_instance_valid(extra), "")
 	tester.queue_free()
 	await _frames(1)
 

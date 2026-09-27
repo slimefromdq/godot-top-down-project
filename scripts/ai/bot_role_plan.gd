@@ -55,6 +55,29 @@ enum Job {
 @export var spread_radius: float = 1300.0
 @export var spread_penalty: float = 900.0
 
+@export_group("Neutrals")
+## Clear jungle camps up to this far away when there's nothing more pressing
+## (no Dreamer emergency, no stack to deposit, no job, no Dream Mote).
+## 0 = never jungles (it still fights back if a neutral attacks it).
+@export var jungle_radius: float = 2000.0
+## Only start a camp with at least this share of health.
+@export_range(0.0, 1.0, 0.05) var jungle_min_health: float = 0.6
+## Join the fight when the Nightmare is up (see BotRules.nightmare_*).
+@export var fights_nightmare: bool = true
+## ...from within this distance.
+@export var nightmare_radius: float = 7000.0
+
+@export_group("Items")
+## What the bot buys, in purchase order (components before their upgrades).
+## It buys whenever it can shop (in base, or dead), stops at the first item
+## it can't afford and saves for it. Items that can never fit (a second
+## active) are skipped.
+@export var item_build: Array[ItemData] = []
+## Walk home to shop once holding this much gold (and the next item is
+## affordable, no Motes carried, no fight). 0 = only shop when passing
+## through base or while dead.
+@export var shop_trip_gold: float = 0.0
+
 @export_group("Team play")
 ## ESCORT: follow carriers holding at least this value.
 @export var escort_min_value: int = 4

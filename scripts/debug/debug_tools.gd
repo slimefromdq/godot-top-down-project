@@ -298,6 +298,63 @@ func get_mote_director() -> MoteDirector:
 	return MoteDirector.find(get_tree())
 
 
+func get_objective_director() -> ObjectiveDirector:
+	return ObjectiveDirector.find(get_tree())
+
+
+# --- Items -----------------------------------------------------------------------
+
+func get_player_inventory() -> ItemInventory:
+	return ItemInventory.find_on(get_player())
+
+
+## Put an item on the player for free (no gold, no shop rules).
+func give_player_item(item: ItemData) -> void:
+	var inventory := get_player_inventory()
+	if inventory != null and item != null:
+		inventory.give(item)
+
+
+## Buy an item for the player with the normal rules. Returns "" or why not.
+func buy_player_item(item: ItemData) -> String:
+	var inventory := get_player_inventory()
+	if inventory == null:
+		return "No match"
+	var reason := inventory.get_buy_block_reason(item)
+	if reason == "":
+		inventory.buy(item)
+		return "Bought %s" % item.display_name
+	return reason
+
+
+func clear_player_items() -> void:
+	var inventory := get_player_inventory()
+	if inventory != null:
+		inventory.clear()
+
+
+func set_shop_anywhere(enabled: bool) -> void:
+	var manager := get_match()
+	if manager != null:
+		manager.get_rules().shop_anywhere = enabled
+
+
+func open_shop() -> void:
+	var hud := get_tree().get_first_node_in_group(MatchHud.GROUP) as MatchHud
+	if hud != null and hud.shop_panel != null:
+		hud.shop_panel.open()
+
+
+## Every bot buys from its build now (where it can shop). Returns items bought.
+func bots_shop_now() -> int:
+	var total := 0
+	for node in get_tree().get_nodes_in_group(&"heroes"):
+		var bot := (node as Node).get_node_or_null(^"BotHeroInput") as BotHeroInput
+		if bot != null:
+			total += bot.try_shopping().size()
+	return total
+
+
 # A Mote (or Dream Mote) at the cursor.
 func spawn_mote_at_cursor(dream: bool = false) -> Mote:
 	var director := get_mote_director()
@@ -889,6 +946,53 @@ func _match_tab(hero: Hero) -> Control:
 			director.clear_motes()))
 	box.add_child(motes)
 	box.add_child(_check("Mote spawns on the M map view", mote_overlay_enabled, set_mote_overlay_enabled))
+
+	box.add_child(_label("Neutral objectives", 15))
+	var objectives := HFlowContainer.new()
+	objectives.add_child(_button("Spawn jungle camps", func():
+		var director := get_objective_director()
+		if director != null:
+			manager.start_playing()
+			director.force_spawn_all(true)))
+	objectives.add_child(_button("Nightmare now", func():
+		var director := get_objective_director()
+		if director != null:
+			manager.start_playing()
+			director.force_spawn_announced()))
+	objectives.add_child(_button("Nightmare warning", func():
+		var director := get_objective_director()
+		if director != null:
+			manager.start_playing()
+			director.force_warning()))
+	objectives.add_child(_button("Clear neutrals", func():
+		var director := get_objective_director()
+		if director != null:
+			director.despawn_all()))
+	box.add_child(objectives)
+	box.add_child(_check("Objectives on", manager.get_rules().objectives_enabled,
+		func(on): manager.get_rules().objectives_enabled = on))
+
+	box.add_child(_label("Items (local player)", 15))
+	var items_row := HFlowContainer.new()
+	var item_list := OptionButton.new()
+	var catalog := manager.get_rules().shop_catalog
+	var catalog_items: Array[ItemData] = catalog.items if catalog != null else ([] as Array[ItemData])
+	for item in catalog_items:
+		item_list.add_item("%s (%s, %d)" % [item.display_name, item.get_tier_name(), item.cost])
+	items_row.add_child(item_list)
+	var item_result := _label("")
+	var picked := func() -> ItemData:
+		return catalog_items[item_list.selected] if item_list.selected >= 0 and item_list.selected < catalog_items.size() else null
+	items_row.add_child(_button("Give free", func():
+		give_player_item(picked.call())
+		item_result.text = "Gave %s" % picked.call().display_name if picked.call() != null else ""))
+	items_row.add_child(_button("Buy", func(): item_result.text = buy_player_item(picked.call())))
+	items_row.add_child(_button("Clear my items", clear_player_items))
+	items_row.add_child(_button("Open shop", open_shop))
+	items_row.add_child(_button("Bots shop now", func(): item_result.text = "Bots bought %d items" % bots_shop_now()))
+	box.add_child(items_row)
+	box.add_child(item_result)
+	box.add_child(_check("Shop anywhere", manager.get_rules().shop_anywhere, set_shop_anywhere))
 
 	box.add_child(_label("Dreamers", 15))
 	for team in MatchManager.TEAMS:

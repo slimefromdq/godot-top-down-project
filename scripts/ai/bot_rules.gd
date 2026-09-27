@@ -20,6 +20,16 @@ class_name BotRules
 @export var bank_health_fraction: float = 0.4
 ## A retreating bot stays in its spawn area until healed to this share.
 @export var retreat_until_fraction: float = 0.9
+## Seconds between shopping checks while alive (bots also shop on death and
+## on respawn). See BotRolePlan.item_build.
+@export var shop_interval: float = 1.0
+## Most bots of one team on the same jungle camp.
+@export var jungle_bots_per_camp: int = 2
+## Bots only go for the Nightmare while at least this many of their team are
+## alive (no solo attempts)...
+@export var nightmare_min_team_alive: int = 3
+## ...and they have at least this share of health.
+@export_range(0.0, 1.0, 0.05) var nightmare_min_health: float = 0.5
 @export var mote_search_radius: float = 2400.0
 @export var enemy_search_radius: float = 1700.0
 @export var stuck_time: float = 1.0

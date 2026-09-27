@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="SelfStatusData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/self_status_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/abilities/common/self_status_ability.gd" id="2_x"]
+[ext_resource type="Resource" path="res://resources/status/overdrive.tres" id="3_x"]
+[ext_resource type="Resource" path="res://resources/items/active/item_feel.tres" id="4_x"]
+
+[resource]
+script = ExtResource("1_x")
+self_status = ExtResource("3_x")
+id = &"item_pocket_overdrive"
+display_name = "Pocket Overdrive"
+description = "Overdrive for 4 s: +75% fire rate, +25% move speed."
+ability_script = ExtResource("2_x")
+cooldown = 50.0
+tags = Array[StringName]([&"ability", &"item"])
+feel_override = ExtResource("4_x")

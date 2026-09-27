@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/item_data.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_mod"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"sugar_rush"
+display_name = "Sugar Rush"
+description = "Just one more sweet."
+tier = 0
+family = &"fire_rate"
+cost = 350
+stat_multipliers = Dictionary[StringName, float]({
+&"fire_rate": 1.12
+})
+color = Color(1, 0.78, 0.42, 1)
+glyph = "»"

@@ -1,0 +1,76 @@
+[gd_resource type="Resource" script_class="NeutralData" format=3]
+
+[ext_resource type="Script" path="res://scripts/match/neutral_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="2_block"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="3_scaling"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="4_value"]
+[ext_resource type="Resource" path="res://resources/match/neutrals/neutral_bolt.tres" id="5_bolt"]
+[ext_resource type="PackedScene" path="res://scenes/match/neutral_look.tscn" id="6_look"]
+
+[sub_resource type="Resource" id="Stat_health"]
+script = ExtResource("3_scaling")
+base = 350.0
+growth = 45.0
+
+[sub_resource type="Resource" id="Stat_weapon"]
+script = ExtResource("3_scaling")
+base = 0.0
+growth = 0.0
+
+[sub_resource type="Resource" id="Stat_magic"]
+script = ExtResource("3_scaling")
+base = 0.0
+growth = 0.0
+
+[sub_resource type="Resource" id="Stat_armor"]
+script = ExtResource("3_scaling")
+base = 0.0
+growth = 1.0
+
+[sub_resource type="Resource" id="Stat_magic_resist"]
+script = ExtResource("3_scaling")
+base = 0.0
+growth = 1.0
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2_block")
+health = SubResource("Stat_health")
+weapon = SubResource("Stat_weapon")
+magic = SubResource("Stat_magic")
+armor = SubResource("Stat_armor")
+magic_resist = SubResource("Stat_magic_resist")
+
+[sub_resource type="Resource" id="Damage"]
+script = ExtResource("4_value")
+base = 18.0
+per_level = 3.0
+
+[resource]
+script = ExtResource("1_data")
+stats = SubResource("Stats")
+attack_projectile = ExtResource("5_bolt")
+attack_damage = SubResource("Damage")
+look_scene = ExtResource("6_look")
+id = &"dream_wisp"
+display_name = "Dream Wisps"
+count = 3
+pack_spread = 90.0
+first_spawn_time = 45.0
+respawn_time = 60.0
+attack_interval = 1.1
+attack_range = 600.0
+leash_radius = 750.0
+reset_time = 6.0
+move_speed = 200.0
+killer_gold = 25.0
+killer_xp = 50.0
+team_gold = 20.0
+team_xp = 50.0
+mote_count = 1
+mote_value = 1
+mote_burst_radius = 110.0
+mote_claim_time = 6.0
+killer_ult_charge = 2.0
+size = 48.0
+color = Color(0.99, 0.75, 0.87, 1)
+icon_color = Color(0.99, 0.75, 0.87, 1)

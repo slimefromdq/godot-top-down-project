@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="SelfStatusData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/self_status_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/abilities/common/self_status_ability.gd" id="2_x"]
+[ext_resource type="Resource" path="res://resources/items/active/dream_bubble_shield.tres" id="3_x"]
+[ext_resource type="Resource" path="res://resources/items/active/item_feel.tres" id="4_x"]
+
+[resource]
+script = ExtResource("1_x")
+self_status = ExtResource("3_x")
+id = &"item_dream_bubble"
+display_name = "Dream Bubble"
+description = "A bubble shield for 3 s (120, +20 per level)."
+ability_script = ExtResource("2_x")
+cooldown = 40.0
+tags = Array[StringName]([&"ability", &"item"])
+feel_override = ExtResource("4_x")

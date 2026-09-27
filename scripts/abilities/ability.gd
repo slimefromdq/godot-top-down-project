@@ -569,10 +569,17 @@ func _on_charge_start() -> void: pass
 func _on_charge_released(_ratio: float, _perfect: bool) -> void: pass
 
 
+# The COOLDOWN_RATE multiplier (items): 1.2 = cooldowns tick 20% faster.
+func _cooldown_rate() -> float:
+	if actor == null or actor.status_component == null:
+		return 1.0
+	return maxf(actor.status_component.get_multiplier(StatusEffect.COOLDOWN_RATE), 0.01)
+
+
 # Simulation: cooldowns and cast phases tick on physics frames.
 func _physics_process(delta: float) -> void:
 	if cooldown_remaining > 0.0:
-		cooldown_remaining -= delta
+		cooldown_remaining -= delta * _cooldown_rate()
 		if cooldowns_disabled or cooldown_remaining <= 0.0:
 			cooldown_remaining = 0.0
 			_recharge_one()

@@ -11,6 +11,11 @@
 [ext_resource type="PackedScene" path="res://scenes/map/bush.tscn" id="9_bush"]
 [ext_resource type="Script" path="res://scripts/match/dream_zone.gd" id="10_dream_zone"]
 [ext_resource type="PackedScene" path="res://scenes/match/dreamer.tscn" id="11_dreamer"]
+[ext_resource type="Script" path="res://scripts/items/shop.gd" id="12_shop"]
+[ext_resource type="Script" path="res://scripts/match/neutral_camp.gd" id="13_neutral_camp"]
+[ext_resource type="Resource" path="res://resources/match/neutrals/nightmare.tres" id="14_nightmare"]
+[ext_resource type="Resource" path="res://resources/match/neutrals/sleepwalker.tres" id="15_sleepwalker"]
+[ext_resource type="Resource" path="res://resources/match/neutrals/dream_wisps.tres" id="16_dream_wisps"]
 
 [node name="DreamBasin" type="Node2D"]
 script = ExtResource("1_game_map")
@@ -2613,6 +2618,74 @@ team = &"a"
 [node name="Dusk" parent="Dreamers" instance=ExtResource("11_dreamer")]
 position = Vector2(0, -3096)
 team = &"b"
+
+[node name="Shops" type="Node2D" parent="."]
+
+[node name="DawnShop" type="Node2D" parent="Shops"]
+script = ExtResource("12_shop")
+position = Vector2(0, 4752)
+team = &"a"
+
+[node name="DuskShop" type="Node2D" parent="Shops"]
+script = ExtResource("12_shop")
+position = Vector2(0, -4752)
+team = &"b"
+
+[node name="NeutralCamps" type="Node2D" parent="."]
+
+[node name="Nightmare" type="Node2D" parent="NeutralCamps"]
+script = ExtResource("13_neutral_camp")
+position = Vector2(0, 0)
+data = ExtResource("14_nightmare")
+display_name = "the Nightmare"
+
+[node name="GladeSleepwalkerA" type="Node2D" parent="NeutralCamps"]
+script = ExtResource("13_neutral_camp")
+position = Vector2(-4000, 360)
+data = ExtResource("15_sleepwalker")
+display_name = "Glade Sleepwalker"
+
+[node name="RidgeSleepwalkerB" type="Node2D" parent="NeutralCamps"]
+script = ExtResource("13_neutral_camp")
+position = Vector2(-3750, -2220)
+data = ExtResource("15_sleepwalker")
+display_name = "Ridge Sleepwalker"
+
+[node name="TangleWispsA" type="Node2D" parent="NeutralCamps"]
+script = ExtResource("13_neutral_camp")
+position = Vector2(-4100, 1920)
+data = ExtResource("16_dream_wisps")
+display_name = "Tangle Wisps"
+
+[node name="DriftfieldWispsA" type="Node2D" parent="NeutralCamps"]
+script = ExtResource("13_neutral_camp")
+position = Vector2(1500, 1380)
+data = ExtResource("16_dream_wisps")
+display_name = "Driftfield Wisps"
+
+[node name="GladeSleepwalkerB" type="Node2D" parent="NeutralCamps"]
+script = ExtResource("13_neutral_camp")
+position = Vector2(4000, -360)
+data = ExtResource("15_sleepwalker")
+display_name = "Glade Sleepwalker"
+
+[node name="RidgeSleepwalkerA" type="Node2D" parent="NeutralCamps"]
+script = ExtResource("13_neutral_camp")
+position = Vector2(3750, 2220)
+data = ExtResource("15_sleepwalker")
+display_name = "Ridge Sleepwalker"
+
+[node name="TangleWispsB" type="Node2D" parent="NeutralCamps"]
+script = ExtResource("13_neutral_camp")
+position = Vector2(4100, -1920)
+data = ExtResource("16_dream_wisps")
+display_name = "Tangle Wisps"
+
+[node name="DriftfieldWispsB" type="Node2D" parent="NeutralCamps"]
+script = ExtResource("13_neutral_camp")
+position = Vector2(-1500, -1380)
+data = ExtResource("16_dream_wisps")
+display_name = "Driftfield Wisps"
 
 [node name="DreamZones" type="Node2D" parent="."]
 
