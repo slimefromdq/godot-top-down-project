@@ -119,6 +119,7 @@ static func explode_at(context: Node, projectile_data: ProjectileData, at: Vecto
 
 
 func _ready() -> void:
+	add_to_group(&"bot_projectiles")
 	if _detonation_only:
 		return
 	if data.visual_scene != null:

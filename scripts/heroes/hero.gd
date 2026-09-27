@@ -18,6 +18,10 @@ signal respawned
 @export var definition: HeroDefinition
 ## Adds a PlayerHeroInput and a camera, and joins the "player" group.
 @export var player_controlled: bool = false
+## Adds a BotHeroInput. Can be switched at runtime with set_bot_controlled().
+@export var bot_controlled: bool = false
+@export var bot_skill: BotSkill = preload("res://resources/ai/normal.tres")
+@export var bot_seed: int = 1
 @export_range(1, 20) var start_level: int = 1
 
 ## Stay in the tree when dead (hidden, not hittable) so something can call
@@ -70,6 +74,8 @@ func _ready() -> void:
 	_build_abilities()
 	if player_controlled:
 		_setup_player_control()
+	if bot_controlled:
+		set_bot_controlled(true)
 	definition_applied.emit()
 
 
@@ -168,6 +174,26 @@ func _setup_player_control() -> void:
 		camera.make_current()
 
 
+func set_bot_controlled(enabled: bool) -> void:
+	bot_controlled = enabled
+	var player_input := get_node_or_null(^"PlayerHeroInput") as PlayerHeroInput
+	if player_input != null:
+		player_input.set_physics_process(not enabled)
+		player_input.set_process_unhandled_input(not enabled)
+	var existing := get_node_or_null(^"BotHeroInput") as BotHeroInput
+	if enabled and existing == null:
+		var bot := BotHeroInput.new()
+		bot.name = "BotHeroInput"
+		bot.skill = bot_skill
+		bot.seed = bot_seed
+		bot.process_physics_priority = -1
+		add_child(bot)
+	elif not enabled and existing != null:
+		existing.stop()
+		remove_child(existing)
+		existing.queue_free()
+
+
 # The local player and respawning heroes stay in the tree when dead (the
 # camera is a child, and the world shows the game-over screen or the match
 # respawns them). Other heroes use Actor's default.
@@ -214,3 +240,6 @@ func _set_input_enabled(enabled: bool) -> void:
 	if input != null:
 		input.set_physics_process(enabled)
 		input.set_process_unhandled_input(enabled)
+	var bot := get_node_or_null(^"BotHeroInput")
+	if bot != null:
+		bot.set_physics_process(enabled)

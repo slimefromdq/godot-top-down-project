@@ -146,6 +146,9 @@ godot --headless res://tools/match/match_test.tscn
 godot --headless res://tools/match/mote_test.tscn
 godot --headless res://tools/match/dreamer_test.tscn
 godot --headless res://tools/match/polish_test.tscn
+godot --headless res://tools/ai/bot_test.tscn
+godot --headless res://tools/ai/bot_nav_test.tscn
+godot --headless res://tools/ai/bot_match_smoke_test.tscn
 ```
 
 Each exits with the number of failed checks (0 = all passed).
