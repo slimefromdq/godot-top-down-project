@@ -1,4 +1,4 @@
-[gd_resource type="AudioBusLayout" load_steps=3 format=3]
+[gd_resource type="AudioBusLayout" format=3 uid="uid://bi0aafo6e0k1o"]
 
 [sub_resource type="AudioEffectHardLimiter" id="AudioEffectHardLimiter_master"]
 resource_name = "HardLimiter"
@@ -7,7 +7,6 @@ ceiling_db = -0.5
 [sub_resource type="AudioEffectCompressor" id="AudioEffectCompressor_sfx"]
 resource_name = "Compressor"
 threshold = -16.0
-ratio = 4.0
 attack_us = 2000.0
 release_ms = 180.0
 

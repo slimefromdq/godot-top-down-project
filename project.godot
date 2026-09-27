@@ -35,6 +35,10 @@ window/stretch/aspect="expand"
 
 enabled=PackedStringArray("res://addons/hero_tools/plugin.cfg")
 
+[gui]
+
+theme/custom="res://resources/ui/aero_theme.tres"
+
 [input]
 
 move_up={
@@ -163,12 +167,7 @@ debug_meter={
 
 3d/physics_engine="Jolt Physics"
 
-[gui]
-
-theme/custom="res://resources/ui/aero_theme.tres"
-
 [rendering]
 
-environment/defaults/default_clear_color=Color(0.2, 0.5, 0.72, 1)
-
 rendering_device/driver.windows="d3d12"
+environment/defaults/default_clear_color=Color(0.2, 0.5, 0.72, 1)
