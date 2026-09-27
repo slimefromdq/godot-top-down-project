@@ -225,10 +225,14 @@ func _build() -> void:
 	_xp_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var fill := StyleBoxFlat.new()
 	fill.bg_color = xp_color
-	fill.set_corner_radius_all(4)
+	fill.set_corner_radius_all(7)
+	fill.border_color = xp_color.lightened(0.5)
+	fill.border_width_top = 3
 	var back := StyleBoxFlat.new()
-	back.bg_color = Color(0, 0, 0, 0.55)
-	back.set_corner_radius_all(4)
+	back.bg_color = Color(0.05, 0.18, 0.32, 0.6)
+	back.border_color = Color(1, 1, 1, 0.55)
+	back.set_border_width_all(1)
+	back.set_corner_radius_all(7)
 	_xp_bar.add_theme_stylebox_override(&"fill", fill)
 	_xp_bar.add_theme_stylebox_override(&"background", back)
 	economy.add_child(_xp_bar)
@@ -267,7 +271,7 @@ func _slot(slot_name: String) -> Control:
 func _label(size: int) -> Label:
 	var label := Label.new()
 	label.add_theme_font_size_override(&"font_size", size)
-	label.add_theme_color_override(&"font_outline_color", Color(0, 0, 0, 0.85))
+	label.add_theme_color_override(&"font_outline_color", Color(0.04, 0.16, 0.3, 0.85))
 	label.add_theme_constant_override(&"outline_size", maxi(size / 5, 3))
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return label

@@ -7,7 +7,7 @@ class_name FloorGrid
 
 @export var bounds := Rect2(-4800, -4860, 9600, 9720)
 @export var spacing: float = 160.0
-@export var color := Color(0, 0, 0, 0.05)
+@export var color := Color(1, 1, 1, 0.14)
 ## Every Nth line is drawn stronger (one "tile" of the grid).
 @export var major_every: int = 6
 

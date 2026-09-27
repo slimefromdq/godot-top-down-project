@@ -1,6 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-<!-- Placeholder body for jose (carry). Silhouette = role, colour + letter = hero. -->
-<circle cx="64" cy="64" r="54" fill="#e0344f" stroke="#15141c" stroke-width="7" stroke-linejoin="round"/>
-<path d="M 76.6,40.0 L 76.6,71.3 Q 76.6,86.0 62.2,86.0 Q 49.6,86.0 46.7,74.0" fill="none" stroke="#15141c" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- Placeholder body (glossy aero badge) for jose (carry). Silhouette = role, colour + letter = hero. -->
+<defs>
+<radialGradient id="aero-body" cx="0.4" cy="0.3" r="0.8">
+<stop offset="0" stop-color="#ee8f9e"/><stop offset="0.55" stop-color="#e0344f"/><stop offset="1" stop-color="#952e4a"/>
+</radialGradient>
+<linearGradient id="aero-gloss" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.05"/>
+</linearGradient>
+<clipPath id="aero-clip"><circle cx="64" cy="64" r="54" /></clipPath>
+</defs>
+<circle cx="64" cy="64" r="54" fill="url(#aero-body)" stroke="#16304f" stroke-width="7" stroke-linejoin="round"/>
+<ellipse cx="64" cy="36" rx="46" ry="26" fill="url(#aero-gloss)" clip-path="url(#aero-clip)"/>
+<ellipse cx="84" cy="100" rx="14" ry="6" fill="#ffffff" fill-opacity="0.3" clip-path="url(#aero-clip)"/>
+<path d="M 76.6,40.0 L 76.6,71.3 Q 76.6,86.0 62.2,86.0 Q 49.6,86.0 46.7,74.0" fill="none" stroke="#16304f" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M 76.6,40.0 L 76.6,71.3 Q 76.6,86.0 62.2,86.0 Q 49.6,86.0 46.7,74.0" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

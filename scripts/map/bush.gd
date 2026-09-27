@@ -87,4 +87,4 @@ func _draw() -> void:
 	for lobe: Vector2 in lobes:
 		draw_circle(lobe * radius, radius * 0.72, dark)
 	for lobe: Vector2 in lobes:
-		draw_circle(lobe * radius + Vector2(-6, -8), radius * 0.62, fill)
+		AeroDraw.gloss_circle(self, lobe * radius + Vector2(-6, -8), radius * 0.62, fill)

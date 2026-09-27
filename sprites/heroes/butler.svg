@@ -1,6 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-<!-- Placeholder body for butler (tank). Silhouette = role, colour + letter = hero. -->
-<polygon points="122.0,64.0 93.0,114.2 35.0,114.2 6.0,64.0 35.0,13.8 93.0,13.8" fill="#6a6282" stroke="#15141c" stroke-width="7" stroke-linejoin="round"/>
-<path d="M 46.0,40.0 L 46.0,86.0 L 67.6,86.0 Q 82.0,86.0 82.0,74.0 Q 82.0,63.0 67.6,63.0 L 46.0,63.0 M 46.0,40.0 L 65.8,40.0 Q 78.4,40.0 78.4,51.5 Q 78.4,63.0 65.8,63.0" fill="none" stroke="#15141c" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- Placeholder body (glossy aero badge) for butler (tank). Silhouette = role, colour + letter = hero. -->
+<defs>
+<radialGradient id="aero-body" cx="0.4" cy="0.3" r="0.8">
+<stop offset="0" stop-color="#ada9ba"/><stop offset="0.55" stop-color="#6a6282"/><stop offset="1" stop-color="#494c6b"/>
+</radialGradient>
+<linearGradient id="aero-gloss" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.05"/>
+</linearGradient>
+<clipPath id="aero-clip"><polygon points="122.0,64.0 93.0,114.2 35.0,114.2 6.0,64.0 35.0,13.8 93.0,13.8" /></clipPath>
+</defs>
+<polygon points="122.0,64.0 93.0,114.2 35.0,114.2 6.0,64.0 35.0,13.8 93.0,13.8" fill="url(#aero-body)" stroke="#16304f" stroke-width="7" stroke-linejoin="round"/>
+<ellipse cx="64" cy="36" rx="46" ry="26" fill="url(#aero-gloss)" clip-path="url(#aero-clip)"/>
+<ellipse cx="84" cy="100" rx="14" ry="6" fill="#ffffff" fill-opacity="0.3" clip-path="url(#aero-clip)"/>
+<path d="M 46.0,40.0 L 46.0,86.0 L 67.6,86.0 Q 82.0,86.0 82.0,74.0 Q 82.0,63.0 67.6,63.0 L 46.0,63.0 M 46.0,40.0 L 65.8,40.0 Q 78.4,40.0 78.4,51.5 Q 78.4,63.0 65.8,63.0" fill="none" stroke="#16304f" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M 46.0,40.0 L 46.0,86.0 L 67.6,86.0 Q 82.0,86.0 82.0,74.0 Q 82.0,63.0 67.6,63.0 L 46.0,63.0 M 46.0,40.0 L 65.8,40.0 Q 78.4,40.0 78.4,51.5 Q 78.4,63.0 65.8,63.0" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

@@ -12,11 +12,11 @@ bounds = Rect2(-1800, -1300, 3600, 2600)
 z_index = -20
 
 [node name="Void" type="Polygon2D" parent="Floor"]
-color = Color(0.122, 0.122, 0.141, 1)
+color = Color(0.2, 0.5, 0.72, 1)
 polygon = PackedVector2Array(-2200, -1700, 2200, -1700, 2200, 1700, -2200, 1700)
 
 [node name="Sand" type="Polygon2D" parent="Floor"]
-color = Color(0.87, 0.82, 0.7, 1)
+color = Color(0.896, 0.829, 0.668, 1.0)
 polygon = PackedVector2Array(-1800, -1300, 1800, -1300, 1800, 1300, -1800, 1300)
 
 [node name="Grid" type="Node2D" parent="Floor"]
@@ -29,7 +29,7 @@ bounds = Rect2(-1800, -1300, 3600, 2600)
 position = Vector2(0, -1400)
 script = ExtResource("3_cover")
 height = 0
-fill_color = Color(0.169, 0.169, 0.188, 1)
+fill_color = Color(0.090, 0.310, 0.470, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/WallNorth"]
 polygon = PackedVector2Array(-2000, -100, 2000, -100, 2000, 100, -2000, 100)
@@ -38,7 +38,7 @@ polygon = PackedVector2Array(-2000, -100, 2000, -100, 2000, 100, -2000, 100)
 position = Vector2(0, 1400)
 script = ExtResource("3_cover")
 height = 0
-fill_color = Color(0.169, 0.169, 0.188, 1)
+fill_color = Color(0.090, 0.310, 0.470, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/WallSouth"]
 polygon = PackedVector2Array(-2000, -100, 2000, -100, 2000, 100, -2000, 100)
@@ -47,7 +47,7 @@ polygon = PackedVector2Array(-2000, -100, 2000, -100, 2000, 100, -2000, 100)
 position = Vector2(-1900, 0)
 script = ExtResource("3_cover")
 height = 0
-fill_color = Color(0.169, 0.169, 0.188, 1)
+fill_color = Color(0.090, 0.310, 0.470, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/WallWest"]
 polygon = PackedVector2Array(-100, -1300, 100, -1300, 100, 1300, -100, 1300)
@@ -56,7 +56,7 @@ polygon = PackedVector2Array(-100, -1300, 100, -1300, 100, 1300, -100, 1300)
 position = Vector2(1900, 0)
 script = ExtResource("3_cover")
 height = 0
-fill_color = Color(0.169, 0.169, 0.188, 1)
+fill_color = Color(0.090, 0.310, 0.470, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/WallEast"]
 polygon = PackedVector2Array(-100, -1300, 100, -1300, 100, 1300, -100, 1300)
@@ -65,7 +65,7 @@ polygon = PackedVector2Array(-100, -1300, 100, -1300, 100, 1300, -100, 1300)
 position = Vector2(-1100, 350)
 script = ExtResource("3_cover")
 height = 0
-fill_color = Color(0.42, 0.4, 0.38, 1)
+fill_color = Color(0.434, 0.497, 0.556, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/PillarWest"]
 polygon = PackedVector2Array(-70, -70, 70, -70, 70, 70, -70, 70)
@@ -74,7 +74,7 @@ polygon = PackedVector2Array(-70, -70, 70, -70, 70, 70, -70, 70)
 position = Vector2(1100, 350)
 script = ExtResource("3_cover")
 height = 0
-fill_color = Color(0.42, 0.4, 0.38, 1)
+fill_color = Color(0.434, 0.497, 0.556, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/PillarEast"]
 polygon = PackedVector2Array(-70, -70, 70, -70, 70, 70, -70, 70)
@@ -83,7 +83,7 @@ polygon = PackedVector2Array(-70, -70, 70, -70, 70, 70, -70, 70)
 position = Vector2(-600, 650)
 script = ExtResource("3_cover")
 height = 1
-fill_color = Color(0.64, 0.62, 0.57, 1)
+fill_color = Color(0.571, 0.655, 0.732, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/LowWallWest"]
 polygon = PackedVector2Array(-180, -22, 180, -22, 180, 22, -180, 22)
@@ -92,7 +92,7 @@ polygon = PackedVector2Array(-180, -22, 180, -22, 180, 22, -180, 22)
 position = Vector2(600, 650)
 script = ExtResource("3_cover")
 height = 1
-fill_color = Color(0.64, 0.62, 0.57, 1)
+fill_color = Color(0.571, 0.655, 0.732, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/LowWallEast"]
 polygon = PackedVector2Array(-180, -22, 180, -22, 180, 22, -180, 22)
