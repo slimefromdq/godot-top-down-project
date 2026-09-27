@@ -1,0 +1,256 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/cutout_rig.gd" id="1_vkro1"]
+
+[sub_resource type="Animation" id="Animation_a3107"]
+length = 0.6
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Hips:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.5]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hips:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 10), Vector2(0, 30)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Hips:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.4, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_0f5lf"]
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Hips:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.08, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, 0.25, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hips:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 0.5, 0.5, 1), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_ph264"]
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Hips/Torso:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 2), Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hips/Cape:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, 0.08, 0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Hips/WingBack:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, -0.1, 0.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Hips/Torso/WingFront:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, 0.1, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_q68mc"]
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Hips/LegFront:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.45, -0.45, 0.45]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hips/LegBack:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [-0.45, 0.45, -0.45]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Hips:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.125, 0.25, 0.375, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 10), Vector2(0, 6), Vector2(0, 10), Vector2(0, 6), Vector2(0, 10)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Hips/Cape:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.25, 0.35, 0.25]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Hips/Torso/ArmFront:rotation")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [-0.3, 0.3, -0.3]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_weg7m"]
+_data = {
+&"death": SubResource("Animation_a3107"),
+&"hurt": SubResource("Animation_0f5lf"),
+&"idle": SubResource("Animation_ph264"),
+&"move": SubResource("Animation_q68mc")
+}
+
+[node name="CutoutRig" type="Node2D" unique_id=1035204640]
+script = ExtResource("1_vkro1")
+frame_size = Vector2i(160, 160)
+
+[node name="Hips" type="Node2D" parent="." unique_id=1226762457]
+position = Vector2(0, 10)
+
+[node name="WingBack" type="Polygon2D" parent="Hips" unique_id=1352374556]
+position = Vector2(-6, -30)
+color = Color(0.75, 0.93, 0.88, 1)
+polygon = PackedVector2Array(-4, 0, -50, -30, -44, 4, -30, 16)
+
+[node name="Cape" type="Polygon2D" parent="Hips" unique_id=1177239544]
+position = Vector2(0, -28)
+color = Color(0.1, 0.8, 0.8, 1)
+polygon = PackedVector2Array(-10, 0, 10, 0, 4, 50, -30, 44)
+
+[node name="LegBack" type="Polygon2D" parent="Hips" unique_id=1117258773]
+position = Vector2(6, 0)
+color = Color(0.79050004, 0.8245, 0.816, 1)
+polygon = PackedVector2Array(-6, 0, 6, 0, 6, 34, -6, 34)
+
+[node name="Torso" type="Polygon2D" parent="Hips" unique_id=1989119048]
+color = Color(0.93, 0.97, 0.96, 1)
+polygon = PackedVector2Array(-14, 0, 14, 0, 12, -34, -12, -34)
+
+[node name="ArmBack" type="Polygon2D" parent="Hips/Torso" unique_id=1691909396]
+position = Vector2(12, -28)
+color = Color(0.79050004, 0.8245, 0.816, 1)
+polygon = PackedVector2Array(-4, 0, 4, 0, 4, 24, -4, 24)
+
+[node name="Head" type="Polygon2D" parent="Hips/Torso" unique_id=1495451590]
+position = Vector2(0, -36)
+color = Color(0.93, 0.97, 0.96, 1)
+polygon = PackedVector2Array(18, 0, 16.629831, 6.8883023, 12.7279215, 12.7279215, 6.888302, 16.629831, -7.86805e-07, 18, -6.888301, 16.629831, -12.7279215, 12.7279215, -16.629831, 6.888303, -18, -1.57361e-06, -16.629831, -6.888302, -12.727922, -12.727921, -6.888304, -16.629831, 2.1464786e-07, -18, 6.8883047, -16.62983, 12.72792, -12.727924, 16.629831, -6.888302)
+
+[node name="Visor" type="Polygon2D" parent="Hips/Torso" unique_id=156372930]
+position = Vector2(4, -38)
+color = Color(0.8, 0.62, 0.2, 1)
+polygon = PackedVector2Array(-8, -8, 14, -8, 14, 8, -8, 8)
+
+[node name="WingFront" type="Polygon2D" parent="Hips/Torso" unique_id=2035992569]
+position = Vector2(-10, -28)
+color = Color(0.75, 0.93, 0.88, 1)
+polygon = PackedVector2Array(0, 0, -40, -44, -36, -6, -24, 12)
+
+[node name="ArmFront" type="Polygon2D" parent="Hips/Torso" unique_id=1693116674]
+position = Vector2(-12, -28)
+color = Color(0.93, 0.97, 0.96, 1)
+polygon = PackedVector2Array(-4, 0, 4, 0, 4, 24, -4, 24)
+
+[node name="Sword" type="Polygon2D" parent="Hips/Torso/ArmFront" unique_id=1890294366]
+position = Vector2(0, 24)
+color = Color(0.3, 0.85, 0.85, 1)
+polygon = PackedVector2Array(-3, 0, 3, 0, 3, 44, 0, 52, -3, 44)
+
+[node name="LegFront" type="Polygon2D" parent="Hips" unique_id=229645872]
+position = Vector2(-6, 0)
+color = Color(0.93, 0.97, 0.96, 1)
+polygon = PackedVector2Array(-6, 0, 6, 0, 6, 34, -6, 34)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1670188510]
+libraries/ = SubResource("AnimationLibrary_weg7m")
