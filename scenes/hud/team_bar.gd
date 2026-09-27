@@ -69,7 +69,7 @@ func _draw() -> void:
 
 func _draw_card(hero: Hero, rect: Rect2, color: Color, details: bool, font: Font) -> void:
 	var dead := hero.health_component.is_dead()
-	draw_rect(rect, Color(0.06, 0.07, 0.1, 0.85))
+	AeroDraw.gloss_rect(self, rect, Color(color.darkened(0.2), 0.85) if not dead else Color(0.3, 0.36, 0.42, 0.85), 8.0)
 	var profile := hero.definition.visual_profile if hero.definition != null else null
 	var texture := profile.texture if profile != null else null
 	var tint := Color(0.35, 0.35, 0.4) if dead else Color.WHITE

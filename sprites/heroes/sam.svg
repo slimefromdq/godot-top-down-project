@@ -1,6 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-<!-- Placeholder body for sam (tempo). Silhouette = role, colour + letter = hero. -->
-<polygon points="64,6 122,64 64,122 6,64" fill="#9b6cf0" stroke="#15141c" stroke-width="7" stroke-linejoin="round"/>
-<path d="M 80.2,46.4 Q 74.8,40.0 64.0,40.0 Q 47.8,40.0 47.8,52.0 Q 47.8,63.0 64.0,63.0 Q 80.2,63.0 80.2,74.5 Q 80.2,86.0 64.0,86.0 Q 53.2,86.0 47.1,79.6" fill="none" stroke="#15141c" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- Placeholder body (glossy aero badge) for sam (tempo). Silhouette = role, colour + letter = hero. -->
+<defs>
+<radialGradient id="aero-body" cx="0.4" cy="0.3" r="0.8">
+<stop offset="0" stop-color="#c8aef7"/><stop offset="0.55" stop-color="#9b6cf0"/><stop offset="1" stop-color="#6952b2"/>
+</radialGradient>
+<linearGradient id="aero-gloss" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.05"/>
+</linearGradient>
+<clipPath id="aero-clip"><polygon points="64,6 122,64 64,122 6,64" /></clipPath>
+</defs>
+<polygon points="64,6 122,64 64,122 6,64" fill="url(#aero-body)" stroke="#16304f" stroke-width="7" stroke-linejoin="round"/>
+<ellipse cx="64" cy="36" rx="46" ry="26" fill="url(#aero-gloss)" clip-path="url(#aero-clip)"/>
+<ellipse cx="84" cy="100" rx="14" ry="6" fill="#ffffff" fill-opacity="0.3" clip-path="url(#aero-clip)"/>
+<path d="M 80.2,46.4 Q 74.8,40.0 64.0,40.0 Q 47.8,40.0 47.8,52.0 Q 47.8,63.0 64.0,63.0 Q 80.2,63.0 80.2,74.5 Q 80.2,86.0 64.0,86.0 Q 53.2,86.0 47.1,79.6" fill="none" stroke="#16304f" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M 80.2,46.4 Q 74.8,40.0 64.0,40.0 Q 47.8,40.0 47.8,52.0 Q 47.8,63.0 64.0,63.0 Q 80.2,63.0 80.2,74.5 Q 80.2,86.0 64.0,86.0 Q 53.2,86.0 47.1,79.6" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

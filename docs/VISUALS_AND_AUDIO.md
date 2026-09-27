@@ -74,10 +74,29 @@ misspelt or dead cue name).
 Each hero's own placeholder sounds live in `audio/sfx/<hero>/`, next to the
 shared ones in `audio/sfx/`.
 
+## The aero look
+
+The game aims for Frutiger Aero / Flash-game gloss: bright saturated colour,
+glassy highlights, rounded shapes, sky-blue surroundings.
+
+- **UI theme**: `resources/ui/aero_theme.tres` (project setting
+  `gui/theme/custom`) gives every Control glossy aqua buttons, glass panels
+  and bubbly progress bars. It's generated: edit the colours in
+  `tools/visuals/build_aero_theme.gd` and run
+  `godot --headless --script res://tools/visuals/build_aero_theme.gd`.
+- **Custom `_draw()` code** uses `AeroDraw` (`scripts/visuals/aero_draw.gd`):
+  `gloss_rect` (glass panel), `gloss_circle` (bubble/orb) and
+  `gloss_polygon` (highlight on a shape). HUD slots, team cards, the minimap,
+  cover and bushes all go through it, so restyle there first.
+- **Maps**: sky-blue void and clear colour, a white floor grid, saturated
+  floor zones and cover (dark boundary walls are deep navy-teal).
+- **Hero badges** carry a radial body gradient and a gloss highlight
+  (see below).
+
 ## Telling heroes and teams apart
 
 **Placeholder bodies**: each hero's VisualProfile `texture` is
-`sprites/heroes/<hero>.svg`, a flat badge until real art arrives: the
+`sprites/heroes/<hero>.svg`, a glossy badge until real art arrives: the
 silhouette is the role (tank hexagon, carry circle, tempo diamond, flex
 pentagon), the fill colour and the letter are the hero. They set
 `flip_to_face_aim = false` so the letter stays readable; replace the texture

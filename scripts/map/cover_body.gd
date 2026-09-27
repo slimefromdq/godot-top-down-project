@@ -15,7 +15,7 @@ class_name CoverBody
 
 enum Height { FULL, LOW }
 
-const SHADOW := Color(0, 0, 0, 0.22)
+const SHADOW := Color(0.02, 0.15, 0.3, 0.22)
 
 @export var height: Height = Height.FULL:
 	set(value):
@@ -67,6 +67,7 @@ func _draw() -> void:
 			shadow.append(point + shadow_offset)
 		draw_colored_polygon(shadow, SHADOW)
 		draw_colored_polygon(polygon, fill_color)
+		AeroDraw.gloss_polygon(self, polygon, fill_color)
 
 		var outline := polygon.duplicate()
 		outline.append(polygon[0])

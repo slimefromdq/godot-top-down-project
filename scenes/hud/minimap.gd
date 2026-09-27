@@ -32,8 +32,8 @@ class_name Minimap
 
 @export var width: float = 448.0
 @export var margin: float = 20.0
-@export var background := Color(0.08, 0.08, 0.1, 0.85)
-@export var frame_color := Color(1, 1, 1, 0.5)
+@export var background := Color(0.1, 0.32, 0.5, 0.82)
+@export var frame_color := Color(1, 1, 1, 0.7)
 @export var ally_color := Color("4fd1c5")
 @export var enemy_color := Color("f05252")
 @export var neutral_color := Color("c8c8c8")
@@ -184,7 +184,7 @@ func _descendants(type: Variant) -> Array[Node]:
 
 
 func _draw_static(canvas: Control) -> void:
-	canvas.draw_rect(Rect2(Vector2.ZERO, canvas.size), background)
+	AeroDraw.gloss_rect(canvas, Rect2(Vector2.ZERO, canvas.size), background, 12.0)
 	# From here on, draw in map coordinates.
 	canvas.draw_set_transform(-_map.bounds.position * _scale, 0.0, Vector2.ONE * _scale)
 	var to_map := _map.get_global_transform().affine_inverse()
