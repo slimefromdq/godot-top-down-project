@@ -9,6 +9,11 @@ class_name VisualProfile
 ## Animated body. Animations named idle, move, hurt, death are used
 ## automatically; any other name can be triggered from a VisualCue.
 @export var sprite_frames: SpriteFrames
+## Optional lower-body layer baked from a CutoutRig's legs_layer_paths. It's
+## drawn behind the body, faces the aim with it, and plays its walk backwards
+## while moving away from the aim. Same animation names and frame counts as
+## sprite_frames.
+@export var legs_frames: SpriteFrames
 ## Static body sprite, used when sprite_frames is empty.
 @export var texture: Texture2D
 @export var body_scale: Vector2 = Vector2.ONE

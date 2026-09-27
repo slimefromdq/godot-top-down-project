@@ -6,7 +6,8 @@ extends SceneTree
 #   godot --script res://tools/visuals/bake_rig.gd -- <rig.tscn> [<out_frames.tres>] [--profile <visuals.tres>]
 #
 # Writes <out>.png (the sheet) next to <out>.tres; the default out is the rig
-# path with "_frames". A rig with an aim part also gets <out>_aim.tscn.
+# path with "_frames". A rig with an aim part also gets <out>_aim.tscn, one
+# with a legs layer <out>_legs.png/.tres.
 # --profile points that VisualProfile at the bake (sprite frames + aim part).
 # It needs a renderer, so NOT --headless. In a cloud session wrap it:
 #   xvfb-run -a godot --rendering-driver opengl3 --script res://tools/visuals/bake_rig.gd -- <rig.tscn>
@@ -52,6 +53,8 @@ func _run() -> void:
 		push_error("save failed: %s" % error_string(err))
 		quit(1)
 		return
+	if result.legs_frames != null:
+		print("  legs layer: %s" % RigBaker.legs_path(frames_path))
 	if result.aim_scene != null:
 		print("  aim part: %s  pivot %s  rest %.0f deg" % [RigBaker.aim_scene_path(frames_path),
 				result.aim_pivot, result.aim_rest_angle])

@@ -31,6 +31,10 @@ const META_KEY := &"visuals_component"
 @export var print_cues: bool = false
 
 var body: CanvasItem
+## The lower-body layer (profile.legs_frames), a child of the body drawn behind
+## it; null if none.
+var legs: AnimatedSprite2D
+var _walking_backwards := false
 ## The live aim part (profile.aim_part), rotated toward the aim; null if none.
 var aim_part: Node2D
 var _aim_holder: Node2D
@@ -105,6 +109,11 @@ func _process(delta: float) -> void:
 	if body is AnimatedSprite2D and not _playing_one_shot:
 		var moving: bool = "velocity" in root and root.velocity.length() > profile.move_animation_threshold
 		_play_body_loop(&"move" if moving else &"idle")
+	if legs != null:
+		# The body faces the aim; moving away from it walks the legs backwards.
+		_walking_backwards = "velocity" in root and "aim_direction" in root \
+				and (root.velocity as Vector2).dot(root.aim_direction) < -profile.move_animation_threshold
+		_sync_legs()
 
 
 # ---------------------------------------------------------------------------
@@ -281,6 +290,12 @@ func make_body_snapshot() -> Sprite2D:
 	ghost.offset = body.offset
 	ghost.centered = body.centered
 	ghost.global_transform = (body as Node2D).global_transform
+	if legs != null and legs.visible:
+		var legs_ghost := Sprite2D.new()
+		legs_ghost.texture = legs.sprite_frames.get_frame_texture(legs.animation, legs.frame)
+		legs_ghost.flip_h = legs.flip_h
+		legs_ghost.show_behind_parent = true
+		ghost.add_child(legs_ghost)
 	return ghost
 
 
@@ -425,8 +440,47 @@ func _setup_body() -> void:
 
 	if body is AnimatedSprite2D:
 		body.animation_finished.connect(func(): _playing_one_shot = false)
+		_setup_legs()
 		_play_body_loop(&"idle")
 	_setup_aim_part()
+
+
+# Legs follow the body's animation frame by frame (never play on their own),
+# so a hurt or death reads as one picture; only the walk can run backwards.
+func _setup_legs() -> void:
+	if profile.legs_frames == null:
+		return
+	legs = AnimatedSprite2D.new()
+	legs.name = "Legs"
+	legs.sprite_frames = profile.legs_frames
+	legs.show_behind_parent = true
+	legs.use_parent_material = true
+	body.add_child(legs)
+	body.frame_changed.connect(_sync_legs)
+	body.animation_changed.connect(_sync_legs)
+	_sync_legs()
+
+
+func _sync_legs() -> void:
+	var sprite := body as AnimatedSprite2D
+	legs.flip_h = sprite.flip_h
+	legs.self_modulate = sprite.self_modulate
+	var anim := sprite.animation
+	legs.visible = legs.sprite_frames.has_animation(anim)
+	if not legs.visible:
+		return
+	if legs.animation != anim:
+		legs.animation = anim
+	var count := legs.sprite_frames.get_frame_count(anim)
+	var frame := mini(sprite.frame, count - 1)
+	if _walking_backwards and anim == &"move":
+		frame = (count - frame) % count
+	legs.frame = frame
+
+
+## True while the legs play their walk backwards (moving away from the aim).
+func is_walking_backwards() -> bool:
+	return _walking_backwards
 
 
 # The aim part hangs off a holder at the pivot. Facing left mirrors the holder

@@ -64,6 +64,24 @@ func _run() -> void:
 	_check("a missing aim part is refused", not rig.validate().is_empty(), "")
 	rig.aim_part_path = ^"Hips/Torso/ArmFront"
 
+	# Legs layer: the template's legs, back wing and cape bake separately.
+	_check("template has a four-part legs layer", rig.get_legs_parts().size() == 4, "")
+	var torso := rig.get_node(^"Hips/Torso") as CanvasItem
+	var leg := rig.get_node(^"Hips/LegFront") as CanvasItem
+	var hips := rig.get_node(^"Hips") as CanvasItem
+	var changed := rig.isolate_layer(CutoutRig.LAYER_UPPER)
+	_check("upper pass hides the legs only", not leg.visible and torso.visible, "")
+	CutoutRig.restore_layers(changed)
+	changed = rig.isolate_layer(CutoutRig.LAYER_LEGS)
+	_check("legs pass hides the torso, keeps the legs, and keeps their parent drawing nothing",
+			not torso.visible and leg.visible and hips.visible and hips.self_modulate.a == 0.0, "")
+	CutoutRig.restore_layers(changed)
+	_check("layers restore", torso.visible and leg.visible and hips.self_modulate.a == 1.0, "")
+	rig.legs_layer_paths = [^"Hips/Nope"]
+	_check("a missing legs part is refused", not rig.validate().is_empty(), "")
+	rig.legs_layer_paths = [^"Hips/WingBack", ^"Hips/Cape", ^"Hips/LegBack", ^"Hips/LegFront"]
+	_check("legs files sit next to the body's", RigBaker.legs_path("res://a/x_frames.tres") == "res://a/x_frames_legs.tres", "")
+
 	if not RigBaker.can_render():
 		var result: Dictionary = await RigBaker.render(rig, self)
 		_check("render refuses --headless with a reason", not result.errors.is_empty(), "")
@@ -84,6 +102,10 @@ func _run() -> void:
 		_check("idle starts at rest", RigBaker.aim_pivot_offset(baked, &"idle", 0) == Vector2.ZERO, "")
 		_check("walk bounce moves the shoulder",
 				RigBaker.aim_pivot_offset(baked, &"move", 1).y < -1.0, str(RigBaker.aim_pivot_offset(baked, &"move", 1)))
+	var legs_frames := load(RigBaker.legs_path(TEMPLATE_FRAMES)) as SpriteFrames
+	_check("committed bake has a legs layer matching the body frame for frame", legs_frames != null
+			and baked != null and legs_frames.get_animation_names() == baked.get_animation_names()
+			and Array(baked.get_animation_names()).all(func(n): return legs_frames.get_frame_count(n) == baked.get_frame_count(n)), "")
 	var aim_scene := load(RigBaker.aim_scene_path(TEMPLATE_FRAMES)) as PackedScene
 	_check("committed bake has its aim part scene", aim_scene != null
 			and aim_scene.instantiate().name == &"ArmFront", "")
