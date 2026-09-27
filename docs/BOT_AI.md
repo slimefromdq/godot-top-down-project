@@ -90,8 +90,22 @@ walks home to shop. An active item is cast like any other slot when ready.
 | Tempo | Stardust Pouch, Moonlit Tome, Dream Bubble, Cozy Blanket, Crown of Reverie, Pillow Fort |
 | Flex | Sugar Rush, Cozy Blanket, Stardust Pouch, Pocket Overdrive, Night Owl Espresso, Pillow Fort |
 
-Bots don't fight neutral camps on purpose yet (they only shoot one that is
-in their line of fire).
+### Neutral objectives
+
+* **Jungling:** with nothing more pressing (no Dreamer emergency, no stack
+  to deposit, no role job, no Dream Mote), a bot clears the nearest live
+  jungle camp within its plan's `jungle_radius` (tank 2600, flex 2200, carry
+  1800, tempo 1400) if it has at least `jungle_min_health` (60%). At most
+  `BotRules.jungle_bots_per_camp` (2) of a team take the same camp. It
+  stands off at its preferred range and fights the camp's nearest monster.
+* **The Nightmare:** while it's up, every bot with `fights_nightmare` within
+  `nightmare_radius` goes for it, but only while at least
+  `BotRules.nightmare_min_team_alive` (3) of its team are alive and it has
+  `nightmare_min_health` (50%). This comes before the role's job.
+* **Priorities:** an enemy hero in range always comes first
+  (`target`); the monster (`neutral_target`) is fought only when no hero
+  is. A neutral that attacks a bot is fought back, like an enemy hero would
+  be.
 
 ### Fill
 
@@ -113,12 +127,15 @@ obstacles. The graph is rebuilt when a new map is loaded.
 
 ## Tests and limits
 
-Run the four scenes in `tools/ai/`: `bot_test.tscn` checks control,
+Run the five scenes in `tools/ai/`: `bot_test.tscn` checks control,
 perception, projectile dodge, fill, and overlay; `bot_role_test.tscn` checks
 engage radii per role, the strategy decisions (roam, escort, bank or deliver,
 hunt with a hunter cap, Mote claims, defend) and that twelve bots with fights
 off spread out over the map; `bot_nav_test.tscn` checks
 Dream Basin routes including jump pad and teleporter edges;
+`bot_neutral_test.tscn` checks jungling (reach, health, the per-camp cap,
+heroes first, fighting back) and the Nightmare's team-size rule, and has two
+bots clear a Sleepwalker by themselves;
 `bot_match_smoke_test.tscn` runs twelve bots on Dream Basin and prints
 controller time. Ledges are currently treated as blocking in both directions
 by the graph; bots route around them or take a jump pad. The controller does

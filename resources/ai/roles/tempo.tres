@@ -32,5 +32,6 @@ hunt_radius = 3500.0
 hunt_min_value = 4
 max_hunters = 2
 dream_mote_radius = 6000.0
+jungle_radius = 1400.0
 item_build = Array[ExtResource("item_script")]([ExtResource("item_stardust_pouch"), ExtResource("item_moonlit_tome"), ExtResource("item_dream_bubble"), ExtResource("item_cozy_blanket"), ExtResource("item_crown_of_reverie"), ExtResource("item_pillow_fort")])
 shop_trip_gold = 1500.0
