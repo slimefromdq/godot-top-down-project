@@ -39,7 +39,8 @@ still defends a stirring Dreamer, grabs Motes it passes and fights back.
 Every `strategy_interval`, in order: defend a stirring home Dreamer; deliver
 the winning Mote to a stirring enemy Dreamer after its grace (or stand in its
 ring to pause the Lullaby); retreat when below the plan's health threshold
-with an enemy in sight; bank when hurt (if home is nearer than the enemy
+with an enemy in sight, to the team's healing spawn area, and stay there
+until `retreat_until_fraction` health; bank when hurt (if home is nearer than the enemy
 Dreamer); take a stack of `deposit_value` to a Dreamer (bank or deliver by
 the plan, banking instead when `gauntlet_enemies` wait at theirs); the role's
 job; the Dream Mote (at the Cradle for the warning, chased while loose); the

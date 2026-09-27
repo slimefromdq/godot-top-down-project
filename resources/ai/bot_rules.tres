@@ -23,6 +23,7 @@ too_close_range_fraction = 0.55
 wounded_ally_fraction = 0.75
 waypoint_reached_fraction = 0.6
 bank_health_fraction = 0.4
+retreat_until_fraction = 0.9
 mote_search_radius = 2400.0
 enemy_search_radius = 1700.0
 stuck_time = 1.0

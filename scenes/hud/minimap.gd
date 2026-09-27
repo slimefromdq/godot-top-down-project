@@ -30,7 +30,7 @@ class_name Minimap
 # get_presence() (0..1) are tinted (active dreaming zones). Pings of kind
 # &"stir" and &"dream_mote" pulse bigger; viewer_team &"" pings everyone.
 
-@export var width: float = 280.0
+@export var width: float = 448.0
 @export var margin: float = 20.0
 @export var background := Color(0.08, 0.08, 0.1, 0.85)
 @export var frame_color := Color(1, 1, 1, 0.5)

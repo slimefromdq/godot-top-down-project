@@ -56,6 +56,12 @@ A full wake meter makes that Dreamer **stir** for 30 seconds.
 - If time runs out with no final Mote, it settles at 80%: defending actively
   pays off more than stalling. Defenders respawn faster during a stir.
 
+## Spawn areas
+
+Each team's spawn area (tinted in its colour, around the spawn markers) heals
+its own heroes fast: 30% of max health a second. Camping the enemy's spawn
+doesn't pay, and anyone can walk home to reset. Enemies get nothing there.
+
 ## Ultimate charge
 
 In a match nobody starts with their ultimate. It fills from 0 to
@@ -81,6 +87,14 @@ match) ultimates keep their cooldowns so they can be practised.
 | `warmup_time` | 10.0 | Countdown before the match starts. Heroes can move, nobody earns anything. |
 | `respawn_base` | 5.0 | Seconds a dead hero waits before respawning: base + per_level x level. |
 | `respawn_per_level` | 0.8 | As above. |
+
+### Spawn
+
+| Value | Default | What it does |
+|---|---|---|
+| `spawn_area_margin` | 450.0 | A team's spawn area is the box around its spawn markers grown by this (kept inside the map). |
+| `spawn_heal_pct_per_second` | 0.3 | Share of max health healed per second for the team's own living heroes in it... |
+| `spawn_heal_interval` | 0.5 | ...paid in chunks this many seconds apart (label `spawn_heal`, gives no ultimate charge). |
 
 ### Economy
 

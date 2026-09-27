@@ -22,6 +22,16 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 @export var respawn_base: float = 5.0
 @export var respawn_per_level: float = 0.8
 
+@export_group("Spawn")
+## Each team's spawn area (the bounding box of its spawn markers grown by
+## this much) heals its own living heroes: no spawn camping, and a way to
+## reset. See SpawnSanctuary.
+@export var spawn_area_margin: float = 450.0
+## Share of max health healed per second while standing in it...
+@export var spawn_heal_pct_per_second: float = 0.3
+## ...paid in chunks this many seconds apart.
+@export var spawn_heal_interval: float = 0.5
+
 @export_group("Economy")
 ## Paid to every hero on a team (alive or dead) while the match is PLAYING.
 @export var passive_gold_per_second: float = 2.0
