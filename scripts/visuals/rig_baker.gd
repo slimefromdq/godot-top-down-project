@@ -1,6 +1,8 @@
 extends RefCounted
 class_name RigBaker
 
+const AIM_OFFSETS_META := &"aim_pivot_offsets"
+
 # Renders a CutoutRig into one sprite sheet (a row per animation) and a
 # SpriteFrames that uses it. Needs a real renderer: under --headless every
 # frame comes back empty, so run the bake tool through xvfb-run in a cloud
@@ -9,6 +11,10 @@ class_name RigBaker
 #   var result := await RigBaker.bake(rig, host_node)
 #   result.sheet   Image with every frame
 #   result.frames  SpriteFrames whose AtlasTextures point at `sheet_texture`
+#
+# Each frame also records how far the aim part's pivot has moved from its rest
+# pose (SpriteFrames metadata, see aim_pivot_offset()), so a live aim arm rides
+# the baked idle bob, walk cycle and hurt recoil.
 #
 # pack() and build_frames() are pure, so tests can check them headless.
 
@@ -20,13 +26,14 @@ static func can_render() -> bool:
 
 ## Renders every frame. `host` is any node in the tree to hang the viewport
 ## on. The rig is moved into the viewport for the bake and put back after.
-## Returns {errors, frames_by_anim: {name: Array[Image]}} .
+## Returns {errors, frames_by_anim: {name: Array[Image]},
+## aim_offsets: {name: PackedVector2Array}} (empty without an aim part).
 static func render(rig: CutoutRig, host: Node) -> Dictionary:
 	var errors := rig.validate()
 	if not can_render():
 		errors.append("no renderer: run without --headless (xvfb-run in a cloud session)")
 	if not errors.is_empty():
-		return {"errors": errors, "frames_by_anim": {}}
+		return {"errors": errors, "frames_by_anim": {}, "aim_offsets": {}}
 
 	var viewport := SubViewport.new()
 	viewport.size = rig.frame_size
@@ -55,9 +62,12 @@ static func render(rig: CutoutRig, host: Node) -> Dictionary:
 			hidden.append(node)
 
 	var player := rig.get_animation_player()
+	var rest_pivot := rig.get_aim_pivot()
 	var frames_by_anim := {}
+	var aim_offsets := {}
 	for anim_name in rig.get_bake_list():
 		var images: Array[Image] = []
+		var offsets := PackedVector2Array()
 		player.play(anim_name)
 		player.pause()
 		for t in rig.get_sample_times(anim_name):
@@ -66,7 +76,10 @@ static func render(rig: CutoutRig, host: Node) -> Dictionary:
 			var img := viewport.get_texture().get_image()
 			img.convert(Image.FORMAT_RGBA8)
 			images.append(img)
+			offsets.append(rig.get_aim_pivot() - rest_pivot)
 		frames_by_anim[anim_name] = images
+		if aim != null:
+			aim_offsets[anim_name] = offsets
 	player.stop()
 
 	for node in hidden:
@@ -76,7 +89,7 @@ static func render(rig: CutoutRig, host: Node) -> Dictionary:
 	if old_parent != null:
 		old_parent.add_child(rig)
 	viewport.queue_free()
-	return {"errors": errors, "frames_by_anim": frames_by_anim}
+	return {"errors": errors, "frames_by_anim": frames_by_anim, "aim_offsets": aim_offsets}
 
 
 ## Lays frames out one animation per row, left to right.
@@ -103,7 +116,7 @@ static func pack(frames_by_anim: Dictionary, order: Array[StringName], frame_siz
 
 ## SpriteFrames over `sheet_texture` using the rects from pack().
 static func build_frames(sheet_texture: Texture2D, cells: Dictionary, order: Array[StringName],
-		fps: float, looping: Dictionary) -> SpriteFrames:
+		fps: float, looping: Dictionary, aim_offsets: Dictionary = {}) -> SpriteFrames:
 	var frames := SpriteFrames.new()
 	frames.remove_animation(&"default")
 	for anim_name in order:
@@ -115,7 +128,18 @@ static func build_frames(sheet_texture: Texture2D, cells: Dictionary, order: Arr
 			atlas.atlas = sheet_texture
 			atlas.region = Rect2(rect)
 			frames.add_frame(anim_name, atlas)
+	if not aim_offsets.is_empty():
+		frames.set_meta(AIM_OFFSETS_META, aim_offsets)
 	return frames
+
+
+## How far the aim part's pivot has moved from rest on this frame (Vector2.ZERO
+## for frames baked without an aim part, or any other SpriteFrames).
+static func aim_pivot_offset(frames: SpriteFrames, anim_name: StringName, frame: int) -> Vector2:
+	if frames == null or not frames.has_meta(AIM_OFFSETS_META):
+		return Vector2.ZERO
+	var offsets: PackedVector2Array = frames.get_meta(AIM_OFFSETS_META).get(anim_name, PackedVector2Array())
+	return offsets[frame] if frame >= 0 and frame < offsets.size() else Vector2.ZERO
 
 
 ## Renders, packs, and builds. `sheet_path` (a .png) is where the sheet will
@@ -140,7 +164,7 @@ static func bake(rig: CutoutRig, host: Node, sheet_path: String) -> Dictionary:
 	var packed := pack(rendered.frames_by_anim, order, rig.frame_size)
 	var texture := ImageTexture.create_from_image(packed.sheet)
 	texture.take_over_path(sheet_path)
-	var frames := build_frames(texture, packed.cells, order, rig.fps, looping)
+	var frames := build_frames(texture, packed.cells, order, rig.fps, looping, rendered.aim_offsets)
 	return {"errors": PackedStringArray(), "sheet": packed.sheet, "frames": frames,
 			"aim_scene": aim_scene, "aim_pivot": aim_pivot, "aim_rest_angle": rig.aim_part_rest_angle}
 

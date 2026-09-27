@@ -77,6 +77,13 @@ func _run() -> void:
 	if baked != null:
 		_check("committed bake has a texture", baked.get_frame_texture(&"idle", 0) != null, "")
 		_check("committed bake hurt is a one-shot", not baked.get_animation_loop(&"hurt"), "")
+	if baked != null:
+		var bob := RigBaker.aim_pivot_offset(baked, &"idle", 6)
+		_check("committed bake records the idle bob at the shoulder (0.5 s = +2 px)",
+				bob.is_equal_approx(Vector2(0, 2)), str(bob))
+		_check("idle starts at rest", RigBaker.aim_pivot_offset(baked, &"idle", 0) == Vector2.ZERO, "")
+		_check("walk bounce moves the shoulder",
+				RigBaker.aim_pivot_offset(baked, &"move", 1).y < -1.0, str(RigBaker.aim_pivot_offset(baked, &"move", 1)))
 	var aim_scene := load(RigBaker.aim_scene_path(TEMPLATE_FRAMES)) as PackedScene
 	_check("committed bake has its aim part scene", aim_scene != null
 			and aim_scene.instantiate().name == &"ArmFront", "")
@@ -107,6 +114,11 @@ func _test_pack_and_frames() -> void:
 	_check("speed and loop are carried", frames.get_animation_speed(&"a") == 10.0
 			and frames.get_animation_loop(&"a") and not frames.get_animation_loop(&"b"), "")
 	var third := frames.get_frame_texture(&"a", 2) as AtlasTexture
+	var with_aim := RigBaker.build_frames(ImageTexture.create_from_image(sheet), packed.cells, order,
+			10.0, {}, {&"a": PackedVector2Array([Vector2.ZERO, Vector2(0, 3), Vector2(1, 1)])})
+	_check("aim offsets are read per frame", RigBaker.aim_pivot_offset(with_aim, &"a", 1) == Vector2(0, 3)
+			and RigBaker.aim_pivot_offset(with_aim, &"b", 0) == Vector2.ZERO
+			and RigBaker.aim_pivot_offset(frames, &"a", 1) == Vector2.ZERO, "")
 	_check("atlas regions point at the cells", third != null and third.region == Rect2(8, 0, 4, 4), "")
 
 

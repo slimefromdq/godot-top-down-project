@@ -29,6 +29,7 @@ class_name VisualProfile
 ## rig's bake and exported by tools/visuals/bake_rig.gd.
 @export var aim_part: PackedScene
 ## Pivot position relative to the body, facing right, before Body Scale.
+## Bodies baked from a CutoutRig add each frame's pivot movement on top.
 @export var aim_part_pivot: Vector2 = Vector2.ZERO
 ## Which way the part's art points at rotation 0 (90 = hanging down).
 @export_range(-180.0, 180.0, 1.0, "degrees") var aim_part_rest_angle: float = 0.0

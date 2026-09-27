@@ -448,6 +448,10 @@ func _setup_aim_part() -> void:
 	aim_part.use_parent_material = true
 	for node in aim_part.find_children("*", "CanvasItem"):
 		node.use_parent_material = true
+	if body is AnimatedSprite2D:
+		# Baked frames move the pivot (RigBaker); follow them the frame they show.
+		body.frame_changed.connect(func(): _update_aim_part(_get_root()))
+		body.animation_changed.connect(func(): _update_aim_part(_get_root()))
 	_update_aim_part(_get_root())
 
 
@@ -457,7 +461,10 @@ func _update_aim_part(root: Node) -> void:
 	var aim: Vector2 = root.aim_direction if "aim_direction" in root else Vector2.RIGHT
 	var flipped: bool = "flip_h" in body and body.flip_h
 	var side := -1.0 if flipped else 1.0
-	var pivot := profile.aim_part_pivot * profile.body_scale
+	var pivot := profile.aim_part_pivot
+	if body is AnimatedSprite2D:
+		pivot += RigBaker.aim_pivot_offset(body.sprite_frames, body.animation, body.frame)
+	pivot *= profile.body_scale
 	_aim_holder.position = (body as Node2D).position + Vector2(pivot.x * side, pivot.y)
 	_aim_holder.scale = Vector2(absf(profile.body_scale.x) * side, profile.body_scale.y)
 	var angle := aim.angle() if aim != Vector2.ZERO else 0.0

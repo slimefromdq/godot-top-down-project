@@ -1045,6 +1045,20 @@ func _test_aim_part() -> void:
 		var want_x: float = profile.aim_part_pivot.x * profile.body_scale.x * (-1.0 if aim.x < 0.0 else 1.0)
 		_check("aim part pivot mirrors with facing %s" % aim,
 				is_equal_approx(holder.position.x - visuals.body.position.x, want_x), str(holder.position))
+	# The pivot rides the baked frame (idle bob at the shoulder).
+	var sprite := visuals.body as AnimatedSprite2D
+	hero.aim_direction = Vector2.RIGHT
+	sprite.play(&"idle")
+	sprite.pause()
+	var rise := {}
+	for f in [0, 6]:
+		sprite.frame = f
+		await _frames(1)
+		rise[f] = (part.get_parent() as Node2D).position.y
+	var want: float = RigBaker.aim_pivot_offset(sprite.sprite_frames, &"idle", 6).y * profile.body_scale.y
+	_check("aim pivot follows the idle bob frame by frame", want != 0.0
+			and is_equal_approx(rise[6] - rise[0], want), "%s want %.2f" % [rise, want])
+	sprite.play()
 	_check("aim part shares the body's flash/tint material",
 			part.get_parent().material == visuals.body.material and part.use_parent_material, "")
 	hero.aim_direction = saved
