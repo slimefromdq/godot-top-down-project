@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/item_data.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Resource" path="res://resources/items/sugar_rush.tres" id="3_from"]
+
+[sub_resource type="Resource" id="Mod_0"]
+script = ExtResource("2_mod")
+stat = &"weapon"
+flat = 10.0
+percent = 0.0
+
+[resource]
+script = ExtResource("1_item")
+id = &"night_owl_espresso"
+display_name = "Night Owl Espresso"
+description = "Who needs sleep?"
+tier = 1
+family = &"fire_rate"
+cost = 1000
+builds_from = ExtResource("3_from")
+stat_modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_0")])
+stat_multipliers = Dictionary[StringName, float]({
+&"fire_rate": 1.25
+})
+color = Color(0.96, 0.6, 0.2, 1)
+glyph = "»»"

@@ -17,6 +17,9 @@ class_name MatchHud
 # viewer) decides per viewer instead: {} hides it, else {color, scale} (a
 # Dreamer shows only while you carry Motes, bold for the enemy's).
 #
+# Shop: a ShopPanel (B) and a "B  Shop" hint under the gold while the player
+# can buy (in base, or dead).
+#
 # Read-only: it listens to the MatchManager and polls the player each frame.
 # Hides itself when the scene has no MatchManager.
 
@@ -33,6 +36,7 @@ class_name MatchHud
 
 var match_manager: MatchManager
 var announcer: Announcer
+var shop_panel: ShopPanel
 
 var _clock_label: Label
 var _state_label: Label
@@ -43,6 +47,7 @@ var _xp_label: Label
 var _respawn_label: Label
 var _arrows: Control
 var _mote_label: Label
+var _shop_hint: Label
 ## Left/right of the clock, empty until the wake meters arrive.
 var wake_slot_a: Control
 var wake_slot_b: Control
@@ -50,7 +55,11 @@ var team_bar_a: TeamBar
 var team_bar_b: TeamBar
 
 
+const GROUP := &"match_hud"
+
+
 func _ready() -> void:
+	add_to_group(GROUP)
 	layer = 5
 	_build()
 	_bind.call_deferred()
@@ -63,6 +72,10 @@ func _bind() -> void:
 	announcer.name = "Announcer"
 	add_child(announcer)
 	announcer.bind(match_manager)
+	shop_panel = ShopPanel.new()
+	shop_panel.name = "ShopPanel"
+	add_child(shop_panel)
+	shop_panel.bind(match_manager)
 	for slot_team in [[wake_slot_a, &"a", true], [wake_slot_b, &"b", false]]:
 		var meter := WakeMeter.new()
 		meter.name = "WakeMeter"
@@ -105,6 +118,7 @@ func _process(_delta: float) -> void:
 	var count := carrier.get_mote_count() if carrier != null else 0
 	_mote_label.visible = count > 0
 	_mote_label.text = "Motes %d / %d  (value %d)" % [count, carrier.get_max(), carrier.get_mote_value()] if count > 0 else ""
+	_shop_hint.visible = match_manager.can_shop(hero) and not shop_panel.is_open()
 	var respawn := match_manager.get_respawn_left(hero)
 	_respawn_label.visible = hero.health_component.is_dead() and respawn > 0.0
 	_respawn_label.text = "Respawning in %d" % ceili(respawn)
@@ -238,6 +252,11 @@ func _build() -> void:
 	economy.add_child(_xp_bar)
 	_xp_label = _label(12)
 	economy.add_child(_xp_label)
+	_shop_hint = _label(16)
+	_shop_hint.text = "%s  Shop" % _action_key(ShopPanel.TOGGLE_ACTION)
+	_shop_hint.modulate = gold_color
+	_shop_hint.visible = false
+	economy.add_child(_shop_hint)
 	_mote_label = _label(16)
 	_mote_label.modulate = Color("fde68a")
 	_mote_label.visible = false
@@ -258,6 +277,12 @@ func _build() -> void:
 	_respawn_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_respawn_label.visible = false
 	add_child(_respawn_label)
+
+
+func _action_key(action: StringName) -> String:
+	if not InputMap.has_action(action) or InputMap.action_get_events(action).is_empty():
+		return "?"
+	return InputMap.action_get_events(action)[0].as_text().replace(" - Physical", "").replace(" (Physical)", "")
 
 
 func _slot(slot_name: String) -> Control:

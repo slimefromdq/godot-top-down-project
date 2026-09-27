@@ -225,6 +225,23 @@ def export_map(m):
     for d in m["dreamers"]:
         s.node("Dawn" if d["team"] == "A" else "Dusk", "Dreamers", instance=dreamer_scene,
                position=v2((d["x"], d["y"])), team=f'&"{d["team"].lower()}"')
+    # --- items and neutral objectives ---------------------------------------------
+    shop_script = s.res("Script", "res://scripts/items/shop.gd")
+    s.node("Shops", ".", "Node2D")
+    for sh in m["shops"]:
+        s.node("DawnShop" if sh["team"] == "A" else "DuskShop", "Shops", "Node2D", script=shop_script,
+               position=v2((sh["x"], sh["y"])), team=f'&"{sh["team"].lower()}"')
+    camp_script = s.res("Script", "res://scripts/match/neutral_camp.gd")
+    s.node("NeutralCamps", ".", "Node2D")
+    camp_data = {}
+    for cp in m["camps"]:
+        if cp["kind"] not in camp_data:
+            camp_data[cp["kind"]] = s.res("Resource", f'res://resources/match/neutrals/{cp["kind"]}.tres')
+        data = camp_data[cp["kind"]]
+        side = "" if cp["x"] == 0 and cp["y"] == 0 else ("A" if cp["y"] > 0 or (cp["y"] == 0 and cp["x"] < 0) else "B")
+        name = cp["name"].title().replace(" ", "").replace("The", "") + side
+        s.node(name, "NeutralCamps", "Node2D", script=camp_script, position=v2((cp["x"], cp["y"])),
+               data=data, display_name=f'"{cp["name"]}"')
     s.node("DreamZones", ".", "Node2D")
     seen_pairs = {}
     for z in m["dream_zones"]:

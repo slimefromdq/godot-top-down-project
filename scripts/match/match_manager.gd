@@ -51,6 +51,10 @@ const REASON_PASSIVE := &"passive"
 const REASON_KILL := &"kill"
 const REASON_ASSIST := &"assist"
 const REASON_DEBUG := &"debug"
+## Buying (negative gold) and selling items.
+const REASON_SHOP := &"shop"
+## A slain neutral camp or the Nightmare.
+const REASON_OBJECTIVE := &"objective"
 
 ## Empty = a private copy of MatchRules.current(), so the debug panel's live
 ## edits never touch the .tres.
@@ -121,6 +125,10 @@ func _ready() -> void:
 		var director := MoteDirector.new()
 		director.name = "MoteDirector"
 		add_child(director)
+	if get_node_or_null(^"ObjectiveDirector") == null:
+		var objectives := ObjectiveDirector.new()
+		objectives.name = "ObjectiveDirector"
+		add_child(objectives)
 	if get_node_or_null(^"MatchMusic") == null:
 		var music := MatchMusic.new()
 		music.name = "MatchMusic"
@@ -256,6 +264,7 @@ func _try_register(node: Node) -> void:
 	_records[hero] = record
 	hero.respawns = true
 	_attach_ultimate_charge(hero)
+	_attach_inventory(hero)
 	hero.health_component.damage_taken.connect(_on_hero_damaged.bind(hero))
 	hero.health_component.healed.connect(_on_hero_healed.bind(hero))
 	hero.health_component.died.connect(_on_hero_died.bind(hero))
@@ -269,6 +278,9 @@ func _unregister(hero: Hero) -> void:
 	var charge := UltimateCharge.find_on(hero)
 	if charge != null:
 		charge.queue_free()
+	var inventory := ItemInventory.find_on(hero)
+	if inventory != null:
+		inventory.queue_free()
 	if record != null and hero.player_controlled:
 		# The debug panel may be swapping this player for another hero: keep
 		# their gold and XP for whoever takes over (on_player_replaced).
@@ -335,6 +347,18 @@ func grant_actor(hero: Hero, gold: float, xp: float, reason: StringName) -> void
 		gold_changed.emit(hero, gold, reason)
 	if xp > 0.0:
 		add_xp(hero, xp, reason)
+
+
+## Take `amount` gold from a hero (a purchase). False, and nothing taken,
+## if they don't have that much.
+func spend_gold(hero: Hero, amount: float, reason: StringName = REASON_SHOP) -> bool:
+	var record: Record = _records.get(hero)
+	if record == null or amount < 0.0 or record.gold + 0.001 < amount:
+		return false
+	if amount > 0.0:
+		record.gold = maxf(record.gold - amount, 0.0)
+		gold_changed.emit(hero, -amount, reason)
+	return true
 
 
 func add_xp(hero: Hero, amount: float, reason: StringName) -> void:
@@ -458,6 +482,50 @@ func _on_hero_healed(amount: float, source: Node, target: Hero) -> void:
 	var r := get_rules()
 	var mult := r.ult_charge_self_heal_mult if healer == target else 1.0
 	add_ultimate_charge(healer, amount * r.ult_charge_per_heal * mult)
+
+
+# ---------------------------------------------------------------------------
+# Items and shops
+# ---------------------------------------------------------------------------
+
+func _attach_inventory(hero: Hero) -> void:
+	if ItemInventory.find_on(hero) != null:
+		return
+	var inventory := ItemInventory.new()
+	inventory.name = ItemInventory.NODE_NAME
+	inventory.manager = self
+	hero.add_child(inventory)
+
+
+## "" if `hero` may buy and sell right now, else why not: in their own base
+## (near their team's Shop, or in its spawn area), or anywhere while dead (MatchRules.shop_while_dead). Warmup counts.
+func get_shop_block_reason(hero: Hero) -> String:
+	if hero == null or not _records.has(hero):
+		return "Not in the match"
+	if state == State.ENDED:
+		return "Match over"
+	var r := get_rules()
+	if r.shop_anywhere:
+		return ""
+	if hero.health_component.is_dead():
+		return "" if r.shop_while_dead else "Dead"
+	if is_in_base(hero):
+		return ""
+	return "Return to base to shop"
+
+
+func can_shop(hero: Hero) -> bool:
+	return get_shop_block_reason(hero) == ""
+
+
+## In the team's base: near one of its Shops, or in its spawn area.
+func is_in_base(hero: Hero) -> bool:
+	var reach := get_rules().shop_radius
+	for shop in Shop.get_all(get_tree(), hero.team):
+		if shop.global_position.distance_to(hero.global_position) <= reach:
+			return true
+	var sanctuary := get_sanctuary(hero.team)
+	return sanctuary != null and sanctuary.contains(hero.global_position)
 
 
 # ---------------------------------------------------------------------------

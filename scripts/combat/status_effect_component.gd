@@ -55,6 +55,9 @@ static var _next_serial: int = 1
 var _vfx_viewers: Dictionary = {}
 # clear() ends everything at once (a reset or death): it grants no Resolve.
 var _clearing := false
+# Always-on multipliers from outside the status system (items): source id ->
+# {stat: multiplier}. Folded into get_multiplier(); clear() leaves them.
+var _persistent: Dictionary = {}
 
 
 func _ready() -> void:
@@ -271,9 +274,12 @@ func get_active_effects() -> Array[StatusEffect]:
 
 # Product of every active multiplier for `stat`. Each application's
 # distance from 1.0 is scaled by its strength and, with fade_multipliers,
-# by how much of its duration is left.
+# by how much of its duration is left. Persistent multipliers (items) count
+# too.
 func get_multiplier(stat: StringName) -> float:
 	var result := 1.0
+	for multipliers in _persistent.values():
+		result *= float(multipliers.get(stat, 1.0))
 	for entry in _active.values():
 		var full: float = entry.effect.get_stat_multiplier(stat)
 		if full == 1.0:
@@ -455,6 +461,8 @@ func is_carried() -> bool:
 
 # Simulation timers run on physics ticks (see HealthComponent for why).
 func _physics_process(delta: float) -> void:
+	if _active.is_empty():
+		return
 	for key in _active.keys():
 		var entry: Entry = _active.get(key)
 		if entry == null:
@@ -645,6 +653,24 @@ func _any(predicate: Callable) -> bool:
 
 func _get_root() -> Node:
 	return owner if owner != null else get_parent()
+
+
+# Always-on multipliers (an item's fire rate, move speed ...) keyed by
+# `source_id`: they last until removed, through deaths and clear(). Setting
+# the same source again replaces its multipliers.
+func set_persistent_multipliers(source_id: StringName, multipliers: Dictionary) -> void:
+	if multipliers.is_empty():
+		_persistent.erase(source_id)
+	else:
+		_persistent[source_id] = multipliers.duplicate()
+
+
+func remove_persistent_multipliers(source_id: StringName) -> void:
+	_persistent.erase(source_id)
+
+
+func get_persistent_multipliers(source_id: StringName) -> Dictionary:
+	return _persistent.get(source_id, {})
 
 
 # Lets components treat a missing StatusEffectComponent as "no modifiers".

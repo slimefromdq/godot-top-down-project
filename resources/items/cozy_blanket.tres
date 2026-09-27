@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/item_data.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_mod"]
+
+[sub_resource type="Resource" id="Mod_0"]
+script = ExtResource("2_mod")
+stat = &"health"
+flat = 150.0
+percent = 0.0
+
+[resource]
+script = ExtResource("1_item")
+id = &"cozy_blanket"
+display_name = "Cozy Blanket"
+description = "Warm enough to take a hit."
+tier = 0
+family = &"health"
+cost = 300
+stat_modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_0")])
+color = Color(0.53, 0.94, 0.67, 1)
+glyph = "+"

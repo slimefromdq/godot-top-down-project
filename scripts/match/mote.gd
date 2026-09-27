@@ -11,6 +11,8 @@ class_name Mote
 #             data.magnet_time, then attaches (MoteCarrier.add_mote) and frees
 #
 # Only heroes whose MoteCarrier has room (and isn't abducted) pull it in.
+# A claimed Mote (claim(): a slain neutral's reward) only answers heroes of
+# the claiming team until the claim runs out.
 # A dropped Mote fades after data.fade_time, blinking for the last
 # data.blink_time. Its last carrier can't grab it back for data.regrab_lockout.
 # A decoy looks and pulls the same, but pops on pickup and adds nothing.
@@ -39,6 +41,9 @@ var dropped: bool = false
 ## Who dropped it, and how long before they may grab it again.
 var last_carrier: Hero
 var lockout_left: float = 0.0
+## claim(): only this team's heroes can take it while claim_left > 0.
+var claim_team: StringName = &""
+var claim_left: float = 0.0
 ## Set by the director: the spawn point or dreaming-zone half it came from.
 var origin: Node
 ## On the minimap only where your team can see it (the Dream Mote is always
@@ -118,6 +123,16 @@ func draw_minimap_icon(canvas: CanvasItem, at: Vector2, _viewer_team: StringName
 		canvas.draw_circle(at, 2.0, Color("fde047"))
 
 
+## Only `team` can pick it up for `seconds` (a neutral objective's reward).
+func claim(team: StringName, seconds: float) -> void:
+	claim_team = team
+	claim_left = seconds
+
+
+func is_claimed_against(hero: Hero) -> bool:
+	return claim_left > 0.0 and claim_team != &"" and hero.team != claim_team
+
+
 func is_dream() -> bool:
 	return data != null and data.is_dream
 
@@ -129,6 +144,7 @@ func is_landing() -> bool:
 func _physics_process(delta: float) -> void:
 	age += delta
 	lockout_left = maxf(lockout_left - delta, 0.0)
+	claim_left = maxf(claim_left - delta, 0.0)
 	match state:
 		State.LANDING:
 			_move_t += delta / LAND_TIME
@@ -227,6 +243,8 @@ func _can_take(hero: Hero, pulling: bool) -> bool:
 	if hero == null or not is_instance_valid(hero) or not hero.is_inside_tree():
 		return false
 	if hero == last_carrier and lockout_left > 0.0 and not pulling:
+		return false
+	if is_claimed_against(hero):
 		return false
 	var carrier := MoteCarrier.find_on(hero)
 	return carrier != null and carrier.can_pick_up()

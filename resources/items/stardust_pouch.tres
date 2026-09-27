@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/item_data.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_mod"]
+
+[sub_resource type="Resource" id="Mod_0"]
+script = ExtResource("2_mod")
+stat = &"magic"
+flat = 25.0
+percent = 0.0
+
+[resource]
+script = ExtResource("1_item")
+id = &"stardust_pouch"
+display_name = "Stardust Pouch"
+description = "A pinch of it goes a long way."
+tier = 0
+family = &"magic"
+cost = 350
+stat_modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_0")])
+color = Color(0.77, 0.71, 1, 1)
+glyph = "*"

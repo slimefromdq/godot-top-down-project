@@ -12,6 +12,9 @@
   reachable on foot from A spawn (no pads or teleporters), 180-degree
   mirrored, and at least MOTE_DOOR_CLEARANCE from every spawn door; zone
   spawns sit inside their own zone, and zones come in mirrored pairs.
+* Objectives: one Shop per team inside its spawn room; the Nightmare's lair
+  at the centre; every jungle camp mirrored, clear of cover by
+  CAMP_CLEARANCE and reachable on foot from A spawn.
 * Dreamers: one per team, mirrored, the deposit ring outside the spawn room,
   and each ring reachable on foot from the Cradle with EITHER the Plaza's
   north choke or its side gates blocked, the spawn room's north door closed
@@ -28,6 +31,7 @@ BODY = 52      # actor collision circle radius (50) plus a hair
 CELL = 25
 MOTE_DOOR_CLEARANCE = 1200   # about one screen from any spawn door
 DEPOSIT_RADIUS = 300         # MatchRules.deposit_radius
+CAMP_CLEARANCE = 160         # a camp's monsters need room to stand and be circled
 
 
 def seg_hits_poly(a, b, pts):
@@ -244,6 +248,42 @@ def check_dreamers(m):
     return ok
 
 
+def check_objectives(m, grid):
+    print("== Shops and neutral camps ==")
+    ok = True
+    shops = m["shops"]
+    teams = sorted(sh["team"] for sh in shops)
+    print(f"  {len(shops)} shops, {len(m['camps'])} camps")
+    ok &= teams == ["A", "B"]
+    for sh in shops:
+        sign = 1 if sh["team"] == "A" else -1
+        inside = abs(sh["x"]) < 1400 and sign * sh["y"] > Y(3300)
+        if not inside:
+            print(f"  SHOP OUTSIDE ITS SPAWN ROOM: {sh}")
+            ok = False
+    centre = [cp for cp in m["camps"] if cp["kind"] == "nightmare"]
+    if len(centre) != 1 or (centre[0]["x"], centre[0]["y"]) != (0, 0):
+        print("  the Nightmare must have exactly one lair, at the centre")
+        ok = False
+    others = [(cp["x"], cp["y"]) for cp in m["camps"] if cp["kind"] != "nightmare"]
+    unmatched = _mirrored(others)
+    if unmatched:
+        print(f"  UNMIRRORED camps: {unmatched}")
+        ok = False
+    seen, cell_of = flood(m, grid, (-700, Y(3880)), use_pads=False)
+    for cp in m["camps"]:
+        p = (cp["x"], cp["y"])
+        d = min(dist_to_poly(p, o["pts"]) for o in m["full"] + m["low"])
+        r, c = cell_of(*p)
+        if d < CAMP_CLEARANCE:
+            print(f"  CAMP TOO CLOSE TO COVER: {cp['name']} at {p} ({d:.0f}px)")
+            ok = False
+        if not seen[r][c]:
+            print(f"  CAMP UNREACHABLE ON FOOT: {cp['name']} at {p}")
+            ok = False
+    return ok
+
+
 def main():
     m = build()
     # Dreamer bodies block walking like low cover.
@@ -309,6 +349,7 @@ def main():
         ok &= reach
     ok &= check_motes(m, grid)
     ok &= check_dreamers(m)
+    ok &= check_objectives(m, grid)
 
     # Without pads/teleporters, from the Cradle, the only way up is stairs.
     # Block the stairwells too and the Wilds must become unreachable.
