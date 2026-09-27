@@ -208,10 +208,52 @@ func _on_hero_respawned(hero: Hero) -> void:
 		hero.status_component.apply(owed.effect, hero, Vector2.ZERO, 1.0, left)
 
 
-## Debug: announce / spawn every camp that isn't up.
-func force_spawn_all() -> void:
+## Debug: spawn every camp that isn't up (announced ones too, unless
+## `jungle_only`). A camp that's gone for good comes back as well.
+func force_spawn_all(jungle_only: bool = false) -> void:
 	for camp in get_camps():
+		if jungle_only and camp.data.announce:
+			continue
 		if not _scheduled.has(camp):
 			_schedule(camp)
-		if camp.state != NeutralCamp.CampState.ALIVE and camp.state != NeutralCamp.CampState.GONE:
+		if not camp.is_alive():
 			spawn_camp(camp)
+
+
+## Debug: spawn the announced camps (the Nightmare) now.
+func force_spawn_announced() -> void:
+	for camp in get_camps():
+		if camp.data.announce and not camp.is_alive():
+			if not _scheduled.has(camp):
+				_schedule(camp)
+			spawn_camp(camp)
+
+
+## Debug: announced camps start their warning now (spawning warning_time
+## later), so the whole announce-and-spawn sequence can be watched.
+func force_warning() -> void:
+	for camp in get_camps():
+		if camp.data.announce and not camp.is_alive():
+			_scheduled[camp] = true
+			camp.state = NeutralCamp.CampState.WAITING
+			camp.next_spawn_time = get_clock() + camp.data.warning_time
+			_warn(camp)
+
+
+## Debug: remove every monster. Camps wait out their respawn_time again; a
+## once-only camp (the Nightmare) whose time has passed stays gone ("Nightmare
+## now" still brings it back), one still ahead keeps its first-spawn time.
+func despawn_all() -> void:
+	var clock := get_clock()
+	for camp in get_camps():
+		camp.despawn()
+		if camp.data.respawn_time > 0.0:
+			camp.state = NeutralCamp.CampState.WAITING
+			camp.next_spawn_time = maxf(camp.data.first_spawn_time, clock + camp.data.respawn_time)
+		elif camp.data.first_spawn_time > clock:
+			camp.state = NeutralCamp.CampState.WAITING
+			camp.next_spawn_time = camp.data.first_spawn_time
+		else:
+			camp.state = NeutralCamp.CampState.GONE
+			camp.next_spawn_time = INF
+		_scheduled[camp] = true

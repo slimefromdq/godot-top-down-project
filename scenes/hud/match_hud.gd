@@ -55,7 +55,11 @@ var team_bar_a: TeamBar
 var team_bar_b: TeamBar
 
 
+const GROUP := &"match_hud"
+
+
 func _ready() -> void:
+	add_to_group(GROUP)
 	layer = 5
 	_build()
 	_bind.call_deferred()

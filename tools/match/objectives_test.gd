@@ -8,7 +8,8 @@ extends Node2D
 # rewards (killer and team gold/XP, ultimate charge, a pack pays per
 # monster); claimed Motes (only the killer's team, until the claim runs
 # out); the Nightmare's team buff (dead heroes get the rest on respawn);
-# and Dream Basin's camps.
+# Dream Basin's camps; and the debug controls (spawn jungle, the Nightmare
+# now / its warning, clear).
 #
 #   godot --headless res://tools/match/objectives_test.tscn
 #
@@ -65,6 +66,7 @@ func _run() -> void:
 	await _test_claimed_motes()
 	await _test_nightmare()
 	await _test_dream_basin_camps()
+	await _test_debug_controls()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
 	get_tree().quit(failures)
@@ -307,6 +309,27 @@ func _test_dream_basin_camps() -> void:
 		func(o): return o.position.distance_to(-c.position) < 1.0 and o.data == c.data))
 	_check("jungle camps are mirrored", mirrored, "")
 	basin.free()
+
+
+func _test_debug_controls() -> void:
+	print("\n-- Debug controls")
+	director.despawn_all()
+	await _frames(1)
+	_check("clear: nothing up", not jungle.is_alive() and not pack.is_alive() and not lair.is_alive(), "")
+	director.force_spawn_all(true)
+	_check("spawn jungle camps: jungle up, no Nightmare", jungle.is_alive() and pack.is_alive() and not lair.is_alive(), "")
+	var warned: Array = []
+	director.objective_warning.connect(func(camp, _s): warned.append(camp), CONNECT_ONE_SHOT)
+	director.force_warning()
+	_check("Nightmare warning: announced now", warned == [lair] and lair.state == NeutralCamp.CampState.WARNING, "")
+	director.force_spawn_announced()
+	_check("Nightmare now: up (even after it was slain)", lair.is_alive(), "")
+	director.despawn_all()
+	await _frames(1)
+	# (The Nightmare slain by the test before may still be fading out.)
+	var left := get_tree().get_nodes_in_group(NeutralMonster.GROUP).filter(
+		func(m): return not m.is_queued_for_deletion() and not m.health_component.is_dead())
+	_check("clear again", not lair.is_alive() and left.is_empty(), "%s %s" % [lair.state, left])
 
 
 # --- Helpers -----------------------------------------------------------------

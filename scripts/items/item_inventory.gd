@@ -99,6 +99,45 @@ func has_item(item: ItemData) -> bool:
 	return _find(item) != null
 
 
+## Owned, or used up into an item you own (Pillow Fort counts as having
+## had its Cozy Blanket).
+func is_built(item: ItemData) -> bool:
+	for owned in _owned:
+		var step := owned.item
+		while step != null:
+			if step == item:
+				return true
+			step = step.builds_from
+	return false
+
+
+## The next item of `build` (a purchase order, components first) not yet
+## built, skipping ones that can never fit (a second active item). null =
+## the build is done. It may still be unaffordable: check can_buy().
+func get_next_in_build(build: Array[ItemData]) -> ItemData:
+	for item in build:
+		if item == null or is_built(item):
+			continue
+		var reason := get_buy_block_reason(item)
+		if reason == "Inventory full" or reason == "One active item only" or reason == "Not sold here":
+			continue
+		return item
+	return null
+
+
+## Buy as far down `build` as the gold allows (bots). Stops at the first
+## item it can't afford, so it saves up for it instead of skipping ahead.
+## Returns what it bought.
+func buy_from_build(build: Array[ItemData], max_purchases: int = 6) -> Array[ItemData]:
+	var bought: Array[ItemData] = []
+	for i in max_purchases:
+		var next := get_next_in_build(build)
+		if next == null or not buy(next):
+			break
+		bought.append(next)
+	return bought
+
+
 func count_of(item: ItemData) -> int:
 	return _owned.filter(func(o: Owned): return o.item == item).size()
 

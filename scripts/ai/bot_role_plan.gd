@@ -55,6 +55,17 @@ enum Job {
 @export var spread_radius: float = 1300.0
 @export var spread_penalty: float = 900.0
 
+@export_group("Items")
+## What the bot buys, in purchase order (components before their upgrades).
+## It buys whenever it can shop (in base, or dead), stops at the first item
+## it can't afford and saves for it. Items that can never fit (a second
+## active) are skipped.
+@export var item_build: Array[ItemData] = []
+## Walk home to shop once holding this much gold (and the next item is
+## affordable, no Motes carried, no fight). 0 = only shop when passing
+## through base or while dead.
+@export var shop_trip_gold: float = 0.0
+
 @export_group("Team play")
 ## ESCORT: follow carriers holding at least this value.
 @export var escort_min_value: int = 4

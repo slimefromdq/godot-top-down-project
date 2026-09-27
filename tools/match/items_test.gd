@@ -7,7 +7,9 @@ extends Node2D
 # restored, max HP never granted back), the slot limits (inventory full, one
 # active item), active items (the ability lands in the "item" slot, casts,
 # and leaves when sold), items surviving death, cooldown_rate, the Dream
-# Mote's value and Dream Basin's shops.
+# Mote's value and Dream Basin's shops; bots buying their role's build (on
+# death, on respawn, saving up, skipping a second active, the shop trip);
+# and the F1 debug hooks (give, buy, clear, shop anywhere).
 #
 #   godot --headless res://tools/match/items_test.tscn
 #
@@ -62,6 +64,9 @@ func _run() -> void:
 	await _test_death_keeps_items()
 	await _test_cooldown_rate()
 	_test_dream_mote_value()
+	_test_build_helpers()
+	await _test_bot_shopping()
+	_test_debug_hooks()
 	await _test_dream_basin_shops()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
@@ -313,6 +318,90 @@ func _test_dream_basin_shops() -> void:
 		var near := own_spawns.any(func(m): return m.position.distance_to(s.position) < 1200.0)
 		_check("the %s shop sits by its spawn points" % s.team, near, str(s.position))
 	basin.free()
+
+
+func _test_build_helpers() -> void:
+	print("\n-- Build order helpers")
+	var inv := ItemInventory.find_on(a1)
+	inv.clear()
+	var blanket := catalog.get_item(&"cozy_blanket")
+	var fort := catalog.get_item(&"pillow_fort")
+	var bubble := catalog.get_item(&"dream_bubble")
+	var overdrive := catalog.get_item(&"pocket_overdrive")
+	var build: Array[ItemData] = [blanket, bubble, overdrive, fort]
+	a1.global_position = shop.global_position
+	_check("empty inventory: next is the first", inv.get_next_in_build(build) == blanket, "")
+	inv.give(fort)
+	_check("an upgrade counts its component as built", inv.is_built(blanket) and inv.is_built(fort), "")
+	_check("so next skips the Blanket", inv.get_next_in_build(build) == bubble, "")
+	inv.give(bubble)
+	_check("a second active is skipped", inv.get_next_in_build(build) == null, "")
+	inv.clear()
+	_set_gold(a1, blanket.cost + 10)
+	var bought := inv.buy_from_build([blanket, fort])
+	_check("buy_from_build stops where the gold runs out (saves up)", bought == [blanket] and inv.has_item(blanket)
+		and not inv.has_item(fort), str(bought))
+	inv.clear()
+
+
+func _test_bot_shopping() -> void:
+	print("\n-- Bots buy items")
+	b1.set_bot_controlled(true)
+	await _frames(2)
+	var bot := b1.get_node("BotHeroInput") as BotHeroInput
+	var build := bot.plan.item_build
+	_check("every role plan has a valid build", [BotRules.current().tank_plan, BotRules.current().carry_plan,
+		BotRules.current().tempo_plan, BotRules.current().flex_plan].all(
+			func(p): return p.item_build.size() >= 3 and p.item_build.all(func(i): return catalog.items.has(i))), "")
+	var inv := ItemInventory.find_on(b1)
+	b1.global_position = Vector2(3000, 0)
+	_set_gold(b1, 100000)
+	await _frames(int(BotRules.current().shop_interval * Engine.physics_ticks_per_second) + 5)
+	_check("out in the map: the bot doesn't buy", inv.get_items().is_empty(), str(inv.get_items().size()))
+	_set_gold(b1, build[0].cost + 5)
+	b1.health_component.kill()
+	await _frames(3)
+	_check("on death it buys the first item of its build", inv.has_item(build[0]), str(inv.get_items()))
+	_check("and saves for the next", manager.get_gold(b1) < inv.price_of(build[1]), "")
+	_set_gold(b1, 100000)
+	manager.respawn_now(b1)
+	await _frames(3)
+	_check("on respawn (in base) it buys down the rest of its build", inv.get_next_in_build(build) == null,
+		"%d items: %s" % [inv.get_items().size(), inv.get_items().map(func(i): return i.id)])
+	_check("at most one active", inv.get_items().filter(func(i): return i.is_active()).size() <= 1, "")
+	inv.clear()
+	var trip_plan := bot.plan.duplicate()
+	trip_plan.shop_trip_gold = 500.0
+	bot.plan = trip_plan
+	bot.target = null
+	_set_gold(b1, 400)
+	_check("under shop_trip_gold: no trip", not bot._wants_shop_trip(manager, 0), "")
+	_set_gold(b1, 5000)
+	_check("over it, next item affordable: a trip", bot._wants_shop_trip(manager, 0), "")
+	_check("not while carrying Motes", not bot._wants_shop_trip(manager, 3), "")
+	b1.set_bot_controlled(false)
+	inv.clear()
+	b1.global_position = Vector2(0, -2000)
+
+
+func _test_debug_hooks() -> void:
+	print("\n-- Debug panel hooks")
+	a1.add_to_group(&"player")
+	var inv := ItemInventory.find_on(a1)
+	inv.clear()
+	var crown := catalog.get_item(&"crown_of_reverie")
+	DebugTools.give_player_item(crown)
+	_check("give free: owned, no gold spent", inv.has_item(crown), "")
+	DebugTools.clear_player_items()
+	_check("clear items", inv.get_items().is_empty(), "")
+	a1.global_position = Vector2(3000, 0)
+	_set_gold(a1, 5000)
+	_check("buy follows the shop rules", DebugTools.buy_player_item(crown) == "Return to base to shop", "")
+	DebugTools.set_shop_anywhere(true)
+	_check("shop anywhere lifts them", DebugTools.buy_player_item(crown).begins_with("Bought") and inv.has_item(crown), "")
+	DebugTools.set_shop_anywhere(false)
+	inv.clear()
+	a1.remove_from_group(&"player")
 
 
 # --- Helpers -----------------------------------------------------------------

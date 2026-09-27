@@ -505,6 +505,8 @@ func get_shop_block_reason(hero: Hero) -> String:
 	if state == State.ENDED:
 		return "Match over"
 	var r := get_rules()
+	if r.shop_anywhere:
+		return ""
 	if hero.health_component.is_dead():
 		return "" if r.shop_while_dead else "Dead"
 	if is_in_base(hero):

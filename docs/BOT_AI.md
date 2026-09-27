@@ -72,6 +72,27 @@ In a match every hero starts with no ultimate and charges it by playing (see
 [OBJECTIVE.md](OBJECTIVE.md#ultimate-charge)). A bot tries its ultimate like
 any other slot once it is charged.
 
+### Items
+
+Each role plan has an `item_build`: the items it buys, in purchase order
+(components before their upgrades). A bot buys down it whenever it can shop:
+when it dies (dead heroes shop from anywhere), when it respawns (in base),
+and every `BotRules.shop_interval` while it's in base. It stops at the first
+item it can't afford and saves for it, and skips items that can never fit (a
+second active item). With `shop_trip_gold` above 0 (carry and tempo: 1500), a
+bot holding that much, with the next item affordable, no Motes and no fight,
+walks home to shop. An active item is cast like any other slot when ready.
+
+| Role | Build |
+|---|---|
+| Tank | Cozy Blanket, Pillow Fort, Dream Bubble, Stardust Pouch, Dreamheart, Moonlit Tome |
+| Carry | Sugar Rush, Night Owl Espresso, Pocket Overdrive, Cozy Blanket, Insomnia Engine, Pillow Fort |
+| Tempo | Stardust Pouch, Moonlit Tome, Dream Bubble, Cozy Blanket, Crown of Reverie, Pillow Fort |
+| Flex | Sugar Rush, Cozy Blanket, Stardust Pouch, Pocket Overdrive, Night Owl Espresso, Pillow Fort |
+
+Bots don't fight neutral camps on purpose yet (they only shoot one that is
+in their line of fire).
+
 ### Fill
 
 F1 > Bots fills each team to `team_size` following `BotRules.team_composition`

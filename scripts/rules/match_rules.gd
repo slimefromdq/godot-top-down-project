@@ -199,6 +199,8 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 @export var shop_radius: float = 700.0
 ## Dead heroes (waiting to respawn) can shop from anywhere.
 @export var shop_while_dead: bool = true
+## Debug: shop from anywhere, alive or not (F1 > Match).
+@export var shop_anywhere: bool = false
 
 @export_group("Late match")
 ## After late_match_time, new Motes spawn worth late_match_value_mult times

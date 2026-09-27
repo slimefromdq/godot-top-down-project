@@ -13,6 +13,10 @@ class_name BotHeroInput
 ##   teammates' fights), the Dream Mote, the nearest unclaimed Mote, and
 ##   otherwise ROAM: scout the Mote spawns the team hasn't seen for longest,
 ##   spread away from teammates' roam goals.
+## Items: the plan's item_build is bought in order whenever the bot can
+## shop (on death, on respawn, and every shop_interval while in base); with
+## plan.shop_trip_gold set, a bot with that much gold and nothing better to
+## do walks home to shop. Active items are cast like any other slot.
 ## Teammates' bots share their `goal_key` so two bots don't chase the same
 ## Mote, roam point, carrier or hunt target.
 ##
@@ -76,6 +80,7 @@ var _attacked_time: float = -INF
 # Enemy carriers the team knows about: Hero -> [position, time]. Revealed
 # carriers update at their minimap ping rate.
 var _known_carriers: Dictionary = {}
+var _shop_left: float = 0.0
 
 
 func _ready() -> void:
@@ -86,6 +91,10 @@ func _ready() -> void:
 	var role := hero.definition.role if hero.definition != null else HeroDefinition.Role.FLEX
 	plan = BotRules.current().plan_for(role)
 	hero.health_component.damage_taken.connect(_on_damage_taken)
+	# Dead heroes can shop from anywhere, and a respawn lands in base (the
+	# bot doesn't tick while dead).
+	hero.health_component.died.connect(try_shopping, CONNECT_DEFERRED)
+	hero.respawned.connect(try_shopping)
 	# Spread expensive sight and strategy work across physics frames.
 	_strategy_left = _rng.randf_range(0.0, BotRules.current().strategy_interval)
 	_perception_left = _rng.randf_range(0.0, BotRules.current().perception_interval)
@@ -122,6 +131,10 @@ func _physics_process(delta: float) -> void:
 		stop()
 		return
 	_time += delta
+	_shop_left -= delta
+	if _shop_left <= 0.0:
+		_shop_left = rules.shop_interval
+		try_shopping()
 	_perception_left -= delta
 	if _perception_left <= 0.0:
 		_perception_left = BotRules.current().perception_interval
@@ -359,6 +372,9 @@ func _choose_goal(manager: MatchManager) -> void:
 			and hero.global_position.distance_to(goal) > rules.goal_reached_distance \
 			and _claim_still_valid():
 		return
+	if _wants_shop_trip(manager, carried) and sanctuary != null:
+		_set_goal(&"shop", &"travel", sanctuary.area.get_center())
+		return
 	if _choose_job():
 		return
 	if _choose_dream_mote(manager):
@@ -373,6 +389,27 @@ func _choose_goal(manager: MatchManager) -> void:
 			_set_goal(&"deliver" if deposit == enemy_dreamer else &"bank", &"travel", deposit.global_position)
 			return
 	_choose_roam(home, enemy_dreamer)
+
+
+# Buy down the plan's item_build as far as the gold goes. Returns what was
+# bought (nothing when the bot can't shop right now).
+func try_shopping() -> Array[ItemData]:
+	var inventory := ItemInventory.find_on(hero)
+	if inventory == null or plan == null or plan.item_build.is_empty() or not inventory.can_shop():
+		return []
+	return inventory.buy_from_build(plan.item_build)
+
+
+# Worth walking home for: enough gold, the next item affordable, nothing
+# carried and nobody to fight.
+func _wants_shop_trip(manager: MatchManager, carried: int) -> bool:
+	if manager == null or plan.shop_trip_gold <= 0.0 or carried > 0 or target != null:
+		return false
+	var inventory := ItemInventory.find_on(hero)
+	if inventory == null or inventory.get_gold() < plan.shop_trip_gold:
+		return false
+	var next := inventory.get_next_in_build(plan.item_build)
+	return next != null and inventory.get_gold() >= inventory.price_of(next)
 
 
 # Bank or deliver: the plan's preference, the enemy's wake meter, and how

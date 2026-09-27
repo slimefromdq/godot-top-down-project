@@ -1,6 +1,13 @@
 [gd_resource type="Resource" script_class="BotRolePlan" format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/bot_role_plan.gd" id="1_plan"]
+[ext_resource type="Script" path="res://scripts/items/item_data.gd" id="item_script"]
+[ext_resource type="Resource" path="res://resources/items/cozy_blanket.tres" id="item_cozy_blanket"]
+[ext_resource type="Resource" path="res://resources/items/pillow_fort.tres" id="item_pillow_fort"]
+[ext_resource type="Resource" path="res://resources/items/dream_bubble.tres" id="item_dream_bubble"]
+[ext_resource type="Resource" path="res://resources/items/stardust_pouch.tres" id="item_stardust_pouch"]
+[ext_resource type="Resource" path="res://resources/items/dreamheart.tres" id="item_dreamheart"]
+[ext_resource type="Resource" path="res://resources/items/moonlit_tome.tres" id="item_moonlit_tome"]
 
 [resource]
 script = ExtResource("1_plan")
@@ -25,3 +32,4 @@ hunt_radius = 2000.0
 hunt_min_value = 8
 max_hunters = 1
 dream_mote_radius = 6000.0
+item_build = Array[ExtResource("item_script")]([ExtResource("item_cozy_blanket"), ExtResource("item_pillow_fort"), ExtResource("item_dream_bubble"), ExtResource("item_stardust_pouch"), ExtResource("item_dreamheart"), ExtResource("item_moonlit_tome")])

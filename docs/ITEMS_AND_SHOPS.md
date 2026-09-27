@@ -92,6 +92,17 @@ item only", "Return to base to shop"). Your items are listed underneath:
 click one to sell it. The match HUD shows a "B Shop" hint under your gold
 whenever you can buy.
 
+### Bots
+
+Bots buy their role plan's `item_build` (see `BOT_AI.md` > Items).
+
+### Debug
+
+F1 > Match has **Items** (give free / buy any catalog item, clear your
+items, open the shop, bots shop now, Shop anywhere) and **Neutral
+objectives** (jungle camps now, the Nightmare now or its warning now, clear
+all, objectives on/off).
+
 ### Shops on the map
 
 A `Shop` node (`scripts/items/shop.gd`) with a `team`, placed in each base
