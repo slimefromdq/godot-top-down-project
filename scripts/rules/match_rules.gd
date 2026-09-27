@@ -10,8 +10,8 @@ class_name MatchRules
 # playtest mode. Each MatchManager plays on a private copy, which the
 # F1 > Match tab edits live.
 #
-# Groups: Match, Economy, Leveling, Motes, Spawning, Dreamers, Wake, Buffs,
-# Late match, Cues.
+# Groups: Match, Economy, Leveling, Ultimate, Motes, Spawning, Dreamers,
+# Wake, Buffs, Late match, Cues.
 
 const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 
@@ -42,6 +42,31 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 ## With 300 / 100, level 10 takes 6300 XP in total.
 @export var xp_level_base: float = 300.0
 @export var xp_level_growth: float = 100.0
+
+@export_group("Ultimate")
+## In a match, charge-gated slots (SlotDefinition.ultimate_charge: the
+## ultimate) ignore their cooldown: every hero starts at 0 charge, earns it
+## from the sources below and spends all of it on a cast. Off = ultimates
+## use their cooldowns (as on the training maps).
+@export var ultimate_charge_enabled: bool = true
+## Charge that fills the ultimate.
+@export var ult_charge_max: float = 100.0
+## Earned by every living hero each second while the match is PLAYING.
+@export var ult_charge_per_second: float = 0.35
+## Per point of damage dealt to enemy heroes (after resistances).
+@export var ult_charge_per_damage: float = 0.03
+## Per point of damage taken from enemy heroes (shields included), so
+## frontliners charge by soaking.
+@export var ult_charge_per_damage_taken: float = 0.015
+## Per point of healing done to a teammate (self-heals count at
+## ult_charge_self_heal_mult).
+@export var ult_charge_per_heal: float = 0.04
+@export_range(0.0, 1.0, 0.05) var ult_charge_self_heal_mult: float = 0.25
+## Flat charge for a kill and for an assist.
+@export var ult_charge_kill: float = 12.0
+@export var ult_charge_assist: float = 6.0
+## Per Mote value the depositor puts into either Dreamer.
+@export var ult_charge_per_mote_value: float = 1.5
 
 @export_group("Motes")
 ## Most Motes one hero can carry (a Dream Mote takes one slot).

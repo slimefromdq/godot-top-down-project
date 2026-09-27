@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AudioMix" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/audio_mix.gd" id="1_mix"]
+
+[resource]
+script = ExtResource("1_mix")
+max_sfx_voices = 22
+same_stream_window = 0.05
+same_stream_max_voices = 3
+cull_distance = 1900.0
+max_distance = 2200.0
+attenuation = 1.8
+other_source_db = -4.0

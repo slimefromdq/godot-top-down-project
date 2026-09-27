@@ -1,6 +1,7 @@
 # How to add a hero
 
-After adding a hero, try it as a bot through F1 > Bots. Check that it can
+After adding a hero, give it a placeholder body (`sprites/heroes/<hero>.svg`,
+see VISUALS_AND_AUDIO.md) and try it as a bot through F1 > Bots. Check that it can
 move, use its slots, and take part in a match; bot control reads the hero's
 `AbilityData` and has no hero-specific script.
 
@@ -132,6 +133,7 @@ For each slot in the definition's `abilities` dictionary, point at an
 | hold to raise a shield/cloak on your aim arc that eats projectiles and has its own HP | `BlockerData` + `BlockerAbility` (a `FrontalBlocker`: HP `ScalingValue`, regen, break, slots allowed while raised, raised/lowered statuses) | none |
 | lifesteal / a drain | `AbilityData.lifesteal` (share of this ability's damage dealt that heals the caster) | none |
 | a status only while dashing (untargetable swarm, barging armor) | `ChargeData.dash_status` | none |
+| an ultimate charged by playing in a match (no cooldown there) | nothing: the `ultimate` slot has `SlotDefinition.ultimate_charge`, and `MatchRules` > Ultimate sets the rates. A script that starts the ultimate itself (a passive revive) calls `_spend_cooldown()`, which spends the charge in a match | none |
 | heal over time / regen (a buff that restores health each tick) | `StatusEffect.tick_heal_ratio` (share of max HP per `tick_interval`, times stacks) | none |
 | read how many Motes someone carries (show a count, scale an effect) | `MoteCarrier.find_on(actor).get_mote_count()` / `get_mote_value()` / `changed` signal | a small script |
 | knock Motes loose (Jostle) | nothing: any enemy status push or pull of at least `MatchRules.jostle_min_distance`, a carry, or an abduction (`MinigameHost.play(game, source)`) already reports `Actor.displaced(source, distance)` | none |

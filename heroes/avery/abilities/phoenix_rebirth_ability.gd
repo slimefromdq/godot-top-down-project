@@ -49,7 +49,7 @@ func _on_about_to_die(event: DeathEvent) -> void:
 		return
 	var rebirth := get_rebirth_data()
 	event.cancel(1.0, self)
-	cooldown_remaining = 0.0 if cooldowns_disabled else get_cooldown()
+	_spend_cooldown()    # the cooldown, or a match ultimate charge
 	activated.emit()
 	_reviving = true
 	_time_left = rebirth.rebirth_duration

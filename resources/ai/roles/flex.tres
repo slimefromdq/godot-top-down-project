@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="BotRolePlan" format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/bot_role_plan.gd" id="1_plan"]
+
+[resource]
+script = ExtResource("1_plan")
+job = 2
+engage_radius = 850.0
+chase_radius = 1200.0
+retreat_health_fraction = 0.3
+deposit_value = 8
+prefers_bank = false
+deliver_when_enemy_wake = 0.0
+deliver_from_level = 1
+gauntlet_enemies = 2
+enemy_half_bias = 0.0
+unseen_weight = 12.0
+distance_weight = 0.35
+spread_radius = 1300.0
+spread_penalty = 900.0
+escort_min_value = 4
+escort_distance = 320.0
+assist_radius = 2800.0
+hunt_radius = 2500.0
+hunt_min_value = 5
+max_hunters = 2
+dream_mote_radius = 5000.0

@@ -380,7 +380,8 @@ func _split(at: Vector2) -> void:
 
 func _spawn_feedback(effect: PackedScene, sound: SoundCue, at: Vector2) -> void:
 	EffectSpawner.spawn(self, effect, {"position": at, "direction": direction})
-	AudioManager.play_sfx(sound, at)
+	var source: Node = damage_template.source if damage_template != null else null
+	AudioManager.play_sfx(sound, at, 1.0, 0.0, source if is_instance_valid(source) else null)
 
 
 # --- Returning projectiles --------------------------------------------------

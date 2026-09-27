@@ -3,7 +3,10 @@ extends Node
 # Autoload (Project Settings > Globals): AudioManager.
 #
 # SFX: play_sfx(cue, position) plays a SoundCue anywhere, detached from the
-# caller, so a death sound survives its actor being freed.
+# caller, so a death sound survives its actor being freed. The AudioMix
+# (resources/audio/audio_mix.tres) thins a crowded mix first: a voice
+# budget, one start per sound file per few milliseconds, off-screen culling,
+# and other heroes a little quieter than you (pass `source`).
 #
 # Music: a priority stack. Anything can request_music(requester, stream,
 # priority); the highest priority request plays, with a crossfade. When the
@@ -19,6 +22,10 @@ const MUSIC_BUS := &"Music"
 
 var _last_play_msec: Dictionary = {}    # SoundCue -> int
 var _voices: Dictionary = {}            # SoundCue -> Array[Node]
+var _all_voices: Array[Node] = []       # every SFX player, oldest first
+var _stream_msec: Dictionary = {}       # AudioStream -> last start (msec)
+## Sounds skipped by the AudioMix since startup (for tests and debugging).
+var skipped_sfx: int = 0
 
 var _music_requests: Array[Dictionary] = []
 var _music_players: Array[AudioStreamPlayer] = []
@@ -49,8 +56,9 @@ func _ready() -> void:
 
 # `pitch_scale` multiplies the cue's own random pitch (game feel uses it to
 # make heavy hits deeper); `volume_offset_db` is added to its volume.
+# `source`: who made the sound. The local player's sounds are never thinned.
 func play_sfx(cue: SoundCue, position: Vector2 = Vector2.ZERO, pitch_scale: float = 1.0,
-		volume_offset_db: float = 0.0) -> void:
+		volume_offset_db: float = 0.0, source: Node = null) -> void:
 	if cue == null:
 		return
 	var stream := cue.pick_stream()
@@ -60,28 +68,76 @@ func play_sfx(cue: SoundCue, position: Vector2 = Vector2.ZERO, pitch_scale: floa
 	var now := Time.get_ticks_msec()
 	if cue.min_interval > 0.0 and now - _last_play_msec.get(cue, -100000) < cue.min_interval * 1000.0:
 		return
+	var mix := AudioMix.current()
+	# Flat (UI, announcer) sounds are never thinned either.
+	var own := is_local_source(source) or not cue.positional
+	if not own and not _mix_allows(cue, stream, position, now, mix):
+		skipped_sfx += 1
+		return
 	_last_play_msec[cue] = now
+	_stream_msec[stream] = now
 
 	var voices: Array = _voices.get_or_add(cue, [])
 	voices = voices.filter(func(v): return is_instance_valid(v))
 	if cue.max_voices > 0 and voices.size() >= cue.max_voices:
 		voices.pop_front().queue_free()
 	_voices[cue] = voices
+	_all_voices = _all_voices.filter(func(v): return is_instance_valid(v) and not v.is_queued_for_deletion())
+	if mix.max_sfx_voices > 0 and _all_voices.size() >= mix.max_sfx_voices:
+		# Only reached for your own sounds (or a UI sound): steal the oldest.
+		_all_voices.pop_front().queue_free()
 
 	var player: Node
 	if cue.positional:
 		player = AudioStreamPlayer2D.new()
 		player.position = position
+		player.max_distance = mix.max_distance
+		player.attenuation = mix.attenuation
 	else:
 		player = AudioStreamPlayer.new()
 	player.stream = stream
-	player.volume_db = cue.volume_db + volume_offset_db
+	var other := source != null and not is_local_source(source)
+	player.volume_db = cue.volume_db + volume_offset_db + (mix.other_source_db if other else 0.0)
 	player.pitch_scale = randf_range(cue.pitch_min, cue.pitch_max) * pitch_scale
 	player.bus = cue.bus
 	player.finished.connect(player.queue_free)
 	add_child(player)
 	player.play()
 	voices.append(player)
+	_all_voices.append(player)
+
+
+## Is `source` (or what owns it) the local player's hero?
+static func is_local_source(source: Node) -> bool:
+	var node := source
+	while node != null and is_instance_valid(node):
+		if node.is_in_group(&"player"):
+			return node.get(&"bot_controlled") != true
+		node = node.get_parent()
+	return false
+
+
+# Whether a sound that isn't the local player's may start now.
+func _mix_allows(cue: SoundCue, stream: AudioStream, position: Vector2, now: int, mix: AudioMix) -> bool:
+	if cue.bus == MUSIC_BUS:
+		return true
+	if now - int(_stream_msec.get(stream, -100000)) < mix.same_stream_window * 1000.0:
+		return false
+	_all_voices = _all_voices.filter(func(v): return is_instance_valid(v) and not v.is_queued_for_deletion())
+	if mix.max_sfx_voices > 0 and _all_voices.size() >= mix.max_sfx_voices:
+		return false
+	if mix.same_stream_max_voices > 0:
+		var same := 0
+		for voice in _all_voices:
+			if voice.stream == stream:
+				same += 1
+		if same >= mix.same_stream_max_voices:
+			return false
+	if cue.positional and mix.cull_distance > 0.0:
+		var camera := get_viewport().get_camera_2d()
+		if camera != null and camera.get_screen_center_position().distance_to(position) > mix.cull_distance:
+			return false
+	return true
 
 
 # ---------------------------------------------------------------------------

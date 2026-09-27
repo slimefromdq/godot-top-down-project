@@ -16,3 +16,6 @@ class_name SlotDefinition
 ## Holding the key keeps re-requesting the ability (a basic-attack chain).
 ## Off means one press = one request.
 @export var hold_to_repeat: bool = false
+## In a match with MatchRules.ultimate_charge_enabled, this slot is gated by
+## the hero's UltimateCharge instead of its cooldown (the ultimate).
+@export var ultimate_charge: bool = false
