@@ -110,6 +110,9 @@ func _test_pose_trail_and_nudge() -> void:
 	await get_tree().process_frame
 	var trails := avery.visuals.find_children("*", "SlashTrail", false, false)
 	_check("slash trail spawned on release", trails.size() > 0, "")
+	var flame := load("res://heroes/avery/vfx/sun_flame.png") as Texture2D
+	_check("Avery's trail sweeps her sun flame art", trails.size() > 0 and trails[0].texture != null
+			and trails[0].texture.get_size() == flame.get_size(), "")
 	await get_tree().process_frame
 	_check("camera nudges toward the swing", camera.offset.x > 1.0, "offset %s" % camera.offset)
 	await _seconds(0.8)

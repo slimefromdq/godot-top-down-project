@@ -3,14 +3,13 @@
 [ext_resource type="Texture2D" path="res://heroes/avery/art/parts/sword_arm.png" id="1_il5bn"]
 [ext_resource type="Texture2D" path="res://heroes/avery/art/parts/sword.png" id="2_s1x5i"]
 
-[node name="ArmFront" type="Sprite2D" unique_id=1194805781]
+[node name="ArmFront" type="Sprite2D" unique_id=1416485538]
 texture = ExtResource("1_il5bn")
 offset = Vector2(-4, 43)
 
-[node name="Sword" type="Sprite2D" parent="." unique_id=1211011137]
+[node name="Sword" type="Sprite2D" parent="." unique_id=2108790097]
 show_behind_parent = true
-position = Vector2(-3, 84)
-scale = Vector2(0.75, 0.75)
+position = Vector2(-2, 86)
 texture = ExtResource("2_s1x5i")
-offset = Vector2(0, 52)
+offset = Vector2(0, 14)
 flip_v = true
