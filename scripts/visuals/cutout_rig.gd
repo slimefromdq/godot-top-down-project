@@ -25,10 +25,52 @@ const HIDDEN_GROUP := &"bake_hidden"
 @export var bake_scale: float = 1.0
 ## Path of the AnimationPlayer, relative to this node.
 @export var animation_player_path: NodePath = ^"AnimationPlayer"
+## Optional live part (the weapon arm) that rotates toward the aim in game.
+## It's left out of the bake and exported as its own scene; its origin is
+## the pivot (shoulder). Empty = no aim part.
+@export var aim_part_path: NodePath
+## Which way the aim part's art points at rotation 0 (90 = hanging down).
+@export_range(-180.0, 180.0, 1.0, "degrees") var aim_part_rest_angle: float = 90.0
 
 
 func get_animation_player() -> AnimationPlayer:
 	return get_node_or_null(animation_player_path) as AnimationPlayer
+
+
+func get_aim_part() -> Node2D:
+	if aim_part_path.is_empty():
+		return null
+	return get_node_or_null(aim_part_path) as Node2D
+
+
+## The aim part's pivot relative to this rig's origin (= the frame centre),
+## at bake scale, in the rest pose. Call it before any animation has played.
+func get_aim_pivot() -> Vector2:
+	var part := get_aim_part()
+	if part == null:
+		return Vector2.ZERO
+	var local := Vector2.ZERO
+	var node: Node = part
+	while node != self and node is Node2D:
+		local = (node as Node2D).transform * local
+		node = node.get_parent()
+	return local * bake_scale
+
+
+## A standalone copy of the aim part in its rest pose, scaled to the bake
+## (origin = pivot, rotation 0), ready to pack as a scene.
+func make_aim_part_copy() -> Node2D:
+	var part := get_aim_part()
+	if part == null:
+		return null
+	var copy := part.duplicate() as Node2D
+	copy.position = Vector2.ZERO
+	copy.rotation = 0.0
+	copy.scale *= bake_scale
+	copy.visible = true
+	for node in copy.find_children("*", "", true, false):
+		node.owner = copy
+	return copy
 
 
 ## Problems that would stop a bake. Empty = ready.
@@ -45,6 +87,8 @@ func validate() -> PackedStringArray:
 		errors.append("no AnimationPlayer at %s" % animation_player_path)
 	elif get_bake_list().is_empty():
 		errors.append("none of %s exist in the AnimationPlayer" % [bake_animations])
+	if not aim_part_path.is_empty() and get_aim_part() == null:
+		errors.append("no Node2D aim part at %s" % aim_part_path)
 	return errors
 
 

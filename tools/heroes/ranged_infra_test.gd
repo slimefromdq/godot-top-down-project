@@ -48,6 +48,7 @@ func _run() -> void:
 	await _test_parry()
 	await _test_look_ahead_pierce_and_launch()
 	await _test_containment_ring()
+	await _test_aim_part()
 	_test_cooldown_api()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
@@ -1022,6 +1023,31 @@ func _fire_until_empty(h: Hero, slot: StringName, timeout: float) -> void:
 			return
 		h.request_slot(slot, h.aim_point)
 		await get_tree().physics_frame
+
+
+# --- Live aim part (VisualProfile.aim_part) ---------------------------------
+
+func _test_aim_part() -> void:
+	var visuals := VisualsComponent.find_on(hero)
+	var part := visuals.aim_part
+	_check("test hero has a live aim part from its baked rig", part != null and visuals.body is AnimatedSprite2D, "")
+	if part == null:
+		return
+	var profile := visuals.profile
+	var rest := Vector2.from_angle(deg_to_rad(profile.aim_part_rest_angle))
+	var saved: Vector2 = hero.aim_direction
+	for aim: Vector2 in [Vector2.RIGHT, Vector2.LEFT, Vector2(-1, -1).normalized(), Vector2(0.3, 1).normalized()]:
+		hero.aim_direction = aim
+		await _frames(2)
+		var points: Vector2 = part.global_transform.basis_xform(rest).normalized()
+		_check("aim part points along aim %s" % aim, points.dot(aim) > 0.99, "points %s" % points)
+		var holder := part.get_parent() as Node2D
+		var want_x: float = profile.aim_part_pivot.x * profile.body_scale.x * (-1.0 if aim.x < 0.0 else 1.0)
+		_check("aim part pivot mirrors with facing %s" % aim,
+				is_equal_approx(holder.position.x - visuals.body.position.x, want_x), str(holder.position))
+	_check("aim part shares the body's flash/tint material",
+			part.get_parent().material == visuals.body.material and part.use_parent_material, "")
+	hero.aim_direction = saved
 
 
 func _check(label: String, ok: bool, detail: String) -> void:

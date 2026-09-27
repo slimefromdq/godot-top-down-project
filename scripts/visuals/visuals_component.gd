@@ -31,6 +31,9 @@ const META_KEY := &"visuals_component"
 @export var print_cues: bool = false
 
 var body: CanvasItem
+## The live aim part (profile.aim_part), rotated toward the aim; null if none.
+var aim_part: Node2D
+var _aim_holder: Node2D
 var _animation_player: AnimationPlayer
 var _body_material: ShaderMaterial
 var _flash_tween: Tween
@@ -96,6 +99,7 @@ func _process(delta: float) -> void:
 		var aim: Vector2 = root.aim_direction
 		if absf(aim.x) > 0.01:
 			body.flip_h = aim.x < 0.0
+	_update_aim_part(root)
 
 	if body is AnimatedSprite2D and not _playing_one_shot:
 		var moving: bool = "velocity" in root and root.velocity.length() > profile.move_animation_threshold
@@ -253,6 +257,8 @@ func get_death_duration() -> float:
 func revive() -> void:
 	_is_dead = false
 	_playing_one_shot = false
+	if _aim_holder != null:
+		_aim_holder.show()
 	play_cue(&"spawn")
 
 
@@ -306,6 +312,9 @@ func _on_healed(amount: float, _source: Node = null) -> void:
 func _on_died() -> void:
 	_is_dead = true
 	set_highlighted(false)
+	# The baked death animation has no aim part, so it goes with the body.
+	if _aim_holder != null:
+		_aim_holder.hide()
 	for effect_id in _status_vfx.keys():
 		_remove_status_vfx(effect_id)
 	play_cue(&"death", {"align": false})
@@ -416,6 +425,45 @@ func _setup_body() -> void:
 	if body is AnimatedSprite2D:
 		body.animation_finished.connect(func(): _playing_one_shot = false)
 		_play_body_loop(&"idle")
+	_setup_aim_part()
+
+
+# The aim part hangs off a holder at the pivot. Facing left mirrors the holder
+# (scale.x = -1), so the part's own rotation is solved in mirrored space.
+func _setup_aim_part() -> void:
+	if profile.aim_part == null:
+		return
+	aim_part = profile.aim_part.instantiate() as Node2D
+	if aim_part == null:
+		push_warning("VisualProfile.aim_part root must be a Node2D")
+		return
+	_aim_holder = Node2D.new()
+	_aim_holder.name = "AimPart"
+	_aim_holder.scale = profile.body_scale
+	add_child(_aim_holder)
+	_aim_holder.add_child(aim_part)
+	move_child(_aim_holder, body.get_index() if profile.aim_part_behind_body else body.get_index() + 1)
+	# Flashes, tints and highlights reach the part through the body's material.
+	_aim_holder.material = body.material
+	aim_part.use_parent_material = true
+	for node in aim_part.find_children("*", "CanvasItem"):
+		node.use_parent_material = true
+	_update_aim_part(_get_root())
+
+
+func _update_aim_part(root: Node) -> void:
+	if _aim_holder == null:
+		return
+	var aim: Vector2 = root.aim_direction if "aim_direction" in root else Vector2.RIGHT
+	var flipped: bool = "flip_h" in body and body.flip_h
+	var side := -1.0 if flipped else 1.0
+	var pivot := profile.aim_part_pivot * profile.body_scale
+	_aim_holder.position = (body as Node2D).position + Vector2(pivot.x * side, pivot.y)
+	_aim_holder.scale = Vector2(absf(profile.body_scale.x) * side, profile.body_scale.y)
+	var angle := aim.angle() if aim != Vector2.ZERO else 0.0
+	if flipped:
+		angle = PI - angle
+	aim_part.rotation = angle - deg_to_rad(profile.aim_part_rest_angle)
 
 
 func _play_body_loop(animation: StringName) -> void:

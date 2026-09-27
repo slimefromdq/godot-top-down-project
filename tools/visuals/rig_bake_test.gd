@@ -48,10 +48,27 @@ func _run() -> void:
 	rig.animation_player_path = ^"AnimationPlayer"
 	rig.bake_animations = [&"idle", &"move", &"hurt", &"death"]
 
+	# Aim part: the template's sword arm, hanging down from the shoulder.
+	_check("template has an aim part", rig.get_aim_part() != null, "")
+	_check("aim pivot is the shoulder relative to the frame centre",
+			rig.get_aim_pivot() == Vector2(-12, -18), str(rig.get_aim_pivot()))
+	rig.bake_scale = 0.5
+	_check("aim pivot follows bake scale", rig.get_aim_pivot() == Vector2(-6, -9), str(rig.get_aim_pivot()))
+	var copy := rig.make_aim_part_copy()
+	_check("aim part copy is at its pivot, scaled, with its children",
+			copy.position == Vector2.ZERO and copy.scale == Vector2(0.5, 0.5) and copy.get_child_count() == 1
+			and copy.get_child(0).owner == copy, "")
+	copy.free()
+	rig.bake_scale = 1.0
+	rig.aim_part_path = ^"Hips/Nope"
+	_check("a missing aim part is refused", not rig.validate().is_empty(), "")
+	rig.aim_part_path = ^"Hips/Torso/ArmFront"
+
 	if not RigBaker.can_render():
 		var result: Dictionary = await RigBaker.render(rig, self)
 		_check("render refuses --headless with a reason", not result.errors.is_empty(), "")
 		_check("the rig is back where it was", rig.get_parent() == self, "")
+		_check("the aim part is visible again", rig.get_aim_part().visible, "")
 
 	_test_pack_and_frames()
 
@@ -60,6 +77,9 @@ func _run() -> void:
 	if baked != null:
 		_check("committed bake has a texture", baked.get_frame_texture(&"idle", 0) != null, "")
 		_check("committed bake hurt is a one-shot", not baked.get_animation_loop(&"hurt"), "")
+	var aim_scene := load(RigBaker.aim_scene_path(TEMPLATE_FRAMES)) as PackedScene
+	_check("committed bake has its aim part scene", aim_scene != null
+			and aim_scene.instantiate().name == &"ArmFront", "")
 
 	print("rig_bake_test: %d failed" % failures)
 	get_tree().quit(failures)

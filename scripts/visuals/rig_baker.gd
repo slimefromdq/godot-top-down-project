@@ -45,6 +45,10 @@ static func render(rig: CutoutRig, host: Node) -> Dictionary:
 	rig.rotation = 0.0
 
 	var hidden: Array[CanvasItem] = []
+	var aim := rig.get_aim_part()
+	if aim != null and aim.visible:
+		aim.visible = false
+		hidden.append(aim)
 	for node in rig.get_tree().get_nodes_in_group(CutoutRig.HIDDEN_GROUP):
 		if node is CanvasItem and rig.is_ancestor_of(node) and node.visible:
 			node.visible = false
@@ -118,6 +122,14 @@ static func build_frames(sheet_texture: Texture2D, cells: Dictionary, order: Arr
 ## live; the SpriteFrames references it by that path. Returns {errors, sheet,
 ## frames}. Saving is the caller's job (see save()).
 static func bake(rig: CutoutRig, host: Node, sheet_path: String) -> Dictionary:
+	# Rest pose, before render() plays anything.
+	var aim_scene: PackedScene = null
+	var aim_pivot := rig.get_aim_pivot()
+	var aim_copy := rig.make_aim_part_copy()
+	if aim_copy != null:
+		aim_scene = PackedScene.new()
+		aim_scene.pack(aim_copy)
+		aim_copy.free()
 	var rendered: Dictionary = await render(rig, host)
 	if not rendered.errors.is_empty():
 		return {"errors": rendered.errors, "sheet": null, "frames": null}
@@ -129,12 +141,31 @@ static func bake(rig: CutoutRig, host: Node, sheet_path: String) -> Dictionary:
 	var texture := ImageTexture.create_from_image(packed.sheet)
 	texture.take_over_path(sheet_path)
 	var frames := build_frames(texture, packed.cells, order, rig.fps, looping)
-	return {"errors": PackedStringArray(), "sheet": packed.sheet, "frames": frames}
+	return {"errors": PackedStringArray(), "sheet": packed.sheet, "frames": frames,
+			"aim_scene": aim_scene, "aim_pivot": aim_pivot, "aim_rest_angle": rig.aim_part_rest_angle}
 
 
-## Writes the sheet PNG and the SpriteFrames .tres (which points at the PNG).
+## Writes the sheet PNG, the SpriteFrames .tres (which points at the PNG)
+## and, if the rig has an aim part, <frames>_aim.tscn.
 static func save(result: Dictionary, sheet_path: String, frames_path: String) -> Error:
 	var err := (result.sheet as Image).save_png(ProjectSettings.globalize_path(sheet_path))
 	if err != OK:
 		return err
-	return ResourceSaver.save(result.frames, frames_path)
+	err = ResourceSaver.save(result.frames, frames_path)
+	if err != OK or result.get("aim_scene") == null:
+		return err
+	return ResourceSaver.save(result.aim_scene, aim_scene_path(frames_path))
+
+
+static func aim_scene_path(frames_path: String) -> String:
+	return frames_path.get_basename() + "_aim.tscn"
+
+
+## Points a VisualProfile at a bake: sprite frames, and the aim part fields
+## when the rig had one. Body Scale / Offset are left alone.
+static func apply_to_profile(result: Dictionary, frames_path: String, profile: VisualProfile) -> void:
+	profile.sprite_frames = load(frames_path)
+	if result.get("aim_scene") != null:
+		profile.aim_part = load(aim_scene_path(frames_path))
+		profile.aim_part_pivot = result.aim_pivot
+		profile.aim_part_rest_angle = result.aim_rest_angle

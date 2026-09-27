@@ -130,6 +130,7 @@ For each slot in the definition's `abilities` dictionary, point at an
 | shots that ricochet off walls | `ProjectileData.wall_bounces` | none |
 | shorter knockbacks and pulls on someone | `StatusEffect.DISPLACEMENT_TAKEN` in `stat_multipliers` (0.6 = 40% shorter) | none |
 | an animated body from layered art (cutout rig baked to sprite frames) | copy `resources/visuals/rig_template/rig_template.tscn` (`CutoutRig`), bake with `tools/visuals/bake_rig.gd`, set the result as `VisualProfile.sprite_frames` (see docs/VISUALS_AND_AUDIO.md) | none |
+| a weapon arm that turns toward the aim on a baked body | `CutoutRig.aim_part_path` (exported by the bake) + `VisualProfile` Aim Part group; `bake_rig.gd --profile` fills it in | none |
 | a second form: swap a slot to another ability and back (each keeps its own cooldown) | `AbilityController.swap_slot(slot_id, data)` / `restore_slot(slot_id)` / `is_slot_swapped`; the swapped-out ability goes dormant (`Ability.is_dormant()`) | a small script (decides when) |
 | hold to raise a shield/cloak on your aim arc that eats projectiles and has its own HP | `BlockerData` + `BlockerAbility` (a `FrontalBlocker`: HP `ScalingValue`, regen, break, slots allowed while raised, raised/lowered statuses) | none |
 | lifesteal / a drain | `AbilityData.lifesteal` (share of this ability's damage dealt that heals the caster) | none |

@@ -19,6 +19,9 @@ func _init() -> void:
 	var rig := CutoutRig.new()
 	rig.name = "CutoutRig"
 	rig.frame_size = Vector2i(160, 160)
+	# The sword arm stays live and turns toward the aim; it hangs down at rest.
+	rig.aim_part_path = ^"Hips/Torso/ArmFront"
+	rig.aim_part_rest_angle = 90.0
 
 	var hips := _part(rig, rig, "Hips", Vector2(0, 10), [])
 	_part(rig, hips, "WingBack", Vector2(-6, -30), _poly([-4, 0, -50, -30, -44, 4, -30, 16]), WING)
@@ -107,7 +110,7 @@ func _move() -> Animation:
 	_track(a, "Hips:position", [0.0, Vector2(0, 10), 0.125, Vector2(0, 6), 0.25, Vector2(0, 10),
 			0.375, Vector2(0, 6), 0.5, Vector2(0, 10)])
 	_track(a, "Hips/Cape:rotation", [0.0, 0.25, 0.25, 0.35, 0.5, 0.25])
-	_track(a, "Hips/Torso/ArmFront:rotation", [0.0, -0.3, 0.25, 0.3, 0.5, -0.3])
+	_track(a, "Hips/Torso/ArmBack:rotation", [0.0, 0.3, 0.25, -0.3, 0.5, 0.3])
 	return a
 
 

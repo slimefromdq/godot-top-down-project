@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="PackedScene" path="res://resources/visuals/rig_template/rig_template_frames_aim.tscn" id="1_83d6f"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_ydu0y"]
+[ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="2_wry6b"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="3_83d6f"]
+[ext_resource type="SpriteFrames" path="res://resources/visuals/rig_template/rig_template_frames.tres" id="5_svj80"]
+
+[resource]
+script = ExtResource("3_83d6f")
+sprite_frames = ExtResource("5_svj80")
+body_scale = Vector2(0.6, 0.6)
+aim_part = ExtResource("1_83d6f")
+aim_part_pivot = Vector2(-12, -18)
+aim_part_rest_angle = 90.0
