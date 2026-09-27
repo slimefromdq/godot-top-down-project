@@ -38,10 +38,44 @@ func _on_player_died() -> void:
 	game_over_screen.show_screen()
 
 
+## Wake sequence timings (cosmetic): a slow-motion beat while the Dreamer's
+## eyes open, one hit-stop frame, then the dream-shimmer into the victory
+## screen.
+@export var wake_slowmo_scale: float = 0.3
+@export var wake_slowmo_time: float = 1.4
+@export var wake_hitstop_time: float = 0.12
+@export var wake_shimmer_time: float = 1.1
+
+
 func _on_match_ended(winner_team: StringName) -> void:
+	var woken := false
+	for node in get_tree().get_nodes_in_group(Dreamer.GROUP):
+		woken = woken or (node as Dreamer).woken_by != &""
+	if woken:
+		await _play_wake_sequence()
 	get_tree().paused = true
 	var title := "%s VICTORY" % MatchManager.team_name(winner_team).to_upper()
 	game_over_screen.show_screen(title, MatchManager.team_color(winner_team))
+
+
+func _play_wake_sequence() -> void:
+	var tree := get_tree()
+	Engine.time_scale = wake_slowmo_scale
+	await tree.create_timer(wake_slowmo_time, true, false, true).timeout
+	var settings = GameFeel.settings
+	if settings == null or settings.hitstop_enabled:
+		Engine.time_scale = 0.0
+		await tree.create_timer(wake_hitstop_time * (settings.hitstop_scale if settings != null else 1.0),
+			true, false, true).timeout
+	Engine.time_scale = wake_slowmo_scale
+	var shimmer := DreamShimmer.new()
+	add_child(shimmer)
+	await shimmer.play(wake_shimmer_time)
+	Engine.time_scale = 1.0
+
+
+func _exit_tree() -> void:
+	Engine.time_scale = 1.0
 
 
 func _unhandled_key_input(event: InputEvent) -> void:

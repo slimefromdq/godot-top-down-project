@@ -23,12 +23,13 @@ class_name MatchHud
 @export var xp_color := Color("a78bfa")
 ## Arrows sit this far in from the left and right edges...
 @export var arrow_margin: float = 46.0
-## ...and this far from the top and bottom, clear of the wake meters and
-## the ability bar.
-@export var arrow_margin_top: float = 130.0
+## ...and this far from the top and bottom, clear of the wake meters, the
+## announcer banners and the ability bar.
+@export var arrow_margin_top: float = 205.0
 @export var arrow_margin_bottom: float = 170.0
 
 var match_manager: MatchManager
+var announcer: Announcer
 
 var _clock_label: Label
 var _state_label: Label
@@ -53,6 +54,10 @@ func _ready() -> void:
 func _bind() -> void:
 	match_manager = MatchManager.find(get_tree())
 	visible = match_manager != null
+	announcer = Announcer.new()
+	announcer.name = "Announcer"
+	add_child(announcer)
+	announcer.bind(match_manager)
 	for slot_team in [[wake_slot_a, &"a", true], [wake_slot_b, &"b", false]]:
 		var meter := WakeMeter.new()
 		meter.name = "WakeMeter"

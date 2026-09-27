@@ -23,6 +23,12 @@ class_name Minimap
 # carrier over the top reveal step). add_ping(position, viewer_team) flashes
 # a spot for one team only (the lower reveal steps ping instead). A hero
 # carrying Motes gets a pip per motes_per_pip next to its dot.
+#
+# Custom icons: an objective with draw_minimap_icon(canvas, point,
+# viewer_team) draws itself (the Dream Mote's star, a Dreamer's filling
+# ring). Areas: nodes in "minimap_areas" with get_minimap_polygon() and
+# get_presence() (0..1) are tinted (active dreaming zones). Pings of kind
+# &"stir" and &"dream_mote" pulse bigger; viewer_team &"" pings everyone.
 
 @export var width: float = 280.0
 @export var margin: float = 20.0
@@ -39,6 +45,8 @@ class_name Minimap
 ## Seconds between visibility refreshes (line-of-sight rays are not free).
 @export var fog_refresh: float = 0.1
 @export var ping_time: float = 1.6
+## Pings of the match's key moments (a stir, the Dream Mote) last this long.
+@export var big_ping_time: float = 4.0
 @export var mote_pip_color := Color("fde047")
 ## A carrier gets one pip per this many Motes.
 @export var motes_per_pip: int = 5
@@ -97,7 +105,7 @@ func _process(delta: float) -> void:
 		_dynamic.queue_redraw()
 	for ping in _pings:
 		ping.age += delta
-	_pings = _pings.filter(func(p): return p.age < ping_time)
+	_pings = _pings.filter(func(p): return p.age < p.life)
 	_fog_left -= delta
 	if _fog_left <= 0.0:
 		_fog_left = fog_refresh
@@ -109,7 +117,9 @@ func add_ping(world_position: Vector2, viewer_team: StringName, kind: StringName
 	if _map == null:
 		return
 	var local := _map.get_global_transform().affine_inverse() * world_position
-	_pings.append({"position": local, "team": viewer_team, "age": 0.0, "kind": kind})
+	var big := kind == &"stir" or kind == &"dream_mote"
+	_pings.append({"position": local, "team": viewer_team, "age": 0.0, "kind": kind,
+		"life": big_ping_time if big else ping_time})
 
 
 func get_pings() -> Array[Dictionary]:
@@ -222,9 +232,22 @@ func _draw_dynamic(canvas: Control) -> void:
 		var center := _map.get_global_transform().affine_inverse() * camera.get_screen_center_position()
 		canvas.draw_rect(Rect2(_to_minimap(center - view_size / 2.0), view_size * _scale), Color(1, 1, 1, 0.35), false, 1.0)
 
+	var to_map := _map.get_global_transform().affine_inverse()
+	for node in get_tree().get_nodes_in_group(&"minimap_areas"):
+		var presence: float = node.get_presence() if node.has_method(&"get_presence") else 1.0
+		if presence > 0.0 and node.has_method(&"get_minimap_polygon"):
+			var polygon: PackedVector2Array = to_map * node.get_minimap_polygon()
+			var local := PackedVector2Array()
+			for p in polygon:
+				local.append(_to_minimap(p))
+			canvas.draw_colored_polygon(local, Color(0.78, 0.6, 1.0, 0.45 * presence))
+
 	for node in get_tree().get_nodes_in_group(&"minimap_objectives"):
 		if node is Node2D and node.is_visible_in_tree() and is_shown(node):
 			var point := _to_minimap(_to_map(node))
+			if node.has_method(&"draw_minimap_icon"):
+				node.draw_minimap_icon(canvas, point, my_team)
+				continue
 			var owner_team = node.get("team")
 			var color := objective_color if owner_team == null or owner_team == &"" \
 				else (ally_color if owner_team == my_team else enemy_color)
@@ -234,11 +257,18 @@ func _draw_dynamic(canvas: Control) -> void:
 				point + Vector2(0, d), point + Vector2(-d, 0)]), color)
 
 	for ping in _pings:
-		if ping.team != my_team:
+		if ping.team != my_team and ping.team != &"":
 			continue
-		var k: float = ping.age / ping_time
+		var k: float = ping.age / ping.life
 		var point := _to_minimap(ping.position)
 		var fade := 1.0 - k
+		if ping.kind == &"stir" or ping.kind == &"dream_mote":
+			# Big pulsing rings for the match's key moments.
+			var color := Color("fde68a") if ping.kind == &"dream_mote" else Color.WHITE
+			for j in 3:
+				var kk := fmod(k * 2.0 + j / 3.0, 1.0)
+				canvas.draw_arc(point, 6.0 + 26.0 * kk, 0.0, TAU, 24, Color(color, fade * (1.0 - kk)), 2.5)
+			continue
 		canvas.draw_arc(point, 4.0 + 12.0 * k, 0.0, TAU, 20, Color(enemy_color, fade), 2.0)
 		canvas.draw_circle(point, 3.0, Color(enemy_color, fade))
 

@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tools/match/polish_test.gd" id="1_test"]
+
+[node name="PolishTest" type="Node2D"]
+script = ExtResource("1_test")

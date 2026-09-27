@@ -23,3 +23,5 @@ class_name FeelSettings
 @export_range(0.0, 2.0, 0.05) var hitstop_scale: float = 1.0
 @export_range(0.0, 2.0, 0.05) var camera_nudge_scale: float = 1.0
 @export var flash_enabled: bool = true
+## Show the match announcer's banner text (its sounds always play).
+@export var announcer_text: bool = true

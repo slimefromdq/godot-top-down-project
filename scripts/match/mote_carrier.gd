@@ -138,7 +138,7 @@ func add_mote(data: MoteData, value: int) -> bool:
 	_datas.append(data)
 	_emit_changed()
 	MatchManager.play_world_cue(actor, &"mote_pickup", {"position": actor.global_position,
-		"count": get_mote_count(), "pitch": 1.0 + 0.12 * (get_mote_count() - 1)})
+		"count": get_mote_count(), "pitch": get_rules().chime_pitch(get_mote_count())})
 	var director := MoteDirector.find(get_tree())
 	if director != null and data.is_dream:
 		director.on_dream_mote_picked_up(actor)
