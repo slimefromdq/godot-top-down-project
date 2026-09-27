@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://heroes/avery/art/parts/sword_arm.png" id="1_il5bn"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/parts/sword.png" id="2_s1x5i"]
+
+[node name="ArmFront" type="Sprite2D" unique_id=1194805781]
+texture = ExtResource("1_il5bn")
+offset = Vector2(-4, 43)
+
+[node name="Sword" type="Sprite2D" parent="." unique_id=1211011137]
+show_behind_parent = true
+position = Vector2(-3, 84)
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("2_s1x5i")
+offset = Vector2(0, 52)
+flip_v = true
