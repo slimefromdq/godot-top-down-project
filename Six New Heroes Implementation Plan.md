@@ -270,7 +270,7 @@ Tilly supports by moving her team, not healing it: trampolines send allies over 
 
 Each of the six has a clear job around Motes, and two small objective rules make the Tempo heroes matter there. No Mote code exists in the repo yet, so these rules can go straight into the first Mote implementation.
 
-**What Motes are.** Motes are little dream-bugs, the young of Cpt. Yellow's species: round, soft yellow bodies with a dark stripe, fluttering wings and bobbing antennae, two big glossy eyes and a small smile. They look toward nearby heroes, wiggle happily while carried and blink sleepily before they fade. The Dream Mote is a bigger, fluffier elder with a slow iridescent shimmer.
+**What Motes are.** Motes are little dream-bugs, the young of Cpt. Yellow's species: round, soft yellow bodies, fluttering wings and bobbing antennae, two big glossy eyes and a small smile. They look toward nearby heroes, wiggle happily while carried and blink sleepily before they fade. The Dream Mote is a bigger, fluffier elder with a slow iridescent shimmer.
 
 **Proposed rules:**
 

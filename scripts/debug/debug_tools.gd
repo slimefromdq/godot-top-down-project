@@ -13,7 +13,9 @@ extends CanvasLayer
 #   Match               gold, XP, level, warmup skip, end the match, play
 #                       as either team (MatchManager); Motes at the cursor,
 #                       give Motes, force a dreaming zone, clear Motes, and
-#                       the Mote spawn overlay on the M map view
+#                       the Mote spawn overlay on the M map view; each
+#                       Dreamer's wake meter, stirs, Lullabies, Sweet
+#                       Dreams, and a ring overlay
 #
 # Everything here edits RUNTIME copies (each hero and ability owns a private
 # duplicate of its data), so nothing is written to .tres files and "Reset"
@@ -313,6 +315,43 @@ func give_player_motes(count: int) -> int:
 			break
 		added += 1
 	return added
+
+
+# --- Dreamers (F1 > Match) ------------------------------------------------------
+
+func get_dreamer(team: StringName) -> Dreamer:
+	return Dreamer.find_for(get_tree(), team)
+
+
+func set_dreamer_wake(team: StringName, value: float) -> void:
+	var dreamer := get_dreamer(team)
+	if dreamer != null and not dreamer.is_stirring():
+		dreamer.set_wake(value)
+
+
+func force_stir(team: StringName) -> void:
+	var dreamer := get_dreamer(team)
+	if dreamer != null and not dreamer.is_stirring():
+		dreamer.start_stir()
+
+
+## Finish (true) or fail (false: the stir runs out) a stirring Dreamer's Lullaby.
+func end_lullaby(team: StringName, finished: bool) -> void:
+	var dreamer := get_dreamer(team)
+	if dreamer != null:
+		dreamer.settle(Dreamer.SETTLE_LULLABY if finished else Dreamer.SETTLE_TIMEOUT)
+
+
+func fill_sweet_dreams(team: StringName) -> void:
+	var dreamer := get_dreamer(team)
+	if dreamer != null:
+		dreamer.sweet = 0.0
+		dreamer.grant_sweet_dreams()
+		dreamer.sweet_changed.emit(dreamer.sweet)
+
+
+func set_dreamer_rings(enabled: bool) -> void:
+	Dreamer.debug_rings = enabled
 
 
 func set_mote_overlay_enabled(enabled: bool) -> void:
@@ -714,6 +753,24 @@ func _match_tab(hero: Hero) -> Control:
 			director.clear_motes()))
 	box.add_child(motes)
 	box.add_child(_check("Mote spawns on the M map view", mote_overlay_enabled, set_mote_overlay_enabled))
+
+	box.add_child(_label("Dreamers", 15))
+	for team in MatchManager.TEAMS:
+		var row := HFlowContainer.new()
+		var name_label := _label(MatchManager.team_name(team))
+		name_label.modulate = MatchManager.team_color(team)
+		row.add_child(name_label)
+		var wake_spin := _spin(50, 0, 1000, 5)
+		row.add_child(_button("Set wake:", func(): set_dreamer_wake(team, wake_spin.value)))
+		row.add_child(wake_spin)
+		row.add_child(_button("Force stir", func():
+			manager.start_playing()
+			force_stir(team)))
+		row.add_child(_button("Lullaby done", func(): end_lullaby(team, true)))
+		row.add_child(_button("Lullaby fails", func(): end_lullaby(team, false)))
+		row.add_child(_button("Sweet Dreams", func(): fill_sweet_dreams(team)))
+		box.add_child(row)
+	box.add_child(_check("Deposit / Lullaby rings", Dreamer.debug_rings, set_dreamer_rings))
 
 	box.add_child(_label("MatchRules (live)", 15))
 	var editor := PropertyEditor.new()

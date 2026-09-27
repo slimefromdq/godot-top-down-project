@@ -10,8 +10,8 @@ class_name MatchRules
 # playtest mode. Each MatchManager plays on a private copy, which the
 # F1 > Match tab edits live.
 #
-# Groups for later phases (Dreamers, Wake, Buffs) get their fields in the
-# phase that uses them.
+# Groups: Match, Economy, Leveling, Motes, Spawning, Dreamers, Wake, Buffs,
+# Late match, Cues.
 
 const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 
@@ -45,25 +45,28 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 
 @export_group("Motes")
 ## Most Motes one hero can carry (a Dream Mote takes one slot).
-@export var max_carried: int = 5
+@export var max_carried: int = 25
 ## Enemy minimap reveal steps by carried VALUE: at reveal_values[i] or more,
 ## the carrier pings the enemy minimap every reveal_ping_intervals[i]
 ## seconds (0 = shown all the time). Ascending.
-@export var reveal_values: PackedInt32Array = PackedInt32Array([4, 7, 10])
+@export var reveal_values: PackedInt32Array = PackedInt32Array([8, 15, 22])
 @export var reveal_ping_intervals: PackedFloat32Array = PackedFloat32Array([6.0, 3.0, 0.0])
 ## Enemy displacements (pushes, pulls, carries, abductions) needed to jostle
-## one Mote loose. Pushes shorter than jostle_min_distance don't count.
+## Motes loose. Pushes shorter than jostle_min_distance don't count.
 @export var jostle_displacements_required: int = 1
 @export var jostle_min_distance: float = 100.0
 ## For jostle_displacements_required > 1: displacements this far apart
 ## start the count again.
 @export var jostle_window: float = 4.0
+## A jostle knocks loose this share of the stack (rounded up), at least one.
+## 0.2 = a full stack of 25 loses 5.
+@export_range(0.0, 1.0, 0.05) var jostle_drop_fraction: float = 0.2
 ## Heavy pockets: seconds of extra air time per carried Mote on jump pads
 ## and trampolines.
-@export var heavy_pockets_air_time: float = 0.1
+@export var heavy_pockets_air_time: float = 0.04
 ## Death burst: Motes scatter this far from the body.
 @export var burst_radius: float = 170.0
-## A jostled Mote lands this far from the carrier.
+## Jostled Motes land about this far from the carrier.
 @export var jostle_drop_distance: float = 120.0
 
 @export_group("Spawning")
@@ -89,6 +92,53 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 @export var dream_mote_first_time: float = 240.0
 @export var dream_mote_interval: float = 180.0
 @export var dream_mote_warning: float = 15.0
+
+@export_group("Dreamers")
+## A carrier standing within this of a Dreamer deposits (the deposit ring).
+@export var deposit_radius: float = 300.0
+## Seconds before the first Mote of a visit goes in; each next gap is
+## deposit_tick_speedup times the last, down to deposit_tick_min.
+@export var deposit_tick: float = 0.2
+@export_range(0.1, 1.0, 0.05) var deposit_tick_speedup: float = 0.9
+@export var deposit_tick_min: float = 0.06
+## Banking at your own Dreamer: paid per Mote value, split across the team.
+@export var bank_gold_per_value: float = 15.0
+@export var bank_xp_per_value: float = 50.0
+## Delivering to the enemy Dreamer: paid per value, split across the team.
+@export var deliver_gold_per_value: float = 25.0
+@export var deliver_xp_per_value: float = 80.0
+## The depositor also gets this share of each tick's team payment.
+@export_range(0.0, 2.0, 0.05) var depositor_bonus_pct: float = 0.25
+
+@export_group("Wake")
+## Delivered value that fills a Dreamer's wake meter. It never drains on its
+## own.
+@export var wake_meter_max: float = 100.0
+## A full meter stirs the Dreamer for this long.
+@export var stir_duration: float = 30.0
+## The first seconds of a stir refuse deposits (the filling deposit stops
+## too), so the defenders always get their final fight.
+@export var stir_grace: float = 5.0
+## Defenders in this ring fill the Lullaby (larger than the deposit ring).
+@export var lullaby_radius: float = 600.0
+## Lullaby progress (0..1) per second per living defender in the ring. It
+## pauses while any living attacker is inside.
+@export var lullaby_rate_per_defender: float = 0.04
+## Lullaby progress per value banked at your own stirring Dreamer.
+@export var lullaby_per_banked_value: float = 0.02
+## A finished Lullaby settles the Dreamer at this share of the wake meter...
+@export_range(0.0, 1.0, 0.05) var lullaby_reset_pct: float = 0.6
+## ...and a stir that runs out with no final Mote settles it at this.
+@export_range(0.0, 1.0, 0.05) var timeout_reset_pct: float = 0.8
+## Defenders of a stirring Dreamer respawn this much faster.
+@export var stir_defender_respawn_mult: float = 0.75
+
+@export_group("Buffs")
+## Every this much banked value gives the whole team the Sweet Dreams buff.
+@export var sweet_dreams_threshold: float = 25.0
+## The buff; its own duration is replaced by sweet_dreams_duration.
+@export var sweet_dreams_status: StatusEffect
+@export var sweet_dreams_duration: float = 30.0
 
 @export_group("Late match")
 ## After late_match_time, new Motes spawn worth late_match_value_mult times
@@ -140,6 +190,11 @@ func reveal_interval_for(value: int) -> float:
 		if value >= reveal_values[i]:
 			interval = reveal_ping_intervals[i]
 	return interval
+
+
+## How many Motes a jostle knocks loose from a stack of `count`.
+func jostle_drop_count(count: int) -> int:
+	return mini(count, maxi(1, ceili(count * jostle_drop_fraction)))
 
 
 func respawn_time(level: int) -> float:

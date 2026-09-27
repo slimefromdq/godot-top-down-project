@@ -532,6 +532,10 @@
 <circle cx="280.0" cy="286.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
 <circle cx="440.0" cy="390.9" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
 <circle cx="658.6" cy="448.0" r="5" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="520.0" cy="835.6" r="30.0" fill="none" stroke="#2f8f6a" stroke-width="1.5" stroke-dasharray="4 3"/>
+<circle cx="520.0" cy="835.6" r="13.0" fill="#2f8f6a" fill-opacity="0.8"/>
+<circle cx="520.0" cy="216.4" r="30.0" fill="none" stroke="#c05a3c" stroke-width="1.5" stroke-dasharray="4 3"/>
+<circle cx="520.0" cy="216.4" r="13.0" fill="#c05a3c" fill-opacity="0.8"/>
 <circle cx="520.0" cy="526.0" r="11" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="3"/>
 <text x="145.0" y="700.0" font-size="15.0" text-anchor="middle" dominant-baseline="middle" fill="#1f2937" font-weight="700" fill-opacity="0.72" letter-spacing="1" stroke="#fbfaf7" stroke-width="2.5" paint-order="stroke">THE TANGLE</text>
 <text x="145.0" y="526.0" font-size="13.0" text-anchor="middle" dominant-baseline="middle" fill="#1f2937" font-weight="700" fill-opacity="0.72" letter-spacing="1" stroke="#fbfaf7" stroke-width="2.5" paint-order="stroke">THE GLADE</text>
@@ -593,4 +597,6 @@
 <text x="1102.0" y="729" font-size="16" fill="#222">Dreaming zone (mirrored pairs)</text>
 <circle cx="1075.0" cy="758" r="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="3"/>
 <text x="1102.0" y="763" font-size="16" fill="#222">Dream Mote spot</text>
+<circle cx="1075.0" cy="792" r="7" fill="#2f8f6a"/><circle cx="1075.0" cy="792" r="12" fill="none" stroke="#2f8f6a" stroke-dasharray="3 2"/>
+<text x="1102.0" y="797" font-size="16" fill="#222">Dreamer + deposit ring</text>
 </svg>

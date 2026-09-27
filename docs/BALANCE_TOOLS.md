@@ -47,6 +47,9 @@ values.
     force the next dreaming zone, clear every Mote (loose and carried), and
     **Mote spawns on the M map view** (trickle points, zones and their spawn
     points, the Dream Mote spot; press M to see them).
+  * **Dreamers**: for each team, set the wake meter, force a stir, finish
+    or fail its Lullaby, grant Sweet Dreams now, and a **Deposit / Lullaby
+    rings** overlay.
   * The match's `MatchRules`, editable live (a private copy per match).
 * **Tools**: export the balance CSV, validate heroes, reset the meter, show or hide the overlays, switch maps. **Sight lines** draws a line from you to every nearby enemy: green if you can see it, red if a wall or a bush blocks it (`CombatQueries.has_line_of_sight`). **Airlock practice** plays Sam's airlock maze on you.
 
@@ -141,6 +144,7 @@ godot --headless res://tools/heroes/map_switch_test.tscn
 godot --headless res://tools/dream_basin/smoke_test.tscn
 godot --headless res://tools/match/match_test.tscn
 godot --headless res://tools/match/mote_test.tscn
+godot --headless res://tools/match/dreamer_test.tscn
 ```
 
 Each exits with the number of failed checks (0 = all passed).
@@ -152,4 +156,5 @@ and 10, measured in-engine against a dummy with no resists
 `tools/heroes/capture_feel.tscn` saves screenshots of a finisher swing
 (run under a display or `xvfb-run` with `--rendering-driver opengl3`).
 `tools/match/capture_match.tscn` does the same for the match HUD, the F1
-Match tab and Motes (loose, carried, a dreaming zone, the spawn overlay).
+Match tab, Motes (loose, carried, a dreaming zone, the spawn overlay) and
+the Dreamers (asleep with the wake meters, stirring with a Lullaby).

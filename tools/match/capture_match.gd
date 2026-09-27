@@ -3,7 +3,8 @@ extends Node
 # Screenshots of the match HUD (clock, gold, level and XP bar), the F1 > Match
 # tab, the respawn countdown, and Motes (loose, a carried stack, the Dream
 # Mote and its off-screen arrow, a dreaming zone, the M-view spawn overlay),
-# in Dream Basin.
+# and the Dreamers (idle with the wake meters, stirring with the Lullaby), in
+# Dream Basin.
 #
 #   xvfb-run godot --rendering-driver opengl3 res://tools/match/capture_match.tscn -- <out_dir>
 
@@ -49,7 +50,7 @@ func _run() -> void:
 	director.spawn_mote(player.global_position + Vector2(-420, -120), true)
 	await get_tree().create_timer(0.8).timeout
 	await _shot("motes_loose")
-	DebugTools.give_player_motes(4)
+	DebugTools.give_player_motes(25)
 	player.global_position += Vector2(0, -520)
 	await get_tree().create_timer(0.8).timeout
 	await _shot("motes_carried")
@@ -69,6 +70,24 @@ func _run() -> void:
 	view.toggle()
 	DebugTools.set_mote_overlay_enabled(false)
 	await get_tree().create_timer(0.5).timeout
+
+	# Dreamers: Dawn's asleep near the player (carrying, so arrows show),
+	# then Dusk's stirring with a Lullaby under way.
+	director.clear_motes()
+	var dawn := Dreamer.find_for(get_tree(), &"a")
+	var dusk := Dreamer.find_for(get_tree(), &"b")
+	dawn.set_wake(35.0)
+	dawn.sweet = 12.0
+	dusk.set_wake(70.0)
+	player.global_position = dawn.global_position + Vector2(-420, -380)
+	DebugTools.give_player_motes(12)
+	await get_tree().create_timer(1.0).timeout
+	await _shot("dreamer_idle")
+	player.global_position = dusk.global_position + Vector2(0, 420)
+	dusk.start_stir()
+	dusk.lullaby = 0.35
+	await get_tree().create_timer(0.6).timeout
+	await _shot("dreamer_stirring")
 	# Avery's revive would cancel the death: die as Jose instead.
 	var jose := DebugTools.swap_player(load("res://heroes/jose/jose_definition.tres"))
 	await get_tree().create_timer(0.3).timeout

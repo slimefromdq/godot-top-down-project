@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="DreamerData" format=3]
+
+[ext_resource type="Script" path="res://scripts/match/dreamer_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://scenes/match/dreamer_look.tscn" id="2_look"]
+
+[resource]
+script = ExtResource("1_data")
+look_scene = ExtResource("2_look")

@@ -81,6 +81,7 @@ class Entry:
 	# Snapshot of one tick's damage per stack, from the applier's stats.
 	var tick_amount: float = 0.0
 	var tick_timer: float = 0.0
+	var heal_timer: float = 0.0
 	# StatModifier.source_id for this application's modifiers ("" = none).
 	var modifier_source: StringName = &""
 	# Duration the fade runs over (time_left / full_duration = fade ratio).
@@ -462,6 +463,7 @@ func _physics_process(delta: float) -> void:
 			_end(entry, REASON_APPLIER_DIED)
 			continue
 		_tick_damage(entry, delta)
+		_tick_heal(entry, delta)
 		entry.time_left -= delta
 		if entry.time_left <= 0.0 and _active.get(key) == entry:
 			_end(entry, REASON_EXPIRED)
@@ -482,6 +484,18 @@ func _tick_damage(entry: Entry, delta: float) -> void:
 		info.label = effect.tick_label if effect.tick_label != &"" else effect.id
 		info.weight = 0.0    # DoT ticks never trigger hitstop / shake
 		health_component.apply_damage(info)
+
+
+# StatusEffect.tick_heal_ratio: a share of max HP every tick_interval.
+func _tick_heal(entry: Entry, delta: float) -> void:
+	var effect := entry.effect
+	if effect.tick_heal_ratio <= 0.0 or effect.tick_interval <= 0.0 or health_component == null:
+		return
+	entry.heal_timer += delta
+	while entry.heal_timer + TICK_EPSILON >= effect.tick_interval and not health_component.is_dead():
+		entry.heal_timer -= effect.tick_interval
+		health_component.heal(health_component.max_health * effect.tick_heal_ratio * entry.stacks,
+			entry.source if is_instance_valid(entry.source) else null, effect.id)
 
 
 # The one exit path: removes the entry, its stat modifiers, tells the applier

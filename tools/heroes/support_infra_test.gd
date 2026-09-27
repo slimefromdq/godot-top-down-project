@@ -39,6 +39,7 @@ func _run() -> void:
 	await _test_charges_bounces_displacement()
 	await _test_forms_and_blocker()
 	await _test_either_team_and_link()
+	await _test_tick_heal()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
 	get_tree().quit(failures)
@@ -959,6 +960,36 @@ func _until_flag(condition: Callable, timeout: float) -> void:
 	while not condition.call() and waited < timeout:
 		await get_tree().physics_frame
 		waited += get_physics_process_delta_time()
+
+
+# StatusEffect.tick_heal_ratio (regen): the Ranged Test hero's Reload Dash
+# carries a 2%-per-0.5 s regen for 2 s as its self_status.
+func _test_tick_heal() -> void:
+	print("\n-- Regen (tick_heal_ratio)")
+	var regen: StatusEffect = (load("res://tools/heroes/ranged_test/ranged_test_reload_dash.tres") as ChargeData).self_status
+	_check("Ranged Test's Reload Dash carries a regen", regen != null and regen.tick_heal_ratio > 0.0, "")
+	if regen == null:
+		return
+	hero.status_component.clear()
+	var health := hero.health_component
+	health.current_health = health.max_health * 0.5
+	var healed: Array = []
+	var on_heal := func(amount, _source): healed.append(amount)
+	health.healed.connect(on_heal)
+	hero.status_component.apply(regen, hero)
+	await _seconds(regen.duration + 0.1)
+	health.healed.disconnect(on_heal)
+	var expected := health.max_health * regen.tick_heal_ratio
+	_check("heals tick_heal_ratio of max HP each tick_interval (4 ticks)", healed.size() == 4
+		and healed.all(func(a): return is_equal_approx(a, expected)), str(healed))
+	_check("a negative ratio fails validation", _negative_heal_problem(), "")
+	health.current_health = health.max_health
+
+
+func _negative_heal_problem() -> bool:
+	var bad := StatusEffect.new()
+	bad.tick_heal_ratio = -0.1
+	return Array(bad.validate()).any(func(p): return "tick_heal_ratio" in p)
 
 
 func _hero(at: Vector2, team: StringName) -> Hero:

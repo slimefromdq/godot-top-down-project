@@ -48,6 +48,7 @@ L = {
     "mote_spawns": [],  # trickle points {x, y}
     "dream_zones": [],  # {pair, name, pts, spawns: [(x, y)]}
     "dream_point": [],  # the Dream Mote spot {x, y} (self-symmetric: centre)
+    "dreamers": [],     # {x, y, team, body} one per team, in its Plaza
 }
 
 
@@ -465,6 +466,13 @@ dream_zone("orchard", "The Orchards", rect(2000, 2850, 4700, 3950),
 
 L["dream_point"].append({"x": 0, "y": 0})
 
+# The Dawn Dreamer: in the Plaza between the Cradle Steps choke and the
+# Sundial (which still guards the spawn door's sight line). Reachable from
+# the choke (north) and both side gates (Lamplight Road); check.py proves
+# the deposit ring stays reachable with either route blocked. Its body is a
+# 130 px low-cover circle (blocks walking, not shots).
+L["dreamers"].append({"x": 0, "y": Y(2580), "team": "A", "body": 130})
+
 # Region labels (authored half only; rotated copies get B names below)
 label(-3750, 1450, "THE TANGLE", 150)
 label(-3750, 0, "THE GLADE", 130)
@@ -518,6 +526,8 @@ def build():
                                "label": m["label"]})
     for mk in L["mote_spawns"]:
         out["mote_spawns"].append({"x": -mk["x"], "y": -mk["y"]})
+    for d in L["dreamers"]:
+        out["dreamers"].append({**d, "x": -d["x"], "y": -d["y"], "team": _swap(d["team"])})
     for z in L["dream_zones"]:
         out["dream_zones"].append({**z, "pts": [_rot(p) for p in z["pts"]],
                                    "spawns": [_rot(p) for p in z["spawns"]]})
