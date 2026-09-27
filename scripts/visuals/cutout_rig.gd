@@ -14,6 +14,7 @@ class_name CutoutRig
 # Bake: see tools/visuals/bake_rig.gd and docs/VISUALS_AND_AUDIO.md.
 
 const HIDDEN_GROUP := &"bake_hidden"
+enum { LAYER_UPPER, LAYER_LEGS }
 
 ## Size of one baked frame in pixels. Leave room for the widest pose.
 @export var frame_size: Vector2i = Vector2i(256, 256)
@@ -31,6 +32,12 @@ const HIDDEN_GROUP := &"bake_hidden"
 @export var aim_part_path: NodePath
 ## Which way the aim part's art points at rotation 0 (90 = hanging down).
 @export_range(-180.0, 180.0, 1.0, "degrees") var aim_part_rest_angle: float = 90.0
+## Parts baked into a second "legs" layer (with their children), drawn behind
+## the rest. In game the legs play their walk backwards while you move away
+## from the aim, so the body keeps facing the mouse. List the legs, and
+## anything drawn behind the torso (cape, wings) so the order holds.
+## Empty = one layer.
+@export var legs_layer_paths: Array[NodePath] = []
 
 
 func get_animation_player() -> AnimationPlayer:
@@ -73,6 +80,46 @@ func make_aim_part_copy() -> Node2D:
 	return copy
 
 
+## The legs layer's root parts (legs_layer_paths that exist).
+func get_legs_parts() -> Array[CanvasItem]:
+	var out: Array[CanvasItem] = []
+	for path in legs_layer_paths:
+		var node := get_node_or_null(path) as CanvasItem
+		if node != null:
+			out.append(node)
+	return out
+
+
+## Shows only one layer for a bake pass: LAYER_UPPER hides the legs parts,
+## LAYER_LEGS hides everything else (parents of legs parts only stop drawing
+## themselves). Returns what to hand restore_layers() afterwards.
+func isolate_layer(layer: int) -> Array:
+	var changed := []
+	var legs := get_legs_parts()
+	if layer == LAYER_UPPER:
+		for node in legs:
+			changed.append([node, &"visible", node.visible])
+			node.visible = false
+		return changed
+	for node in find_children("*", "CanvasItem", true, false):
+		var item := node as CanvasItem
+		if legs.any(func(l): return l == item or l.is_ancestor_of(item)):
+			continue
+		if legs.any(func(l): return item.is_ancestor_of(l)):
+			changed.append([item, &"self_modulate", item.self_modulate])
+			item.self_modulate = Color(1, 1, 1, 0)
+		else:
+			changed.append([item, &"visible", item.visible])
+			item.visible = false
+	return changed
+
+
+static func restore_layers(changed: Array) -> void:
+	changed.reverse()
+	for entry in changed:
+		(entry[0] as Object).set(entry[1], entry[2])
+
+
 ## Problems that would stop a bake. Empty = ready.
 func validate() -> PackedStringArray:
 	var errors := PackedStringArray()
@@ -89,6 +136,8 @@ func validate() -> PackedStringArray:
 		errors.append("none of %s exist in the AnimationPlayer" % [bake_animations])
 	if not aim_part_path.is_empty() and get_aim_part() == null:
 		errors.append("no Node2D aim part at %s" % aim_part_path)
+	if get_legs_parts().size() != legs_layer_paths.size():
+		errors.append("a legs_layer_paths entry is missing: %s" % [legs_layer_paths])
 	return errors
 
 

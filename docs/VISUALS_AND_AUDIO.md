@@ -101,6 +101,9 @@ hand-drawn frames.
      the node at the shoulder) and **Aim Part Rest Angle** is the way its
      art points at rotation 0 (90 = hanging down). The template's
      `ArmFront` + `Sword` is one.
+   - **Legs Layer Paths** bakes the listed parts (with their children) into a
+     second, lower-body layer. List the legs and anything drawn behind the
+     torso (cape, wings) so the draw order holds. See *The legs layer* below.
    - Other parts in the `bake_hidden` group are also left out of the bake.
 3. **Bake** (needs a renderer, so not `--headless`):
    ```
@@ -110,13 +113,22 @@ hand-drawn frames.
    godot --headless --import
    ```
    It writes `<name>_rig_frames.png` (one row per animation),
-   `<name>_rig_frames.tres`, and `<name>_rig_frames_aim.tscn` if the rig
-   has an aim part. Pass a second path to choose where. Add
+   `<name>_rig_frames.tres`, `<name>_rig_frames_legs.png/.tres` if the rig
+   has a legs layer, and `<name>_rig_frames_aim.tscn` if it has an aim part. Pass a second path to choose where. Add
    `--profile res://heroes/<name>/<name>_visuals.tres` to point that
-   VisualProfile at the bake (Sprite Frames plus the Aim Part fields).
+   VisualProfile at the bake (Sprite Frames, Legs Frames and the Aim Part
+   fields).
 4. **Use it:** in the hero's VisualProfile set **Sprite Frames** to the
    `.tres` (or use `--profile`), **Body Tint** alpha to 0, and adjust
    **Body Scale / Offset**.
+
+**The legs layer** (VisualProfile > Legs Frames): the body always faces the
+aim (the mouse for players), and the movement keys only move the legs. The
+layer is drawn behind the body and follows its animation frame for frame, so
+hurt and death still read as one picture, but while the hero moves away from
+where it's aiming the walk plays backwards, as a backpedal instead of a
+turn. `VisualsComponent.is_walking_backwards()` reports it. Every frame of a
+walk cycle must face the same way as the rest (draw strides facing right).
 
 **The live aim part** (VisualProfile > Aim Part): `VisualsComponent` puts
 the **Aim Part** scene at **Aim Part Pivot** (relative to the body, facing

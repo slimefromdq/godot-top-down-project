@@ -16,6 +16,9 @@ const AIM_OFFSETS_META := &"aim_pivot_offsets"
 # pose (SpriteFrames metadata, see aim_pivot_offset()), so a live aim arm rides
 # the baked idle bob, walk cycle and hurt recoil.
 #
+# A rig with legs_layer_paths bakes those parts into a second SpriteFrames
+# (result.legs_frames, same frame size and origin) for VisualProfile.legs_frames.
+#
 # pack() and build_frames() are pure, so tests can check them headless.
 
 
@@ -27,13 +30,14 @@ static func can_render() -> bool:
 ## Renders every frame. `host` is any node in the tree to hang the viewport
 ## on. The rig is moved into the viewport for the bake and put back after.
 ## Returns {errors, frames_by_anim: {name: Array[Image]},
+## legs_by_anim: {name: Array[Image]} (empty without a legs layer),
 ## aim_offsets: {name: PackedVector2Array}} (empty without an aim part).
 static func render(rig: CutoutRig, host: Node) -> Dictionary:
 	var errors := rig.validate()
 	if not can_render():
 		errors.append("no renderer: run without --headless (xvfb-run in a cloud session)")
 	if not errors.is_empty():
-		return {"errors": errors, "frames_by_anim": {}, "aim_offsets": {}}
+		return {"errors": errors, "frames_by_anim": {}, "legs_by_anim": {}, "aim_offsets": {}}
 
 	var viewport := SubViewport.new()
 	viewport.size = rig.frame_size
@@ -64,20 +68,30 @@ static func render(rig: CutoutRig, host: Node) -> Dictionary:
 	var player := rig.get_animation_player()
 	var rest_pivot := rig.get_aim_pivot()
 	var frames_by_anim := {}
+	var legs_by_anim := {}
+	var two_layers := not rig.get_legs_parts().is_empty()
 	var aim_offsets := {}
 	for anim_name in rig.get_bake_list():
 		var images: Array[Image] = []
+		var legs_images: Array[Image] = []
 		var offsets := PackedVector2Array()
 		player.play(anim_name)
 		player.pause()
 		for t in rig.get_sample_times(anim_name):
 			player.seek(t, true)
-			await RenderingServer.frame_post_draw
-			var img := viewport.get_texture().get_image()
-			img.convert(Image.FORMAT_RGBA8)
-			images.append(img)
+			if two_layers:
+				var changed := rig.isolate_layer(CutoutRig.LAYER_LEGS)
+				legs_images.append(await _capture(viewport))
+				CutoutRig.restore_layers(changed)
+				changed = rig.isolate_layer(CutoutRig.LAYER_UPPER)
+				images.append(await _capture(viewport))
+				CutoutRig.restore_layers(changed)
+			else:
+				images.append(await _capture(viewport))
 			offsets.append(rig.get_aim_pivot() - rest_pivot)
 		frames_by_anim[anim_name] = images
+		if two_layers:
+			legs_by_anim[anim_name] = legs_images
 		if aim != null:
 			aim_offsets[anim_name] = offsets
 	player.stop()
@@ -89,7 +103,15 @@ static func render(rig: CutoutRig, host: Node) -> Dictionary:
 	if old_parent != null:
 		old_parent.add_child(rig)
 	viewport.queue_free()
-	return {"errors": errors, "frames_by_anim": frames_by_anim, "aim_offsets": aim_offsets}
+	return {"errors": errors, "frames_by_anim": frames_by_anim, "legs_by_anim": legs_by_anim,
+			"aim_offsets": aim_offsets}
+
+
+static func _capture(viewport: SubViewport) -> Image:
+	await RenderingServer.frame_post_draw
+	var img := viewport.get_texture().get_image()
+	img.convert(Image.FORMAT_RGBA8)
+	return img
 
 
 ## Lays frames out one animation per row, left to right.
@@ -165,30 +187,48 @@ static func bake(rig: CutoutRig, host: Node, sheet_path: String) -> Dictionary:
 	var texture := ImageTexture.create_from_image(packed.sheet)
 	texture.take_over_path(sheet_path)
 	var frames := build_frames(texture, packed.cells, order, rig.fps, looping, rendered.aim_offsets)
+	var legs_sheet: Image = null
+	var legs_frames: SpriteFrames = null
+	if not rendered.legs_by_anim.is_empty():
+		var legs_packed := pack(rendered.legs_by_anim, order, rig.frame_size)
+		legs_sheet = legs_packed.sheet
+		var legs_texture := ImageTexture.create_from_image(legs_sheet)
+		legs_texture.take_over_path(legs_path(sheet_path))
+		legs_frames = build_frames(legs_texture, legs_packed.cells, order, rig.fps, looping)
 	return {"errors": PackedStringArray(), "sheet": packed.sheet, "frames": frames,
+			"legs_sheet": legs_sheet, "legs_frames": legs_frames,
 			"aim_scene": aim_scene, "aim_pivot": aim_pivot, "aim_rest_angle": rig.aim_part_rest_angle}
 
 
-## Writes the sheet PNG, the SpriteFrames .tres (which points at the PNG)
-## and, if the rig has an aim part, <frames>_aim.tscn.
+## Writes the sheet PNG, the SpriteFrames .tres (which points at the PNG),
+## <frames>_legs.png/.tres for a legs layer and <frames>_aim.tscn for an aim part.
 static func save(result: Dictionary, sheet_path: String, frames_path: String) -> Error:
 	var err := (result.sheet as Image).save_png(ProjectSettings.globalize_path(sheet_path))
-	if err != OK:
-		return err
-	err = ResourceSaver.save(result.frames, frames_path)
-	if err != OK or result.get("aim_scene") == null:
-		return err
-	return ResourceSaver.save(result.aim_scene, aim_scene_path(frames_path))
+	if err == OK:
+		err = ResourceSaver.save(result.frames, frames_path)
+	if err == OK and result.get("legs_frames") != null:
+		err = (result.legs_sheet as Image).save_png(ProjectSettings.globalize_path(legs_path(sheet_path)))
+		if err == OK:
+			err = ResourceSaver.save(result.legs_frames, legs_path(frames_path))
+	if err == OK and result.get("aim_scene") != null:
+		err = ResourceSaver.save(result.aim_scene, aim_scene_path(frames_path))
+	return err
 
 
 static func aim_scene_path(frames_path: String) -> String:
 	return frames_path.get_basename() + "_aim.tscn"
 
 
+## The legs layer's file next to a body file: x.png -> x_legs.png, x.tres -> x_legs.tres.
+static func legs_path(path: String) -> String:
+	return path.get_basename() + "_legs." + path.get_extension()
+
+
 ## Points a VisualProfile at a bake: sprite frames, and the aim part fields
 ## when the rig had one. Body Scale / Offset are left alone.
 static func apply_to_profile(result: Dictionary, frames_path: String, profile: VisualProfile) -> void:
 	profile.sprite_frames = load(frames_path)
+	profile.legs_frames = load(legs_path(frames_path)) if result.get("legs_frames") != null else null
 	if result.get("aim_scene") != null:
 		profile.aim_part = load(aim_scene_path(frames_path))
 		profile.aim_part_pivot = result.aim_pivot

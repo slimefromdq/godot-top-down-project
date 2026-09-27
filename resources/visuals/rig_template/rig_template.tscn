@@ -191,67 +191,68 @@ _data = {
 &"move": SubResource("Animation_q68mc")
 }
 
-[node name="CutoutRig" type="Node2D" unique_id=1599611126]
+[node name="CutoutRig" type="Node2D" unique_id=548440276]
 script = ExtResource("1_vkro1")
 frame_size = Vector2i(160, 160)
 aim_part_path = NodePath("Hips/Torso/ArmFront")
+legs_layer_paths = Array[NodePath]([NodePath("Hips/WingBack"), NodePath("Hips/Cape"), NodePath("Hips/LegBack"), NodePath("Hips/LegFront")])
 
-[node name="Hips" type="Node2D" parent="." unique_id=1070539803]
+[node name="Hips" type="Node2D" parent="." unique_id=1731095858]
 position = Vector2(0, 10)
 
-[node name="WingBack" type="Polygon2D" parent="Hips" unique_id=878599421]
+[node name="WingBack" type="Polygon2D" parent="Hips" unique_id=899093936]
 position = Vector2(-6, -30)
 color = Color(0.75, 0.93, 0.88, 1)
 polygon = PackedVector2Array(-4, 0, -50, -30, -44, 4, -30, 16)
 
-[node name="Cape" type="Polygon2D" parent="Hips" unique_id=1957709455]
+[node name="Cape" type="Polygon2D" parent="Hips" unique_id=989441857]
 position = Vector2(0, -28)
 color = Color(0.1, 0.8, 0.8, 1)
 polygon = PackedVector2Array(-10, 0, 10, 0, 4, 50, -30, 44)
 
-[node name="LegBack" type="Polygon2D" parent="Hips" unique_id=945759324]
+[node name="LegBack" type="Polygon2D" parent="Hips" unique_id=1504400732]
 position = Vector2(6, 0)
 color = Color(0.79050004, 0.8245, 0.816, 1)
 polygon = PackedVector2Array(-6, 0, 6, 0, 6, 34, -6, 34)
 
-[node name="Torso" type="Polygon2D" parent="Hips" unique_id=1717170943]
+[node name="Torso" type="Polygon2D" parent="Hips" unique_id=1928213661]
 color = Color(0.93, 0.97, 0.96, 1)
 polygon = PackedVector2Array(-14, 0, 14, 0, 12, -34, -12, -34)
 
-[node name="ArmBack" type="Polygon2D" parent="Hips/Torso" unique_id=849610922]
+[node name="ArmBack" type="Polygon2D" parent="Hips/Torso" unique_id=1784401360]
 position = Vector2(12, -28)
 color = Color(0.79050004, 0.8245, 0.816, 1)
 polygon = PackedVector2Array(-4, 0, 4, 0, 4, 24, -4, 24)
 
-[node name="Head" type="Polygon2D" parent="Hips/Torso" unique_id=884046808]
+[node name="Head" type="Polygon2D" parent="Hips/Torso" unique_id=1864262954]
 position = Vector2(0, -36)
 color = Color(0.93, 0.97, 0.96, 1)
 polygon = PackedVector2Array(18, 0, 16.629831, 6.8883023, 12.7279215, 12.7279215, 6.888302, 16.629831, -7.86805e-07, 18, -6.888301, 16.629831, -12.7279215, 12.7279215, -16.629831, 6.888303, -18, -1.57361e-06, -16.629831, -6.888302, -12.727922, -12.727921, -6.888304, -16.629831, 2.1464786e-07, -18, 6.8883047, -16.62983, 12.72792, -12.727924, 16.629831, -6.888302)
 
-[node name="Visor" type="Polygon2D" parent="Hips/Torso" unique_id=1215719368]
+[node name="Visor" type="Polygon2D" parent="Hips/Torso" unique_id=1977039656]
 position = Vector2(4, -38)
 color = Color(0.8, 0.62, 0.2, 1)
 polygon = PackedVector2Array(-8, -8, 14, -8, 14, 8, -8, 8)
 
-[node name="WingFront" type="Polygon2D" parent="Hips/Torso" unique_id=1602470342]
+[node name="WingFront" type="Polygon2D" parent="Hips/Torso" unique_id=607214339]
 position = Vector2(-10, -28)
 color = Color(0.75, 0.93, 0.88, 1)
 polygon = PackedVector2Array(0, 0, -40, -44, -36, -6, -24, 12)
 
-[node name="ArmFront" type="Polygon2D" parent="Hips/Torso" unique_id=1612525504]
+[node name="ArmFront" type="Polygon2D" parent="Hips/Torso" unique_id=404408688]
 position = Vector2(-12, -28)
 color = Color(0.93, 0.97, 0.96, 1)
 polygon = PackedVector2Array(-4, 0, 4, 0, 4, 24, -4, 24)
 
-[node name="Sword" type="Polygon2D" parent="Hips/Torso/ArmFront" unique_id=1433097357]
+[node name="Sword" type="Polygon2D" parent="Hips/Torso/ArmFront" unique_id=297872082]
 position = Vector2(0, 24)
 color = Color(0.3, 0.85, 0.85, 1)
 polygon = PackedVector2Array(-3, 0, 3, 0, 3, 44, 0, 52, -3, 44)
 
-[node name="LegFront" type="Polygon2D" parent="Hips" unique_id=467032435]
+[node name="LegFront" type="Polygon2D" parent="Hips" unique_id=1231718594]
 position = Vector2(-6, 0)
 color = Color(0.93, 0.97, 0.96, 1)
 polygon = PackedVector2Array(-6, 0, 6, 0, 6, 34, -6, 34)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1539482040]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=856987284]
 libraries/ = SubResource("AnimationLibrary_weg7m")

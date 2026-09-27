@@ -49,6 +49,7 @@ func _run() -> void:
 	await _test_look_ahead_pierce_and_launch()
 	await _test_containment_ring()
 	await _test_aim_part()
+	await _test_legs_layer()
 	_test_cooldown_api()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
@@ -1023,6 +1024,49 @@ func _fire_until_empty(h: Hero, slot: StringName, timeout: float) -> void:
 			return
 		h.request_slot(slot, h.aim_point)
 		await get_tree().physics_frame
+
+
+# --- Legs layer (VisualProfile.legs_frames) ---------------------------------
+
+func _test_legs_layer() -> void:
+	var visuals := VisualsComponent.find_on(hero)
+	var legs := visuals.legs
+	var sprite := visuals.body as AnimatedSprite2D
+	_check("test hero has a legs layer behind its body", legs != null and legs.get_parent() == sprite
+			and legs.show_behind_parent, "")
+	if legs == null:
+		return
+	hero.aim_direction = Vector2.LEFT
+	await _frames(2)
+	_check("legs face the aim with the body", legs.flip_h and sprite.flip_h, "")
+	# Walk toward the aim: legs match the body frame for frame.
+	hero.movement_component.set_cruise(self, Vector2.LEFT, 300.0)
+	await _frames(6)
+	_check("walking toward the aim plays the walk forward", sprite.animation == &"move"
+			and not visuals.is_walking_backwards() and legs.frame == sprite.frame,
+			"%s legs %d body %d" % [sprite.animation, legs.frame, sprite.frame])
+	# Walk away from it (still aiming left): legs run the walk backwards.
+	hero.movement_component.set_cruise(self, Vector2.RIGHT, 300.0)
+	await _frames(20)    # turn around first
+	var count := legs.sprite_frames.get_frame_count(&"move")
+	# Check on a frame where forward and backward differ (not 0 or the middle).
+	for i in 30:
+		if sprite.frame * 2 % count != 0:
+			break
+		await _frames(1)
+	_check("backing away from the aim plays the walk backwards, body still facing the aim",
+			visuals.is_walking_backwards() and sprite.flip_h and legs.animation == &"move"
+			and legs.frame == (count - sprite.frame) % count,
+			"legs %d body %d of %d back %s flip %s vel %s aim %s" % [legs.frame, sprite.frame, count, visuals.is_walking_backwards(), sprite.flip_h, hero.velocity, hero.aim_direction])
+	hero.movement_component.clear_cruise(self)
+	await _frames(20)
+	_check("standing still: legs back to forward idle", not visuals.is_walking_backwards()
+			and legs.animation == sprite.animation and legs.frame == sprite.frame, str(sprite.animation))
+	var ghost := visuals.make_body_snapshot()
+	_check("afterimages carry the legs", ghost != null and ghost.get_child_count() == 1, "")
+	if ghost != null:
+		ghost.free()
+	hero.aim_direction = Vector2.RIGHT
 
 
 # --- Live aim part (VisualProfile.aim_part) ---------------------------------

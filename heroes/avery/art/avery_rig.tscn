@@ -249,59 +249,60 @@ _data = {
 &"move": SubResource("Animation_8i213")
 }
 
-[node name="AveryRig" type="Node2D" unique_id=508431000]
+[node name="AveryRig" type="Node2D" unique_id=322243983]
 script = ExtResource("1_aj8jt")
 frame_size = Vector2i(320, 320)
 aim_part_path = NodePath("Hips/Torso/ArmFront")
+legs_layer_paths = Array[NodePath]([NodePath("Hips/Wings"), NodePath("Hips/Cape"), NodePath("Hips/Legs")])
 
-[node name="Hips" type="Node2D" parent="." unique_id=752061135]
+[node name="Hips" type="Node2D" parent="." unique_id=401440277]
 position = Vector2(0, 28)
 
-[node name="Wings" type="Sprite2D" parent="Hips" unique_id=248297538]
+[node name="Wings" type="Sprite2D" parent="Hips" unique_id=258552221]
 position = Vector2(-12, -46)
 rotation = -0.1
 texture = ExtResource("2_qhhnv")
 offset = Vector2(-26, -7)
 
-[node name="Cape" type="Sprite2D" parent="Hips" unique_id=46287414]
+[node name="Cape" type="Sprite2D" parent="Hips" unique_id=138086954]
 position = Vector2(-12, -50)
 rotation = 0.22
 texture = ExtResource("3_biwcy")
 offset = Vector2(-1, 47)
 
-[node name="Legs" type="Sprite2D" parent="Hips" unique_id=891117134]
+[node name="Legs" type="Sprite2D" parent="Hips" unique_id=415178486]
 position = Vector2(0, -6)
 texture = ExtResource("4_hd07b")
 offset = Vector2(0, 33.5)
 
-[node name="Torso" type="Sprite2D" parent="Hips" unique_id=1238951576]
+[node name="Torso" type="Sprite2D" parent="Hips" unique_id=396420629]
 position = Vector2(0, 8)
 texture = ExtResource("5_nxovl")
 offset = Vector2(0.5, -37)
 
-[node name="ArmBack" type="Sprite2D" parent="Hips/Torso" unique_id=783310675]
+[node name="ArmBack" type="Sprite2D" parent="Hips/Torso" unique_id=350405110]
 show_behind_parent = true
 position = Vector2(-22, -58)
 rotation = 0.9
 texture = ExtResource("6_l18kh")
 offset = Vector2(20, 24.5)
 
-[node name="Head" type="Sprite2D" parent="Hips/Torso" unique_id=1550980808]
+[node name="Head" type="Sprite2D" parent="Hips/Torso" unique_id=1555150415]
 position = Vector2(2, -64)
 texture = ExtResource("7_co3kr")
 offset = Vector2(-1.5, -37)
 
-[node name="ArmFront" type="Sprite2D" parent="Hips/Torso" unique_id=350000843]
+[node name="ArmFront" type="Sprite2D" parent="Hips/Torso" unique_id=1662744299]
 position = Vector2(20, -60)
 texture = ExtResource("8_vvs1e")
 offset = Vector2(-4, 43)
 
-[node name="Sword" type="Sprite2D" parent="Hips/Torso/ArmFront" unique_id=616075987]
+[node name="Sword" type="Sprite2D" parent="Hips/Torso/ArmFront" unique_id=1332179499]
 show_behind_parent = true
 position = Vector2(-2, 86)
 texture = ExtResource("9_vj16t")
 offset = Vector2(0, 14)
 flip_v = true
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1843765406]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1762953175]
 libraries/ = SubResource("AnimationLibrary_qrc3b")
