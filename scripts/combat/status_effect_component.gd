@@ -455,6 +455,8 @@ func is_carried() -> bool:
 
 # Simulation timers run on physics ticks (see HealthComponent for why).
 func _physics_process(delta: float) -> void:
+	if _active.is_empty():
+		return
 	for key in _active.keys():
 		var entry: Entry = _active.get(key)
 		if entry == null:

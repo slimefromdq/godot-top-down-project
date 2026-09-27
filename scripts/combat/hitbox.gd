@@ -131,6 +131,11 @@ func find_targets(shape: HitShape, direction: Vector2) -> Array[HurtboxComponent
 	return query(actor, actor.global_position, direction, shape, actor)
 
 
+static var _query_params: PhysicsShapeQueryParameters2D
+static var _query_rect: RectangleShape2D
+static var _query_circle: CircleShape2D
+
+
 # The shared search behind Hitbox, GroundZone and area bursts: every hurtbox
 # `source` is allowed to hit inside `shape`, placed at `origin` facing
 # `direction`. `context` is any node in the world (for physics access).
@@ -139,22 +144,26 @@ static func query(context: Node2D, origin: Vector2, direction: Vector2, shape: H
 	if direction == Vector2.ZERO:
 		direction = Vector2.RIGHT
 	origin += direction * shape.forward_offset
-	var params := PhysicsShapeQueryParameters2D.new()
+	# Shared query objects: intersect_shape is synchronous, so reusing them
+	# is safe and saves three allocations per zone per tick in a teamfight.
+	if _query_params == null:
+		_query_params = PhysicsShapeQueryParameters2D.new()
+		_query_rect = RectangleShape2D.new()
+		_query_circle = CircleShape2D.new()
+	var params := _query_params
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	params.collision_mask = GameRules.current().hurtbox_mask
 
 	match shape.kind:
 		HitShape.Kind.LINE:
-			var rect := RectangleShape2D.new()
-			rect.size = Vector2(shape.length, shape.width)
-			params.shape = rect
+			_query_rect.size = Vector2(shape.length, shape.width)
+			params.shape = _query_rect
 			params.transform = Transform2D(direction.angle(), origin + direction * shape.length / 2.0)
 		_:
 			# ARC searches the full circle, then filters by angle below.
-			var circle := CircleShape2D.new()
-			circle.radius = shape.radius
-			params.shape = circle
+			_query_circle.radius = shape.radius
+			params.shape = _query_circle
 			params.transform = Transform2D(0.0, origin)
 
 	var results: Array[HurtboxComponent] = []
