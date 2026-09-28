@@ -29,6 +29,8 @@ func _run() -> void:
 	await _test_movement_feel()
 	await _test_ledge_blocks_climbing()
 	await _test_ledge_allows_drop()
+	await _test_stairwell_climbs_cliff()
+	await _test_court_stairs_both_ways()
 	await _test_jump_pad_climbs_cliff()
 	await _test_one_way_teleporter()
 	await _test_two_way_teleporter()
@@ -83,8 +85,27 @@ func _test_ledge_allows_drop() -> void:
 		"x=%.0f" % player.global_position.x)
 
 
+func _test_stairwell_climbs_cliff() -> void:
+	# The Lawn stairwell (y 120..540) in the same cliff: walking up needs no pad.
+	_place(Vector2(-2450, 330))
+	await _hold("move_left", 1.5)
+	_check("stairwell climbs the cliff on foot", player.global_position.x < -2900,
+		"x=%.0f" % player.global_position.x)
+
+
+func _test_court_stairs_both_ways() -> void:
+	# The Sunken Court's south stair (on the axis, radius 600): walk out of the
+	# court and back in, both on foot.
+	_place(Vector2(0, 350))
+	await _hold("move_down", 1.0)
+	var out_y := player.global_position.y
+	await _hold("move_up", 1.5)
+	_check("court stair walks out and back in", out_y > 750 and player.global_position.y < 400,
+		"out y=%.0f, back y=%.0f" % [out_y, player.global_position.y])
+
+
 func _test_jump_pad_climbs_cliff() -> void:
-	var pad: JumpPad = world.get_node("DreamBasin/Mobility/JumpPads/GladeSpringA")
+	var pad: JumpPad = world.get_node("DreamBasin/Mobility/JumpPads/RuinsUpdraftA")
 	var landing := pad.get_landing_position()
 	_place(pad.global_position + Vector2(160, 0))
 	await _hold("move_left", 0.3)

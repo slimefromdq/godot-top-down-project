@@ -271,9 +271,12 @@ L["regions"] += [
 # ==========================================================================
 
 # --- Cliff edges (one-way ledges) ---------------------------------------
-# Inner cliff facing the basin, broken by the basin stairwell (y -1200..-850).
+# Inner cliff facing the basin, broken by two basin stairwells: one in each
+# team's half (y -1200..-850 and 100..450; the rotation gives the right Wild
+# the same pair), so every Wild is a short walk up from either half.
 ledge(-LEDGE_X, -WILD_Y, -LEDGE_X, -1200, (1, 0))
-ledge(-LEDGE_X, -850, -LEDGE_X, WILD_Y, (1, 0))
+ledge(-LEDGE_X, -850, -LEDGE_X, 100, (1, 0))
+ledge(-LEDGE_X, 450, -LEDGE_X, WILD_Y, (1, 0))
 # South cliff (Tangle -> Cloister yard), stairwell x -3900..-3500.
 ledge(-HX, WILD_Y, -3900, WILD_Y, (0, 1))
 ledge(-3500, WILD_Y, -LEDGE_X, WILD_Y, (0, 1))
@@ -282,11 +285,13 @@ ledge(-HX, -WILD_Y, -3900, -WILD_Y, (0, -1))
 ledge(-3500, -WILD_Y, -LEDGE_X, -WILD_Y, (0, -1))
 
 stair(-LEDGE_X + 160, -1025, 350, 320, (-1, 0))   # basin -> Ridge flank
+stair(-LEDGE_X + 160, 275, 350, 320, (-1, 0))     # basin -> Lawn (was the Glade Spring pad)
 stair(-3700, WILD_Y + 160, 400, 320, (0, -1))      # Cloister -> Tangle
 stair(-3700, -WILD_Y - 160, 400, 320, (0, 1))      # B outskirts -> Ridge
-# Rails that funnel the basin stairwell into a proper choke.
-lowwall(-LEDGE_X + 20, -1220, -LEDGE_X + 380, -1220)
-lowwall(-LEDGE_X + 20, -830, -LEDGE_X + 380, -830)
+# Rails that funnel each basin stairwell into a proper choke.
+for y0, y1 in ((-1220, -830), (80, 470)):
+    lowwall(-LEDGE_X + 20, y0, -LEDGE_X + 380, y0)
+    lowwall(-LEDGE_X + 20, y1, -LEDGE_X + 380, y1)
 
 # --- The Tangle (y 900..2700): a walled hedge garden ---------------------
 # Protection comes from the perimeter hedges (they block shots, so you have to
@@ -338,8 +343,8 @@ for (bx, by) in [(-4100, -1100), (-4000, -1900), (-4150, -2400), (-3700, -1450)]
     bush(bx, by, 120)
 low(rock(-3650, -2250, 110, 47, stretch=(1.6, 0.7)), "lowrock")
 
-# Jump pads onto the left Wild (both fire from the A half of the basin).
-jump_pad(-2530, 300, -3450, 300, "Glade Spring")         # basin -> glade
+# The one jump pad onto the left Wild: an optional shortcut. On foot, the
+# Ruins' doors lead to the Lawn stairwell or the Cloister stair.
 jump_pad(-2400, 1950, -3250, 1850, "Ruins Updraft")     # ruins courtyard -> Tangle
 
 # ==========================================================================
@@ -362,13 +367,14 @@ low(rock(-980, 560, 80, 71, stretch=(1.6, 0.6), rot=-0.5), "lowrock")
 # --- The Sunken Court: the Cradle's heart, one step down ------------------
 # A round court sunk into the middle of the Cradle (the Nightmare's lair and
 # the Dream Mote spot sit on its floor). Its rim is a stone balustrade (low
-# cover: shoot over it, can't walk through), broken by four staircases on
-# the diagonals (both ways) and four drop-offs on the axes (one-way ledges:
-# hop down, never up). Planters on the court floor give the fight inside
-# something to use. Radius in real units; the helpers take authored y.
+# cover: shoot over it, can't walk through), broken by eight staircases, on
+# the diagonals and the axes, all walkable both ways. Planters on the court
+# floor give the fight inside something to use. Radius in real units; the
+# helpers take authored y. COURT_DROPS (one-way ledges: hop down, never up)
+# is kept for layouts that want them; Dream Basin has none.
 COURT_R = 600
-COURT_STAIRS = [(35, 55), (125, 145)]          # degrees, authored half
-COURT_DROPS = [(-10, 10), (80, 100)]
+COURT_STAIRS = [(-10, 10), (35, 55), (80, 100), (125, 145)]   # degrees, authored half
+COURT_DROPS = []
 
 
 def _court_pt(deg, r=COURT_R):

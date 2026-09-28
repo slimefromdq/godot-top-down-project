@@ -22,12 +22,12 @@ old names (`glade`, `ridge`, `tangle`, `ruins`, `driftfield`, `orchard`).
 
 | Region | Where | Role |
 |---|---|---|
-| **The Sunken Court** (the Cradle) | Basin centre | The main arena. An open oval ring (600 px wide, collision-free) circles a ring of marble columns. Inside it the court itself sits one step down (radius 600 px), with the Nightmare's lair and the Dream Mote spot on its floor. Its rim is a stone balustrade (low cover: shoot over it), broken by four staircases on the diagonals (both ways) and four drop-offs on the axes (one-way: hop down, never climb up). Two pairs of planters on the floor. |
+| **The Sunken Court** (the Cradle) | Basin centre | The main arena. An open oval ring (600 px wide, collision-free) circles a ring of marble columns. Inside it the court itself sits one step down (radius 600 px), with the Nightmare's lair and the Dream Mote spot on its floor. Its rim is a stone balustrade (low cover: shoot over it), broken by eight staircases, on the diagonals and the axes, all walkable both ways. Two pairs of planters on the floor. |
 | **The Old Colonnade** (Lullaby Ruins) | Basin corner (A: lower-left, B: upper-right) | A sandstone arcade under restoration (1400 × 1800 px). Four ways in: the north gate, a collapsed corner facing the court, east door, south door, plus dropping in from the Garden Court. Inside: a row of columns, a courtyard with the updraft, and a side chapel with the Dream Rift. **Enclosed.** |
 | **The Fountain Court** (Driftfield) | The other two basin corners | Open paved court under the Upper Terrace, with a fountain and a pavilion. Mid-range. |
 | **The Garden Court** (the Tangle) | Wild third nearest your base (left side for A) | Walled hedge garden. Its perimeter hedges block shots, so you have to come inside to fight. Inside are loose rooms around a fountain, with lanes of 450 px or more. **Enclosed.** |
 | **The Hollow** | Pocket on the outer wall between the Garden Court and the Lawn | Hidden exit of your one-way spawn teleporter. |
-| **The Lawn** (the Glade) | Middle of each Wild | Mid-range lawn with garden boulders. |
+| **The Lawn** (the Glade) | Middle of each Wild | Mid-range lawn with garden boulders. The Lawn Stairs climb to it from the basin. |
 | **The Upper Terrace** (Stilt Ridge) | The other end of each Wild | Open high ground overlooking the plaza. The sniper perch is a pavilion behind a row of low stones. |
 | **Dawn / Dusk Forecourt** (Plaza) | In front of each base | Staging area. The sundial and two hedge planters block every diagonal into the spawn door. |
 | **Cloister** | Base outskirts, Garden Court side | Walled tunnel (**close-quarters**) that opens into a colonnade. |
@@ -52,6 +52,22 @@ cover, reachable on foot, mirrored).
 | **Travelator** ×2 | The Plaza Express, along each Plaza front (`scenes/map/travelator.tscn`). |
 | **Water stairs** ×2 | Each Fountain Court, running down toward the Sunken Court (`scenes/map/water_stairs.tscn`): x1.45 going down, x0.6 climbing. |
 | **Launch flower** ×2 | Past each Driftfield, landing on the Cradle's side (`scenes/map/jump_pad.tscn` with a sweep). |
+
+## Getting around on foot
+
+Every area can be reached by walking, from either base, and walked back
+out of; `check.py` (Walking) and `bot_nav_test` both prove it with every
+jump pad, launch flower and teleporter removed. Pads and teleporters are
+only shortcuts.
+
+- **Each Wild** is high ground behind a cliff (chevrons point down it). Four
+  staircases climb it: two up from the basin, one in each team's half (the
+  Lawn Stairs and the Terrace Stairs), one from your Cloister yard, one from
+  the enemy's outskirts. You can drop off the cliff anywhere.
+- **The Sunken Court** has eight two-way staircases in its rim.
+- **The one map jump pad**, Ruins Updraft (Old Colonnade courtyard up to the
+  Garden Court), saves a walk out of the Colonnade and up the Lawn Stairs or
+  the Cloister stair. Its landing ring and flight path are always drawn.
 
 `check.py` counts intact glass as full cover for every check (lanes, routes,
 standable points), so nothing depends on it being broken, and keeps every
@@ -224,7 +240,7 @@ the spawn room closed), and unreachable with all of them blocked.
 
 | File | What it does |
 |---|---|
-| `check.py` | Validates the layout: lanes are clear, pads have standable landings, 128 px bodies can reach everything, one-way cliffs only open via stairs or pads, spawn door exposure. |
+| `check.py` | Validates the layout: lanes are clear, pads have standable landings, 128 px bodies can reach everything, one-way cliffs only open via stairs or pads, every area walkable both ways without pads or teleporters (each pad has a walking route; the report shows how far), spawn door exposure. |
 | `render_svg.py` | Redraws the blockout image. |
 | `export_godot.py` | Writes `scenes/maps/dream_basin.tscn` and `scenes/dream_basin_world.tscn` (the map plus the player, HUD, `MatchManager` and match HUD). **Re-exporting overwrites hand edits to both scenes.** |
 | `smoke_test.tscn` | Runs the real player through ledges, pads, teleporters, strips and projectile layers. Run it with `godot --headless res://tools/dream_basin/smoke_test.tscn`. |

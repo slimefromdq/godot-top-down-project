@@ -117,54 +117,90 @@ width = 350
 depth = 320
 
 [node name="Stairwell2" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(-2590, 330)
+rotation = 3.141593
+width = 350
+depth = 320
+
+[node name="Stairwell3" parent="Stairwells" instance=ExtResource("5_stairwell")]
 position = Vector2(-3700, 3432)
 rotation = -1.570796
 width = 400
 depth = 320
 
-[node name="Stairwell3" parent="Stairwells" instance=ExtResource("5_stairwell")]
+[node name="Stairwell4" parent="Stairwells" instance=ExtResource("5_stairwell")]
 position = Vector2(-3700, -3432)
 rotation = 1.570796
 width = 400
 depth = 320
 
-[node name="Stairwell4" parent="Stairwells" instance=ExtResource("5_stairwell")]
+[node name="Stairwell5" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(600, 0)
+rotation = 0.000000
+width = 208
+depth = 90
+
+[node name="Stairwell6" parent="Stairwells" instance=ExtResource("5_stairwell")]
 position = Vector2(424, 424)
 rotation = 0.785398
 width = 208
 depth = 90
 
-[node name="Stairwell5" parent="Stairwells" instance=ExtResource("5_stairwell")]
+[node name="Stairwell7" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(0, 600)
+rotation = 1.570796
+width = 208
+depth = 90
+
+[node name="Stairwell8" parent="Stairwells" instance=ExtResource("5_stairwell")]
 position = Vector2(-424, 424)
 rotation = 2.356194
 width = 208
 depth = 90
 
-[node name="Stairwell6" parent="Stairwells" instance=ExtResource("5_stairwell")]
+[node name="Stairwell9" parent="Stairwells" instance=ExtResource("5_stairwell")]
 position = Vector2(2590, 1230)
 rotation = 0.000000
 width = 350
 depth = 320
 
-[node name="Stairwell7" parent="Stairwells" instance=ExtResource("5_stairwell")]
+[node name="Stairwell10" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(2590, -330)
+rotation = 0.000000
+width = 350
+depth = 320
+
+[node name="Stairwell11" parent="Stairwells" instance=ExtResource("5_stairwell")]
 position = Vector2(3700, -3432)
 rotation = 1.570796
 width = 400
 depth = 320
 
-[node name="Stairwell8" parent="Stairwells" instance=ExtResource("5_stairwell")]
+[node name="Stairwell12" parent="Stairwells" instance=ExtResource("5_stairwell")]
 position = Vector2(3700, 3432)
 rotation = -1.570796
 width = 400
 depth = 320
 
-[node name="Stairwell9" parent="Stairwells" instance=ExtResource("5_stairwell")]
+[node name="Stairwell13" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(-600, -0)
+rotation = -3.141593
+width = 208
+depth = 90
+
+[node name="Stairwell14" parent="Stairwells" instance=ExtResource("5_stairwell")]
 position = Vector2(-424, -424)
 rotation = -2.356194
 width = 208
 depth = 90
 
-[node name="Stairwell10" parent="Stairwells" instance=ExtResource("5_stairwell")]
+[node name="Stairwell15" parent="Stairwells" instance=ExtResource("5_stairwell")]
+position = Vector2(-0, -600)
+rotation = -1.570796
+width = 208
+depth = 90
+
+[node name="Stairwell16" parent="Stairwells" instance=ExtResource("5_stairwell")]
 position = Vector2(424, -424)
 rotation = -0.785398
 width = 208
@@ -181,97 +217,67 @@ length = 1800
 [node name="Ledge2" parent="Ledges" instance=ExtResource("4_ledge")]
 position = Vector2(-2750, -1020)
 rotation = 1.570796
-length = 4260
+length = 1140
 
 [node name="Ledge3" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(-2750, 540)
+rotation = 1.570796
+length = 2700
+
+[node name="Ledge4" parent="Ledges" instance=ExtResource("4_ledge")]
 position = Vector2(-3900, 3240)
 rotation = 3.141593
 length = 900
 
-[node name="Ledge4" parent="Ledges" instance=ExtResource("4_ledge")]
+[node name="Ledge5" parent="Ledges" instance=ExtResource("4_ledge")]
 position = Vector2(-2750, 3240)
 rotation = 3.141593
 length = 750
 
-[node name="Ledge5" parent="Ledges" instance=ExtResource("4_ledge")]
+[node name="Ledge6" parent="Ledges" instance=ExtResource("4_ledge")]
 position = Vector2(-4800, -3240)
 rotation = 0.000000
 length = 900
 
-[node name="Ledge6" parent="Ledges" instance=ExtResource("4_ledge")]
+[node name="Ledge7" parent="Ledges" instance=ExtResource("4_ledge")]
 position = Vector2(-3500, -3240)
 rotation = 0.000000
 length = 750
 
-[node name="Ledge7" parent="Ledges" instance=ExtResource("4_ledge")]
-position = Vector2(600, 0)
-rotation = -1.658063
-length = 105
-
 [node name="Ledge8" parent="Ledges" instance=ExtResource("4_ledge")]
-position = Vector2(591, 104)
-rotation = -1.483530
-length = 105
-
-[node name="Ledge9" parent="Ledges" instance=ExtResource("4_ledge")]
-position = Vector2(0, 600)
-rotation = -0.087266
-length = 105
-
-[node name="Ledge10" parent="Ledges" instance=ExtResource("4_ledge")]
-position = Vector2(-104, 591)
-rotation = 0.087266
-length = 105
-
-[node name="Ledge11" parent="Ledges" instance=ExtResource("4_ledge")]
 position = Vector2(2750, 3240)
 rotation = -1.570796
 length = 1800
 
-[node name="Ledge12" parent="Ledges" instance=ExtResource("4_ledge")]
+[node name="Ledge9" parent="Ledges" instance=ExtResource("4_ledge")]
 position = Vector2(2750, 1020)
 rotation = -1.570796
-length = 4260
+length = 1140
 
-[node name="Ledge13" parent="Ledges" instance=ExtResource("4_ledge")]
+[node name="Ledge10" parent="Ledges" instance=ExtResource("4_ledge")]
+position = Vector2(2750, -540)
+rotation = -1.570796
+length = 2700
+
+[node name="Ledge11" parent="Ledges" instance=ExtResource("4_ledge")]
 position = Vector2(3900, -3240)
 rotation = 0.000000
 length = 900
 
-[node name="Ledge14" parent="Ledges" instance=ExtResource("4_ledge")]
+[node name="Ledge12" parent="Ledges" instance=ExtResource("4_ledge")]
 position = Vector2(2750, -3240)
 rotation = 0.000000
 length = 750
 
-[node name="Ledge15" parent="Ledges" instance=ExtResource("4_ledge")]
+[node name="Ledge13" parent="Ledges" instance=ExtResource("4_ledge")]
 position = Vector2(4800, 3240)
 rotation = 3.141593
 length = 900
 
-[node name="Ledge16" parent="Ledges" instance=ExtResource("4_ledge")]
+[node name="Ledge14" parent="Ledges" instance=ExtResource("4_ledge")]
 position = Vector2(3500, 3240)
 rotation = 3.141593
 length = 750
-
-[node name="Ledge17" parent="Ledges" instance=ExtResource("4_ledge")]
-position = Vector2(-600, -0)
-rotation = 1.483530
-length = 105
-
-[node name="Ledge18" parent="Ledges" instance=ExtResource("4_ledge")]
-position = Vector2(-591, -104)
-rotation = 1.658063
-length = 105
-
-[node name="Ledge19" parent="Ledges" instance=ExtResource("4_ledge")]
-position = Vector2(-0, -600)
-rotation = 3.054326
-length = 105
-
-[node name="Ledge20" parent="Ledges" instance=ExtResource("4_ledge")]
-position = Vector2(104, -591)
-rotation = -3.054326
-length = 105
 
 [node name="Mobility" type="Node2D" parent="."]
 
@@ -295,17 +301,9 @@ size = Vector2(900, 170)
 
 [node name="JumpPads" type="Node2D" parent="Mobility"]
 
-[node name="GladeSpringA" parent="Mobility/JumpPads" instance=ExtResource("6_jump_pad")]
-position = Vector2(-2530, 360)
-landing_offset = Vector2(-920, 0)
-
 [node name="RuinsUpdraftA" parent="Mobility/JumpPads" instance=ExtResource("6_jump_pad")]
 position = Vector2(-2400, 2340)
 landing_offset = Vector2(-850, -120)
-
-[node name="GladeSpringB" parent="Mobility/JumpPads" instance=ExtResource("6_jump_pad")]
-position = Vector2(2530, -360)
-landing_offset = Vector2(920, 0)
 
 [node name="RuinsUpdraftB" parent="Mobility/JumpPads" instance=ExtResource("6_jump_pad")]
 position = Vector2(2400, -2340)
@@ -375,6 +373,24 @@ height = 1
 fill_color = Color(0.570, 0.654, 0.731, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall2"]
+polygon = PackedVector2Array(-205, 25, 205, 25, 205, -25, -205, -25)
+
+[node name="Lowwall3" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2550, 96)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.570, 0.654, 0.731, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall3"]
+polygon = PackedVector2Array(-205, 25, 205, 25, 205, -25, -205, -25)
+
+[node name="Lowwall4" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(-2550, 564)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.570, 0.654, 0.731, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall4"]
 polygon = PackedVector2Array(-205, 25, 205, 25, 205, -25, -205, -25)
 
 [node name="Landmarks" type="Node2D" parent="Cover"]
@@ -563,22 +579,22 @@ fill_color = Color(0.561, 0.690, 0.478, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter2"]
 polygon = PackedVector2Array(54, -1, 44, 28, 15, 52, -16, 56, -45, 33, -55, -5, -42, -34, -16, -51, 17, -51, 44, -26)
 
-[node name="Lowwall3" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowwall5" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(-825, 2376)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.570, 0.654, 0.731, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall3"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall5"]
 polygon = PackedVector2Array(-254, -15, 246, 65, 254, 15, -246, -65)
 
-[node name="Lowwall4" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowwall6" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(875, 2334)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.570, 0.654, 0.731, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall4"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall6"]
 polygon = PackedVector2Array(-295, 83, 304, -34, 295, -83, -304, 34)
 
 [node name="Lowrock10" type="StaticBody2D" parent="Cover/LowCover"]
@@ -707,22 +723,40 @@ fill_color = Color(0.561, 0.690, 0.478, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter4"]
 polygon = PackedVector2Array(59, -9, 46, 37, 11, 60, -21, 55, -49, 28, -57, -2, -48, -36, -22, -55, 25, -53, 55, -26)
 
-[node name="Lowwall5" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowwall7" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(2550, 1464)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.570, 0.654, 0.731, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall5"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall7"]
 polygon = PackedVector2Array(205, -25, -205, -25, -205, 25, 205, 25)
 
-[node name="Lowwall6" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowwall8" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(2550, 996)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.570, 0.654, 0.731, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall6"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall8"]
+polygon = PackedVector2Array(205, -25, -205, -25, -205, 25, 205, 25)
+
+[node name="Lowwall9" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2550, -96)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.570, 0.654, 0.731, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall9"]
+polygon = PackedVector2Array(205, -25, -205, -25, -205, 25, 205, 25)
+
+[node name="Lowwall10" type="StaticBody2D" parent="Cover/LowCover"]
+position = Vector2(2550, -564)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.570, 0.654, 0.731, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall10"]
 polygon = PackedVector2Array(205, -25, -205, -25, -205, 25, 205, 25)
 
 [node name="Fountain3" type="StaticBody2D" parent="Cover/Landmarks" groups=["fountains"]]
@@ -905,22 +939,22 @@ fill_color = Color(0.561, 0.690, 0.478, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter6"]
 polygon = PackedVector2Array(-54, 1, -44, -28, -15, -52, 16, -56, 45, -33, 55, 5, 42, 34, 16, 51, -17, 51, -44, 26)
 
-[node name="Lowwall7" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowwall11" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(825, -2376)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.570, 0.654, 0.731, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall7"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall11"]
 polygon = PackedVector2Array(254, 15, -246, -65, -254, -15, 246, 65)
 
-[node name="Lowwall8" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowwall12" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(-875, -2334)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.570, 0.654, 0.731, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall8"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall12"]
 polygon = PackedVector2Array(295, -83, -304, 34, -295, 83, 304, -34)
 
 [node name="Lowrock23" type="StaticBody2D" parent="Cover/LowCover"]
