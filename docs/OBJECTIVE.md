@@ -102,6 +102,8 @@ Every number is in the camp's `NeutralData`
   one and its damage counts as yours.
 - **The Plaza Express** (a travelator along each Plaza front) carries
   whoever stands on it and flips direction every 30 seconds.
+- **Water stairs** (a stepped cascade in each Fountain Court, running down
+  toward the Sunken Court): quicker going down, slower climbing up.
 - **Launch flowers** (one past each Fountain Court) are jump pads whose landing
   sweeps back and forth: time your jump.
 

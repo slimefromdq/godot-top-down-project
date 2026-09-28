@@ -231,6 +231,12 @@ def travelator(x, y, w, h, name, offset=0.0):
                         "offset": offset, "rot": 0.0})
 
 
+def water_stairs(x, y, w, h, name, rot=0.0):
+    """A stepped cascade running down along +x rotated by rot (radians)."""
+    L["pieces"].append({"x": x, "y": Y(y), "kind": "waterstairs", "w": w, "h": h, "name": name,
+                        "rot": rot})
+
+
 def flower(x, y, tx, ty, sweep, name):
     """A launch flower: a jump pad whose landing sweeps +-sweep degrees."""
     L["pieces"].append({"x": x, "y": Y(y), "kind": "flower", "w": 0, "h": 0, "tx": tx, "ty": Y(ty),
@@ -615,6 +621,9 @@ hazard(-3600, -1167, 420, 300, "sleep_fog", "Ridge Fog")
 hazard(3600, 3250, 360, 260, "thorn_bed", "Orchard Thorns")
 travelator(0, 1979, 1000, 150, "Plaza Express")
 flower(2400, 1000, 1500, 833, 20, "Driftfield Flower")
+# Plaza direction: water stairs in each Fountain Court, running down (west)
+# toward the Sunken Court: quick going down, slow climbing back up.
+water_stairs(2300, 1917, 560, 180, "Fountain Stairs", rot=math.pi)
 
 # ==========================================================================
 # PLAZA FURNITURE (Map Liveliness Plan > Plaza direction, open-space pass)

@@ -24,8 +24,9 @@
 [ext_resource type="Resource" path="res://resources/map/pieces/thorn_bed.tres" id="22_thorn_bed"]
 [ext_resource type="PackedScene" path="res://scenes/map/travelator.tscn" id="23_travelator"]
 [ext_resource type="PackedScene" path="res://scenes/map/jump_pad.tscn" id="24_jump_pad"]
-[ext_resource type="Script" path="res://scripts/map/map_ambience.gd" id="25_map_ambience"]
-[ext_resource type="Resource" path="res://resources/map/dream_basin_ambience.tres" id="26_dream_basin_ambience"]
+[ext_resource type="PackedScene" path="res://scenes/map/water_stairs.tscn" id="25_water_stairs"]
+[ext_resource type="Script" path="res://scripts/map/map_ambience.gd" id="26_map_ambience"]
+[ext_resource type="Resource" path="res://resources/map/dream_basin_ambience.tres" id="27_dream_basin_ambience"]
 
 [node name="DreamBasin" type="Node2D"]
 script = ExtResource("1_game_map")
@@ -3135,6 +3136,11 @@ landing_offset = Vector2(-900, -200)
 sweep_degrees = 20.0
 color = Color(0.95, 0.45, 0.7, 1)
 
+[node name="FountainStairsA" parent="MapPieces" instance=ExtResource("25_water_stairs")]
+position = Vector2(2300, 2300)
+rotation = 3.141593
+size = Vector2(560, 180)
+
 [node name="PlazaGlassB" parent="MapPieces" instance=ExtResource("17_breakable_cover")]
 position = Vector2(800, -1900)
 
@@ -3206,6 +3212,11 @@ position = Vector2(-2400, -1200)
 landing_offset = Vector2(900, 200)
 sweep_degrees = 20.0
 color = Color(0.95, 0.45, 0.7, 1)
+
+[node name="FountainStairsB" parent="MapPieces" instance=ExtResource("25_water_stairs")]
+position = Vector2(-2300, -2300)
+rotation = 6.283185
+size = Vector2(560, 180)
 
 [node name="DreamZones" type="Node2D" parent="."]
 
@@ -3474,8 +3485,8 @@ position = Vector2(-4450, -4380)
 position = Vector2(-3350, -4620)
 
 [node name="Ambience" type="Node2D" parent="."]
-script = ExtResource("25_map_ambience")
-ambience = ExtResource("26_dream_basin_ambience")
+script = ExtResource("26_map_ambience")
+ambience = ExtResource("27_dream_basin_ambience")
 
 [node name="Overview" type="Node2D" parent="." groups=["map_overview"]]
 visible = false

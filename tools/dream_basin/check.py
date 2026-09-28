@@ -334,7 +334,7 @@ def check_pieces(m, grid):
             if kind == "geyser" and not reachable(p):
                 print(f"  GEYSER UNREACHABLE ON FOOT: {pc['name']} at {p}")
                 ok = False
-        elif kind in ("hazard", "travelator"):
+        elif kind in ("hazard", "travelator", "waterstairs"):
             rect = piece_rect(pc)
             corners = rect + [p]
             if any(point_in_poly(q, o["pts"]) for q in corners for o in others):

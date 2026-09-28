@@ -70,7 +70,8 @@ def export_pieces(s, m):
               "gate": "res://scenes/map/toggle_gate.tscn",
               "hazard": "res://scenes/map/hazard_zone.tscn",
               "travelator": "res://scenes/map/travelator.tscn",
-              "flower": "res://scenes/map/jump_pad.tscn"}
+              "flower": "res://scenes/map/jump_pad.tscn",
+              "waterstairs": "res://scenes/map/water_stairs.tscn"}
     used = {}
     datas = {}
     s.node("MapPieces", ".", "Node2D")
@@ -98,6 +99,9 @@ def export_pieces(s, m):
             props["rotation"] = f'{pc["rot"]:.6f}'
             props["size"] = v2((pc["w"], pc["h"]))
             props["cycle_offset"] = f'{pc["offset"]:.1f}'
+        elif kind == "waterstairs":
+            props["rotation"] = f'{pc["rot"]:.6f}'
+            props["size"] = v2((pc["w"], pc["h"]))
         elif kind == "flower":
             props["landing_offset"] = v2((pc["tx"] - pc["x"], pc["ty"] - pc["y"]))
             props["sweep_degrees"] = f'{pc["sweep"]:.1f}'

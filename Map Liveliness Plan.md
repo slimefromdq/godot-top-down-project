@@ -216,9 +216,11 @@ travelator stays (a moving walkway along the forecourt).
    spawn door). Ambience: grey pigeons in the paved and lawn areas (and now
    in the colonnade), fireflies kept in the Garden Court. Internal ids
    (`pair_id`s, `layout.py` names) keep the old names.
-4. **Water stairs** in each fountain court: a speed-zone strip that slows
-   you going up and speeds you going down (a `SpeedStrip`-style
-   `boost_velocity`, one direction only).
+4. **Water stairs.** *Done.* `WaterStairs` (`scenes/map/water_stairs.tscn`,
+   numbers in `resources/map/pieces/water_stairs.tres`): a speed zone
+   that multiplies the part of your movement along the cascade by 1.45
+   going down and 0.6 going up; crossing is unaffected, standing still does
+   nothing. One per Fountain Court, running down toward the Sunken Court.
 5. **Overview art**: refresh `docs/maps/dream_basin_ingame_overview.png` and
    the region names in `docs/maps/DREAM_BASIN.md`.
 
