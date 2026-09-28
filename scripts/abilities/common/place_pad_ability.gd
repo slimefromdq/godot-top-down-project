@@ -6,7 +6,8 @@ class_name PlacePadAbility
 # while the cursor is dragged, and the release point is the landing spot
 # (clamped to max_offset; a short drag lands min_offset along the aim).
 #
-# Cues: <id>_charge_start (context.position = pad spot, for a preview),
+# Cues: <id>_charge_start (context.charge_ability = this; hook
+# effects/feel/pad_preview.tscn to it for the place + landing preview),
 # <id>_placed (context.position, target_position = landing).
 
 ## Pads this ability put down that are still out.
@@ -22,10 +23,6 @@ func _activate(_target_position: Vector2) -> String:
 	var pad_data := get_pad_data()
 	_place_at = actor.global_position + (cast_target - actor.global_position).limit_length(pad_data.place_range)
 	return ""
-
-
-func _on_charge_start() -> void:
-	actor.trigger_cue(StringName(str(ability_id) + "_charge_start"), {"position": _place_at, "charge_ability": self})
 
 
 # Where a release at `release_point` would land.

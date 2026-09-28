@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="1_p"]
 [ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="2_p"]
+[ext_resource type="Resource" path="res://heroes/sam/data/sam_beam_ally.tres" id="3_p"]
 
 [resource]
 script = ExtResource("1_p")
-speed = 1100.0
-lifetime = 1.0
-radius = 26.0
-wall_bounces = 2
+speed = 1600.0
+lifetime = 0.45
+radius = 48.0
 hit_effect = ExtResource("2_p")
+affects = 2
+ally_hit_status = ExtResource("3_p")

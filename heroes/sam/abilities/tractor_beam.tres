@@ -1,38 +1,23 @@
-[gd_resource type="Resource" script_class="SamTractorData" format=3]
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
 
-[ext_resource type="Script" path="res://heroes/sam/abilities/tractor_beam_data.gd" id="1_a"]
-[ext_resource type="Script" path="res://heroes/sam/abilities/tractor_beam_ability.gd" id="2_a"]
-[ext_resource type="Resource" path="res://heroes/sam/data/sam_beam_enemy.tres" id="3_a"]
-[ext_resource type="Resource" path="res://heroes/sam/data/sam_beam_ally.tres" id="4_a"]
-[ext_resource type="Script" path="res://scripts/abilities/ally_targeting.gd" id="5_a"]
-[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
-
-[sub_resource type="Resource" id="Targeting"]
-script = ExtResource("5_a")
-cast_range = 350.0
-snap_radius = 150.0
-accepts = 2
-optional = true
-
-[sub_resource type="Resource" id="Short"]
-script = ExtResource("9_v")
-base = 220.0
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="2_a"]
+[ext_resource type="Resource" path="res://heroes/sam/data/sam_beam_ray.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/sam/data/sam_beam_enemy.tres" id="4_a"]
 
 [resource]
 script = ExtResource("1_a")
-enemy_status = ExtResource("3_a")
-ally_status = ExtResource("4_a")
-distance = 400.0
-speed = 1000.0
-carry_momentum = false
+projectile = ExtResource("3_a")
+muzzles = Array[Vector2]([Vector2(30, 0)])
+fire_mode = 1
+shots_per_second = 2.0
 id = &"tractor_beam"
 display_name = "Tractor Beam"
-description = "Lift someone near the cursor and carry them 400 px along your aim: an enemy is stunned while carried, an ally is untargetable (a rescue). With no one there, a short hover-dash."
+description = "Fire a wide tractor beam (720 px). The first person it touches is sucked back to Sam: an enemy is stunned for 0.5 s, an ally is untargetable while pulled (a rescue)."
 ability_script = ExtResource("2_a")
-cooldown = 14.0
-ally_targeting = SubResource("Targeting")
-tags = Array[StringName]([&"movement"])
-values = Dictionary[StringName, ExtResource("9_v")]({
-&"short_distance": SubResource("Short")
-})
-feel_preset = &"quick"
+cooldown = 12.0
+damage_type = 1
+on_hit_status = ExtResource("4_a")
+tags = Array[StringName]([&"ability", &"cc"])
+meter_label = &"tractor_beam"
+feel_preset = &"throw"

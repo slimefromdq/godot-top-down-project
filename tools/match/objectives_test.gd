@@ -4,7 +4,8 @@ extends Node2D
 # ObjectiveDirector's schedule (first spawn, respawn after a clear, the
 # Nightmare only once, its warning, nothing during warmup or with
 # objectives off); monster level from the heroes; a monster stays passive
-# until hit, then fights back, and leashes (walks home, heals to full);
+# until hit, then fights back, and leashes (walks home, heals: reset_heal_fraction,
+# full by default);
 # rewards (killer and team gold/XP, ultimate charge, a pack pays per
 # monster); claimed Motes (only the killer's team, until the claim runs
 # out); the Nightmare's team buff (dead heroes get the rest on respawn);
@@ -262,6 +263,12 @@ func _test_nightmare() -> void:
 		await get_tree().physics_frame
 		fired = maxi(fired, get_tree().get_nodes_in_group(&"bot_projectiles").size())
 	_check("it fights with volleys and a ring", fired >= lair.data.ring_count, "%d bolts in flight" % fired)
+	var worn := boss.health_component.current_health
+	b1.global_position = boss.global_position + Vector2(lair.data.leash_radius + 200.0, 0)
+	await _frames(3)
+	_check("it doesn't heal when it gives up (reset_heal_fraction 0)", not boss.is_fighting()
+		and is_equal_approx(boss.health_component.current_health, worn)
+		and worn < boss.health_component.max_health, "%.0f / %.0f" % [boss.health_component.current_health, worn])
 	b1.health_component.god_mode = false
 	a2.health_component.kill()
 	await _frames(1)

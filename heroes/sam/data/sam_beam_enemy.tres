@@ -6,8 +6,10 @@
 script = ExtResource("1_s")
 id = &"sam_beam_enemy"
 display_name = "Beamed Up"
-duration = 2.0
+duration = 0.5
 stuns = true
-carry_enabled = true
-carry_max_offset = 160.0
+displace_distance = 720.0
+displace_duration = 0.3
+displace_direction = 2
+pull_stop_distance = 110.0
 body_tint = Color(0.6, 1, 0.8, 0.35)
