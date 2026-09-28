@@ -491,9 +491,20 @@ and the match and never changes them.
   clock, shown by a `MapMood` (CanvasModulate: the world is tinted, the HUD
   isn't). Dream Basin dims toward the Nightmare at 10:00, flares rose while
   it wakes, and turns moonlit at 15:00 when Motes are worth double.
+- **Loud moments.** `MapAmbience` listens to every Actor's cues (actors
+  never call it). A cue in `startle_cues` (`fire`, `death`), or
+  `<ability>_fire` and so on, scatters critters within
+  `shot_scatter_radius` of where it happened and splashes nearby fountains.
+- **Fountains.** Every node in the `fountains` group (the Dream Basin
+  exporter tags them) gets a `FountainRipple`: rings spread across the
+  water every `ripple_interval` or so, plus one per loud moment nearby.
 - **Dreamer glow.** A team-coloured glow on the ground around each Dreamer:
   `glow_alpha_asleep` at an empty wake meter, up to `glow_alpha_full` at a
   full one, and pulsing (`stir_pulse_*`) while it stirs.
+
+Bushes rustle on their own: when a body walks in or out, the leaves part
+away from it by `rustle_amount` and spring back over `rustle_time` (Bush
+exports).
 
 Checks: `tools/map/map_pieces_infra_test.tscn`.
 

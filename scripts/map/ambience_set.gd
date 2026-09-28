@@ -22,3 +22,15 @@ class_name AmbienceSet
 ## While stirring the glow pulses this many times a second, this much.
 @export var stir_pulse_speed: float = 1.6
 @export_range(0.0, 1.0) var stir_pulse_amount: float = 0.5
+
+@export_group("Reactions")
+## Actor cues that count as loud: the cue itself or `<ability>_<cue>`.
+@export var startle_cues := PackedStringArray(["fire", "death"])
+## A loud cue within this distance of a region's critters scatters them.
+@export var shot_scatter_radius: float = 700.0
+## Fountains: a ring spreads across the water about every ripple_interval
+## seconds, and when a shot is fired within shot_scatter_radius.
+@export var ripple_interval: float = 2.5
+@export var ripple_speed: float = 60.0
+@export var ripple_life: float = 2.2
+@export var ripple_color := Color(1, 1, 1, 0.55)

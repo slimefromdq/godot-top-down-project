@@ -143,7 +143,7 @@ Goal: replace the test room with one complete combat map.
 - [ ] Add doors or arena locks for combat encounters.
 - [ ] Add environmental hazards such as explosive props, damaging zones, or slowing terrain.
 - [ ] Add navigation baking and recovery behavior for stuck enemies.
-- [ ] Add ambient animation, lighting, particles, and map audio regions.
+- [x] Add ambient animation, lighting, particles, and map audio regions.
 
 Done when:
 

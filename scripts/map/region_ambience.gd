@@ -53,6 +53,11 @@ func contains(local_point: Vector2) -> bool:
 	return Geometry2D.is_point_in_polygon(local_point, polygon)
 
 
+## Distance from this node to the region's farthest corner.
+func get_reach() -> float:
+	return _radius
+
+
 func get_drifter_count() -> int:
 	return _drifters.size()
 
@@ -63,6 +68,25 @@ func get_critters() -> Array[Dictionary]:
 
 func is_critter_scared(index: int) -> bool:
 	return _critters[index].scared > 0.0
+
+
+## Scatters every resting critter within `radius` of a world point (a shot,
+## an explosion). Returns how many took off.
+func startle(world_point: Vector2, radius: float) -> int:
+	var at := to_local(world_point)
+	var count := 0
+	for c in _critters:
+		if c.scared <= 0.0 and c.pos.distance_to(at) < radius:
+			_scare(c, c.pos - at)
+			count += 1
+	return count
+
+
+func _scare(c: Dictionary, away: Vector2) -> void:
+	var dir := away.normalized() if away.length() > 1.0 else Vector2.UP
+	dir = dir.rotated(_rng.randf_range(-0.6, 0.6))
+	c.vel = dir * profile.scatter_speed + Vector2(0, -profile.scatter_speed * 0.4)
+	c.scared = profile.settle_time
 
 
 func _random_point() -> Vector2:
@@ -103,10 +127,7 @@ func _tick_critters(delta: float) -> bool:
 				continue
 			var away: Vector2 = c.pos - to_local(hero.global_position)
 			if away.length() < profile.scatter_radius:
-				var dir := away.normalized() if away.length() > 1.0 else Vector2.UP
-				dir = dir.rotated(_rng.randf_range(-0.6, 0.6))
-				c.vel = dir * profile.scatter_speed + Vector2(0, -profile.scatter_speed * 0.4)
-				c.scared = profile.settle_time
+				_scare(c, away)
 				busy = true
 				break
 	return busy

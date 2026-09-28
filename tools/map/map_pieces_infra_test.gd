@@ -12,8 +12,10 @@ extends Node2D
 
 const DREAM_BASIN := "res://scenes/maps/dream_basin.tscn"
 const AMBIENCE := "res://resources/map/dream_basin_ambience.tres"
+const HERO := "res://tools/heroes/ranged_test/ranged_test_hero.tscn"
 
 var failures := 0
+var hero: Actor
 
 
 func _ready() -> void:
@@ -52,6 +54,9 @@ func _run() -> void:
 	_beds(amb)
 	await _glow(amb)
 	await _mood_clock(amb)
+	await _shots(amb)
+	await _fountains(amb)
+	await _bush()
 	_finish()
 
 
@@ -175,6 +180,74 @@ func _mood_clock(amb: MapAmbience) -> void:
 	check(amb.mood.get_target_color() == profile.sample(900.0), "the mood follows the match clock")
 	check(profile.sample(900.0) != profile.sample(0.0), "the late match looks different from the start")
 	manager.queue_free()
+
+
+func _shots(amb: MapAmbience) -> void:
+	var region: RegionAmbience
+	for r in amb.get_regions():
+		if not r.get_critters().is_empty():
+			region = r
+			break
+	if region == null:
+		return
+	for c in region.get_critters():
+		c.scared = 0.0
+		c.pos = c.home
+	var home: Vector2 = region.get_critters()[0].home
+	# A real hero's weapon, the hero parked far away so only the shot counts.
+	hero = load(HERO).instantiate()
+	add_child(hero)
+	hero.global_position = Vector2(99999, 99999)
+	await _frames(1)
+	check(amb.is_startling(&"fire") and amb.is_startling(&"snipe_fire"), "fire cues are loud")
+	check(not amb.is_startling(&"heal"), "a heal cue isn't")
+	var near := region.to_global(home) + Vector2(amb.ambience.shot_scatter_radius * 0.5, 0)
+	hero.trigger_cue(&"quick_shot_fire", {"position": near})
+	check(region.is_critter_scared(0), "a hero's shot nearby scatters critters (via its cue)")
+	for c in region.get_critters():
+		c.scared = 0.0
+		c.pos = c.home
+	hero.trigger_cue(&"quick_shot_fire", {"position": region.to_global(home) + Vector2(99999, 0)})
+	check(not region.is_critter_scared(0), "a shot far away doesn't")
+
+
+func _fountains(amb: MapAmbience) -> void:
+	var fountains := amb.get_fountains()
+	check(fountains.size() == 4, "a ripple per Dream Basin fountain (%d)" % fountains.size())
+	if fountains.is_empty():
+		return
+	var f: FountainRipple = fountains[0]
+	check(f.basin_radius > 100.0, "the ripple reads the basin's size from its shape")
+	var rippled := false
+	var waited := 0.0
+	while waited < amb.ambience.ripple_interval * 1.5 and not rippled:
+		await get_tree().process_frame
+		waited += get_process_delta_time()
+		rippled = f.get_ripple_count() > 0
+	check(rippled, "fountains ripple on their own")
+	var before := f.get_ripple_count()
+	amb.startle(f.global_position + Vector2(50, 0))
+	check(f.get_ripple_count() == before + 1, "a shot nearby splashes a fountain")
+	await get_tree().create_timer(amb.ambience.ripple_life + amb.ambience.ripple_interval * 1.4).timeout
+	check(f.get_ripple_count() <= 2, "old ripples fade away")
+
+
+func _bush() -> void:
+	var bush := get_tree().get_first_node_in_group(Bush.GROUP) as Bush
+	check(bush != null, "Dream Basin has bushes")
+	if bush == null:
+		return
+	check(not bush.is_rustling(), "a bush is still with nobody passing")
+	var body := hero
+	if body == null:
+		return
+	body.global_position = bush.global_position + Vector2(20, 0)
+	for i in 4:
+		await get_tree().physics_frame
+	check(bush.has_occupant(body), "a body walks into a bush")
+	check(bush.is_rustling(), "the bush rustles as it enters")
+	await get_tree().create_timer(bush.rustle_time + 0.1).timeout
+	check(not bush.is_rustling(), "and settles after rustle_time")
 
 
 func _finish() -> void:
