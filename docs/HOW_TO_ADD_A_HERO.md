@@ -182,8 +182,8 @@ reloads the primary gun (or the first gun). Give the gun a short feel preset
 
 ```
 revolver.tres  fire_mode SEMI, shots_per_second 3, magazine_size 6,
-               reload_style PER_ROUND, reload_time 0.4,
-               muzzles [(50, -14), (50, 14)]      # alternating barrels
+			   reload_style PER_ROUND, reload_time 0.4,
+			   muzzles [(50, -14), (50, 14)]      # alternating barrels
 ```
 
 Other abilities reach the gun through the hero:
