@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="top-down-project"
-run/main_scene="res://scenes/dream_basin_world.tscn"
+run/main_scene="res://scenes/ui/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -22,6 +22,7 @@ CombatEvents="*res://scripts/combat/combat_events.gd"
 MapSwitcher="*res://scripts/rules/map_switcher.gd"
 GameFeel="*res://scripts/feel/game_feel.gd"
 DebugTools="*res://scripts/debug/debug_tools.gd"
+GameState="*res://scripts/flow/game_state.gd"
 
 [display]
 

@@ -687,15 +687,10 @@ func fill_with_bots(difficulty: int = 1) -> int:
 	var manager := get_match()
 	if manager == null:
 		manager = start_match_here()
-	var definitions := HeroScaffold.find_definitions()
-	definitions = definitions.filter(func(definition: HeroDefinition):
-		return definition.hero_id != &"template" and definition.validate().is_empty())
-	definitions.sort_custom(func(a: HeroDefinition, b: HeroDefinition):
-		return str(a.hero_id) < str(b.hero_id))
+	var definitions := BotDraft.playable_definitions()
 	if definitions.is_empty():
 		return 0
-	var skill_paths := ["res://resources/ai/easy.tres", "res://resources/ai/normal.tres", "res://resources/ai/hard.tres"]
-	var skill: BotSkill = load(skill_paths[clampi(difficulty, 0, skill_paths.size() - 1)])
+	var skill := BotDraft.skill_for(difficulty)
 	var added := 0
 	for team in MatchManager.TEAMS:
 		var roster := manager.get_roster(team)
@@ -703,58 +698,22 @@ func fill_with_bots(difficulty: int = 1) -> int:
 		var pool := definitions.duplicate()
 		if team == &"b":
 			pool.reverse()
+		var have: Array = []
 		var used: Array[StringName] = []
 		for member in roster:
 			if member.definition != null:
+				have.append(member.definition)
 				used.append(member.definition.hero_id)
 		while roster.size() < BotRules.current().team_size:
-			var choice := _pick_bot_definition(pool, roster, used)
+			var choice := BotDraft.pick(pool, have, used)
 			if choice == null:
 				choice = definitions[roster.size() % definitions.size()]
-			var scene: PackedScene = choice.scene_override if choice.scene_override != null else load(HERO_BASE)
-			var bot: Hero = scene.instantiate()
-			bot.definition = choice
-			bot.team = team
-			bot.bot_controlled = true
-			bot.bot_skill = skill
-			bot.bot_seed = 1 + added
-			bot.name = "Bot_%s_%d" % [team, roster.size() + 1]
-			bot.add_to_group(BOT_GROUP)
-			get_tree().current_scene.add_child(bot)
-			var angle := TAU * float(roster.size()) / maxf(BotRules.current().team_size, 1)
-			var map := get_tree().get_first_node_in_group(&"game_map") as GameMap
-			var spawn := Vector2.ZERO
-			if map != null:
-				var points := map.get_spawn_points(team)
-				if not points.is_empty():
-					spawn = points[roster.size() % points.size()].global_position
-			bot.global_position = spawn \
-				+ Vector2.RIGHT.rotated(angle) * BotRules.current().spawn_spacing
+			var bot := BotDraft.spawn_bot(get_tree(), choice, team, skill, 1 + added, roster.size(), BOT_GROUP)
 			roster.append(bot)
+			have.append(choice)
 			used.append(choice.hero_id)
 			added += 1
 	return added
-
-
-# The next bot for a team: the first role in BotRules.team_composition the
-# roster is still short of, else any hero not on the team yet.
-func _pick_bot_definition(pool: Array, roster: Array[Hero], used: Array[StringName]) -> HeroDefinition:
-	var have := {}
-	for member in roster:
-		if member.definition != null:
-			have[member.definition.role] = int(have.get(member.definition.role, 0)) + 1
-	var wanted := {}
-	for role in BotRules.current().team_composition:
-		wanted[role] = int(wanted.get(role, 0)) + 1
-		if int(have.get(role, 0)) >= int(wanted[role]):
-			continue
-		for definition in pool:
-			if definition.role == role and definition.hero_id not in used:
-				return definition
-	for definition in pool:
-		if definition.hero_id not in used:
-			return definition
-	return null
 
 
 func clear_bots() -> void:
