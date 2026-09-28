@@ -112,6 +112,15 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 @export var burst_radius: float = 170.0
 ## Jostled Motes land about this far from the carrier.
 @export var jostle_drop_distance: float = 120.0
+## Damage shake: every hit a carrier takes knocks loose
+## carried * (damage / max HP) * mote_shake_factor Motes. The fraction left
+## over carries to the next hit, so rapid small hits still shake. 0 = off.
+@export var mote_shake_factor: float = 1.0
+## The shaken carrier can't grab their own shaken Motes back for this long
+## (anyone else can at once).
+@export var shake_repickup_delay: float = 0.75
+## Shaken Motes land about this far from the carrier.
+@export var shake_drop_distance: float = 110.0
 
 @export_group("Spawning")
 ## Trickle: one small Mote every interval at a free mote_spawn point, while

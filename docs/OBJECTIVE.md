@@ -31,6 +31,9 @@ one and it flies to you.
   the more the enemy sees of you on their minimap (pings, then always).
 - **Losing them:** when you die they all burst out for anyone to grab. An
   enemy push, pull, carry or abduction **jostles** a fifth of them loose.
+  Every hit **shakes** some loose too, in proportion to the damage (a hit
+  for a quarter of your max HP shakes out a quarter of your stack; small
+  hits add up). You can't grab your own shaken Motes back for a moment.
   Dropped Motes fade after 20 seconds. Carried Motes make jump pads and
   trampolines a little floatier.
 - **In transit you can't deposit:** not while airborne, abducted or inside a
@@ -209,6 +212,9 @@ match) ultimates keep their cooldowns so they can be practised.
 | `heavy_pockets_air_time` | 0.04 | Heavy pockets: seconds of extra air time per carried Mote on jump pads and trampolines. |
 | `burst_radius` | 170.0 | Death burst: Motes scatter this far from the body. |
 | `jostle_drop_distance` | 120.0 | Jostled Motes land about this far from the carrier. |
+| `mote_shake_factor` | 1.0 | Damage shake: every hit knocks loose carried * (damage / max HP) * this. The fraction left over carries to the next hit. 0 = off. |
+| `shake_repickup_delay` | 0.75 | The shaken carrier can't grab their own shaken Motes back for this long. |
+| `shake_drop_distance` | 110.0 | Shaken Motes land about this far from the carrier. |
 
 ### Spawning
 

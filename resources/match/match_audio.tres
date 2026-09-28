@@ -63,6 +63,14 @@ pitch_min = 0.6
 pitch_max = 0.6
 positional = false
 
+[sub_resource type="Resource" id="Sound_mote_shake"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("21_hit")])
+volume_db = -9.0
+pitch_min = 2.1
+pitch_max = 2.4
+min_interval = 0.05
+
 [sub_resource type="Resource" id="Sound_mote_decoy_pop"]
 script = ExtResource("1_sound")
 streams = Array[AudioStream]([ExtResource("7_fail")])
@@ -238,6 +246,7 @@ cues = Dictionary[StringName, ExtResource("1_sound")]({
 &"mote_decoy_pop": SubResource("Sound_mote_decoy_pop"),
 &"mote_drop": SubResource("Sound_mote_drop"),
 &"mote_pickup": SubResource("Sound_mote_pickup"),
+&"mote_shake": SubResource("Sound_mote_shake"),
 &"settle": SubResource("Sound_settle"),
 &"stir_start": SubResource("Sound_stir_start"),
 &"sweet_dreams": SubResource("Sound_sweet_dreams"),

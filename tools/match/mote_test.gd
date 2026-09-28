@@ -1,7 +1,7 @@
 extends Node2D
 
 # Headless checks for Motes: pickup and the carry cap, the regrab lockout,
-# decoys, fading, the death burst, Jostle (pushes, pulls, carries,
+# decoys, fading, the death burst, the damage shake, Jostle (pushes, pulls, carries,
 # abductions, friendly pushes, short pushes, immunity, the count rule), heavy
 # pockets, can_deposit, reveal steps and minimap fog, the MoteDirector's
 # trickle, mirrored dreaming zones, Dream Mote uniqueness and the late-match
@@ -70,6 +70,7 @@ func _run() -> void:
 	await _test_pickup_and_cap()
 	await _test_lockout_decoy_fade()
 	await _test_death_burst()
+	await _test_damage_shake()
 	await _test_jostle()
 	await _test_heavy_pockets()
 	await _test_can_deposit()
@@ -171,6 +172,57 @@ func _test_death_burst() -> void:
 	director.clear_motes()
 	manager.respawn_now(a1)
 	a1.global_position = Vector2(0, 0)
+	await _frames(2)
+
+
+func _test_damage_shake() -> void:
+	print("\n-- Damage shake")
+	var carrier := MoteCarrier.find_on(a1)
+	var health := a1.health_component
+	var max_hp := health.max_health
+	_fill(carrier, 20)
+	var events: Array = []
+	var record := func(_p, n): events.append(n)
+	carrier.dropped.connect(record)
+	health.apply_damage(DamageInfo.create(max_hp * 0.25, b1, DamageInfo.Type.TRUE))
+	await _frames(2)
+	_check("a hit for 25% max HP shakes 25% of the stack loose (5)", carrier.get_mote_count() == 15
+		and events == [5], str(carrier.get_mote_count()))
+	var loose := director.get_loose_motes(true)
+	var locked_ok := loose.size() == 5
+	for m in loose:
+		locked_ok = locked_ok and m.dropped and m.last_carrier == a1 \
+			and m.lockout_left <= rules.shake_repickup_delay and m.lockout_left > 0.0
+	_check("shaken Motes are loose, locked to their carrier for shake_repickup_delay", locked_ok, "")
+	await _seconds(rules.shake_repickup_delay * 0.5)
+	_check("the carrier can't regrab them at once", carrier.get_mote_count() == 15, str(carrier.get_mote_count()))
+	director.clear_motes()
+	carrier.clear()
+	health.reset()
+	events.clear()
+
+	# Rapid small hits: 10 Motes, 1% hits. One alone rounds to nothing, but
+	# the remainder carries over.
+	_fill(carrier, 10)
+	health.apply_damage(DamageInfo.create(max_hp * 0.01, b1, DamageInfo.Type.TRUE))
+	_check("one tiny hit shakes nothing yet", carrier.get_mote_count() == 10, "")
+	for i in 24:
+		health.apply_damage(DamageInfo.create(max_hp * 0.01, b1, DamageInfo.Type.TRUE))
+	_check("many tiny hits still shake Motes loose (remainder carries over)", carrier.get_mote_count() == 8,
+		str(carrier.get_mote_count()))
+	director.clear_motes()
+	carrier.clear()
+	health.reset()
+
+	var factor := rules.mote_shake_factor
+	rules.mote_shake_factor = 0.0
+	_fill(carrier, 10)
+	health.apply_damage(DamageInfo.create(max_hp * 0.5, b1, DamageInfo.Type.TRUE))
+	_check("mote_shake_factor 0 turns it off", carrier.get_mote_count() == 10, "")
+	rules.mote_shake_factor = factor
+	carrier.dropped.disconnect(record)
+	carrier.clear()
+	health.reset()
 	await _frames(2)
 
 
