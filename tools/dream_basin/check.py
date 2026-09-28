@@ -4,6 +4,9 @@
 
 * Sight lanes must be clear of full cover, and are reported in screens.
 * Every jump-pad launch/landing and teleporter end must be standable.
+* Walking: every area is reachable on foot from both spawns and can walk
+  back to both, and every jump pad / launch flower is an optional shortcut
+  with a walking route both ways (its on-foot distance is reported).
 * Grid flood-fill (with a 128 px body, one-way ledges honoured) from A spawn
   must reach every region; from the basin floor the Wilds must only be
   reachable through a stairwell or jump pad.
@@ -110,8 +113,12 @@ def crosses_ledge_upward(m, p, q):
     return False
 
 
-def flood(m, grid, start, use_pads=True):
+def flood(m, grid, start, use_pads=True, steps=None):
+    """Cells reachable from `start`. Pass a dict as `steps` to also get each
+    reached cell's walking distance in grid steps (x CELL = px, 4-connected,
+    so a little longer than the real diagonal walk)."""
     blocked, cols, rows = grid
+    steps = {} if steps is None else steps
     # Ledge crossings are only possible between cells straddling a ledge line,
     # so precompute those cells to keep the flood fast.
     def cell_of(x, y):
@@ -132,6 +139,7 @@ def flood(m, grid, start, use_pads=True):
     seen = [[False] * cols for _ in range(rows)]
     s = cell_of(*start)
     seen[s[0]][s[1]] = True
+    steps[s] = 0
     dq = deque([s])
     while dq:
         r, c = dq.popleft()
@@ -146,6 +154,7 @@ def flood(m, grid, start, use_pads=True):
             if abs(nr - r) + abs(nc - c) == 1 and crosses_ledge_upward(m, p, q):
                 continue
             seen[nr][nc] = True
+            steps[(nr, nc)] = steps[(r, c)] + 1
             dq.append((nr, nc))
     return seen, cell_of
 
@@ -379,6 +388,50 @@ def check_pieces(m, grid):
     return ok
 
 
+def check_walking(m, grid, probes):
+    """Phase 1 rule: every area is reachable on foot, both ways. No jump pad,
+    launch flower or teleporter is ever the only way somewhere: from each
+    spawn every probe is reachable without them, and every probe can walk
+    back to both spawns. Every pad and flower is an optional shortcut: its
+    launch and landing are joined on foot both ways (the walking distance is
+    reported next to the flight, to show what the shortcut saves)."""
+    print("== Walking (no pads, flowers or teleporters; both ways) ==")
+    ok = True
+    spawns = {"A spawn": probes["A spawn"], "B spawn": probes["B spawn"]}
+    reach_from = {}
+    for name, p in spawns.items():
+        reach_from[name] = flood(m, grid, p, use_pads=False)
+    for name, p in probes.items():
+        for sname, (seen, cell_of) in reach_from.items():
+            r, c = cell_of(*p)
+            if not seen[r][c]:
+                print(f"  {sname} CAN'T WALK TO {name}")
+                ok = False
+        seen, cell_of = flood(m, grid, p, use_pads=False)
+        for sname, sp in spawns.items():
+            r, c = cell_of(*sp)
+            if not seen[r][c]:
+                print(f"  {name} CAN'T WALK BACK TO {sname}")
+                ok = False
+    print(f"  {len(probes)} areas: reachable on foot from both spawns and back" if ok else "")
+    shortcuts = [(j["name"], (j["x"], j["y"]), (j["tx"], j["ty"])) for j in m["jump_pads"]]
+    shortcuts += [(pc["name"], (pc["x"], pc["y"]), (pc["tx"], pc["ty"]))
+                  for pc in m["pieces"] if pc["kind"] == "flower"]
+    reported = set()
+    for name, a, b in shortcuts:
+        for frm, to, way in ((a, b, "there"), (b, a, "back")):
+            steps = {}
+            _, cell_of = flood(m, grid, frm, use_pads=False, steps=steps)
+            walk = steps.get(cell_of(*to))
+            if walk is None:
+                print(f"  PAD IS NOT OPTIONAL: {name} ({way}) has no walking route")
+                ok = False
+            elif way == "there" and name not in reported:
+                reported.add(name)
+                print(f"  {name:<18} flight {math.dist(a, b):5.0f}px, on foot {walk * CELL:5.0f}px")
+    return ok
+
+
 def check_court(m, grid):
     """The Sunken Court: you can walk out of it (by its stairs) from its
     floor, without jump pads, and reach both bases."""
@@ -496,7 +549,9 @@ def main():
         "Ruins A": (-2400, 1700), "Ruins B": (2400, -1700),
         "Cloister A": (-2000, 3650), "Orchard A": (3000, 3400),
         "Driftfield A": (2000, 1200), "Plaza A": (-500, 2600),
-        "Hollow A": (-4580, 700),
+        "Hollow A": (-4580, 700), "Hollow B": (4580, -700),
+        "Court floor": (0, 208), "Cloister B": (2000, -3650), "Orchard B": (-3000, -3400),
+        "Driftfield B": (-2000, -1200), "Plaza B": (500, -2600),
     }
     probes = {k: (x, Y(y)) for k, (x, y) in probes.items()}
     seen, cell_of = flood(m, grid, probes["A spawn"])
@@ -509,6 +564,7 @@ def main():
     ok &= check_dreamers(m)
     ok &= check_objectives(m, grid)
     ok &= check_pieces(m, grid)
+    ok &= check_walking(m, grid, probes)
     ok &= check_court(m, grid)
     report_open_space(m)
 

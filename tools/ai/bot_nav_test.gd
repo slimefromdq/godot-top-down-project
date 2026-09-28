@@ -63,8 +63,49 @@ func _run() -> void:
 				break
 		_check("bot waits for teleporter channel and arrives", arrived)
 	print("Navigation build: %.1f ms, %d points" % [build_ms, navigation.graph.get_point_count()])
+	await _check_walking_only(map, bot)
 	print("BOT NAV TEST: %s (%d failed)" % ["PASS" if failures == 0 else "FAIL", failures])
 	get_tree().quit(failures)
+
+
+# Every area of Dream Basin is reachable on foot: with every jump pad and
+# teleporter removed, bots still find a path from each spawn to every area
+# (both bases, the Cradle, the Sunken Court floor, every Wild block, Ruins,
+# Hollow, outskirts) and back.
+func _check_walking_only(old_map: GameMap, bot: Hero) -> void:
+	bot.set_bot_controlled(false)
+	old_map.queue_free()
+	await get_tree().process_frame
+	var map: GameMap = MAP.instantiate()
+	for node in map.find_children("*", "Area2D", true, false):
+		if node is JumpPad or node is Teleporter:
+			node.get_parent().remove_child(node)
+			node.free()
+	add_child(map)
+	bot.global_position = map.get_spawn_points(&"a")[0].global_position
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	var navigation := BotNavigation.for_actor(bot)
+	_check("walking-only graph has no links", navigation != null and navigation.teleport_entries.is_empty()
+		and navigation._links.is_empty())
+	var spawns := [map.get_spawn_points(&"a")[0].global_position, map.get_spawn_points(&"b")[0].global_position]
+	var areas := {
+		"Cradle": Vector2(0, 1320), "Court floor": Vector2(0, 250),
+		"A Garden Court": Vector2(-4000, 2400), "B Garden Court": Vector2(4000, -2400),
+		"Lawn L": Vector2(-3650, -420), "Lawn R": Vector2(3650, 420),
+		"Terrace L": Vector2(-3600, -2400), "Terrace R": Vector2(3600, 2400),
+		"Colonnade A": Vector2(-2400, 2040), "Colonnade B": Vector2(2400, -2040),
+		"Hollow A": Vector2(-4580, 840), "Hollow B": Vector2(4580, -840),
+		"Fountain Court A": Vector2(2000, 1440), "Fountain Court B": Vector2(-2000, -1440),
+		"Cloister A": Vector2(-2000, 4380), "Promenade A": Vector2(3000, 4080),
+	}
+	var bad := []
+	for area in areas:
+		for spawn in spawns:
+			if navigation.path(spawn, areas[area]).size() < 2 or navigation.path(areas[area], spawn).size() < 2:
+				bad.append(area)
+				break
+	_check("bots walk from both spawns to every area and back, no pads (%s)" % ", ".join(bad), bad.is_empty())
 
 
 func _uses_link(route: PackedVector2Array, entry: Vector2, exit: Vector2) -> bool:
