@@ -6,7 +6,8 @@ and `docs/BALANCE_TOOLS.md` for the debug panel, CSV export and test list.
 Items, shops and neutral objectives (jungle camps, the Nightmare) are in
 `docs/ITEMS_AND_SHOPS.md`; the match objective is `docs/OBJECTIVE.md`.
 The current design work is in `Six New Heroes Implementation Plan.md` and
-its phase prompts in `Implementation prompts.md`.
+its phase prompts in `Implementation prompts.md`; map work is in
+`Map Liveliness Plan.md` and `Map Liveliness Prompts.md`.
 
 ## Heroes are data plus small scripts
 
