@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MapPieceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/map/map_piece_data.gd" id="1_data"]
+[ext_resource type="Resource" path="res://resources/status/sleep_fog.tres" id="2_status"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Sleep-fog"
+hazard_status = ExtResource("2_status")
+hazard_tick = 0.5
+hazard_damage = 0.0
+hazard_active_time = 15.0
+hazard_dormant_time = 25.0
+hazard_telegraph = 3.0
+displacement_credit_time = 3.0
+open_cue = &"hazard_on"

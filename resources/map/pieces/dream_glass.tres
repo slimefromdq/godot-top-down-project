@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MapPieceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/map/map_piece_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Dream-glass"
+max_health = 700.0
+regrow_time = 25.0
+regrow_warning = 3.0
+regrow_retry = 0.25
+hit_cue = &"piece_hit"
+break_cue = &"glass_shatter"
+warning_cue = &"glass_regrow_warning"
+restore_cue = &"glass_restore"

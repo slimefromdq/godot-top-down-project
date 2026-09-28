@@ -298,6 +298,84 @@ func get_mote_director() -> MoteDirector:
 	return MoteDirector.find(get_tree())
 
 
+# --- Match time (F1 > Match > Time) --------------------------------------------
+
+## Jump the match clock to `seconds` (see MatchManager.jump_clock).
+func jump_match_clock(seconds: float) -> void:
+	var manager := get_match()
+	if manager != null:
+		manager.jump_clock(seconds)
+
+
+func nudge_match_clock(delta_seconds: float) -> void:
+	var manager := get_match()
+	if manager != null:
+		manager.jump_clock(manager.clock + delta_seconds)
+
+
+## [label, seconds] for the moments worth jumping to, read from the live rules
+## and the map's announced camps (never hard-coded times).
+func get_time_presets() -> Array:
+	var manager := get_match()
+	if manager == null:
+		return []
+	var r := manager.get_rules()
+	var presets := [["Start", 0.0],
+		["Zone warning", maxf(0.0, r.zone_first_time - r.zone_warning)],
+		["First zone", r.zone_first_time],
+		["Dream Mote", r.dream_mote_first_time]]
+	var objectives := get_objective_director()
+	if objectives != null:
+		for camp in objectives.get_camps():
+			if camp.data.announce:
+				presets.append(["%s warning" % camp.display_name.capitalize(),
+					maxf(0.0, camp.data.first_spawn_time - camp.data.warning_time)])
+				presets.append([camp.display_name.capitalize(), camp.data.first_spawn_time])
+	presets.append(["Late match (x%s Motes)" % r.late_match_value_mult, r.late_match_time])
+	return presets
+
+
+# --- Map pieces (F1 > Match > Map pieces) -------------------------------------
+
+func shatter_all_glass() -> int:
+	var count := 0
+	for node in get_tree().get_nodes_in_group(BreakableCover.GROUP):
+		if node.is_solid():
+			node.shatter()
+			count += 1
+	return count
+
+
+func restore_all_glass() -> int:
+	var count := 0
+	for node in get_tree().get_nodes_in_group(BreakableCover.GROUP):
+		if not node.is_solid():
+			node.restore()
+			count += 1
+	return count
+
+
+## Hold every toggle gate open (closed = false) or closed for a minute, or
+## (release) hand them back to their cycles.
+func force_all_gates(closed_state: bool, release: bool = false) -> int:
+	var gates := get_tree().get_nodes_in_group(ToggleGate.GROUP)
+	for gate in gates:
+		if release:
+			gate.release()
+		else:
+			gate.force(closed_state, 60.0)
+	return gates.size()
+
+
+func pop_all_geysers() -> int:
+	var count := 0
+	for node in get_tree().get_nodes_in_group(MoteGeyser.GROUP):
+		if node.is_ready():
+			node.pop()
+			count += 1
+	return count
+
+
 func get_objective_director() -> ObjectiveDirector:
 	return ObjectiveDirector.find(get_tree())
 
@@ -892,6 +970,26 @@ func _match_tab(hero: Hero) -> Control:
 	box.add_child(timer)
 	box.add_child(status)
 
+	box.add_child(_label("Time (jumps re-sync zones, camps, pieces, mood)", 15))
+	var nudges := HFlowContainer.new()
+	for step in [-60.0, -10.0, 10.0, 60.0]:
+		nudges.add_child(_button("%+ds" % int(step), func():
+			nudge_match_clock(step)
+			refresh.call()))
+	var jump_to := _spin(600, 0, 3600, 5)
+	nudges.add_child(_button("Jump to (s):", func():
+		jump_match_clock(jump_to.value)
+		refresh.call()))
+	nudges.add_child(jump_to)
+	box.add_child(nudges)
+	var presets := HFlowContainer.new()
+	for preset in get_time_presets():
+		var at: float = preset[1]
+		presets.add_child(_button("%s %d:%02d" % [preset[0], int(at) / 60, int(at) % 60], func():
+			jump_match_clock(at)
+			refresh.call()))
+	box.add_child(presets)
+
 	box.add_child(_label("Economy (local player)", 15))
 	var gold_amount := _labeled_spin("Gold", 500, 0, 100000, 50, func(_v): pass)
 	var xp_amount := _labeled_spin("XP", 500, 0, 100000, 50, func(_v): pass)
@@ -972,6 +1070,16 @@ func _match_tab(hero: Hero) -> Control:
 	box.add_child(_check("Objectives on", manager.get_rules().objectives_enabled,
 		func(on): manager.get_rules().objectives_enabled = on))
 
+	box.add_child(_label("Map pieces", 15))
+	var pieces := HFlowContainer.new()
+	pieces.add_child(_button("Shatter all glass", shatter_all_glass))
+	pieces.add_child(_button("Restore all glass", restore_all_glass))
+	pieces.add_child(_button("Pop all geysers", pop_all_geysers))
+	pieces.add_child(_button("Open all gates (60 s)", func(): force_all_gates(false)))
+	pieces.add_child(_button("Close all gates (60 s)", func(): force_all_gates(true)))
+	pieces.add_child(_button("Gates back on their cycle", func(): force_all_gates(false, true)))
+	box.add_child(pieces)
+
 	box.add_child(_label("Items (local player)", 15))
 	var items_row := HFlowContainer.new()
 	var item_list := OptionButton.new()
@@ -1031,6 +1139,20 @@ func _tools_tab() -> Control:
 	box.add_child(_check("Sight lines (green seen, red blocked)", sight_lines_enabled, set_sight_lines_enabled))
 	box.add_child(_check("Bot overlay (paths, goals, targets)", bot_overlay_enabled, set_bot_overlay_enabled))
 	box.add_child(_button("Airlock practice (Sam's minigame)", func(): result.text = start_airlock_practice()))
+	box.add_child(_label("Visuals (decoration only, for performance)", 15))
+	var checks: Array[CheckBox] = []
+	for layer: StringName in VisualToggles.LAYERS:
+		var check := _check(VisualToggles.LAYERS[layer], VisualToggles.is_on(layer),
+			func(on): VisualToggles.set_on(layer, on, get_tree()))
+		checks.append(check)
+		box.add_child(check)
+	var all := HFlowContainer.new()
+	for on in [true, false]:
+		all.add_child(_button("All on" if on else "All off", func():
+			VisualToggles.set_all(on, get_tree())
+			for check in checks:
+				check.set_pressed_no_signal(on)))
+	box.add_child(all)
 	box.add_child(_label("Maps (F3 cycles)", 15))
 	for path in GameRules.current().test_maps:
 		box.add_child(_button(path.get_file().get_basename().capitalize(), func(): MapSwitcher.go_to(path)))

@@ -79,6 +79,13 @@ docs/VISUALS_AND_AUDIO.md > Map ambience).
 Heroes can damage both through the normal hurtbox path (they're
 `HealthComponent` targets on a neutral team), so no hero code changes.
 
+**Status: built.** `MapPieceData` (`resources/map/pieces/`),
+`BreakableCover` and `MoteGeyser` (`scenes/map/`), 6 panes and 4 geysers on
+Dream Basin (placed by `layout.py`, checked by `check.py`), one of each in
+Training Grounds, cues in the match profiles. Also added: F1 > Match > Time
+(jump the clock; everything re-syncs) and F1 > Tools > Visuals (switch off
+decorative layers).
+
 ## Phase 3: neutral map pieces, part 2 (gates, hazards, platforms)
 
 | Piece | Behaviour | Data |
@@ -90,6 +97,14 @@ Heroes can damage both through the normal hurtbox path (they're
 
 `check.py` gains rules: no gate state may cut off a base from the Cradle,
 and no gate state may open a sight lane onto a spawn door.
+
+**Status: built**, with one change: Dream Basin has no gaps for a drifting
+platform to ferry across, so it became a **travelator** (a moving walkway
+that carries whoever stands on it, flipping direction on the clock), which
+also suits the plaza theme. Everything cycles on `MapClock` (the match
+clock), so a debug clock jump moves gates, hazards, belts and flowers with
+it. Bots route around closed gates (`BotNavigation`); pushing someone into
+a hazard credits the pusher (`Actor.get_last_displacer`).
 
 ## Phase 4: claimable shrines
 

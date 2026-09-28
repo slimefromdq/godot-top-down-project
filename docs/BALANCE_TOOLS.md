@@ -38,6 +38,14 @@ values.
 * **Match** (maps with a `MatchManager`: Dream Basin; other maps get a
   "Start a match here" button)
   * The state, the clock and both rosters with each hero's level and gold.
+  * **Time**: jump the match clock by -60 / -10 / +10 / +60 s, to any
+    second, or to a preset read from the live rules and the map (start, the
+    first zone and its warning, the Dream Mote, the Nightmare and its
+    warning, the late match). A jump (`MatchManager.jump_clock`) re-syncs
+    everything on the clock as if the match had got there: the dreaming-zone
+    and Dream Mote schedule, every neutral camp (a due camp spawns fresh,
+    one not due yet waits), map pieces (glass whole, geysers ready) and the
+    mood tint. Gold, XP and levels are left alone.
   * Give the player gold or XP, and set their level through the match (plays
     the level-up cue).
   * Skip the warmup, end the match for Dawn or Dusk, respawn now, fill
@@ -54,11 +62,20 @@ values.
   * **Items**: pick any catalog item and **Give free** or **Buy** it (buying
     follows the shop rules), clear your items, open the shop, make every bot
     shop now, and **Shop anywhere** (lifts the in-base rule).
+  * **Map pieces**: shatter or restore every dream-glass pane, pop every
+    Mote geyser, hold every toggle gate open or closed for a minute, or put
+    them back on their cycles.
   * **Dreamers**: for each team, set the wake meter, force a stir, finish
     or fail its Lullaby, grant Sweet Dreams now, and a **Deposit / Lullaby
     rings** overlay.
   * The match's `MatchRules`, editable live (a private copy per match).
 * **Tools**: export the balance CSV, validate heroes, reset the meter, show or hide the overlays, switch maps. **Sight lines** draws a line from you to every nearby enemy: green if you can see it, red if a wall or a bush blocks it (`CombatQueries.has_line_of_sight`). **Airlock practice** plays Sam's airlock maze on you.
+  **Visuals** switches off purely decorative layers one at a time (region
+  drifters, critters, sound beds, the mood tint, the Dreamer glow, fountain
+  ripples, bush rustle, dreaming-zone petals, the floor grid), or all at
+  once, to see what each costs or to lighten a slow machine. They stay off
+  across map switches until the game closes (`VisualToggles`); gameplay
+  never reads them.
 
 ## F2 stat inspector
 

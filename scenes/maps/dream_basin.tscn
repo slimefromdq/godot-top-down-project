@@ -18,6 +18,14 @@
 [ext_resource type="Resource" path="res://resources/match/neutrals/dream_wisps.tres" id="16_dream_wisps"]
 [ext_resource type="Script" path="res://scripts/map/map_ambience.gd" id="20_map_ambience"]
 [ext_resource type="Resource" path="res://resources/map/dream_basin_ambience.tres" id="21_ambience"]
+[ext_resource type="PackedScene" path="res://scenes/map/breakable_cover.tscn" id="31_1_breakable_cover"]
+[ext_resource type="PackedScene" path="res://scenes/map/mote_geyser.tscn" id="31_2_mote_geyser"]
+[ext_resource type="PackedScene" path="res://scenes/map/toggle_gate.tscn" id="31_3_toggle_gate"]
+[ext_resource type="PackedScene" path="res://scenes/map/hazard_zone.tscn" id="31_4_hazard_zone"]
+[ext_resource type="Resource" path="res://resources/map/pieces/sleep_fog.tres" id="31_5_sleep_fog"]
+[ext_resource type="Resource" path="res://resources/map/pieces/thorn_bed.tres" id="31_6_thorn_bed"]
+[ext_resource type="PackedScene" path="res://scenes/map/travelator.tscn" id="31_7_travelator"]
+[ext_resource type="PackedScene" path="res://scenes/map/jump_pad.tscn" id="31_8_jump_pad"]
 
 [node name="DreamBasin" type="Node2D"]
 script = ExtResource("1_game_map")
@@ -2688,6 +2696,148 @@ script = ExtResource("13_neutral_camp")
 position = Vector2(-1500, -1380)
 data = ExtResource("16_dream_wisps")
 display_name = "Driftfield Wisps"
+
+[node name="MapPieces" type="Node2D" parent="."]
+
+[node name="PlazaGlassA" parent="MapPieces" instance=ExtResource("31_1_breakable_cover")]
+position = Vector2(-800, 1900)
+
+[node name="Shape" parent="MapPieces/PlazaGlassA"]
+polygon = PackedVector2Array(-160, -30, 160, -30, 160, 30, -160, 30)
+
+[node name="DriftfieldGlassA" parent="MapPieces" instance=ExtResource("31_1_breakable_cover")]
+position = Vector2(1400, 1700)
+
+[node name="Shape" parent="MapPieces/DriftfieldGlassA"]
+polygon = PackedVector2Array(-30, -160, 30, -160, 30, 160, -30, 160)
+
+[node name="RidgeGlassB" parent="MapPieces" instance=ExtResource("31_1_breakable_cover")]
+position = Vector2(-3300, -1000)
+
+[node name="Shape" parent="MapPieces/RidgeGlassB"]
+polygon = PackedVector2Array(-160, -30, 160, -30, 160, 30, -160, 30)
+
+[node name="GladeGeyserB" parent="MapPieces" instance=ExtResource("31_2_mote_geyser")]
+position = Vector2(-3400, -600)
+
+[node name="RimGeyserA" parent="MapPieces" instance=ExtResource("31_2_mote_geyser")]
+position = Vector2(-2000, 600)
+
+[node name="RuinsNorthGateA" parent="MapPieces" instance=ExtResource("31_3_toggle_gate")]
+position = Vector2(-2150, 1020)
+cycle_offset = 0.0
+lever_offset = Vector2(-290, -90)
+
+[node name="Shape" parent="MapPieces/RuinsNorthGateA"]
+polygon = PackedVector2Array(-200, -40, 200, -40, 200, 40, -200, 40)
+
+[node name="TangleGateA" parent="MapPieces" instance=ExtResource("31_3_toggle_gate")]
+position = Vector2(-3625, 1080)
+cycle_offset = 16.0
+lever_offset = Vector2(330, -100)
+
+[node name="Shape" parent="MapPieces/TangleGateA"]
+polygon = PackedVector2Array(-275, -60, 275, -60, 275, 60, -275, 60)
+
+[node name="RidgeFogB" parent="MapPieces" instance=ExtResource("31_4_hazard_zone")]
+position = Vector2(-3600, -1400)
+data = ExtResource("31_5_sleep_fog")
+cycle_offset = 0.0
+color = Color(0.7, 0.6, 1, 0.32)
+
+[node name="Shape" parent="MapPieces/RidgeFogB"]
+polygon = PackedVector2Array(-210, -150, 210, -150, 210, 150, -210, 150)
+
+[node name="OrchardThornsA" parent="MapPieces" instance=ExtResource("31_4_hazard_zone")]
+position = Vector2(3600, 3900)
+data = ExtResource("31_6_thorn_bed")
+cycle_offset = 0.0
+color = Color(0.45, 0.6, 0.25, 0.45)
+
+[node name="Shape" parent="MapPieces/OrchardThornsA"]
+polygon = PackedVector2Array(-180, -130, 180, -130, 180, 130, -180, 130)
+
+[node name="PlazaExpressA" parent="MapPieces" instance=ExtResource("31_7_travelator")]
+position = Vector2(0, 2375)
+rotation = 0.000000
+size = Vector2(1000, 150)
+cycle_offset = 0.0
+
+[node name="DriftfieldFlowerA" parent="MapPieces" instance=ExtResource("31_8_jump_pad")]
+position = Vector2(2400, 1200)
+landing_offset = Vector2(-900, -200)
+sweep_degrees = 20.0
+color = Color(0.95, 0.45, 0.7, 1)
+
+[node name="PlazaGlassB" parent="MapPieces" instance=ExtResource("31_1_breakable_cover")]
+position = Vector2(800, -1900)
+
+[node name="Shape" parent="MapPieces/PlazaGlassB"]
+polygon = PackedVector2Array(-160, -30, 160, -30, 160, 30, -160, 30)
+
+[node name="DriftfieldGlassB" parent="MapPieces" instance=ExtResource("31_1_breakable_cover")]
+position = Vector2(-1400, -1700)
+
+[node name="Shape" parent="MapPieces/DriftfieldGlassB"]
+polygon = PackedVector2Array(-30, -160, 30, -160, 30, 160, -30, 160)
+
+[node name="RidgeGlassA" parent="MapPieces" instance=ExtResource("31_1_breakable_cover")]
+position = Vector2(3300, 1000)
+
+[node name="Shape" parent="MapPieces/RidgeGlassA"]
+polygon = PackedVector2Array(-160, -30, 160, -30, 160, 30, -160, 30)
+
+[node name="GladeGeyserA" parent="MapPieces" instance=ExtResource("31_2_mote_geyser")]
+position = Vector2(3400, 600)
+
+[node name="RimGeyserB" parent="MapPieces" instance=ExtResource("31_2_mote_geyser")]
+position = Vector2(2000, -600)
+
+[node name="RuinsNorthGateB" parent="MapPieces" instance=ExtResource("31_3_toggle_gate")]
+position = Vector2(2150, -1020)
+cycle_offset = 0.0
+lever_offset = Vector2(290, 90)
+
+[node name="Shape" parent="MapPieces/RuinsNorthGateB"]
+polygon = PackedVector2Array(-200, -40, 200, -40, 200, 40, -200, 40)
+
+[node name="TangleGateB" parent="MapPieces" instance=ExtResource("31_3_toggle_gate")]
+position = Vector2(3625, -1080)
+cycle_offset = 16.0
+lever_offset = Vector2(-330, 100)
+
+[node name="Shape" parent="MapPieces/TangleGateB"]
+polygon = PackedVector2Array(-275, -60, 275, -60, 275, 60, -275, 60)
+
+[node name="RidgeFogA" parent="MapPieces" instance=ExtResource("31_4_hazard_zone")]
+position = Vector2(3600, 1400)
+data = ExtResource("31_5_sleep_fog")
+cycle_offset = 0.0
+color = Color(0.7, 0.6, 1, 0.32)
+
+[node name="Shape" parent="MapPieces/RidgeFogA"]
+polygon = PackedVector2Array(-210, -150, 210, -150, 210, 150, -210, 150)
+
+[node name="OrchardThornsB" parent="MapPieces" instance=ExtResource("31_4_hazard_zone")]
+position = Vector2(-3600, -3900)
+data = ExtResource("31_6_thorn_bed")
+cycle_offset = 0.0
+color = Color(0.45, 0.6, 0.25, 0.45)
+
+[node name="Shape" parent="MapPieces/OrchardThornsB"]
+polygon = PackedVector2Array(-180, -130, 180, -130, 180, 130, -180, 130)
+
+[node name="PlazaExpressB" parent="MapPieces" instance=ExtResource("31_7_travelator")]
+position = Vector2(0, -2375)
+rotation = 3.141593
+size = Vector2(1000, 150)
+cycle_offset = 0.0
+
+[node name="DriftfieldFlowerB" parent="MapPieces" instance=ExtResource("31_8_jump_pad")]
+position = Vector2(-2400, -1200)
+landing_offset = Vector2(900, 200)
+sweep_degrees = 20.0
+color = Color(0.95, 0.45, 0.7, 1)
 
 [node name="DreamZones" type="Node2D" parent="."]
 

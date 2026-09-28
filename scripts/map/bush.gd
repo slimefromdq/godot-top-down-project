@@ -116,7 +116,7 @@ func _on_body(body: Node2D, change: int) -> void:
 
 ## Parts the leaves away from `from_local` (a point in this bush's space).
 func rustle(from_local: Vector2) -> void:
-	if rustle_time <= 0.0 or rustle_amount <= 0.0:
+	if rustle_time <= 0.0 or rustle_amount <= 0.0 or not VisualToggles.is_on(&"bush_rustle"):
 		return
 	_rustle_left = rustle_time
 	_rustle_from = from_local

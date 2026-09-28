@@ -113,7 +113,7 @@ func _draw() -> void:
 	draw_polyline(closed, edge, 10.0 + 4.0 * sin(_t * 3.0))
 	# Petals drifting across (only while dreaming; they fade with it).
 	var petal_alpha := _presence if zone_state != ZoneState.WARNING else _presence * 0.4
-	for petal in _petals:
+	for petal in _petals if VisualToggles.is_on(&"zone_petals") else []:
 		var at: Vector2 = petal[0]
 		if not Geometry2D.is_point_in_polygon(at, _polygon):
 			continue

@@ -38,7 +38,9 @@ var _pending_stop := false
 # through acceleration/friction.
 var _pending_impulse := Vector2.ZERO
 # Speed strips (or any node with boost_velocity(v) -> Vector2 and a
-# `multiplier`) currently under the body.
+# `multiplier`) currently under the body. A zone may also have a
+# `drift_velocity` (Vector2): ground that carries you (a travelator); you
+# walk on top of it, and standing still rides it.
 var _speed_zones: Array[Node] = []
 # "Commitment" slows while attacking. Keyed by whoever asked (an ability), so
 # two overlapping requests can't clear each other: the slowest one wins, and
@@ -213,10 +215,15 @@ func get_velocity(
 	_pending_impulse = Vector2.ZERO
 
 	var target_velocity := input_direction * speed + compel_velocity
+	var drift := Vector2.ZERO
 	for zone in _speed_zones:
 		if is_instance_valid(zone):
 			target_velocity = zone.boost_velocity(target_velocity)
 			accel *= zone.multiplier
+			var carry: Variant = zone.get(&"drift_velocity")
+			if carry is Vector2:
+				drift += carry
+	target_velocity += drift
 
 	if input_direction != Vector2.ZERO or compel_velocity != Vector2.ZERO:
 		# Faster than we want to go (e.g. a swing just slowed us): brake with
@@ -225,7 +232,7 @@ func get_velocity(
 		return current_velocity.move_toward(target_velocity, rate * delta)
 
 	return current_velocity.move_toward(
-		Vector2.ZERO,
+		drift,
 		friction * delta
 	)
 

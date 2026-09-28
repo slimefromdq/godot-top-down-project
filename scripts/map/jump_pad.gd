@@ -33,6 +33,11 @@ const GROUP := &"jump_pads"
 	set(value):
 		landing_offset = value
 		queue_redraw()
+## Launch flower: the landing spot sweeps back and forth this many degrees
+## either side of landing_offset (0 = a fixed pad). Time it to aim.
+@export_range(0.0, 90.0, 1.0) var sweep_degrees: float = 0.0
+## Seconds for one full sweep there and back.
+@export var sweep_period: float = 4.0
 ## Seconds in the air. Longer = floatier and easier to shoot out of the sky.
 @export_range(0.2, 2.0, 0.05) var air_time: float = 0.7
 ## Visual peak height of the arc, in pixels.
@@ -101,7 +106,20 @@ func _ready() -> void:
 
 
 func get_landing_position() -> Vector2:
-	return to_global(landing_offset)
+	return to_global(get_current_offset())
+
+
+## landing_offset turned by the sweep (launch flowers) at this moment.
+func get_current_offset() -> Vector2:
+	if sweep_degrees <= 0.0 or sweep_period <= 0.0 or Engine.is_editor_hint():
+		return landing_offset
+	var t := MapClock.now(self)
+	return landing_offset.rotated(deg_to_rad(sweep_degrees) * sin(TAU * t / sweep_period))
+
+
+## The landing spot at the sweep's `f` (-1 = one end, 1 = the other).
+func get_landing_at(f: float) -> Vector2:
+	return to_global(landing_offset.rotated(deg_to_rad(sweep_degrees) * f))
 
 
 func _rebuild() -> void:
@@ -208,8 +226,13 @@ static func _is_ally(actor: Node, pad_owner: Node) -> bool:
 
 
 func _draw() -> void:
+	# Launch flower: the whole sweep, faintly, so you can time it.
+	if sweep_degrees > 0.0:
+		var a := deg_to_rad(sweep_degrees)
+		draw_arc(Vector2.ZERO, landing_offset.length(), landing_offset.angle() - a, landing_offset.angle() + a,
+			32, Color(color, 0.3), 10.0)
 	# Flight path: a dotted arc bulging "up" (toward -Y on screen) to the landing ring.
-	var end := landing_offset
+	var end := get_current_offset()
 	var lift := Vector2(0, -minf(end.length() * 0.25, 260.0))
 	var dots := int(end.length() / 60.0)
 	var dash_phase := fmod(_time * 1.5, 1.0)

@@ -45,6 +45,9 @@ func splash(local_point: Vector2 = Vector2.ZERO) -> void:
 
 
 func _process(delta: float) -> void:
+	visible = VisualToggles.is_on(&"fountain_ripples")
+	if not visible:
+		return
 	_t += delta
 	_until_next -= delta
 	if _until_next <= 0.0 and settings.ripple_interval > 0.0:

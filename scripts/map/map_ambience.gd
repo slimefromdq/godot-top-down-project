@@ -173,7 +173,7 @@ func _process(delta: float) -> void:
 	if _beds.is_empty():
 		return
 	var at: Variant = _listener_position()
-	var here: StringName = region_at(at) if at != null else &""
+	var here: StringName = region_at(at) if at != null and VisualToggles.is_on(&"sound_beds") else &""
 	var step := 1.0 if ambience.crossfade_time <= 0.0 else delta / ambience.crossfade_time
 	for pair_id in _beds:
 		update_bed(pair_id, here == pair_id, step)

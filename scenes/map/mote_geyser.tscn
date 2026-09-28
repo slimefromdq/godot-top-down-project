@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/map/mote_geyser.gd" id="1_script"]
+[ext_resource type="Resource" path="res://resources/map/pieces/mote_geyser.tres" id="2_data"]
+
+[node name="MoteGeyser" type="StaticBody2D"]
+script = ExtResource("1_script")
+data = ExtResource("2_data")

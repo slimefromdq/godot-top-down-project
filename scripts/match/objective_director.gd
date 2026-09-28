@@ -48,6 +48,7 @@ func _ready() -> void:
 	manager = get_parent() as MatchManager
 	if manager != null:
 		manager.hero_respawned.connect(_on_hero_respawned)
+		manager.clock_jumped.connect(func(_from, to): resync_to_clock(to))
 
 
 func get_rules() -> MatchRules:
@@ -243,6 +244,18 @@ func force_warning() -> void:
 ## Debug: remove every monster. Camps wait out their respawn_time again; a
 ## once-only camp (the Nightmare) whose time has passed stays gone ("Nightmare
 ## now" still brings it back), one still ahead keeps its first-spawn time.
+## After a clock jump: clear every camp, then put each back as the match
+## would have it at `clock`. A camp whose first spawn is still ahead waits for
+## it; one that's already due (a jungle camp, or the Nightmare past 10:00)
+## spawns at once, fresh, so you can see that moment's map.
+func resync_to_clock(clock: float) -> void:
+	for camp in get_camps():
+		camp.despawn()
+		camp.state = NeutralCamp.CampState.WAITING
+		camp.next_spawn_time = maxf(camp.data.first_spawn_time, clock)
+		_scheduled[camp] = true
+
+
 func despawn_all() -> void:
 	var clock := get_clock()
 	for camp in get_camps():

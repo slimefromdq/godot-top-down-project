@@ -147,6 +147,35 @@ effect_scene = ExtResource("10_text")
 align_to_direction = false
 tint = Color(1, 1, 1, 1)
 
+[sub_resource type="Resource" id="Cue_glass_shatter"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("5_death")
+align_to_direction = false
+scale = 1.4
+tint = Color(0.8, 0.75, 1, 1)
+screen_shake = 0.2
+
+[sub_resource type="Resource" id="Cue_glass_restore"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("9_sparkle")
+align_to_direction = false
+scale = 1.2
+tint = Color(0.8, 0.75, 1, 1)
+
+[sub_resource type="Resource" id="Cue_geyser_pop"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("9_sparkle")
+align_to_direction = false
+scale = 1.3
+tint = Color(1, 0.92, 0.45, 1)
+screen_shake = 0.15
+
+[sub_resource type="Resource" id="Cue_geyser_ready"]
+script = ExtResource("1_cue")
+effect_scene = ExtResource("7_pop")
+align_to_direction = false
+tint = Color(1, 0.95, 0.7, 1)
+
 [resource]
 script = ExtResource("2_profile")
 cues = Dictionary[StringName, ExtResource("1_cue")]({
@@ -155,6 +184,10 @@ cues = Dictionary[StringName, ExtResource("1_cue")]({
 &"deposit_tick": SubResource("Cue_deposit_tick"),
 &"dream_mote_spawn": SubResource("Cue_dream_mote_spawn"),
 &"dream_mote_warning": SubResource("Cue_dream_mote_warning"),
+&"geyser_pop": SubResource("Cue_geyser_pop"),
+&"geyser_ready": SubResource("Cue_geyser_ready"),
+&"glass_restore": SubResource("Cue_glass_restore"),
+&"glass_shatter": SubResource("Cue_glass_shatter"),
 &"gold_gain": SubResource("Cue_gold_gain"),
 &"level_up": SubResource("Cue_level_up"),
 &"mote_burst": SubResource("Cue_mote_burst"),

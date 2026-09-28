@@ -82,6 +82,31 @@ Every number is in the camp's `NeutralData`
   damage taken, a little faster (teammates who are dead at the time get
   the rest of it when they respawn).
 
+## Map pieces
+
+- **Dream-glass** (6 on Dream Basin): full cover that both teams can shoot
+  down. It cracks as it takes damage and shatters at 0; about 25 seconds
+  later it shimmers for 3 seconds and grows back (never on top of anyone:
+  it waits for them to move).
+- **Mote geysers** (4): anyone can hit one. Six hits pop 3 Motes around it
+  for anyone to grab, then it rests for 45 seconds. Hits fade if nobody
+  keeps hitting it.
+- **Gates** (4): the Lullaby Ruins' north door and the Tangle's main
+  entrance open for 20 seconds and close for 12, the two alternating. They
+  flash before they change. Shoot the lever post beside one to flip it for
+  8 seconds. A closing gate pushes anyone in the doorway out; it never
+  traps you.
+- **Hazards**: sleep-fog rolls over each Stilt Ridge for 15 seconds at a
+  time (30% slower while you're in it; it blinks for 3 seconds first), and
+  a thorn bed in each Orchard nicks whoever stands in it. Push an enemy into
+  one and its damage counts as yours.
+- **The Plaza Express** (a travelator along each Plaza front) carries
+  whoever stands on it and flips direction every 30 seconds.
+- **Launch flowers** (one past each Driftfield) are jump pads whose landing
+  sweeps back and forth: time your jump.
+
+Every number is in `resources/map/pieces/*.tres`.
+
 ## Shops
 
 Each base has a shop stall in its spawn room. Press **B** to open the shop:

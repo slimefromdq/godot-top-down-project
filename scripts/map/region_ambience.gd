@@ -23,6 +23,7 @@ var _drifters: Array = []
 # Critters: {home, pos, vel, scared (seconds left, 0 = resting), phase}
 var _critters: Array[Dictionary] = []
 var _rng := RandomNumberGenerator.new()
+var _was_drawn := true
 
 
 func setup(p_profile: AmbienceProfile, p_polygon: PackedVector2Array, p_pair: StringName, seed_value: int) -> void:
@@ -101,8 +102,16 @@ func _random_point() -> Vector2:
 func _process(delta: float) -> void:
 	if profile == null:
 		return
+	var drifters := VisualToggles.is_on(&"drifters")
+	var critters := VisualToggles.is_on(&"critters")
+	if not drifters and not critters:
+		if _was_drawn:
+			_was_drawn = false
+			queue_redraw()
+		return
+	_was_drawn = true
 	_t += delta
-	var busy := _tick_critters(delta)
+	var busy := _tick_critters(delta) if critters else false
 	if busy or ScreenCull.is_near(self, _radius):
 		queue_redraw()
 
@@ -137,8 +146,9 @@ func _draw() -> void:
 	if profile == null:
 		return
 	var size := _bounds.size
+	var show_drifters := VisualToggles.is_on(&"drifters")
 	var drift_dir := profile.drift.normalized() if profile.drift.length() > 0.01 else Vector2.RIGHT
-	for d in _drifters:
+	for d in _drifters if show_drifters else []:
 		var base: Vector2 = d[0]
 		var phase: float = d[1]
 		var p := base + profile.drift * _t
@@ -159,7 +169,7 @@ func _draw() -> void:
 			draw_set_transform(Vector2.ZERO)
 		else:
 			draw_circle(p, r, col)
-	for c in _critters:
+	for c in _critters if VisualToggles.is_on(&"critters") else []:
 		var col2 := profile.critter_color
 		var pos: Vector2 = c.pos
 		if c.scared > 0.0:
