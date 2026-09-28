@@ -145,7 +145,15 @@ func _decisions() -> void:
 	_check("standing in your spawn heals fast", tank.health_component.current_health - tank_before
 		>= tank.health_component.max_health * 0.3)
 	_check("the enemy's spawn doesn't heal you", is_equal_approx(enemy.health_component.current_health, enemy_before))
-	enemy.global_position = carry.global_position + Vector2(500, 0)
+	# Put the enemy 500 px from the carry where the carry can see it (the carry
+	# has been roaming, so the spot east of it may be behind a wall or in grass).
+	for offset in [Vector2(500, 0), Vector2(-500, 0), Vector2(0, 500), Vector2(0, -500),
+			Vector2(350, 350), Vector2(-350, 350), Vector2(350, -350), Vector2(-350, -350)]:
+		enemy.global_position = carry.global_position + offset
+		await get_tree().physics_frame
+		await get_tree().physics_frame
+		if CombatQueries.has_line_of_sight(carry, enemy) and CombatQueries.shot_clear(carry, enemy):
+			break
 	carry.health_component.apply_damage(DamageInfo.create(carry.health_component.max_health * 0.8, null, DamageInfo.Type.TRUE))
 	await _frames(15)
 	_think(carry, manager)

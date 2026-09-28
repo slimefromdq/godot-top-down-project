@@ -22,7 +22,7 @@ old names (`glade`, `ridge`, `tangle`, `ruins`, `driftfield`, `orchard`).
 
 | Region | Where | Role |
 |---|---|---|
-| **The Sunken Court** (the Cradle) | Basin centre | The main arena. An oval ring (600 px wide) circles a ring of marble columns; the Ruined Arcs (below) split it into an inner and an outer track. Inside it the court itself sits one step down (radius 600 px), with the Nightmare's lair and the Dream Mote spot on its floor. Its rim is a stone balustrade (low cover: shoot over it), broken by eight staircases, on the diagonals and the axes, all walkable both ways. Two pairs of planters on the floor. |
+| **The Sunken Court** (the Cradle) | Basin centre | The main arena, fought through rather than stood in. An oval ring (600 px wide) goes round it; the Ruined Arcs (below) split that ring into an inner and an outer track. Inside, eight **Spokes** (short walls capped with a column) radiate from the court and split the terrace into wedges, each funnelling into one of the court's openings. The court itself sits one step down (radius 600 px), with the Nightmare's lair and the Dream Mote spot on its floor. Its rim alternates hard wall and balustrade (low cover: shoot over it), broken by eight two-way staircases: wide on the axes, narrower on the diagonals. Four pillars on the axes inside mean no stair sees straight to the lair; planters sit on the diagonals. |
 | **The Old Colonnade** (Lullaby Ruins) | Basin corner (A: lower-left, B: upper-right) | A sandstone arcade under restoration (1400 × 1800 px). Four ways in: the north gate, a collapsed corner facing the court, east door, south door, plus dropping in from the Garden Court. Inside: a row of columns, a courtyard with the updraft, and a side chapel with the Dream Rift. **Enclosed.** |
 | **The Fountain Court** (Driftfield) | The other two basin corners | Open paved court under the Upper Terrace, with a fountain and a pavilion. Mid-range. |
 | **The Garden Court** (the Tangle) | Wild third nearest your base (left side for A) | Walled hedge garden. Its perimeter hedges block shots, so you have to come inside to fight. Inside are loose rooms around a fountain, with lanes of 450 px or more. **Enclosed.** |
@@ -30,8 +30,8 @@ old names (`glade`, `ridge`, `tangle`, `ruins`, `driftfield`, `orchard`).
 | **The Lawn** (the Glade) | Middle of each Wild | Mid-range lawn with garden boulders. The Lawn Stairs climb to it from the basin. |
 | **The Upper Terrace** (Stilt Ridge) | The other end of each Wild | Open high ground overlooking the plaza. The sniper perch is a pavilion behind a row of low stones. |
 | **Dawn / Dusk Forecourt** (Plaza) | In front of each base | Staging area. The sundial and two hedge planters block every diagonal into the spawn door. |
-| **Cloister** | Base outskirts, Garden Court side | Walled tunnel (**close-quarters**) that opens into a colonnade. |
-| **The Promenade** (Orchard) | Base outskirts, Terrace side | Tree-lined walk. |
+| **Cloister** | Base outskirts, Garden Court side | Walled tunnel (**close-quarters**) that opens into a colonnade. The **Cloister Door** (a gate on the tunnel's side door, lever inside the tunnel) lets whoever holds the tunnel shut out the back road. |
+| **The Promenade** (Orchard) | Base outskirts, Terrace side | Tree-lined walk. The **Glasshouse**, a three-sided pavilion of Dream-glass open toward the road: hide in it, shoot out of it, or shatter it. |
 
 ## Shops and neutral camps
 
@@ -45,12 +45,13 @@ cover, reachable on foot, mirrored).
 | **Sleepwalker** ×4 | Each Glade and each Stilt Ridge. |
 | **Dream Wisps** ×4 | Each Tangle and each Driftfield. |
 
-| **Dream-glass** ×6 | Between each Plaza's Reflecting Pools (the avenue into the Cradle), at each Driftfield's inner edge, on each Glade/Ridge border (`scenes/map/breakable_cover.tscn`). |
+| **Dream-glass** ×12 | Between each Plaza's Reflecting Pools (the avenue into the Cradle), at each Driftfield's inner edge, on each Glade/Ridge border, and the three panes of each Promenade's Glasshouse (`scenes/map/breakable_cover.tscn`). |
 | **Mote geyser** ×4 | Each Glade and each Cradle rim (`scenes/map/mote_geyser.tscn`). |
-| **Toggle gate** ×4 | Each Lullaby Ruins' north door and each Tangle's main entrance, with a lever outside (`scenes/map/toggle_gate.tscn`). |
+| **Toggle gate** ×6 | Each Lullaby Ruins' north door and each Tangle's main entrance, with a lever outside, and each Cloister Door, with its lever inside the tunnel (`scenes/map/toggle_gate.tscn`). |
 | **Sleep-fog** ×2 / **Thorn bed** ×2 | Each Stilt Ridge / each Orchard (`scenes/map/hazard_zone.tscn`). |
-| **Travelator** ×2 | The Plaza Express, along each Plaza front (`scenes/map/travelator.tscn`). |
-| **Water stairs** ×2 | Each Fountain Court, running down toward the Sunken Court (`scenes/map/water_stairs.tscn`): x1.45 going down, x0.6 climbing. |
+| **Travelator** ×2 | The **Homeway**: a belt down each Plaza avenue, from behind the Reflecting Pools to the choke, always toward that team's own Dreamer (`scenes/map/travelator.tscn` with `resources/map/pieces/homeway.tres`, which never flips). Carriers ride home to bank; attackers pushing the Dreamer walk against it. |
+| **Water stairs** ×2 | The **Terrace Falls**: the cascade down each Upper Terrace's stairs into its Fountain Court (`scenes/map/water_stairs.tscn`): x1.45 coming down off the perch, x0.6 climbing up. |
+| **Speed strips** ×4 | **Lamplight Road**: straight from each Plaza side gate to the foot of a Wild's stair (west: the Garden Court stair in the Cloister yard; east: the Upper Terrace stair in the Promenade). x1.6 along the road, both ways. |
 | **Launch flower** ×2 | Each Fountain Court's inner edge, landing on the Cradle's inner terrace (`scenes/map/jump_pad.tscn` with a sweep). No pad or flower sits within 400 px of a stairwell (`check.py`), so walking up stairs never launches you. |
 
 ## Getting around on foot
@@ -65,6 +66,7 @@ only shortcuts.
   Lawn Stairs and the Terrace Stairs), one from your Cloister yard, one from
   the enemy's outskirts. You can drop off the cliff anywhere.
 - **The Sunken Court** has eight two-way staircases in its rim.
+- **Nothing that moves you is aimless:** `check.py` (Roads, belts and cascades) requires every Lamplight Road to run from a Plaza gate to a Wild's stair, every belt to end at its own team's Dreamer and never flip, and every cascade to sit on a real stairwell.
 - **The one map jump pad**, Ruins Updraft (Old Colonnade courtyard up to the
   Garden Court), saves a walk out of the Colonnade and up the Lawn Stairs or
   the Cloister stair. Its landing ring and flight path are always drawn.
@@ -93,6 +95,7 @@ phase 3):
 
 - **The Ruined Arcs:** four broken arcs of wall per half along the Cradle ring's centreline (hard stone, and one crystal arc). They split the ring into an inner and an outer track, crossed in the gaps. Gaps stay open where the Plaza avenues come in and along the Moon Aisle, and clear of the ring's Mote points.
 - **The Reflecting Pools:** a standoff line across each Plaza approach. Two water pools (shoot across, can't walk in) with the Plaza Glass between them give two gates on the avenue. Flank round the pools' outer ends. The Cradle Steps' low walls behind them are the defenders' cover.
+- **Tall grass** on the flank routes: beside each Flank Kiosk, below each Lawn Stairs, and at both outer ends of the Reflecting Pools (the way round them).
 - **The flanks** (between the ring and each Wild's cliff) are kinked: a crystal Flank Screen on the ring side at the middle, and a hard Flank Kiosk on the cliff side further along. The bench/lamp/planter cluster that stood in the Lawn Stairs' mouth is gone.
 
 `check.py` guards it:
@@ -106,6 +109,10 @@ phase 3):
 | Whole field: long-range exposure | 53% | 25% |
 | Outside the ring: long-range exposure | 50% | 21% |
 | Ring and inside: long-range exposure | 55% | 30% |
+
+Phase 4 (the Sunken Court as an arena: Spokes, the hard/low rim, pillars
+inside) takes the whole field to **16%** long-range exposure (ring and inside
+**15%**) and a 1370 px average clear shot.
 
 ## Sight lanes
 

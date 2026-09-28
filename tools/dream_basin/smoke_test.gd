@@ -150,14 +150,18 @@ func _test_two_way_teleporter() -> void:
 func _test_speed_strip() -> void:
 	var strip: SpeedStrip = world.get_node("DreamBasin/Mobility/SpeedStrips/LamplightRoad1")
 	var base_speed := player.movement_component.get_move_speed()
-	_place(strip.global_position - Vector2(strip.size.x * 0.45, 0))
-	await _hold("move_right", 0.5)
-	var along := player.velocity.x
-	_check("speed strip boosts along its axis", along > base_speed * 1.4,
+	# Lamplight Roads run at an angle (gate -> stair): walk the way the road
+	# mostly runs, and measure speed along its axis.
+	var axis := strip.global_transform.x.normalized()
+	_place(strip.global_position - axis * strip.size.x * 0.35)
+	await _hold("move_right" if axis.x > 0.0 else "move_left", 0.5)
+	var along := player.velocity.dot(axis)
+	_check("speed strip boosts along its axis", along > base_speed * 1.35,
 		"%.0f vs base %.0f" % [along, base_speed])
-	_place(strip.global_position + Vector2(0, strip.size.y * 0.3))
-	await _hold("move_down", 0.25)
-	_check("speed strip ignores crossing", player.velocity.length() < base_speed * 1.1,
+	var across := axis.orthogonal()
+	_place(strip.global_position + across * strip.size.y * 0.3)
+	await _hold("move_down" if absf(axis.x) > absf(axis.y) else "move_right", 0.25)
+	_check("speed strip barely helps crossing", player.velocity.length() < base_speed * 1.15,
 		"%.0f" % player.velocity.length())
 	await _seconds(0.5)
 

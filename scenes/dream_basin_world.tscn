@@ -23,7 +23,7 @@ team = &"a"
 player_controlled = true
 
 [node name="TrainingDummy1" parent="." instance=ExtResource("5_training_dummy")]
-position = Vector2(0, -360)
+position = Vector2(150, -402)
 
 [node name="TrainingDummy2" parent="." instance=ExtResource("5_training_dummy")]
 position = Vector2(-420, 216)
