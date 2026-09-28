@@ -131,7 +131,8 @@ def render(m):
     # cover
     FULLC = {"tree": "#3f6b35", "hedge": "#2f5a2a", "rock": "#6b6560", "cliffrock": "#5c5650",
              "pillar": "#8d85a8", "wall": "#4b4b4b", "ruin": "#7a6a55", "basewall": "#3d3d3d",
-             "cloister": "#6a5a48", "sundial": "#b99a4a", "statue": "#b99a4a", "building": "#9c7f62"}
+             "cloister": "#6a5a48", "sundial": "#b99a4a", "statue": "#b99a4a", "building": "#9c7f62",
+             "arcwall": "#8d85a8"}
     for c in m["full"]:
         fill = FULLC.get(c["kind"], "#555")
         if c["kind"] == "basewall":

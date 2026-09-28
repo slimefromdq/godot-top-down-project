@@ -355,6 +355,44 @@ cooldown = 0.0
 
 [node name="Cover" type="Node2D" parent="."]
 
+[node name="Pits" type="Node2D" parent="Cover"]
+
+[node name="Water1" type="StaticBody2D" parent="Cover/Pits"]
+position = Vector2(-725, 2060)
+script = ExtResource("3_cover_body")
+height = 2
+fill_color = Color(0.173, 0.353, 0.478, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pits/Water1"]
+polygon = PackedVector2Array(-275, -70, 275, -70, 275, 70, -275, 70)
+
+[node name="Water2" type="StaticBody2D" parent="Cover/Pits"]
+position = Vector2(725, 2060)
+script = ExtResource("3_cover_body")
+height = 2
+fill_color = Color(0.173, 0.353, 0.478, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pits/Water2"]
+polygon = PackedVector2Array(-275, -70, 275, -70, 275, 70, -275, 70)
+
+[node name="Water3" type="StaticBody2D" parent="Cover/Pits"]
+position = Vector2(725, -2060)
+script = ExtResource("3_cover_body")
+height = 2
+fill_color = Color(0.173, 0.353, 0.478, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pits/Water3"]
+polygon = PackedVector2Array(275, 70, -275, 70, -275, -70, 275, -70)
+
+[node name="Water4" type="StaticBody2D" parent="Cover/Pits"]
+position = Vector2(-725, -2060)
+script = ExtResource("3_cover_body")
+height = 2
+fill_color = Color(0.173, 0.353, 0.478, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Pits/Water4"]
+polygon = PackedVector2Array(275, 70, -275, 70, -275, -70, 275, -70)
+
 [node name="LowCover" type="Node2D" parent="Cover"]
 
 [node name="Lowwall1" type="StaticBody2D" parent="Cover/LowCover"]
@@ -597,15 +635,6 @@ fill_color = Color(0.570, 0.654, 0.731, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall6"]
 polygon = PackedVector2Array(-295, 83, 304, -34, 295, -83, -304, 34)
 
-[node name="Lowrock10" type="StaticBody2D" parent="Cover/LowCover"]
-position = Vector2(-7, 2137)
-script = ExtResource("3_cover_body")
-height = 1
-fill_color = Color(0.800, 0.800, 0.860, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock10"]
-polygon = PackedVector2Array(132, -8, 78, 33, 24, 44, -71, 42, -137, 18, -98, -19, -64, -43, 31, -41, 105, -26)
-
 [node name="Crate1" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(-2090, 1944)
 script = ExtResource("3_cover_body")
@@ -633,94 +662,58 @@ fill_color = Color(0.493, 0.791, 0.891, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Fountain2"]
 polygon = PackedVector2Array(170, 0, 162, 53, 138, 100, 100, 138, 53, 162, 0, 170, -53, 162, -100, 138, -138, 100, -162, 53, -170, 0, -162, -53, -138, -100, -100, -138, -53, -162, 0, -170, 53, -162, 100, -138, 138, -100, 162, -53)
 
-[node name="Lowrock11" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock10" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(2151, 1380)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock11"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock10"]
 polygon = PackedVector2Array(133, 54, 66, 54, -13, 50, -60, 6, -101, -26, -96, -52, -50, -61, 17, -44, 104, 19)
 
-[node name="Lowrock12" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock11" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(1652, 2279)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock12"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock11"]
 polygon = PackedVector2Array(108, -38, 97, 1, 18, 39, -33, 39, -108, 44, -79, 15, -68, -18, 13, -39, 53, -42)
 
 [node name="Crate3" type="StaticBody2D" parent="Cover/LowCover"]
-position = Vector2(2450, 492)
-script = ExtResource("3_cover_body")
-height = 1
-fill_color = Color(0.850, 0.651, 0.314, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate3"]
-polygon = PackedVector2Array(-70, -72, 70, -72, 70, 72, -70, 72)
-
-[node name="Crate4" type="StaticBody2D" parent="Cover/LowCover"]
-position = Vector2(2580, 576)
-script = ExtResource("3_cover_body")
-height = 1
-fill_color = Color(0.850, 0.651, 0.314, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate4"]
-polygon = PackedVector2Array(-60, -72, 60, -72, 60, 72, -60, 72)
-
-[node name="Crate5" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(-1795, 4386)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.850, 0.651, 0.314, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate5"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate3"]
 polygon = PackedVector2Array(-55, -54, 55, -54, 55, 54, -55, 54)
 
-[node name="Lowrock13" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock12" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(3443, 3479)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock13"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock12"]
 polygon = PackedVector2Array(114, 1, 103, 37, 17, 35, -41, 39, -122, 9, -116, -17, -75, -38, 30, -37, 91, -29)
 
 [node name="Bench1" type="StaticBody2D" parent="Cover/Furniture"]
-position = Vector2(2150, -144)
-script = ExtResource("3_cover_body")
-height = 1
-fill_color = Color(0.690, 0.541, 0.369, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Bench1"]
-polygon = PackedVector2Array(-7, -88, 54, 70, 7, 88, -54, -70)
-
-[node name="Planter3" type="StaticBody2D" parent="Cover/Furniture"]
-position = Vector2(2351, -396)
-script = ExtResource("3_cover_body")
-height = 1
-fill_color = Color(0.561, 0.690, 0.478, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter3"]
-polygon = PackedVector2Array(56, -6, 45, 38, 14, 56, -19, 58, -52, 28, -58, 5, -44, -38, -16, -60, 24, -53, 49, -29)
-
-[node name="Bench2" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(-4500, 4560)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.690, 0.541, 0.369, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Bench2"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Bench1"]
 polygon = PackedVector2Array(-85, -25, 85, -25, 85, 25, -85, 25)
 
-[node name="Planter4" type="StaticBody2D" parent="Cover/Furniture"]
+[node name="Planter3" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(-4602, 4980)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.561, 0.690, 0.478, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter4"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter3"]
 polygon = PackedVector2Array(59, -9, 46, 37, 11, 60, -21, 55, -49, 28, -57, -2, -48, -36, -22, -55, 25, -53, 55, -26)
 
 [node name="Lowwall7" type="StaticBody2D" parent="Cover/LowCover"]
@@ -768,85 +761,85 @@ fill_color = Color(0.493, 0.791, 0.891, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Fountain3"]
 polygon = PackedVector2Array(-170, 0, -162, -53, -138, -100, -100, -138, -53, -162, 0, -170, 53, -162, 100, -138, 138, -100, 162, -53, 170, 0, 162, 53, 138, 100, 100, 138, 53, 162, 0, 170, -53, 162, -100, 138, -138, 100, -162, 53)
 
-[node name="Lowrock14" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock13" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(3848, -99)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock14"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock13"]
 polygon = PackedVector2Array(-162, 5, -78, -32, -4, -55, 60, -59, 113, -18, 136, 20, 92, 49, -38, 55, -118, 35)
 
-[node name="Lowrock15" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock14" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(2999, 603)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock15"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock14"]
 polygon = PackedVector2Array(-38, -10, -38, -64, -16, -115, 22, -70, 45, -32, 52, 47, 16, 93, -14, 112, -29, 39)
 
-[node name="Lowrock16" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock15" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(2881, 2942)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock16"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock15"]
 polygon = PackedVector2Array(-35, 15, -37, -78, -11, -91, 20, -119, 42, -60, 32, 36, 20, 96, -8, 139, -23, 64)
 
-[node name="Lowrock17" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock16" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(2879, 2461)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock17"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock16"]
 polygon = PackedVector2Array(-36, 14, -41, -81, -8, -125, 17, -108, 43, -27, 45, 65, 18, 73, -9, 90, -30, 97)
 
-[node name="Lowrock18" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock17" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(2882, 1981)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock18"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock17"]
 polygon = PackedVector2Array(-47, -4, -28, -76, -8, -136, 21, -78, 42, -36, 48, 47, 19, 96, -17, 114, -30, 72)
 
-[node name="Lowrock19" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock18" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(2880, 1679)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock19"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock18"]
 polygon = PackedVector2Array(-45, -0, -35, -99, -2, -107, 26, -85, 32, -37, 34, 34, 26, 100, -13, 125, -23, 69)
 
-[node name="Lowrock20" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock19" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(3647, 2701)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock20"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock19"]
 polygon = PackedVector2Array(-126, 2, -93, -35, -19, -55, 47, -53, 96, -24, 159, 18, 71, 51, -48, 65, -88, 31)
 
-[node name="Lowrock21" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock20" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(-990, -497)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock21"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock20"]
 polygon = PackedVector2Array(-90, -68, -57, -65, 12, -33, 68, 3, 86, 46, 72, 63, 31, 56, -44, 26, -78, -27)
 
-[node name="Lowrock22" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock21" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(976, -671)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock22"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock21"]
 polygon = PackedVector2Array(-85, 50, -98, 29, -25, -36, 20, -42, 59, -48, 97, -44, 73, 1, -2, 39, -39, 50)
 
 [node name="Balustrade9" type="StaticBody2D" parent="Cover/Court"]
@@ -921,22 +914,22 @@ fill_color = Color(0.863, 0.875, 0.910, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Court/Balustrade16"]
 polygon = PackedVector2Array(-43, -76, 5, 88, 43, 76, -5, -88)
 
-[node name="Planter5" type="StaticBody2D" parent="Cover/Furniture"]
+[node name="Planter4" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(-254, -255)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.561, 0.690, 0.478, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter5"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter4"]
 polygon = PackedVector2Array(-54, 1, -50, -24, -14, -53, 16, -52, 49, -26, 56, -3, 44, 28, 21, 50, -23, 49, -45, 29)
 
-[node name="Planter6" type="StaticBody2D" parent="Cover/Furniture"]
+[node name="Planter5" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(252, -253)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.561, 0.690, 0.478, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter6"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter5"]
 polygon = PackedVector2Array(-54, 1, -44, -28, -15, -52, 16, -56, 45, -33, 55, 5, 42, 34, 16, 51, -17, 51, -44, 26)
 
 [node name="Lowwall11" type="StaticBody2D" parent="Cover/LowCover"]
@@ -957,31 +950,22 @@ fill_color = Color(0.570, 0.654, 0.731, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowwall12"]
 polygon = PackedVector2Array(295, -83, -304, 34, -295, 83, 304, -34)
 
-[node name="Lowrock23" type="StaticBody2D" parent="Cover/LowCover"]
-position = Vector2(7, -2137)
-script = ExtResource("3_cover_body")
-height = 1
-fill_color = Color(0.800, 0.800, 0.860, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock23"]
-polygon = PackedVector2Array(-132, 8, -78, -33, -24, -44, 71, -42, 137, -18, 98, 19, 64, 43, -31, 41, -105, 26)
-
-[node name="Crate6" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Crate4" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(2090, -1944)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.850, 0.651, 0.314, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate6"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate4"]
 polygon = PackedVector2Array(110, 48, -110, 48, -110, -48, 110, -48)
 
-[node name="Crate7" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Crate5" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(2544, -2577)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.850, 0.651, 0.314, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate7"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate5"]
 polygon = PackedVector2Array(-71, -3, -47, -36, -17, -70, 30, -58, 57, -15, 65, 10, 32, 57, -11, 73, -39, 43)
 
 [node name="Fountain4" type="StaticBody2D" parent="Cover/Landmarks" groups=["fountains"]]
@@ -993,95 +977,115 @@ fill_color = Color(0.493, 0.791, 0.891, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Fountain4"]
 polygon = PackedVector2Array(-170, 0, -162, -53, -138, -100, -100, -138, -53, -162, -0, -170, 53, -162, 100, -138, 138, -100, 162, -53, 170, 0, 162, 53, 138, 100, 100, 138, 53, 162, -0, 170, -53, 162, -100, 138, -138, 100, -162, 53)
 
-[node name="Lowrock24" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock22" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(-2151, -1380)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock24"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock22"]
 polygon = PackedVector2Array(-133, -54, -66, -54, 13, -50, 60, -6, 101, 26, 96, 52, 50, 61, -17, 44, -104, -19)
 
-[node name="Lowrock25" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock23" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(-1652, -2279)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock25"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock23"]
 polygon = PackedVector2Array(-108, 38, -97, -1, -18, -39, 33, -39, 108, -44, 79, -15, 68, 18, -13, 39, -53, 42)
 
-[node name="Crate8" type="StaticBody2D" parent="Cover/LowCover"]
-position = Vector2(-2450, -492)
-script = ExtResource("3_cover_body")
-height = 1
-fill_color = Color(0.850, 0.651, 0.314, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate8"]
-polygon = PackedVector2Array(70, 72, -70, 72, -70, -72, 70, -72)
-
-[node name="Crate9" type="StaticBody2D" parent="Cover/LowCover"]
-position = Vector2(-2580, -576)
-script = ExtResource("3_cover_body")
-height = 1
-fill_color = Color(0.850, 0.651, 0.314, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate9"]
-polygon = PackedVector2Array(60, 72, -60, 72, -60, -72, 60, -72)
-
-[node name="Crate10" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Crate6" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(1795, -4386)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.850, 0.651, 0.314, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate10"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Crate6"]
 polygon = PackedVector2Array(55, 54, -55, 54, -55, -54, 55, -54)
 
-[node name="Lowrock26" type="StaticBody2D" parent="Cover/LowCover"]
+[node name="Lowrock24" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(-3443, -3479)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.800, 0.800, 0.860, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock26"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock24"]
 polygon = PackedVector2Array(-114, -1, -103, -37, -17, -35, 41, -39, 122, -9, 116, 17, 75, 38, -30, 37, -91, 29)
 
-[node name="Bench3" type="StaticBody2D" parent="Cover/Furniture"]
-position = Vector2(-2150, 144)
-script = ExtResource("3_cover_body")
-height = 1
-fill_color = Color(0.690, 0.541, 0.369, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Bench3"]
-polygon = PackedVector2Array(7, 88, -54, -70, -7, -88, 54, 70)
-
-[node name="Planter7" type="StaticBody2D" parent="Cover/Furniture"]
-position = Vector2(-2351, 396)
-script = ExtResource("3_cover_body")
-height = 1
-fill_color = Color(0.561, 0.690, 0.478, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter7"]
-polygon = PackedVector2Array(-56, 6, -45, -38, -14, -56, 19, -58, 52, -28, 58, -5, 44, 38, 16, 60, -24, 53, -49, 29)
-
-[node name="Bench4" type="StaticBody2D" parent="Cover/Furniture"]
+[node name="Bench2" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(4500, -4560)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.690, 0.541, 0.369, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Bench4"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Bench2"]
 polygon = PackedVector2Array(85, 25, -85, 25, -85, -25, 85, -25)
 
-[node name="Planter8" type="StaticBody2D" parent="Cover/Furniture"]
+[node name="Planter6" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(4602, -4980)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.561, 0.690, 0.478, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter8"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter6"]
 polygon = PackedVector2Array(-59, 9, -46, -37, -11, -60, 21, -55, 49, -28, 57, 2, 48, 36, 22, 55, -25, 53, -55, 26)
+
+[node name="Crystal" type="Node2D" parent="Cover"]
+
+[node name="Crystal1" type="StaticBody2D" parent="Cover/Crystal"]
+position = Vector2(547, 1465)
+script = ExtResource("3_cover_body")
+height = 3
+fill_color = Color(0.624, 0.894, 1.000, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Crystal/Crystal1"]
+polygon = PackedVector2Array(80, -76, -110, -9, -80, 76, 110, 9)
+
+[node name="Crystal2" type="StaticBody2D" parent="Cover/Crystal"]
+position = Vector2(441, 1499)
+script = ExtResource("3_cover_body")
+height = 3
+fill_color = Color(0.624, 0.894, 1.000, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Crystal/Crystal2"]
+polygon = PackedVector2Array(85, -70, -109, -16, -85, 70, 109, 16)
+
+[node name="Crystal3" type="StaticBody2D" parent="Cover/Crystal"]
+position = Vector2(2100, 0)
+script = ExtResource("3_cover_body")
+height = 3
+fill_color = Color(0.624, 0.894, 1.000, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Crystal/Crystal3"]
+polygon = PackedVector2Array(-150, -30, 150, -30, 150, 30, -150, 30)
+
+[node name="Crystal4" type="StaticBody2D" parent="Cover/Crystal"]
+position = Vector2(-547, -1465)
+script = ExtResource("3_cover_body")
+height = 3
+fill_color = Color(0.624, 0.894, 1.000, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Crystal/Crystal4"]
+polygon = PackedVector2Array(-80, 76, 110, 9, 80, -76, -110, -9)
+
+[node name="Crystal5" type="StaticBody2D" parent="Cover/Crystal"]
+position = Vector2(-441, -1499)
+script = ExtResource("3_cover_body")
+height = 3
+fill_color = Color(0.624, 0.894, 1.000, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Crystal/Crystal5"]
+polygon = PackedVector2Array(-85, 70, 109, 16, 85, -70, -109, -16)
+
+[node name="Crystal6" type="StaticBody2D" parent="Cover/Crystal"]
+position = Vector2(-2100, 0)
+script = ExtResource("3_cover_body")
+height = 3
+fill_color = Color(0.624, 0.894, 1.000, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Crystal/Crystal6"]
+polygon = PackedVector2Array(150, 30, -150, 30, -150, -30, 150, -30)
 
 [node name="Hedges" type="Node2D" parent="Cover"]
 
@@ -1289,6 +1293,125 @@ fill_color = Color(0.247, 0.556, 0.177, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree12"]
 polygon = PackedVector2Array(75, 3, 42, 52, 14, 61, -23, 58, -68, 39, -72, -36, -40, -55, 15, -61, 56, -60)
 
+[node name="Arcs" type="Node2D" parent="Cover"]
+
+[node name="Arcwall1" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(1576, -260)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall1"]
+polygon = PackedVector2Array(-63, -101, -25, 116, 63, 101, 25, -116)
+
+[node name="Arcwall2" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(1593, -130)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall2"]
+polygon = PackedVector2Array(-54, -106, -35, 114, 54, 106, 35, -114)
+
+[node name="Arcwall3" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(1599, 0)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall3"]
+polygon = PackedVector2Array(-45, -110, -45, 110, 45, 110, 45, -110)
+
+[node name="Arcwall4" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(1593, 130)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall4"]
+polygon = PackedVector2Array(-35, -114, -54, 106, 35, 114, 54, -106)
+
+[node name="Arcwall5" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(1576, 260)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall5"]
+polygon = PackedVector2Array(-25, -116, -63, 101, 25, 116, 63, -101)
+
+[node name="Arcwall6" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(1348, 837)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall6"]
+polygon = PackedVector2Array(24, -120, -100, 70, -24, 120, 100, -70)
+
+[node name="Arcwall7" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(1268, 949)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall7"]
+polygon = PackedVector2Array(35, -117, -106, 62, -35, 117, 106, -62)
+
+[node name="Arcwall8" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(1179, 1053)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall8"]
+polygon = PackedVector2Array(45, -114, -111, 52, -45, 114, 111, -52)
+
+[node name="Arcwall9" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(1080, 1149)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall9"]
+polygon = PackedVector2Array(55, -110, -115, 42, -55, 110, 115, -42)
+
+[node name="Arcwall10" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-461, 1492)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall10"]
+polygon = PackedVector2Array(129, -9, -104, -77, -129, 9, 104, 77)
+
+[node name="Arcwall11" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-605, 1442)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall11"]
+polygon = PackedVector2Array(130, 3, -96, -87, -130, -3, 96, 87)
+
+[node name="Arcwall12" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-744, 1379)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall12"]
+polygon = PackedVector2Array(129, 15, -87, -95, -129, -15, 87, 95)
+
+[node name="Arcwall13" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-876, 1303)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall13"]
+polygon = PackedVector2Array(126, 27, -78, -103, -126, -27, 78, 103)
+
 [node name="Pillars" type="Node2D" parent="Cover"]
 
 [node name="Pillar1" type="StaticBody2D" parent="Cover/Pillars"]
@@ -1335,6 +1458,15 @@ fill_color = Color(0.690, 0.675, 0.720, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock2"]
 polygon = PackedVector2Array(94, 16, 66, 44, 28, 109, -52, 70, -82, 36, -77, -39, -50, -73, 1, -89, 73, -75)
+
+[node name="Building2" type="StaticBody2D" parent="Cover/Buildings"]
+position = Vector2(2550, 520)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.930, 0.880, 0.800, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Buildings/Building2"]
+polygon = PackedVector2Array(-150, -120, 150, -120, 150, 120, -150, 120)
 
 [node name="Walls" type="Node2D" parent="Cover"]
 
@@ -1474,21 +1606,12 @@ fill_color = Color(0.690, 0.675, 0.720, 1.0)
 polygon = PackedVector2Array(86, -9, 81, 57, 10, 75, -66, 84, -98, 15, -88, -19, -39, -60, 29, -99, 85, -44)
 
 [node name="Rock4" type="StaticBody2D" parent="Cover/Rocks"]
-position = Vector2(2340, 536)
-script = ExtResource("3_cover_body")
-height = 0
-fill_color = Color(0.690, 0.675, 0.720, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock4"]
-polygon = PackedVector2Array(85, -6, 64, 43, 9, 84, -45, 59, -73, 17, -74, -22, -50, -71, 15, -76, 69, -29)
-
-[node name="Rock5" type="StaticBody2D" parent="Cover/Rocks"]
 position = Vector2(1245, 2578)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.690, 0.675, 0.720, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock5"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock4"]
 polygon = PackedVector2Array(91, -1, 71, 45, 11, 79, -50, 62, -76, 21, -90, -35, -39, -58, 6, -74, 76, -40)
 
 [node name="Statue2" type="StaticBody2D" parent="Cover/Landmarks"]
@@ -1500,13 +1623,13 @@ fill_color = Color(0.700, 0.803, 0.898, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Statue2"]
 polygon = PackedVector2Array(55, 0, 44, 32, 17, 52, -17, 52, -44, 32, -55, 0, -44, -32, -17, -52, 17, -52, 44, -32)
 
-[node name="Building2" type="StaticBody2D" parent="Cover/Buildings"]
+[node name="Building3" type="StaticBody2D" parent="Cover/Buildings"]
 position = Vector2(2365, 1878)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.930, 0.880, 0.800, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Buildings/Building2"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Buildings/Building3"]
 polygon = PackedVector2Array(-115, -102, 115, -102, 115, 102, -115, 102)
 
 [node name="Cliffrock1" type="StaticBody2D" parent="Cover/Rocks"]
@@ -1752,22 +1875,22 @@ fill_color = Color(0.247, 0.556, 0.177, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree14"]
 polygon = PackedVector2Array(89, -13, 44, 42, 13, 66, -51, 71, -69, 34, -60, -21, -34, -59, 17, -88, 50, -32)
 
-[node name="Rock6" type="StaticBody2D" parent="Cover/Rocks"]
+[node name="Rock5" type="StaticBody2D" parent="Cover/Rocks"]
 position = Vector2(-3404, 4376)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.690, 0.675, 0.720, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock6"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock5"]
 polygon = PackedVector2Array(72, -3, 58, 55, 13, 74, -56, 74, -58, 31, -87, -42, -35, -54, 38, -92, 56, -42)
 
-[node name="Rock7" type="StaticBody2D" parent="Cover/Rocks"]
+[node name="Rock6" type="StaticBody2D" parent="Cover/Rocks"]
 position = Vector2(-2253, 3543)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.690, 0.675, 0.720, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock7"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock6"]
 polygon = PackedVector2Array(80, 9, 66, 37, 11, 105, -62, 74, -93, 27, -86, -34, -41, -60, 34, -103, 91, -54)
 
 [node name="Tree15" type="StaticBody2D" parent="Cover/Trees"]
@@ -1834,21 +1957,12 @@ fill_color = Color(0.247, 0.556, 0.177, 1.0)
 polygon = PackedVector2Array(68, 3, 54, 47, 10, 67, -25, 53, -55, 18, -66, -26, -44, -63, 6, -63, 53, -36)
 
 [node name="Lamp1" type="StaticBody2D" parent="Cover/Furniture"]
-position = Vector2(2000, -396)
-script = ExtResource("3_cover_body")
-height = 0
-fill_color = Color(0.290, 0.310, 0.388, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Lamp1"]
-polygon = PackedVector2Array(28, 0, 20, 20, 0, 28, -20, 20, -28, 0, -20, -20, 0, -28, 20, -20)
-
-[node name="Lamp2" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(-4200, 4860)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.290, 0.310, 0.388, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Lamp2"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Lamp1"]
 polygon = PackedVector2Array(28, 0, 20, 20, 0, 28, -20, 20, -28, 0, -20, -20, 0, -28, 20, -20)
 
 [node name="Hedge8" type="StaticBody2D" parent="Cover/Hedges"]
@@ -1968,13 +2082,13 @@ fill_color = Color(0.247, 0.556, 0.177, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree26"]
 polygon = PackedVector2Array(-62, 3, -46, -41, -9, -72, 36, -66, 59, -31, 60, 16, 32, 56, -17, 79, -51, 57)
 
-[node name="Rock8" type="StaticBody2D" parent="Cover/Rocks"]
+[node name="Rock7" type="StaticBody2D" parent="Cover/Rocks"]
 position = Vector2(3344, 189)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.690, 0.675, 0.720, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock8"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock7"]
 polygon = PackedVector2Array(-100, -20, -132, -66, -25, -82, 69, -81, 113, -24, 106, 36, 76, 95, -32, 105, -77, 37)
 
 [node name="Tree27" type="StaticBody2D" parent="Cover/Trees"]
@@ -1995,13 +2109,13 @@ fill_color = Color(0.247, 0.556, 0.177, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree28"]
 polygon = PackedVector2Array(-81, -4, -71, -48, -17, -75, 37, -75, 79, -35, 82, 38, 51, 78, -15, 60, -64, 61)
 
-[node name="Building3" type="StaticBody2D" parent="Cover/Buildings"]
+[node name="Building4" type="StaticBody2D" parent="Cover/Buildings"]
 position = Vector2(3260, 2226)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.930, 0.880, 0.800, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Buildings/Building3"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Buildings/Building4"]
 polygon = PackedVector2Array(120, 114, -120, 114, -120, -114, 120, -114)
 
 [node name="Tree29" type="StaticBody2D" parent="Cover/Trees"]
@@ -2049,6 +2163,123 @@ fill_color = Color(0.247, 0.556, 0.177, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree33"]
 polygon = PackedVector2Array(-75, -3, -42, -52, -14, -61, 23, -58, 68, -39, 72, 36, 40, 55, -15, 61, -56, 60)
 
+[node name="Arcwall14" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-1576, 260)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall14"]
+polygon = PackedVector2Array(63, 101, 25, -116, -63, -101, -25, 116)
+
+[node name="Arcwall15" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-1593, 130)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall15"]
+polygon = PackedVector2Array(54, 106, 35, -114, -54, -106, -35, 114)
+
+[node name="Arcwall16" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-1599, 0)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall16"]
+polygon = PackedVector2Array(45, 110, 45, -110, -45, -110, -45, 110)
+
+[node name="Arcwall17" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-1593, -130)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall17"]
+polygon = PackedVector2Array(35, 114, 54, -106, -35, -114, -54, 106)
+
+[node name="Arcwall18" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-1576, -260)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall18"]
+polygon = PackedVector2Array(25, 116, 63, -101, -25, -116, -63, 101)
+
+[node name="Arcwall19" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-1348, -837)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall19"]
+polygon = PackedVector2Array(-24, 120, 100, -70, 24, -120, -100, 70)
+
+[node name="Arcwall20" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-1268, -949)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall20"]
+polygon = PackedVector2Array(-35, 117, 106, -62, 35, -117, -106, 62)
+
+[node name="Arcwall21" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-1179, -1053)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall21"]
+polygon = PackedVector2Array(-45, 114, 111, -52, 45, -114, -111, 52)
+
+[node name="Arcwall22" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(-1080, -1149)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall22"]
+polygon = PackedVector2Array(-55, 110, 115, -42, 55, -110, -115, 42)
+
+[node name="Arcwall23" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(461, -1492)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall23"]
+polygon = PackedVector2Array(-129, 9, 104, 77, 129, -9, -104, -77)
+
+[node name="Arcwall24" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(605, -1442)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall24"]
+polygon = PackedVector2Array(-130, -3, 96, 87, 130, 3, -96, -87)
+
+[node name="Arcwall25" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(744, -1379)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall25"]
+polygon = PackedVector2Array(-129, -15, 87, 95, 129, 15, -87, -95)
+
+[node name="Arcwall26" type="StaticBody2D" parent="Cover/Arcs"]
+position = Vector2(876, -1303)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.604, 0.573, 0.722, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Arcs/Arcwall26"]
+polygon = PackedVector2Array(-126, -27, 78, 103, 126, 27, -78, -103)
+
 [node name="Pillar12" type="StaticBody2D" parent="Cover/Pillars"]
 position = Vector2(-817, -258)
 script = ExtResource("3_cover_body")
@@ -2085,14 +2316,23 @@ fill_color = Color(0.900, 0.890, 0.940, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar15"]
 polygon = PackedVector2Array(-96, 6, -59, -78, -14, -103, 59, -74, 106, -12, 67, 86, 13, 112, -77, 64)
 
-[node name="Rock9" type="StaticBody2D" parent="Cover/Rocks"]
+[node name="Rock8" type="StaticBody2D" parent="Cover/Rocks"]
 position = Vector2(-1298, -2335)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.690, 0.675, 0.720, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock9"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock8"]
 polygon = PackedVector2Array(-94, -16, -66, -44, -28, -109, 52, -70, 82, -36, 77, 39, 50, 73, -1, 89, -73, 75)
+
+[node name="Building5" type="StaticBody2D" parent="Cover/Buildings"]
+position = Vector2(-2550, -520)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.930, 0.880, 0.800, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Buildings/Building5"]
+polygon = PackedVector2Array(150, 120, -150, 120, -150, -120, 150, -120)
 
 [node name="Ruin11" type="StaticBody2D" parent="Cover/Walls"]
 position = Vector2(2550, -1020)
@@ -2220,31 +2460,22 @@ fill_color = Color(0.900, 0.890, 0.940, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Pillars/Pillar19"]
 polygon = PackedVector2Array(-62, -5, -40, -36, 23, -53, 50, -31, 55, 27, 12, 58, -39, 41)
 
-[node name="Rock10" type="StaticBody2D" parent="Cover/Rocks"]
+[node name="Rock9" type="StaticBody2D" parent="Cover/Rocks"]
 position = Vector2(-1903, -902)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.690, 0.675, 0.720, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock10"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock9"]
 polygon = PackedVector2Array(-86, 9, -81, -57, -10, -75, 66, -84, 98, -15, 88, 19, 39, 60, -29, 99, -85, 44)
 
-[node name="Rock11" type="StaticBody2D" parent="Cover/Rocks"]
-position = Vector2(-2340, -536)
-script = ExtResource("3_cover_body")
-height = 0
-fill_color = Color(0.690, 0.675, 0.720, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock11"]
-polygon = PackedVector2Array(-85, 6, -64, -43, -9, -84, 45, -59, 73, -17, 74, 22, 50, 71, -15, 76, -69, 29)
-
-[node name="Rock12" type="StaticBody2D" parent="Cover/Rocks"]
+[node name="Rock10" type="StaticBody2D" parent="Cover/Rocks"]
 position = Vector2(-1245, -2578)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.690, 0.675, 0.720, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock12"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock10"]
 polygon = PackedVector2Array(-91, 1, -71, -45, -11, -79, 50, -62, 76, -21, 90, 35, 39, 58, -6, 74, -76, 40)
 
 [node name="Statue9" type="StaticBody2D" parent="Cover/Landmarks"]
@@ -2256,13 +2487,13 @@ fill_color = Color(0.700, 0.803, 0.898, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Landmarks/Statue9"]
 polygon = PackedVector2Array(-55, 0, -44, -32, -17, -52, 17, -52, 44, -32, 55, 0, 44, 32, 17, 52, -17, 52, -44, 32)
 
-[node name="Building4" type="StaticBody2D" parent="Cover/Buildings"]
+[node name="Building6" type="StaticBody2D" parent="Cover/Buildings"]
 position = Vector2(-2365, -1878)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.930, 0.880, 0.800, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Buildings/Building4"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Buildings/Building6"]
 polygon = PackedVector2Array(115, 102, -115, 102, -115, -102, 115, -102)
 
 [node name="Cliffrock4" type="StaticBody2D" parent="Cover/Rocks"]
@@ -2508,22 +2739,22 @@ fill_color = Color(0.247, 0.556, 0.177, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree35"]
 polygon = PackedVector2Array(-89, 13, -44, -42, -13, -66, 51, -71, 69, -34, 60, 21, 34, 59, -17, 88, -50, 32)
 
-[node name="Rock13" type="StaticBody2D" parent="Cover/Rocks"]
+[node name="Rock11" type="StaticBody2D" parent="Cover/Rocks"]
 position = Vector2(3404, -4376)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.690, 0.675, 0.720, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock13"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock11"]
 polygon = PackedVector2Array(-72, 3, -58, -55, -13, -74, 56, -74, 58, -31, 87, 42, 35, 54, -38, 92, -56, 42)
 
-[node name="Rock14" type="StaticBody2D" parent="Cover/Rocks"]
+[node name="Rock12" type="StaticBody2D" parent="Cover/Rocks"]
 position = Vector2(2253, -3543)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.690, 0.675, 0.720, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock14"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Rocks/Rock12"]
 polygon = PackedVector2Array(-80, -9, -66, -37, -11, -105, 62, -74, 93, -27, 86, 34, 41, 60, -34, 103, -91, 54)
 
 [node name="Tree36" type="StaticBody2D" parent="Cover/Trees"]
@@ -2589,22 +2820,13 @@ fill_color = Color(0.247, 0.556, 0.177, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree42"]
 polygon = PackedVector2Array(-68, -3, -54, -47, -10, -67, 25, -53, 55, -18, 66, 26, 44, 63, -6, 63, -53, 36)
 
-[node name="Lamp3" type="StaticBody2D" parent="Cover/Furniture"]
-position = Vector2(-2000, 396)
-script = ExtResource("3_cover_body")
-height = 0
-fill_color = Color(0.290, 0.310, 0.388, 1.0)
-
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Lamp3"]
-polygon = PackedVector2Array(-28, -0, -20, -20, 0, -28, 20, -20, 28, -0, 20, 20, 0, 28, -20, 20)
-
-[node name="Lamp4" type="StaticBody2D" parent="Cover/Furniture"]
+[node name="Lamp2" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(4200, -4860)
 script = ExtResource("3_cover_body")
 height = 0
 fill_color = Color(0.290, 0.310, 0.388, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Lamp4"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Lamp2"]
 polygon = PackedVector2Array(-28, 0, -20, -20, 0, -28, 20, -20, 28, 0, 20, 20, 0, 28, -20, 20)
 
 [node name="Boundary" type="Node2D" parent="Cover"]
@@ -3099,7 +3321,7 @@ display_name = "Fountain Wisps"
 [node name="MapPieces" type="Node2D" parent="."]
 
 [node name="PlazaGlassA" parent="MapPieces" instance=ExtResource("17_breakable_cover")]
-position = Vector2(-800, 1900)
+position = Vector2(0, 2060)
 
 [node name="Shape" parent="MapPieces/PlazaGlassA"]
 polygon = PackedVector2Array(-160, -30, 160, -30, 160, 30, -160, 30)
@@ -3176,7 +3398,7 @@ rotation = 3.141593
 size = Vector2(560, 180)
 
 [node name="PlazaGlassB" parent="MapPieces" instance=ExtResource("17_breakable_cover")]
-position = Vector2(800, -1900)
+position = Vector2(0, -2060)
 
 [node name="Shape" parent="MapPieces/PlazaGlassB"]
 polygon = PackedVector2Array(-160, -30, 160, -30, 160, 30, -160, 30)
@@ -3532,7 +3754,7 @@ width = 28.0
 default_color = Color(0.863, 0.149, 0.149, 0.7)
 
 [node name="Lane2" type="Line2D" parent="Overview"]
-points = PackedVector2Array(3150, 2460, -500, 1500)
+points = PackedVector2Array(3150, 2460, 0, 1630)
 width = 28.0
 default_color = Color(0.863, 0.149, 0.149, 0.7)
 
@@ -3542,7 +3764,7 @@ width = 28.0
 default_color = Color(0.863, 0.149, 0.149, 0.7)
 
 [node name="Lane4" type="Line2D" parent="Overview"]
-points = PackedVector2Array(-3150, -2460, 500, -1500)
+points = PackedVector2Array(-3150, -2460, 0, -1630)
 width = 28.0
 default_color = Color(0.863, 0.149, 0.149, 0.7)
 
