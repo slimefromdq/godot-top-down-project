@@ -619,14 +619,16 @@ geyser(-2000, 500, "Rim Geyser")
 # entrance open and close on the clock (offset so they alternate), each with a
 # lever post outside. Sleep-fog drifts over Stilt Ridge now and then; a thorn
 # bed in the Orchard. The Plaza Express, a travelator along the Plaza front,
-# flips direction every half minute. A launch flower on the Driftfield's far
-# side sweeps its landing across the Cradle's east side.
+# flips direction every half minute. A launch flower on the Driftfield's
+# inner edge sweeps its landing across the Cradle's inner terrace. It's kept
+# well away from every stair mouth (it used to sit at the foot of the Terrace
+# stairs, so walking up them launched you).
 gate(-2350, -1950, 850, 80, "Ruins North Gate", lever=(-290, -90))
 gate(-3900, -3350, 900, 120, "Tangle Gate", lever=(330, -100), offset=16.0)
 hazard(-3600, -1167, 420, 300, "sleep_fog", "Ridge Fog")
 hazard(3600, 3250, 360, 260, "thorn_bed", "Orchard Thorns")
 travelator(0, 1979, 1000, 150, "Plaza Express")
-flower(2400, 1000, 1500, 833, 20, "Driftfield Flower")
+flower(1100, 1450, 620, 815, 20, "Driftfield Flower")
 # Plaza direction: water stairs in each Fountain Court, running down (west)
 # toward the Sunken Court: quick going down, slow climbing back up.
 water_stairs(2300, 1917, 560, 180, "Fountain Stairs", rot=math.pi)

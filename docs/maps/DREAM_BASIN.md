@@ -51,7 +51,7 @@ cover, reachable on foot, mirrored).
 | **Sleep-fog** ×2 / **Thorn bed** ×2 | Each Stilt Ridge / each Orchard (`scenes/map/hazard_zone.tscn`). |
 | **Travelator** ×2 | The Plaza Express, along each Plaza front (`scenes/map/travelator.tscn`). |
 | **Water stairs** ×2 | Each Fountain Court, running down toward the Sunken Court (`scenes/map/water_stairs.tscn`): x1.45 going down, x0.6 climbing. |
-| **Launch flower** ×2 | Past each Driftfield, landing on the Cradle's side (`scenes/map/jump_pad.tscn` with a sweep). |
+| **Launch flower** ×2 | Each Fountain Court's inner edge, landing on the Cradle's inner terrace (`scenes/map/jump_pad.tscn` with a sweep). No pad or flower sits within 400 px of a stairwell (`check.py`), so walking up stairs never launches you. |
 
 ## Getting around on foot
 

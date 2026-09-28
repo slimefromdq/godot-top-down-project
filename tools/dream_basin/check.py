@@ -294,6 +294,7 @@ def check_objectives(m, grid):
 
 
 PIECE_CLEARANCE = 120        # room to walk around a piece and shoot it
+STAIR_CLEARANCE = 400        # pads and flowers stay this far from any stairwell
 
 
 def piece_rect(pc):
@@ -366,6 +367,16 @@ def check_pieces(m, grid):
                     ok = False
             if gap(p) < BODY + 10 or not reachable(p):
                 print(f"  FLOWER PAD BLOCKED OR UNREACHABLE: {pc['name']} at {p}")
+                ok = False
+    # No pad or flower in a stair mouth: walking up the stairs must never
+    # launch you somewhere else.
+    pads = [(j["name"], (j["x"], j["y"])) for j in m["jump_pads"]]
+    pads += [(pc["name"], (pc["x"], pc["y"])) for pc in pieces if pc["kind"] == "flower"]
+    for name, p in pads:
+        for st in m["stairs"]:
+            d = math.dist(p, (st["x"], st["y"])) - max(st["w"], st["d"]) / 2
+            if d < STAIR_CLEARANCE:
+                print(f"  PAD IN A STAIR MOUTH: {name} at {p} ({d:.0f}px from the stairs at ({st['x']:.0f}, {st['y']:.0f}))")
                 ok = False
     # Every gate closed at once (the worst case): the Cradle, every camp,
     # geyser and Dreamer ring must still be reachable on foot from each base.
