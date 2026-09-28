@@ -12,6 +12,16 @@ class_name FloorGrid
 @export var major_every: int = 6
 
 
+func _ready() -> void:
+	add_to_group(VisualToggles.GROUP)
+	if not Engine.is_editor_hint():
+		on_visual_toggles_changed()
+
+
+func on_visual_toggles_changed() -> void:
+	visible = VisualToggles.is_on(&"floor_grid")
+
+
 func _draw() -> void:
 	var major := Color(color, color.a * 2.0)
 	var i := 0

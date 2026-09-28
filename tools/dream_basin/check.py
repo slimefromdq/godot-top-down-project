@@ -284,8 +284,52 @@ def check_objectives(m, grid):
     return ok
 
 
+PIECE_CLEARANCE = 120        # room to walk around a piece and shoot it
+
+
+def piece_rect(pc):
+    return _rect(pc["x"] - pc["w"] / 2, pc["y"] - pc["h"] / 2, pc["x"] + pc["w"] / 2, pc["y"] + pc["h"] / 2)
+
+
+def check_pieces(m, grid):
+    print("== Map pieces ==")
+    ok = True
+    pieces = m["pieces"]
+    kinds = sorted({pc["kind"] for pc in pieces})
+    print(f"  {len(pieces)} pieces ({', '.join(kinds)})")
+    unmatched = _mirrored([(pc["x"], pc["y"]) for pc in pieces])
+    if unmatched:
+        print(f"  UNMIRRORED pieces: {unmatched}")
+        ok = False
+    ring = next(mk for mk in m["markers"] if mk["kind"] == "arena_ring")
+    seen, cell_of = flood(m, grid, (-700, Y(3880)), use_pads=False)
+    others = [o for o in m["full"] + m["low"] if o.get("kind") != "breakable"]
+    for pc in pieces:
+        p = (pc["x"], pc["y"])
+        d = min(dist_to_poly(p, o["pts"]) for o in others) - max(pc["w"], pc["h"]) / 2
+        if d < PIECE_CLEARANCE:
+            print(f"  PIECE TOO CLOSE TO COVER: {pc['name']} at {p} ({d:.0f}px)")
+            ok = False
+        e = math.hypot(p[0] / ring["rx"], p[1] / ring["ry"])
+        inner = (ring["rx"] - ring["width"] / 2 - max(pc["w"], pc["h"]) / 2) / ring["rx"]
+        outer = (ring["rx"] + ring["width"] / 2 + max(pc["w"], pc["h"]) / 2) / ring["rx"]
+        if inner < e < outer:
+            print(f"  PIECE ON THE CRADLE RING: {pc['name']} at {p}")
+            ok = False
+        if pc["kind"] == "geyser":
+            r, c = cell_of(*p)
+            if not seen[r][c]:
+                print(f"  GEYSER UNREACHABLE ON FOOT: {pc['name']} at {p}")
+                ok = False
+    return ok
+
+
 def main():
     m = build()
+    # Breakable cover counts as intact full cover for every check below, so
+    # nothing depends on it being broken.
+    m["full"] = m["full"] + [{"pts": piece_rect(pc), "kind": "breakable"}
+                             for pc in m["pieces"] if pc["kind"] == "breakable"]
     # Dreamer bodies block walking like low cover.
     m["low"] = m["low"] + [{"pts": _circle(d["x"], d["y"], d["body"]), "kind": "dreamer"} for d in m["dreamers"]]
     ok = True
@@ -350,6 +394,7 @@ def main():
     ok &= check_motes(m, grid)
     ok &= check_dreamers(m)
     ok &= check_objectives(m, grid)
+    ok &= check_pieces(m, grid)
 
     # Without pads/teleporters, from the Cradle, the only way up is stairs.
     # Block the stairwells too and the Wilds must become unreachable.

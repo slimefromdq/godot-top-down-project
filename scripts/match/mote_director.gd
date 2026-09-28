@@ -64,6 +64,8 @@ func _ready() -> void:
 	small_data = load(SMALL)
 	dream_data = load(DREAM)
 	reset_schedule()
+	if manager != null:
+		manager.clock_jumped.connect(func(_from, to): resync_to_clock(to))
 
 
 func get_rules() -> MatchRules:
@@ -305,6 +307,33 @@ func _spawn_in_zone(zone: DreamZone) -> void:
 			free.append(point)
 	if not free.is_empty():
 		spawn_mote(free.pick_random().global_position, false, zone)
+
+
+## After a clock jump: end any zone in progress and put the next zone and
+## Dream Mote on the times the regular schedule would give them. A zone the
+## new time falls inside starts dreaming at once (for its full duration).
+## A Dream Mote already out stays out.
+func resync_to_clock(clock: float) -> void:
+	var rules := get_rules()
+	if _zone_phase != DreamZone.ZoneState.OFF:
+		_set_pair_state(DreamZone.ZoneState.OFF)
+		zone_ended.emit(_zone_pair, _pair_name())
+		_last_pair = _zone_pair
+		_zone_pair = &""
+	_next_zone_time = _next_on_schedule(rules.zone_first_time, rules.zone_interval, clock, rules.zone_duration)
+	_trickle_left = rules.trickle_interval
+	if not _dream_out and not dream_mote_exists():
+		_dream_warned = false
+		_next_dream_time = _next_on_schedule(rules.dream_mote_first_time, rules.dream_mote_interval, clock, 0.0)
+
+
+# The first first + k * interval whose [start, start + length) isn't over.
+static func _next_on_schedule(first: float, interval: float, clock: float, length: float) -> float:
+	if clock < first or interval <= 0.0:
+		return first
+	var k := floorf((clock - first) / interval)
+	var start := first + k * interval
+	return start if clock < start + length else start + interval
 
 
 ## Debug: announce the next dreaming zone now.

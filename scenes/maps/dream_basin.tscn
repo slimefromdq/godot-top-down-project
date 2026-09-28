@@ -18,6 +18,8 @@
 [ext_resource type="Resource" path="res://resources/match/neutrals/dream_wisps.tres" id="16_dream_wisps"]
 [ext_resource type="Script" path="res://scripts/map/map_ambience.gd" id="20_map_ambience"]
 [ext_resource type="Resource" path="res://resources/map/dream_basin_ambience.tres" id="21_ambience"]
+[ext_resource type="PackedScene" path="res://scenes/map/breakable_cover.tscn" id="30_1_breakable_cover"]
+[ext_resource type="PackedScene" path="res://scenes/map/mote_geyser.tscn" id="30_2_mote_geyser"]
 
 [node name="DreamBasin" type="Node2D"]
 script = ExtResource("1_game_map")
@@ -2688,6 +2690,56 @@ script = ExtResource("13_neutral_camp")
 position = Vector2(-1500, -1380)
 data = ExtResource("16_dream_wisps")
 display_name = "Driftfield Wisps"
+
+[node name="MapPieces" type="Node2D" parent="."]
+
+[node name="PlazaGlassA" parent="MapPieces" instance=ExtResource("30_1_breakable_cover")]
+position = Vector2(-800, 1900)
+
+[node name="Shape" parent="MapPieces/PlazaGlassA"]
+polygon = PackedVector2Array(-160, -30, 160, -30, 160, 30, -160, 30)
+
+[node name="DriftfieldGlassA" parent="MapPieces" instance=ExtResource("30_1_breakable_cover")]
+position = Vector2(1400, 1700)
+
+[node name="Shape" parent="MapPieces/DriftfieldGlassA"]
+polygon = PackedVector2Array(-30, -160, 30, -160, 30, 160, -30, 160)
+
+[node name="RidgeGlassB" parent="MapPieces" instance=ExtResource("30_1_breakable_cover")]
+position = Vector2(-3300, -1000)
+
+[node name="Shape" parent="MapPieces/RidgeGlassB"]
+polygon = PackedVector2Array(-160, -30, 160, -30, 160, 30, -160, 30)
+
+[node name="GladeGeyserB" parent="MapPieces" instance=ExtResource("30_2_mote_geyser")]
+position = Vector2(-3400, -600)
+
+[node name="RimGeyserA" parent="MapPieces" instance=ExtResource("30_2_mote_geyser")]
+position = Vector2(-2000, 600)
+
+[node name="PlazaGlassB" parent="MapPieces" instance=ExtResource("30_1_breakable_cover")]
+position = Vector2(800, -1900)
+
+[node name="Shape" parent="MapPieces/PlazaGlassB"]
+polygon = PackedVector2Array(-160, -30, 160, -30, 160, 30, -160, 30)
+
+[node name="DriftfieldGlassB" parent="MapPieces" instance=ExtResource("30_1_breakable_cover")]
+position = Vector2(-1400, -1700)
+
+[node name="Shape" parent="MapPieces/DriftfieldGlassB"]
+polygon = PackedVector2Array(-30, -160, 30, -160, 30, 160, -30, 160)
+
+[node name="RidgeGlassA" parent="MapPieces" instance=ExtResource("30_1_breakable_cover")]
+position = Vector2(3300, 1000)
+
+[node name="Shape" parent="MapPieces/RidgeGlassA"]
+polygon = PackedVector2Array(-160, -30, 160, -30, 160, 30, -160, 30)
+
+[node name="GladeGeyserA" parent="MapPieces" instance=ExtResource("30_2_mote_geyser")]
+position = Vector2(3400, 600)
+
+[node name="RimGeyserB" parent="MapPieces" instance=ExtResource("30_2_mote_geyser")]
+position = Vector2(2000, -600)
 
 [node name="DreamZones" type="Node2D" parent="."]
 

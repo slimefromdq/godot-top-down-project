@@ -17,6 +17,21 @@ import os
 from check import dist_to_poly
 from layout import HX, HY, Y, build
 
+def export_pieces(s, m):
+    """Map pieces (Map Liveliness Plan): breakable cover and Mote geysers."""
+    scenes = {"breakable": s.res("PackedScene", "res://scenes/map/breakable_cover.tscn"),
+              "geyser": s.res("PackedScene", "res://scenes/map/mote_geyser.tscn")}
+    s.node("MapPieces", ".", "Node2D")
+    for pc in m["pieces"]:
+        side = "A" if pc["y"] > 0 or (pc["y"] == 0 and pc["x"] < 0) else "B"
+        name = pc["name"].title().replace(" ", "") + side
+        s.node(name, "MapPieces", instance=scenes[pc["kind"]], position=v2((pc["x"], pc["y"])))
+        if pc["kind"] == "breakable":
+            hw, hh = pc["w"] / 2, pc["h"] / 2
+            s.node("Shape", f"MapPieces/{name}",
+                   polygon=pva([(-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh)]))
+
+
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..")
 MAP_OUT = os.path.join(ROOT, "scenes", "maps", "dream_basin.tscn")
 WORLD_OUT = os.path.join(ROOT, "scenes", "dream_basin_world.tscn")
@@ -244,6 +259,7 @@ def export_map(m):
         name = cp["name"].title().replace(" ", "").replace("The", "") + side
         s.node(name, "NeutralCamps", "Node2D", script=camp_script, position=v2((cp["x"], cp["y"])),
                data=data, display_name=f'"{cp["name"]}"')
+    export_pieces(s, m)
     s.node("DreamZones", ".", "Node2D")
     seen_pairs = {}
     for z in m["dream_zones"]:

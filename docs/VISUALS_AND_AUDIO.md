@@ -307,6 +307,9 @@ a major pentatonic over two octaves via `chime_pitch(n)`) and the two chords
 | `mote_fade` | A dropped Mote ran out of time | position |
 | `mote_decoy_pop` | A decoy was grabbed | source (who grabbed it) |
 | `zone_start` | A dreaming zone pair starts | position (one half) |
+| `piece_hit` | A map piece (dream-glass, geyser) takes a hit (sound) | position |
+| `glass_shatter` / `glass_regrow_warning` / `glass_restore` | Dream-glass breaks / starts shimmering back / is solid again | position |
+| `geyser_pop` / `geyser_ready` | A Mote geyser pops its Motes / is ready again | position |
 | `deposit_tick` | One Mote goes into a Dreamer | source (depositor), index (1, 2, 3 ... within the visit), pitch (up the pentatonic scale), delivered, target_position, team |
 | `bank_complete` / `deliver_complete` | A visit to your own / the enemy's Dreamer ends having deposited | source, total, chord (bank: resolving; deliver: brighter) |
 | `sweet_dreams` | A team earns the Sweet Dreams buff | position (their Dreamer) |

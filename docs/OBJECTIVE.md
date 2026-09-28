@@ -82,6 +82,16 @@ Every number is in the camp's `NeutralData`
   damage taken, a little faster (teammates who are dead at the time get
   the rest of it when they respawn).
 
+## Map pieces
+
+- **Dream-glass** (6 on Dream Basin): full cover that both teams can shoot
+  down. It cracks as it takes damage and shatters at 0; about 25 seconds
+  later it shimmers for 3 seconds and grows back (never on top of anyone:
+  it waits for them to move).
+- **Mote geysers** (4): anyone can hit one. Six hits pop 3 Motes around it
+  for anyone to grab, then it rests for 45 seconds. Hits fade if nobody
+  keeps hitting it. Every number is in `resources/map/pieces/*.tres`.
+
 ## Shops
 
 Each base has a shop stall in its spawn room. Press **B** to open the shop:

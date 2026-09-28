@@ -35,7 +35,8 @@ func _process(delta: float) -> void:
 		queue_free()
 		return
 	global_position = dreamer.global_position
-	if ScreenCull.is_near(self, settings.glow_radius):
+	visible = VisualToggles.is_on(&"dreamer_glow")
+	if visible and ScreenCull.is_near(self, settings.glow_radius):
 		queue_redraw()
 
 

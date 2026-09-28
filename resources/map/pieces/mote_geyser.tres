@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="MapPieceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/map/map_piece_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Mote geyser"
+max_health = 100000.0
+body_radius = 46.0
+hits_to_pop = 6
+hit_decay_time = 4.0
+mote_count = 3
+mote_value = 1
+mote_burst_radius = 140.0
+cooldown = 45.0
+hit_cue = &"piece_hit"
+break_cue = &"geyser_pop"
+restore_cue = &"geyser_ready"

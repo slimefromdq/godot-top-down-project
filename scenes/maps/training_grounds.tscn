@@ -3,6 +3,8 @@
 [ext_resource type="Script" path="res://scripts/map/game_map.gd" id="1_map"]
 [ext_resource type="Script" path="res://scripts/map/floor_grid.gd" id="2_grid"]
 [ext_resource type="Script" path="res://scripts/map/cover_body.gd" id="3_cover"]
+[ext_resource type="PackedScene" path="res://scenes/map/breakable_cover.tscn" id="4_glass"]
+[ext_resource type="PackedScene" path="res://scenes/map/mote_geyser.tscn" id="5_geyser"]
 
 [node name="TrainingGrounds" type="Node2D"]
 script = ExtResource("1_map")
@@ -158,4 +160,22 @@ offset_bottom = 760
 theme_override_colors/font_color = Color(0.3, 0.26, 0.2, 0.85)
 theme_override_font_sizes/font_size = 26
 text = "Low cover (crescents fly over)  |  pillars block"
+horizontal_alignment = 1
+
+[node name="MapPieces" type="Node2D" parent="."]
+
+[node name="Glass" parent="MapPieces" instance=ExtResource("4_glass")]
+position = Vector2(-350, 1050)
+
+[node name="Geyser" parent="MapPieces" instance=ExtResource("5_geyser")]
+position = Vector2(400, 1050)
+
+[node name="MapPiecesSign" type="Label" parent="Signs"]
+offset_left = -500
+offset_top = 1160
+offset_right = 600
+offset_bottom = 1200
+theme_override_colors/font_color = Color(0.3, 0.26, 0.2, 0.85)
+theme_override_font_sizes/font_size = 22
+text = "MAP PIECES  -  dream-glass shatters and regrows  |  hit the geyser to pop Motes"
 horizontal_alignment = 1

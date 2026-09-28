@@ -52,6 +52,8 @@ L = {
     # Items and neutral objectives
     "shops": [],        # {x, y, team} one per team, in its spawn room
     "camps": [],        # neutral camps {x, y, kind, name}; kind = a NeutralData file
+    # Map pieces (Map Liveliness Plan): breakable cover and Mote geysers
+    "pieces": [],       # {x, y, kind, w, h, name}; kind = "breakable" | "geyser"
 }
 
 
@@ -195,6 +197,18 @@ def camp(x, y, kind, name):
     """A neutral camp (resources/match/neutrals/<kind>.tres). The rotation
     makes its twin, except for a camp on the centre."""
     L["camps"].append({"x": x, "y": Y(y), "kind": kind, "name": name})
+
+
+def breakable(x, y, w, h, name):
+    """Dream-glass: full cover that shatters and regrows. check.py treats it
+    as intact full cover, so no lane, route or standable point relies on it
+    being broken."""
+    L["pieces"].append({"x": x, "y": Y(y), "kind": "breakable", "w": w, "h": h, "name": name})
+
+
+def geyser(x, y, name):
+    """A Mote geyser: hit it to pop Motes for anyone. Kept clear of cover."""
+    L["pieces"].append({"x": x, "y": Y(y), "kind": "geyser", "w": 0, "h": 0, "name": name})
 
 
 def lane(a, b, text):
@@ -497,6 +511,18 @@ camp(-3750, -1850, "sleepwalker", "Ridge Sleepwalker")
 camp(-4100, 1600, "dream_wisps", "Tangle Wisps")
 camp(1500, 1150, "dream_wisps", "Driftfield Wisps")
 
+# ==========================================================================
+# MAP PIECES (Map Liveliness Plan, phase 2)
+#   Dream-glass panes that shatter and regrow: one screening the Plaza
+#   approach, one at the Driftfield's inner edge, one on the Glade/Ridge
+#   border. Mote geysers in the Glade and on the Cradle's west rim.
+# ==========================================================================
+breakable(-800, 1583, 320, 60, "Plaza Glass")
+breakable(1400, 1417, 60, 320, "Driftfield Glass")
+breakable(-3300, -833, 320, 60, "Ridge Glass")
+geyser(-3400, -500, "Glade Geyser")
+geyser(-2000, 500, "Rim Geyser")
+
 # Region labels (authored half only; rotated copies get B names below)
 label(-3750, 1450, "THE TANGLE", 150)
 label(-3750, 0, "THE GLADE", 130)
@@ -558,6 +584,8 @@ def build():
         if cp["x"] == 0 and cp["y"] == 0:
             continue  # the centre is its own twin
         out["camps"].append({**cp, "x": -cp["x"], "y": -cp["y"]})
+    for pc in L["pieces"]:
+        out["pieces"].append({**pc, "x": -pc["x"], "y": -pc["y"]})
     for z in L["dream_zones"]:
         out["dream_zones"].append({**z, "pts": [_rot(p) for p in z["pts"]],
                                    "spawns": [_rot(p) for p in z["spawns"]]})

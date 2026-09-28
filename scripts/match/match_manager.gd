@@ -38,10 +38,14 @@ signal woke(team: StringName)
 signal wake_milestone(team: StringName, mark: float)
 ## A hero's ultimate charge changed (UltimateCharge, 0..1).
 signal ultimate_charge_changed(actor: Hero, ratio: float)
+## Debug: the clock jumped (jump_clock). Schedules re-sync to the new time.
+signal clock_jumped(from: float, to: float)
 
 enum State { WARMUP, PLAYING, ENDED }
 
 const GROUP := &"match_manager"
+## Nodes in this group get on_clock_jumped(from, to) after jump_clock.
+const CLOCK_LISTENERS := &"clock_listeners"
 const TEAMS: Array[StringName] = [&"a", &"b"]
 const TEAM_NAMES := {&"a": "Dawn", &"b": "Dusk"}
 ## Dawn mint, Dusk coral (light enough for text on a dark HUD).
@@ -175,6 +179,21 @@ func start_playing() -> void:
 	warmup_left = 0.0
 	_passive_timer = 0.0
 	state_changed.emit(state)
+
+
+## Debug: set the match clock to `seconds` (forward or back) and start
+## playing if we weren't. Everything scheduled on the clock (dreaming zones,
+## the Dream Mote, neutral camps, map pieces, the mood) re-syncs through
+## clock_jumped as if the match had reached that time normally: what should
+## be on the map at that time is there, what shouldn't be yet is gone. Gold,
+## XP and levels are left alone.
+func jump_clock(seconds: float) -> void:
+	var from := clock
+	start_playing()
+	clock = maxf(0.0, seconds)
+	clock_jumped.emit(from, clock)
+	# Map-side listeners (pieces, the mood) that don't hold the manager.
+	get_tree().call_group(CLOCK_LISTENERS, &"on_clock_jumped", from, clock)
 
 
 func end_match(winner_team: StringName) -> void:

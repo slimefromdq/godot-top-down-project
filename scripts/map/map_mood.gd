@@ -10,11 +10,17 @@ var _manager: MatchManager
 
 
 func _ready() -> void:
+	add_to_group(MatchManager.CLOCK_LISTENERS)
 	color = profile.sample(0.0) if profile else Color.WHITE
 
 
+## Debug clock jump: show the new time's mood at once, no easing.
+func on_clock_jumped(_from: float, _to: float) -> void:
+	color = get_target_color()
+
+
 func get_target_color() -> Color:
-	if profile == null:
+	if profile == null or not VisualToggles.is_on(&"mood"):
 		return Color.WHITE
 	if _manager == null or not is_instance_valid(_manager):
 		_manager = MatchManager.find(get_tree())

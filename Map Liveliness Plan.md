@@ -79,6 +79,13 @@ docs/VISUALS_AND_AUDIO.md > Map ambience).
 Heroes can damage both through the normal hurtbox path (they're
 `HealthComponent` targets on a neutral team), so no hero code changes.
 
+**Status: built.** `MapPieceData` (`resources/map/pieces/`),
+`BreakableCover` and `MoteGeyser` (`scenes/map/`), 6 panes and 4 geysers on
+Dream Basin (placed by `layout.py`, checked by `check.py`), one of each in
+Training Grounds, cues in the match profiles. Also added: F1 > Match > Time
+(jump the clock; everything re-syncs) and F1 > Tools > Visuals (switch off
+decorative layers).
+
 ## Phase 3: neutral map pieces, part 2 (gates, hazards, platforms)
 
 | Piece | Behaviour | Data |

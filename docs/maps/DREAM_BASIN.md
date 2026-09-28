@@ -40,6 +40,13 @@ cover, reachable on foot, mirrored).
 | **Sleepwalker** ×4 | Each Glade and each Stilt Ridge. |
 | **Dream Wisps** ×4 | Each Tangle and each Driftfield. |
 
+| **Dream-glass** ×6 | Screening each Plaza approach, at each Driftfield's inner edge, on each Glade/Ridge border (`scenes/map/breakable_cover.tscn`). |
+| **Mote geyser** ×4 | Each Glade and each Cradle rim (`scenes/map/mote_geyser.tscn`). |
+
+`check.py` counts intact glass as full cover for every check (lanes, routes,
+standable points), so nothing depends on it being broken, and keeps every
+piece mirrored, clear of cover and off the Cradle ring.
+
 The exporter's colours have drifted from the hand-tuned ones in
 `scenes/maps/dream_basin.tscn`, so these nodes were spliced into the scene
 rather than re-exporting the whole file.
