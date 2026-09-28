@@ -467,6 +467,36 @@ player, `VisualsComponent` stops drawing an enemy (and its health bar and
 minimap dot) while it's hidden; you, your teammates and revealed actors
 (`StatusEffect.reveals`) are always drawn. See `CombatQueries` for the rule.
 
+## Map ambience
+
+A map's idle life comes from one `AmbienceSet`
+(`resources/map/dream_basin_ambience.tres` for Dream Basin), used by a
+`MapAmbience` node in the map scene. It's presentation only: it reads the map
+and the match and never changes them.
+
+- **Regions.** `regions` maps a DreamZone `pair_id` (`glade`, `ridge`,
+  `tangle`, `ruins`, `driftfield`, `orchard`) to an `AmbienceProfile`. Every
+  DreamZone with a profile gets a `RegionAmbience` that draws inside the
+  zone's polygon. A region kind with no entry stays quiet.
+  - **Drifters:** pollen, fog wisps, dust, petals. Density, colours, size,
+    stretch, drift, sway and twinkle.
+  - **Critters:** birds, moths, fireflies. They scatter from any hero within
+    `scatter_radius`, then settle back after `settle_time`.
+  - **Sound bed:** `loop`, crossfaded in over `crossfade_time` while the
+    camera (else the local player) is in a region of that kind. The
+    placeholder loops in `audio/ambience/` come from
+    `tools/map/make_ambience_audio.py`. Replace them with real recordings of
+    the same name.
+- **Mood.** A `MapMoodProfile` of `times` / `colors` keyframes on the match
+  clock, shown by a `MapMood` (CanvasModulate: the world is tinted, the HUD
+  isn't). Dream Basin dims toward the Nightmare at 10:00, flares rose while
+  it wakes, and turns moonlit at 15:00 when Motes are worth double.
+- **Dreamer glow.** A team-coloured glow on the ground around each Dreamer:
+  `glow_alpha_asleep` at an empty wake meter, up to `glow_alpha_full` at a
+  full one, and pulsing (`stir_pulse_*`) while it stirs.
+
+Checks: `tools/map/map_pieces_infra_test.tscn`.
+
 ## Projectiles
 
 Projectiles are plain scenes (`scenes/bullet.tscn`,

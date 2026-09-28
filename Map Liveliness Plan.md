@@ -64,6 +64,11 @@ particles, and map audio regions".
 Done when: Dream Basin looks and sounds alive with nobody fighting, and the
 perf tool (`tools/perf`) shows no frame-time regression.
 
+**Status: built.** Region ambience (drifters, critters, sound beds), match
+mood and the Dreamer glow are in (`MapAmbience`, docs/VISUALS_AND_AUDIO.md >
+Map ambience). Still to do: bushes parting as bodies pass, critters
+scattering from shots as well as heroes, and fountain ripples.
+
 ## Phase 2: neutral map pieces, part 1 (breakables and geysers)
 
 | Piece | Behaviour | Data |

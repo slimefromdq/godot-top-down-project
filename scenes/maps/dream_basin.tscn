@@ -16,6 +16,8 @@
 [ext_resource type="Resource" path="res://resources/match/neutrals/nightmare.tres" id="14_nightmare"]
 [ext_resource type="Resource" path="res://resources/match/neutrals/sleepwalker.tres" id="15_sleepwalker"]
 [ext_resource type="Resource" path="res://resources/match/neutrals/dream_wisps.tres" id="16_dream_wisps"]
+[ext_resource type="Script" path="res://scripts/map/map_ambience.gd" id="20_map_ambience"]
+[ext_resource type="Resource" path="res://resources/map/dream_basin_ambience.tres" id="21_ambience"]
 
 [node name="DreamBasin" type="Node2D"]
 script = ExtResource("1_game_map")
@@ -2952,6 +2954,10 @@ position = Vector2(-4450, -4380)
 
 [node name="Spawn4" type="Marker2D" parent="DreamZones/Orchard2"]
 position = Vector2(-3350, -4620)
+
+[node name="Ambience" type="Node2D" parent="."]
+script = ExtResource("20_map_ambience")
+ambience = ExtResource("21_ambience")
 
 [node name="Overview" type="Node2D" parent="." groups=["map_overview"]]
 visible = false
