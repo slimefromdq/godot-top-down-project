@@ -92,8 +92,8 @@ movement_component = NodePath("../Components/MovementComponent")
 shape = SubResource("CircleShape2D_hurt")
 
 [node name="HealthBar" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("13_bar")]
-offset_left = -40.0
-offset_top = -86.0
-offset_right = 40.0
+offset_left = -46.0
+offset_top = -90.0
+offset_right = 60.0
 offset_bottom = -72.0
 health_component = NodePath("../Components/HealthComponent")
