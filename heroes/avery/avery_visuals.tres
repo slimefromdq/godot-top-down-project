@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="VisualProfile" format=3]
 
-[ext_resource type="PackedScene" path="res://heroes/avery/art/avery_rig_frames_aim.tscn" id="1_clfyw"]
+[ext_resource type="PackedScene" path="res://heroes/avery/art/avery_live_rig.tscn" id="1_clfyw"]
 [ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="1_x"]
 [ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="2_x"]
 [ext_resource type="PackedScene" path="res://effects/spawn_puff.tscn" id="3_x"]
@@ -13,8 +13,6 @@
 [ext_resource type="PackedScene" path="res://effects/overdrive_burst.tscn" id="10_x"]
 [ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="11_x"]
 [ext_resource type="PackedScene" path="res://effects/kill_confirm.tscn" id="12_x"]
-[ext_resource type="SpriteFrames" path="res://heroes/avery/art/avery_rig_frames_legs.tres" id="13_jmmaf"]
-[ext_resource type="SpriteFrames" path="res://heroes/avery/art/avery_rig_frames.tres" id="14_jmmaf"]
 
 [sub_resource type="Resource" id="Sub_5"]
 script = ExtResource("2_x")
@@ -95,12 +93,8 @@ align_to_direction = false
 
 [resource]
 script = ExtResource("1_x")
-sprite_frames = ExtResource("14_jmmaf")
-legs_frames = ExtResource("13_jmmaf")
 body_scale = Vector2(0.55, 0.55)
-aim_part = ExtResource("1_clfyw")
-aim_part_pivot = Vector2(20, -24)
-aim_part_rest_angle = 90.0
+live_rig = ExtResource("1_clfyw")
 cues = Dictionary[StringName, ExtResource("2_x")]({
 &"ability_failed": SubResource("Sub_5"),
 &"dawnbreaker_hit": SubResource("Sub_11"),

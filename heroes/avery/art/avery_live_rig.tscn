@@ -1,0 +1,299 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/live_rig.gd" id="1_20cb5"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/wings/down.png" id="2_m4rj5"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/cape/down.png" id="3_src2n"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/legs/down.png" id="4_24uer"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/wings/down_right.png" id="5_gv060"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/cape/down_right.png" id="6_315gb"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/legs/down_right.png" id="7_cml50"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/wings/right.png" id="8_sa08v"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/cape/right.png" id="9_cxrww"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/legs/right.png" id="10_oesin"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/cape/up_right.png" id="11_mm6r6"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/legs/up_right.png" id="12_muvhr"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/legs/up.png" id="13_fyjko"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/torso/down.png" id="14_sybd6"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/head/down.png" id="15_5ys64"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/free_arm/down.png" id="16_bxn1u"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/sword_arm/down.png" id="17_ihhcq"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/sword_blade.png" id="18_ue376"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/free_arm/down_right.png" id="19_cwwcy"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/torso/down_right.png" id="20_oe6wv"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/head/down_right.png" id="21_40fvn"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/free_arm/right.png" id="22_61hih"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/torso/right.png" id="23_y1akm"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/head/right.png" id="24_1171a"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/free_arm/up_right.png" id="25_hxcbk"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/torso/up_right.png" id="26_oiw74"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/wings/up_right.png" id="27_k8dee"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/head/up_right.png" id="28_2hpee"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/free_arm/up.png" id="29_wkb2h"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/sword_arm/up.png" id="30_tlvmh"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/torso/up.png" id="31_qm1sl"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/wings/up.png" id="32_r78um"]
+[ext_resource type="Texture2D" path="res://heroes/avery/art/directions/head/up.png" id="33_dvjv3"]
+
+[node name="AveryLiveRig" type="Node2D" unique_id=1806198112]
+script = ExtResource("1_20cb5")
+
+[node name="Lower" type="Node2D" parent="." unique_id=1683498191]
+
+[node name="Down" type="Node2D" parent="Lower" unique_id=493855162]
+
+[node name="Wings" type="Sprite2D" parent="Lower/Down" unique_id=1537915407]
+position = Vector2(0, -15)
+texture = ExtResource("2_m4rj5")
+offset = Vector2(0, -11.100006)
+metadata/sway = 0.6
+
+[node name="Cape" type="Sprite2D" parent="Lower/Down" unique_id=120765870]
+position = Vector2(0, -35)
+texture = ExtResource("3_src2n")
+offset = Vector2(0, 46)
+metadata/sway = 1.0
+
+[node name="Legs" type="Sprite2D" parent="Lower/Down" unique_id=180079033]
+position = Vector2(0, 22)
+texture = ExtResource("4_24uer")
+offset = Vector2(0, 34.4)
+
+[node name="DownRight" type="Node2D" parent="Lower" unique_id=998202164]
+
+[node name="Wings" type="Sprite2D" parent="Lower/DownRight" unique_id=1314244129]
+position = Vector2(-12, -14)
+texture = ExtResource("5_gv060")
+offset = Vector2(0, -11)
+metadata/sway = 0.6
+
+[node name="Cape" type="Sprite2D" parent="Lower/DownRight" unique_id=1755864084]
+position = Vector2(-12, -34)
+rotation = 0.22
+texture = ExtResource("6_315gb")
+offset = Vector2(0, 48.760002)
+metadata/sway = 1.0
+
+[node name="Legs" type="Sprite2D" parent="Lower/DownRight" unique_id=809677713]
+position = Vector2(0, 22)
+texture = ExtResource("7_cml50")
+offset = Vector2(0, 34.8)
+
+[node name="Right" type="Node2D" parent="Lower" unique_id=917000050]
+
+[node name="Wings" type="Sprite2D" parent="Lower/Right" unique_id=1649484842]
+position = Vector2(-12, -13)
+texture = ExtResource("8_sa08v")
+offset = Vector2(0, -11.100006)
+metadata/sway = 0.6
+
+[node name="Cape" type="Sprite2D" parent="Lower/Right" unique_id=1853966169]
+position = Vector2(-14, -33)
+rotation = 0.25
+texture = ExtResource("9_cxrww")
+offset = Vector2(0, 48.760002)
+metadata/sway = 1.0
+
+[node name="Legs" type="Sprite2D" parent="Lower/Right" unique_id=1447661145]
+position = Vector2(0, 22)
+texture = ExtResource("10_oesin")
+offset = Vector2(0, 32.8)
+
+[node name="UpRight" type="Node2D" parent="Lower" unique_id=346660306]
+
+[node name="Cape" type="Sprite2D" parent="Lower/UpRight" unique_id=620955787]
+position = Vector2(-8, -32)
+rotation = 0.1
+texture = ExtResource("11_mm6r6")
+offset = Vector2(0, 48.3)
+metadata/sway = 1.0
+
+[node name="Legs" type="Sprite2D" parent="Lower/UpRight" unique_id=597243462]
+position = Vector2(0, 22)
+texture = ExtResource("12_muvhr")
+offset = Vector2(0, 34)
+
+[node name="Up" type="Node2D" parent="Lower" unique_id=1543471717]
+
+[node name="Legs" type="Sprite2D" parent="Lower/Up" unique_id=1892112996]
+position = Vector2(0, 22)
+texture = ExtResource("13_fyjko")
+offset = Vector2(0, 33.2)
+
+[node name="Upper" type="Node2D" parent="." unique_id=1195945483]
+
+[node name="Down" type="Node2D" parent="Upper" unique_id=185879324]
+
+[node name="Torso" type="Sprite2D" parent="Upper/Down" unique_id=935160133]
+position = Vector2(0, 36)
+texture = ExtResource("14_sybd6")
+offset = Vector2(0, -37.5)
+
+[node name="Head" type="Sprite2D" parent="Upper/Down" unique_id=1879830717]
+position = Vector2(0, -27)
+texture = ExtResource("15_5ys64")
+offset = Vector2(0, -38.5)
+
+[node name="FreeArm" type="Sprite2D" parent="Upper/Down" unique_id=76671512]
+position = Vector2(22, -23)
+texture = ExtResource("16_bxn1u")
+offset = Vector2(0, 28.14)
+metadata/sway = 0.5
+
+[node name="AimArm" type="Node2D" parent="Upper/Down" unique_id=798005606]
+position = Vector2(-22, -23)
+metadata/rest_angle = 90.0
+
+[node name="SwordArm" type="Sprite2D" parent="Upper/Down/AimArm" unique_id=87604025]
+texture = ExtResource("17_ihhcq")
+offset = Vector2(-3.6000004, 42.4)
+
+[node name="Sword" type="Sprite2D" parent="Upper/Down/AimArm" unique_id=84547564]
+show_behind_parent = true
+position = Vector2(-2, 86)
+texture = ExtResource("18_ue376")
+offset = Vector2(0, 14)
+flip_v = true
+
+[node name="DownRight" type="Node2D" parent="Upper" unique_id=1627882366]
+
+[node name="FreeArm" type="Sprite2D" parent="Upper/DownRight" unique_id=1612593298]
+position = Vector2(-20, -22)
+texture = ExtResource("19_cwwcy")
+offset = Vector2(0, 27.3)
+metadata/sway = 0.5
+
+[node name="Torso" type="Sprite2D" parent="Upper/DownRight" unique_id=1767238542]
+position = Vector2(0, 36)
+texture = ExtResource("20_oe6wv")
+offset = Vector2(0, -37)
+
+[node name="Head" type="Sprite2D" parent="Upper/DownRight" unique_id=1414127495]
+position = Vector2(2, -26)
+texture = ExtResource("21_40fvn")
+offset = Vector2(0, -37)
+
+[node name="AimArm" type="Node2D" parent="Upper/DownRight" unique_id=1621117160]
+position = Vector2(20, -22)
+metadata/rest_angle = 90.0
+
+[node name="SwordArm" type="Sprite2D" parent="Upper/DownRight/AimArm" unique_id=2110763976]
+texture = ExtResource("17_ihhcq")
+offset = Vector2(-3.6000004, 42.4)
+
+[node name="Sword" type="Sprite2D" parent="Upper/DownRight/AimArm" unique_id=1454685547]
+show_behind_parent = true
+position = Vector2(-2, 86)
+texture = ExtResource("18_ue376")
+offset = Vector2(0, 14)
+flip_v = true
+
+[node name="Right" type="Node2D" parent="Upper" unique_id=2034011063]
+
+[node name="FreeArm" type="Sprite2D" parent="Upper/Right" unique_id=2125261947]
+position = Vector2(-4, -21)
+texture = ExtResource("22_61hih")
+offset = Vector2(0, 19.74)
+metadata/sway = 0.5
+
+[node name="Torso" type="Sprite2D" parent="Upper/Right" unique_id=951547061]
+position = Vector2(0, 36)
+texture = ExtResource("23_y1akm")
+offset = Vector2(0, -36.5)
+
+[node name="Head" type="Sprite2D" parent="Upper/Right" unique_id=916003853]
+position = Vector2(2, -25)
+texture = ExtResource("24_1171a")
+offset = Vector2(0, -37)
+
+[node name="AimArm" type="Node2D" parent="Upper/Right" unique_id=1987976873]
+position = Vector2(2, -21)
+metadata/rest_angle = 90.0
+
+[node name="SwordArm" type="Sprite2D" parent="Upper/Right/AimArm" unique_id=1592407818]
+texture = ExtResource("17_ihhcq")
+offset = Vector2(-3.6000004, 42.4)
+
+[node name="Sword" type="Sprite2D" parent="Upper/Right/AimArm" unique_id=1518764849]
+show_behind_parent = true
+position = Vector2(-2, 86)
+texture = ExtResource("18_ue376")
+offset = Vector2(0, 14)
+flip_v = true
+
+[node name="UpRight" type="Node2D" parent="Upper" unique_id=1153228644]
+
+[node name="FreeArm" type="Sprite2D" parent="Upper/UpRight" unique_id=2026760564]
+position = Vector2(18, -20)
+texture = ExtResource("25_hxcbk")
+offset = Vector2(0, 18.06)
+metadata/sway = 0.5
+
+[node name="AimArm" type="Node2D" parent="Upper/UpRight" unique_id=1117914075]
+position = Vector2(-16, -20)
+metadata/rest_angle = 90.0
+
+[node name="SwordArm" type="Sprite2D" parent="Upper/UpRight/AimArm" unique_id=2141574265]
+texture = ExtResource("17_ihhcq")
+offset = Vector2(-3.6000004, 42.4)
+
+[node name="Sword" type="Sprite2D" parent="Upper/UpRight/AimArm" unique_id=42046020]
+show_behind_parent = true
+position = Vector2(-2, 86)
+texture = ExtResource("18_ue376")
+offset = Vector2(0, 14)
+flip_v = true
+
+[node name="Torso" type="Sprite2D" parent="Upper/UpRight" unique_id=1893104532]
+position = Vector2(0, 36)
+texture = ExtResource("26_oiw74")
+offset = Vector2(0, -36)
+
+[node name="Wings" type="Sprite2D" parent="Upper/UpRight" unique_id=1993673772]
+position = Vector2(-6, -12)
+texture = ExtResource("27_k8dee")
+offset = Vector2(0, -11.200005)
+metadata/sway = 0.6
+
+[node name="Head" type="Sprite2D" parent="Upper/UpRight" unique_id=2053479298]
+position = Vector2(-2, -24)
+texture = ExtResource("28_2hpee")
+offset = Vector2(0, -38.5)
+
+[node name="Up" type="Node2D" parent="Upper" unique_id=1111576684]
+
+[node name="FreeArm" type="Sprite2D" parent="Upper/Up" unique_id=858811050]
+position = Vector2(-20, -25)
+texture = ExtResource("29_wkb2h")
+offset = Vector2(0, 27.3)
+metadata/sway = 0.5
+
+[node name="AimArm" type="Node2D" parent="Upper/Up" unique_id=1631946861]
+position = Vector2(20, -25)
+metadata/rest_angle = 90.0
+
+[node name="SwordArm" type="Sprite2D" parent="Upper/Up/AimArm" unique_id=1265929257]
+texture = ExtResource("30_tlvmh")
+offset = Vector2(-3.5, 40.8)
+
+[node name="Sword" type="Sprite2D" parent="Upper/Up/AimArm" unique_id=411877306]
+show_behind_parent = true
+position = Vector2(-2, 86)
+texture = ExtResource("18_ue376")
+offset = Vector2(0, 14)
+flip_v = true
+
+[node name="Torso" type="Sprite2D" parent="Upper/Up" unique_id=13416815]
+position = Vector2(0, 36)
+texture = ExtResource("31_qm1sl")
+offset = Vector2(0, -38.5)
+
+[node name="Wings" type="Sprite2D" parent="Upper/Up" unique_id=76080102]
+position = Vector2(0, -17)
+texture = ExtResource("32_r78um")
+offset = Vector2(0, -11.300003)
+metadata/sway = 0.6
+
+[node name="Head" type="Sprite2D" parent="Upper/Up" unique_id=1702416349]
+position = Vector2(0, -29)
+texture = ExtResource("33_dvjv3")
+offset = Vector2(0, -37.5)

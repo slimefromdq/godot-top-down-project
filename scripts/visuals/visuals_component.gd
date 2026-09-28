@@ -96,6 +96,13 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_update_freeze(delta)
 	_refresh_local_view()
+	if body is LiveRig:
+		# The rig faces, walks, aims and dies on its own clock.
+		var rig_root := _get_root()
+		body.time_scale = get_time_scale()
+		body.update(rig_root.aim_direction if "aim_direction" in rig_root else Vector2.ZERO,
+				rig_root.velocity if "velocity" in rig_root else Vector2.ZERO, delta)
+		return
 	if body == null or _is_dead:
 		return
 	var root := _get_root()
@@ -234,6 +241,12 @@ func _set_animation_paused(paused: bool) -> void:
 # Plays a one-off animation, then returns to idle/move. Checks the body's
 # SpriteFrames first, then the AnimationPlayer.
 func play_body_animation(animation: StringName) -> void:
+	if body is LiveRig:
+		if animation == &"hurt":
+			body.hurt()
+		elif animation == &"death":
+			body.die()
+		return
 	if body is AnimatedSprite2D and body.sprite_frames.has_animation(animation):
 		_playing_one_shot = not body.sprite_frames.get_animation_loop(animation)
 		body.play(animation)
@@ -252,6 +265,9 @@ func set_highlighted(highlighted: bool) -> void:
 # linger time can finish.
 func get_death_duration() -> float:
 	var duration := profile.death_linger_time
+	if body is LiveRig:
+		var motion: RigMotion = body.motion
+		return maxf(duration, motion.death_time + motion.death_fade_time)
 	if body is AnimatedSprite2D and body.sprite_frames.has_animation(&"death"):
 		var frames: SpriteFrames = body.sprite_frames
 		var total := 0.0
@@ -267,15 +283,19 @@ func get_death_duration() -> float:
 func revive() -> void:
 	_is_dead = false
 	_playing_one_shot = false
+	if body is LiveRig:
+		body.revive()
 	if _aim_holder != null:
 		_aim_holder.show()
 	play_cue(&"spawn")
 
 
 # A detached copy of the current body frame, for afterimages and ghosts.
-func make_body_snapshot() -> Sprite2D:
+func make_body_snapshot() -> Node2D:
 	if body == null:
 		return null
+	if body is LiveRig:
+		return body.make_snapshot()
 	var ghost := Sprite2D.new()
 	if body is AnimatedSprite2D:
 		ghost.texture = body.sprite_frames.get_frame_texture(body.animation, body.frame)
@@ -407,7 +427,18 @@ func _get_root() -> Node:
 func _setup_body() -> void:
 	_animation_player = _find_child_of_type(self, "AnimationPlayer")
 
-	if profile.sprite_frames != null:
+	if profile.live_rig != null:
+		var rig := profile.live_rig.instantiate() as LiveRig
+		if rig == null:
+			push_warning("VisualProfile.live_rig root must use live_rig.gd")
+		else:
+			rig.name = "Body"
+			add_child(rig)
+			for child in get_children():
+				if child is Sprite2D:
+					child.hide()
+			body = rig
+	if body == null and profile.sprite_frames != null:
 		var animated := AnimatedSprite2D.new()
 		animated.name = "Body"
 		animated.sprite_frames = profile.sprite_frames
@@ -417,7 +448,7 @@ func _setup_body() -> void:
 			if child is Sprite2D:
 				child.hide()
 		body = animated
-	else:
+	elif body == null:
 		for child in get_children():
 			if child is AnimatedSprite2D or child is Sprite2D:
 				body = child
@@ -437,6 +468,10 @@ func _setup_body() -> void:
 		_body_material.shader = BODY_SHADER
 		body.material = _body_material
 		_refresh_tint()
+	if body is LiveRig:
+		# Flashes and tints reach every part through the rig's material.
+		for part in body.find_children("*", "CanvasItem", true, false):
+			part.use_parent_material = true
 
 	if body is AnimatedSprite2D:
 		body.animation_finished.connect(func(): _playing_one_shot = false)

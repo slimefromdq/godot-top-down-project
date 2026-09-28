@@ -7,9 +7,9 @@
 
 [sub_resource type="Resource" id="Damage"]
 script = ExtResource("9_v")
-base = 8.0
-per_level = 0.5
-weapon_ratio = 0.35
+base = 9.0
+per_level = 0.6
+weapon_ratio = 0.4
 
 [resource]
 script = ExtResource("1_a")
@@ -19,7 +19,7 @@ fire_mode = 0
 shots_per_second = 2.5
 id = &"bouncy_balls"
 display_name = "Bouncy Balls"
-description = "Hold to throw rubber balls that ricochet off walls twice."
+description = "Hold to throw big rubber balls that fly far and ricochet off walls twice."
 ability_script = ExtResource("2_a")
 cooldown = 0.0
 damage = SubResource("Damage")

@@ -124,13 +124,14 @@ For each slot in the definition's `abilities` dictionary, point at an
 | a leap / glide to the cursor over low cover and ledges, optionally steerable | `LaunchData` + `LaunchAbility` (`max_distance`, `air_time`, `steer_speed`); scripts can `actor.retarget_launch(point)` mid-air | none |
 | shots that pass through some targets without using up pierce | override `RangedAttackAbility._hit_is_free_pierce(hurtbox)` (`Projectile.free_pierce`) | a small script |
 | an ability with charges (two uses stocked, one recharging) | `AbilityData.max_charges`; the HUD shows them as pips | none |
-| place a jump pad: press, drag the landing spot, release; allies launch, enemies bounce | `PlacePadData` + `PlacePadAbility` (charge group on for the drag); scripts can `JumpPad.place(...)` | none |
+| place a jump pad: press, drag the landing spot, release; allies launch, enemies bounce | `PlacePadData` + `PlacePadAbility` (charge group on for the drag); scripts can `JumpPad.place(...)`. Preview: hook `effects/feel/pad_preview.tscn` to `<id>_charge_start` | none |
 | a zone that saves allies who would die (a safety net) | `GroundZoneData` Death intercept group (`intercepts_deaths`, health ratio, move to owner, status); `GroundZone.death_intercepted` | none |
 | cast a zone and move on (no channel) | `ZoneAbilityData.instant` | none |
 | shots that ricochet off walls | `ProjectileData.wall_bounces` | none |
 | shorter knockbacks and pulls on someone | `StatusEffect.DISPLACEMENT_TAKEN` in `stat_multipliers` (0.6 = 40% shorter) | none |
 | an animated body from layered art (cutout rig baked to sprite frames) | copy `resources/visuals/rig_template/rig_template.tscn` (`CutoutRig`), bake with `tools/visuals/bake_rig.gd`, set the result as `VisualProfile.sprite_frames` (see docs/VISUALS_AND_AUDIO.md) | none |
 | a body that faces the mouse while the legs walk (forward or backpedalling) with the movement keys | `CutoutRig.legs_layer_paths` (baked as `<frames>_legs.tres`) + `VisualProfile.legs_frames`; `bake_rig.gd --profile` fills it in | none |
+| an 8-direction body from a per-facing sheet (body faces the mouse, legs strafe/backpedal, arm aims) | `SheetSpec` + `tools/visuals/cut_sheet.gd` to cut parts, a `LiveRig` scene, `VisualProfile.live_rig` | none |
 | a weapon arm that turns toward the aim on a baked body | `CutoutRig.aim_part_path` (exported by the bake) + `VisualProfile` Aim Part group; `bake_rig.gd --profile` fills it in | none |
 | a second form: swap a slot to another ability and back (each keeps its own cooldown) | `AbilityController.swap_slot(slot_id, data)` / `restore_slot(slot_id)` / `is_slot_swapped`; the swapped-out ability goes dormant (`Ability.is_dormant()`) | a small script (decides when) |
 | hold to raise a shield/cloak on your aim arc that eats projectiles and has its own HP | `BlockerData` + `BlockerAbility` (a `FrontalBlocker`: HP `ScalingValue`, regen, break, slots allowed while raised, raised/lowered statuses) | none |
@@ -430,7 +431,7 @@ A TEMPO disabler (title: The Visitor). Tools → New Hero from Template →
 |---|---|---|
 | primary | `hello.tres`: `RangedAttackData`, AUTO 3/s, magic, 5 + 0.5/lvl + 12% Magic; `sam_hello` projectile with `wall_bounces` 1 | none (`RangedAttackAbility`) |
 | ability_1 | `hug.tres`: damage-less one-shot; `sam_hug_hand` projectile (`affects` BOTH, 650 px, `ally_hit_status` = 120 + 50% Magic shield, `vfx/hug_arm.tscn` draws the arm); `on_hit_status` = 1 s root | none (`RangedAttackAbility`) |
-| movement | `tractor_beam.tres` (`SamTractorData`, a `ChargeData` 400 px): `ally_targeting` accepts BOTH, optional; `enemy_status` (carry + stun), `ally_status` (carry + untargetable); `values/short_distance` 220 | `tractor_beam_ability.gd`: flies along the aim, the status by team, the short dash |
+| movement | `tractor_beam.tres`: `RangedAttackData`, a wide (48 px) 720 px skillshot (`sam_beam_ray.tres`, `affects` BOTH); enemies get `sam_beam_enemy` (pull `TOWARD_SOURCE` + 0.5 s stun), allies `sam_beam_ally` (pull + untargetable) | generic `RangedAttackAbility` |
 | cc | `friendship_bracelet.tres`: damage-less one-shot, `sam_bracelet` (`affects` BOTH); `values/chain_range` 400, `leash_distance` 300, `heal_share` 0.5, `link_duration` 4 | `bracelet_ability.gd`: chains to the nearest teammate of whoever it hit, spawns an `ActorLink` |
 | ultimate | `close_encounter.tres` (`SamEncounterData`): `minigame` = the airlock, `abducted_status` (untargetable, `damage_taken` x0, `vfx/ufo.tscn`), `daze_status` 0.3 s; `values/telegraph` 0.4, `beam_radius` 90, `ufo_speed` 350 | `close_encounter_ability.gd`: telegraph, `MinigameHost`, `set_cruise` toward Sam's cursor, `lock_abilities` (primary allowed), the drop |
 
@@ -492,8 +493,8 @@ Hero from Template → "Tilly", basic attack deleted, then:
 | Slot | Data | Script |
 |---|---|---|
 | passive | `crumple_zone.tres` (`TillyCrumpleZoneData`): an always-on status with `displacement_taken` 0.6, and a +25% speed status on landing | `crumple_zone.gd` (`PassiveAbility`): keeps the status on, applies the other on `Actor.landed` |
-| primary | `bouncy_balls.tres`: `RangedAttackData`, AUTO 2.5/s, `wall_bounces` 2 | generic `RangedAttackAbility` |
-| ability_1 | `trampoline.tres`: `PlacePadData`, 700 px, 10 s / 4 launches, `max_charges` 2, 16 s recharge, enemies get a 250 px bounce back | shared `PlacePadAbility` |
+| primary | `bouncy_balls.tres`: `RangedAttackData`, AUTO 2.5/s, big (26 px) long-flying (1100 px) balls, `wall_bounces` 2 | generic `RangedAttackAbility` |
+| ability_1 | `trampoline.tres`: `PlacePadData`, 700 px, 10 s / 4 launches, `max_charges` 2, 11 s recharge, enemies get a 250 px bounce back | shared `PlacePadAbility` |
 | movement | `cartwheel.tres`: `ChargeData`, 350 px | `cartwheel_ability.gd`: ending on her own pad resets the cooldown (the pad launches her) |
 | cc | `all_eyes_on_me.tres`: `SelfStatusData` (40% less damage, 1.25 s), `count_radius` 300, `on_hit_status` = a compel | `all_eyes_ability.gd`: puts the compel on every enemy counted |
 | ultimate | `safety_net.tres`: `ZoneAbilityData`, `instant`; a 600 px ALLIES zone with the death intercept (15%, beside her, 1 s untargetable) | generic `ZoneAbility` |

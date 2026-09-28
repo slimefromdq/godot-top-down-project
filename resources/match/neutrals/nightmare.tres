@@ -11,7 +11,7 @@
 
 [sub_resource type="Resource" id="Stat_health"]
 script = ExtResource("3_scaling")
-base = 6000.0
+base = 5000.0
 growth = 450.0
 
 [sub_resource type="Resource" id="Stat_weapon"]
@@ -70,6 +70,7 @@ ring_interval = 6.0
 ring_count = 16
 leash_radius = 1500.0
 reset_time = 10.0
+reset_heal_fraction = 0.0
 killer_gold = 300.0
 killer_xp = 400.0
 team_gold = 1000.0

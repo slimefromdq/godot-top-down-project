@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("1_p")
 speed = 1100.0
-lifetime = 0.7
-radius = 18.0
+lifetime = 1.0
+radius = 26.0
 wall_bounces = 2
 hit_effect = ExtResource("2_p")

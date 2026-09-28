@@ -10,6 +10,9 @@ class_name TeamBar
 # health and ultimate charge (UltimateCharge; gold and pulsing when full).
 # Your own card has a white frame.
 #
+# Every card (both teams) shows the hero's level in a badge on its corner
+# and its kills / deaths / assists under the name.
+#
 # Read-only: it polls the MatchManager's roster every frame.
 
 @export var team: StringName = &"a"
@@ -30,7 +33,7 @@ var _redraw_left: float = 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	custom_minimum_size = Vector2(card_size.x * max_cards + card_gap * (max_cards - 1), card_size.y + 36)
+	custom_minimum_size = Vector2(card_size.x * max_cards + card_gap * (max_cards - 1), card_size.y + 52)
 
 
 func _process(delta: float) -> void:
@@ -120,6 +123,19 @@ func _draw_card(hero: Hero, rect: Rect2, color: Color, details: bool, font: Font
 		y += 7.0
 	var display := hero.definition.display_name if hero.definition != null else str(hero.name)
 	_centered(font, display, Vector2(rect.get_center().x, y + 11.0), 12, color.lightened(0.2) if not dead else Color(0.6, 0.6, 0.65))
+	# Level badge, top-left corner.
+	var badge := Rect2(rect.position - Vector2(3, 3), Vector2(20, 18))
+	draw_rect(badge, Color(0.05, 0.08, 0.14, 0.92))
+	draw_rect(badge, Color(1, 1, 1, 0.75), false, 1.0)
+	_centered(font, str(hero.get_level()), Vector2(badge.get_center().x, badge.end.y - 4.0), 13, Color("fde68a"))
+	if match_manager != null:
+		_centered(font, kda_text(hero), Vector2(rect.get_center().x, y + 26.0), 12, Color(0.92, 0.94, 0.98))
+
+
+## "K/D/A" for a card.
+func kda_text(hero: Hero) -> String:
+	var kda := match_manager.get_kda(hero) if match_manager != null else Vector3i.ZERO
+	return "%d/%d/%d" % [kda.x, kda.y, kda.z]
 
 
 func _centered(font: Font, text: String, baseline_center: Vector2, font_size: int, color: Color) -> void:

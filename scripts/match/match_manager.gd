@@ -328,6 +328,20 @@ func get_record(hero: Hero) -> Record:
 	return _records.get(hero)
 
 
+## Kills, deaths and assists as (x, y, z); zeros for an unknown hero.
+func get_kda(hero: Hero) -> Vector3i:
+	var record: Record = _records.get(hero)
+	return Vector3i(record.kills, record.deaths, record.assists) if record != null else Vector3i.ZERO
+
+
+## A team's total kills.
+func get_team_kills(team: StringName) -> int:
+	var total := 0
+	for hero in get_roster(team):
+		total += get_kda(hero).x
+	return total
+
+
 ## Split gold and XP evenly across `team`'s heroes (dead ones too).
 func grant_team(team: StringName, gold: float, xp: float, reason: StringName) -> void:
 	var heroes := get_roster(team)
