@@ -64,15 +64,18 @@ var _look_node: Node
 
 
 ## Put a Mote into the current scene at `at`. With `land_from`, it flies
-## from there to `at` first (a drop). `locked` can't pick it up for a moment.
+## from there to `at` first (a drop). `locked` can't pick it up for a moment:
+## `lockout` seconds, or data.regrab_lockout when negative.
 static func spawn(context: Node, mote_data: MoteData, at: Vector2, mote_value: int = -1,
-		is_dropped: bool = false, land_from: Variant = null, locked: Hero = null) -> Mote:
+		is_dropped: bool = false, land_from: Variant = null, locked: Hero = null,
+		lockout: float = -1.0) -> Mote:
 	var mote: Mote = load(SCENE).instantiate()
 	mote.data = mote_data
 	mote.value = mote_value if mote_value >= 0 else mote_data.value
 	mote.dropped = is_dropped
 	mote.last_carrier = locked
-	mote.lockout_left = mote_data.regrab_lockout if locked != null else 0.0
+	if locked != null:
+		mote.lockout_left = lockout if lockout >= 0.0 else mote_data.regrab_lockout
 	if land_from is Vector2:
 		mote.state = State.LANDING
 		mote._from = land_from

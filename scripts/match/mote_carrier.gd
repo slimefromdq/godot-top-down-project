@@ -9,6 +9,10 @@ class_name MoteCarrier
 #               MoteOrbit child draws them circling the hero, and a drop
 #               spawns fresh Motes.
 #   death       every Mote bursts out in a ring and lands scattered
+#   shake       every hit knocks loose carried * (damage / max HP) *
+#               MatchRules.mote_shake_factor Motes, scattered the same way
+#               (closer in). The fraction left over carries to the next hit.
+#               The carrier can't regrab them for shake_repickup_delay.
 #   jostle      an ENEMY displacement (Actor.displaced: a push or pull of at
 #               least jostle_min_distance, a carry, an abduction) knocks
 #               jostle_drop_fraction of the stack (at least one) loose where
@@ -39,6 +43,8 @@ var _jostles: int = 0
 var _last_jostle_time: float = -INF
 var _jostle_pending := false
 var _jostle_by: Node
+# Damage shake: fractional Motes owed, paid out once it reaches a whole one.
+var _shake_owed: float = 0.0
 var _time: float = 0.0
 var _ping_left: float = 0.0
 var _was_ready := false
@@ -66,6 +72,7 @@ func _ready() -> void:
 	# runs after ours.
 	await actor.ready
 	actor.health_component.died.connect(_on_died)
+	actor.health_component.damage_taken.connect(_on_damage_taken)
 	actor.displaced.connect(_on_displaced)
 	_orbit = MoteOrbit.new()
 	_orbit.name = "MoteOrbit"
@@ -166,6 +173,7 @@ func clear() -> void:
 	_values.clear()
 	_datas.clear()
 	_jostle_pending = false
+	_shake_owed = 0.0
 	_emit_changed()
 
 
@@ -206,22 +214,44 @@ func drop_some(n: int) -> Array[Mote]:
 
 ## Every Mote bursts out in a ring (death).
 func burst_all() -> Array[Mote]:
+	var from := actor.global_position
+	var n := get_mote_count()
+	_shake_owed = 0.0
+	var spawned := _scatter(n, get_rules().burst_radius, -1.0)
+	if n > 0:
+		_jostle_pending = false
+		MatchManager.play_world_cue(actor, &"mote_burst", {"position": from, "count": n,
+			"radius": get_rules().burst_radius})
+		dropped.emit(from, n)
+	return spawned
+
+
+## Shake the last `n` picked up loose (a hit), for anyone but this carrier to
+## grab for a moment.
+func shake_loose(n: int) -> Array[Mote]:
+	n = mini(n, get_mote_count())
+	var rules := get_rules()
+	var spawned := _scatter(n, rules.shake_drop_distance, rules.shake_repickup_delay)
+	if n > 0:
+		MatchManager.play_world_cue(actor, &"mote_shake", {"position": actor.global_position, "count": n})
+		dropped.emit(actor.global_position, n)
+	return spawned
+
+
+# The last `n` picked up fly out in a ring about `radius` away and land.
+# The carrier's own regrab lockout is `lockout` (negative = the Mote's own).
+func _scatter(n: int, radius: float, lockout: float) -> Array[Mote]:
 	var spawned: Array[Mote] = []
-	var n := _values.size()
-	if n == 0:
+	if n <= 0:
 		return spawned
 	var from := actor.global_position
 	var start := randf() * TAU
-	var radius := get_rules().burst_radius
 	for i in n:
+		var data: MoteData = _datas.pop_back()
+		var value: int = _values.pop_back()
 		var at := _clear_point(from, Vector2.from_angle(start + TAU * i / n), radius * randf_range(0.5, 1.4))
-		spawned.append(Mote.spawn(actor, _datas[i], at, _values[i], true, from, actor))
-	_values.clear()
-	_datas.clear()
-	_jostle_pending = false
+		spawned.append(Mote.spawn(actor, data, at, value, true, from, actor, lockout))
 	_emit_changed()
-	MatchManager.play_world_cue(actor, &"mote_burst", {"position": from, "count": n, "radius": radius})
-	dropped.emit(from, n)
 	return spawned
 
 
@@ -271,6 +301,20 @@ func get_reveal_interval() -> float:
 
 func _on_died() -> void:
 	burst_all()
+
+
+func _on_damage_taken(info: DamageInfo) -> void:
+	var count := get_mote_count()
+	var max_hp := actor.health_component.max_health
+	# A killing hit: the death burst takes everything anyway.
+	if count == 0 or max_hp <= 0.0 or actor.health_component.is_dead():
+		_shake_owed = 0.0
+		return
+	_shake_owed += count * (info.final_amount / max_hp) * get_rules().mote_shake_factor
+	var n := floori(_shake_owed)
+	if n > 0:
+		_shake_owed -= n
+		shake_loose(n)
 
 
 func _on_displaced(source: Node, distance: float) -> void:
