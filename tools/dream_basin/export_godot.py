@@ -133,6 +133,7 @@ COVER = {
     # The obstacle types (CoverBody PIT / CRYSTAL): deep water blue, a dark
     # violet pit, pale see-through crystal.
     "water": "2c5a7a", "pit": "3a2f52", "crystal": "9fe4ff",
+    "arcwall": "9a92b8",
 }
 GRASS_COLOR = "73a842"
 TEAM_COVER = {
@@ -148,7 +149,7 @@ GROUP = {
     "boundary": "Boundary", "lowrock": "LowCover", "lowwall": "LowCover", "crate": "LowCover",
     "balustrade": "Court", "planter": "Furniture", "hedgebox": "Furniture", "bench": "Furniture", "lamp": "Furniture",
     "fountain": "Landmarks", "building": "Buildings",
-    "water": "Pits", "pit": "Pits", "crystal": "Crystal",
+    "water": "Pits", "pit": "Pits", "crystal": "Crystal", "arcwall": "Arcs",
 }
 
 

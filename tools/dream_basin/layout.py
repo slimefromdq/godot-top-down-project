@@ -369,10 +369,41 @@ jump_pad(-2400, 1950, -3250, 1850, "Ruins Updraft")     # ruins courtyard -> Tan
 # ==========================================================================
 # LOWER BASIN (y >= 0): THE CRADLE, the A-side LULLABY RUINS, the DRIFTFIELD
 # ==========================================================================
-# The Cradle's open ring: a wide oval kept free of collision so the future
-# objective (whatever it becomes) has room to move, and fights can circle.
+# The Cradle's ring: a wide oval promenade around the middle (fights can
+# circle it). It used to be kept free of collision; since the geometry pass
+# (phase 3) it's broken up by the Ruined Arcs below, and check.py only asks
+# that you can still walk all the way round.
+RING_RX, RING_RY = 1600, 1300          # centreline, authored units
 L["markers"].append({"x": 0, "y": 0, "kind": "arena_ring",
-                     "rx": 1600, "ry": Y(1300), "width": 600, "label": "", "team": None})
+                     "rx": RING_RX, "ry": Y(RING_RY), "width": 600, "label": "", "team": None})
+
+
+def ring_arc(d0, d1, kind="arcwall", t=90, r=1.0):
+    """A wall along the ring's centreline (scaled by r) from d0 to d1 degrees
+    (0 = east, 90 = south). kind "crystal" makes it a crystal arc."""
+    n = max(1, round((d1 - d0) / 5))
+    pts = [(RING_RX * r * math.cos(math.radians(d0 + (d1 - d0) * i / n)),
+            RING_RY * r * math.sin(math.radians(d0 + (d1 - d0) * i / n))) for i in range(n + 1)]
+    for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+        if kind == "crystal":
+            crystal(seg(ax, ay, bx, by, t))
+        else:
+            full(seg(ax, ay, bx, by, t), kind)
+
+
+# The Ruined Arcs (geometry pass, phase 3): broken arcs of wall along the
+# ring's centreline split it into an inner and an outer track you cross in
+# the gaps. They cut the long lines along and across the ring into pockets.
+# Gaps are left where the Plaza avenues come in (90 / 270 degrees) and along
+# the Moon Aisle (about 140 / 320 degrees), the one sightline across the
+# middle that snipers have to fight to hold. Authored half: 0..180 degrees;
+# the arc straddling 0 degrees is its own rotation's twin at 180.
+# They also keep 8+ degrees clear of the ring's Mote trickle points (about 59
+# and 151 degrees). The crystal arc: see the avenue's fight from the ring,
+# not shoot into it.
+RING_ARCS = [(-12, 12, "arcwall"), (30, 50, "arcwall"), (68, 76, "crystal"), (104, 126, "arcwall")]
+for d0, d1, arc_kind in RING_ARCS:
+    ring_arc(d0, d1, arc_kind)
 
 # Broken pillar ring inside the circuit. Angles avoid the Moon Aisle diagonal.
 for i, deg in enumerate([15, 72, 102, 172]):
@@ -443,10 +474,32 @@ bush(-1000, 150, 100)
 # --- Cradle Steps: the terraces between circuit and plaza choke ---------
 lowwall(-1050, 1950, -600, 2010)
 lowwall(600, 1990, 1150, 1900)
-low(rock(0, 1780, 90, 72, stretch=(1.8, 0.7)), "lowrock")
 full(rock(1300, 1950, 130, 74), "rock")
 bush(-850, 2150, 100)
 bush(850, 2150, 100)
+
+# ==========================================================================
+# CENTER FIELD (geometry pass, phase 3): pockets instead of one long field.
+#   Kept long on purpose: the Moon Aisle and the Ridge Lines (see SIGHT
+#   LANES). Everything else is broken up.
+# ==========================================================================
+# The Reflecting Pools: a standoff line across each Plaza approach. Two
+# pools (shoot across, can't walk in) with the Plaza Glass between them:
+# two clear gates on the avenue from the base to the Cradle, and you walk
+# round the pools' outer ends to flank. The Cradle Steps' low walls behind
+# are the defenders' cover.
+POOL_Y = (1658, 1775)                  # authored y (real 1990..2130)
+for x0, x1 in ((-1000, -450), (450, 1000)):
+    pit(rect(x0, POOL_Y[0], x1, POOL_Y[1]), "water")
+
+# The flanks (the strip between the Cradle ring and each Wild's cliff) were
+# a 2000 px north-south sniper alley. A crystal screen on the ring side at
+# the middle (see across, can't shoot across) and a hard-walled kiosk on the
+# cliff side further along kink it into pockets. Authored on the east; the
+# rotation gives the west flank the same, the other way round, clear of
+# its Lawn Stairs.
+crystal(rect(1950, -25, 2250, 25))     # Flank Screen (straddles the middle)
+building(2400, 333, 2700, 533)         # Flank Kiosk
 
 # --- Lullaby Ruins (A): x -2750..-1350, y 850..2350, NE corner collapsed ----
 # A roofless chapel. Four ways in: north door, the collapsed north-east breach
@@ -475,14 +528,12 @@ bush(-2600, 1550, 100)
 teleporter((-1580, 2150), (1580, -2150), True, "Dream Rift")
 
 # --- Driftfield (A): open field under the A Ridge, x 1100..2750 ----------
-for i, (x, y, r) in enumerate([(1900, 750, 130), (2350, 450, 110), (1250, 2150, 100)]):
+for i, (x, y, r) in ((0, (1900, 750, 130)), (2, (1250, 2150, 100))):
     full(rock(x, y, r, 90 + i, stretch=(1.2, 0.9)), "rock")
 fountain(1900, 1450)                    # the Driftfield's landmark
 building(2250, 1480, 2480, 1650)        # ruined gatehouse under the Ridge
 low(rock(2150, 1150, 100, 96, stretch=(1.6, 0.6), rot=0.4), "lowrock")
 low(rock(1650, 1900, 90, 97, stretch=(1.5, 0.6), rot=-0.3), "lowrock")
-low(rect(2380, 350, 2520, 470), "crate")
-low(rect(2520, 420, 2640, 540), "crate")
 for (bx, by) in [(2000, 1000), (1300, 1500), (2550, 1300), (1750, 2250)]:
     bush(bx, by, 120)
 
@@ -565,7 +616,7 @@ low(rock(3450, 2900, 100, 130, stretch=(1.6, 0.6)), "lowrock")
 # SIGHT LANES (validated by check.py: must be clear of full cover)
 # ==========================================================================
 lane((-1550, 1100), (1550, -1100), "Moon Aisle")
-lane((3150, 2050), (-500, 1250), "Ridge Line (A)")
+lane((3150, 2050), (0, 1358), "Ridge Line (A)")   # perch -> Fountain Court -> the south avenue
 lane((3000, 2550), (3000, -800), "Wild Rail (A)")
 
 # ==========================================================================
@@ -629,7 +680,7 @@ camp(1500, 1150, "dream_wisps", "Fountain Wisps")
 #   approach, one at the Driftfield's inner edge, one on the Glade/Ridge
 #   border. Mote geysers in the Glade and on the Cradle's west rim.
 # ==========================================================================
-breakable(-800, 1583, 320, 60, "Plaza Glass")
+breakable(0, 1717, 320, 60, "Plaza Glass")    # between the Reflecting Pools
 breakable(1400, 1417, 60, 320, "Driftfield Glass")
 breakable(-3300, -833, 320, 60, "Ridge Glass")
 geyser(-3400, -500, "Glade Geyser")
@@ -667,11 +718,6 @@ def bench(x, y, w=170, rot=0.0):
 def lamp(x, y):
     full(circle(x, y, 28, 8), "lamp")
 
-
-# The Cradle's east edge by the Driftfield: a bench pair under a lamp.
-bench(2150, -120, rot=1.2)
-lamp(2000, -330)
-low(rock(2350, -330, 60, 90, n=10, jitter=0.05), "planter")
 
 # Back-road corners of the outskirts: benches and a lamp along the walk.
 bench(-4500, 3800, rot=0.0)

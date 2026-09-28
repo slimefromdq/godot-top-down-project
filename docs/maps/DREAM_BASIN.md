@@ -22,7 +22,7 @@ old names (`glade`, `ridge`, `tangle`, `ruins`, `driftfield`, `orchard`).
 
 | Region | Where | Role |
 |---|---|---|
-| **The Sunken Court** (the Cradle) | Basin centre | The main arena. An open oval ring (600 px wide, collision-free) circles a ring of marble columns. Inside it the court itself sits one step down (radius 600 px), with the Nightmare's lair and the Dream Mote spot on its floor. Its rim is a stone balustrade (low cover: shoot over it), broken by eight staircases, on the diagonals and the axes, all walkable both ways. Two pairs of planters on the floor. |
+| **The Sunken Court** (the Cradle) | Basin centre | The main arena. An oval ring (600 px wide) circles a ring of marble columns; the Ruined Arcs (below) split it into an inner and an outer track. Inside it the court itself sits one step down (radius 600 px), with the Nightmare's lair and the Dream Mote spot on its floor. Its rim is a stone balustrade (low cover: shoot over it), broken by eight staircases, on the diagonals and the axes, all walkable both ways. Two pairs of planters on the floor. |
 | **The Old Colonnade** (Lullaby Ruins) | Basin corner (A: lower-left, B: upper-right) | A sandstone arcade under restoration (1400 × 1800 px). Four ways in: the north gate, a collapsed corner facing the court, east door, south door, plus dropping in from the Garden Court. Inside: a row of columns, a courtyard with the updraft, and a side chapel with the Dream Rift. **Enclosed.** |
 | **The Fountain Court** (Driftfield) | The other two basin corners | Open paved court under the Upper Terrace, with a fountain and a pavilion. Mid-range. |
 | **The Garden Court** (the Tangle) | Wild third nearest your base (left side for A) | Walled hedge garden. Its perimeter hedges block shots, so you have to come inside to fight. Inside are loose rooms around a fountain, with lanes of 450 px or more. **Enclosed.** |
@@ -45,7 +45,7 @@ cover, reachable on foot, mirrored).
 | **Sleepwalker** ×4 | Each Glade and each Stilt Ridge. |
 | **Dream Wisps** ×4 | Each Tangle and each Driftfield. |
 
-| **Dream-glass** ×6 | Screening each Plaza approach, at each Driftfield's inner edge, on each Glade/Ridge border (`scenes/map/breakable_cover.tscn`). |
+| **Dream-glass** ×6 | Between each Plaza's Reflecting Pools (the avenue into the Cradle), at each Driftfield's inner edge, on each Glade/Ridge border (`scenes/map/breakable_cover.tscn`). |
 | **Mote geyser** ×4 | Each Glade and each Cradle rim (`scenes/map/mote_geyser.tscn`). |
 | **Toggle gate** ×4 | Each Lullaby Ruins' north door and each Tangle's main entrance, with a lever outside (`scenes/map/toggle_gate.tscn`). |
 | **Sleep-fog** ×2 / **Thorn bed** ×2 | Each Stilt Ridge / each Orchard (`scenes/map/hazard_zone.tscn`). |
@@ -85,6 +85,28 @@ rather than editing the scene by hand. (It also rewrites
 clear circle per region, to show where more cover would help (target
 650 px; plaza furniture — benches, planters, lamp posts — fills the gaps).
 
+## The center field
+
+The basin between the two Plazas used to be one long open field, won by
+whoever had the most range. It's now broken into pockets (geometry pass,
+phase 3):
+
+- **The Ruined Arcs:** four broken arcs of wall per half along the Cradle ring's centreline (hard stone, and one crystal arc). They split the ring into an inner and an outer track, crossed in the gaps. Gaps stay open where the Plaza avenues come in and along the Moon Aisle, and clear of the ring's Mote points.
+- **The Reflecting Pools:** a standoff line across each Plaza approach. Two water pools (shoot across, can't walk in) with the Plaza Glass between them give two gates on the avenue. Flank round the pools' outer ends. The Cradle Steps' low walls behind them are the defenders' cover.
+- **The flanks** (between the ring and each Wild's cliff) are kinked: a crystal Flank Screen on the ring side at the middle, and a hard Flank Kiosk on the cliff side further along. The bench/lamp/planter cluster that stood in the Lawn Stairs' mouth is gone.
+
+`check.py` guards it:
+- **The ring stays a circuit:** you can walk all the way round, with a worst detour of x1.12.
+- **Base routes stay direct:** from each Plaza exit to the Sunken Court, x1.07 to x1.25 of a straight line.
+- **Sightlines are reported:** "long-range exposure" is the share of field points 1500 px+ away that have a clear shot at a spot.
+
+| | Before | After phase 3 |
+|---|---|---|
+| Whole field: average clear shot | 2081 px | 1546 px |
+| Whole field: long-range exposure | 53% | 25% |
+| Outside the ring: long-range exposure | 50% | 21% |
+| Ring and inside: long-range exposure | 55% | 30% |
+
 ## Sight lanes
 
 All lanes are verified clear by `check.py`.
@@ -92,7 +114,7 @@ All lanes are verified clear by `check.py`.
 | Lane | Length |
 |---|---|
 | Moon Aisle (diagonal through the Cradle) | 2.5 screens |
-| Ridge Line ×2 (perch → Driftfield → Cradle) | 2.0 screens |
+| Ridge Line ×2 (perch → Driftfield → the Plaza avenue into the Cradle) | 1.7 screens |
 | Wild Rail ×2 (along the cliff lip, Ridge → Glade) | 2.1 screens |
 
 No lane reaches a spawn door. The longest clear ray out of any spawn door is about 2 screens, at a shallow angle.

@@ -25,6 +25,13 @@
   north choke or its side gates blocked, the spawn room's north door closed
   both times (two ways in besides the spawn room). With all three closed it
   must be unreachable, proving the blockers really cut those routes.
+* Cradle ring: it has cover on it (the Ruined Arcs), but you can walk all
+  the way round (RING_MAX_DETOUR between stops every RING_STEP degrees).
+* Base routes: the walk from each Plaza exit (north choke, both side gates)
+  to the Sunken Court floor stays within ROUTE_MAX_DETOUR of a straight line.
+* Reports (no pass/fail): open space per region, and center-field
+  sightlines (average clear shot, long-range exposure: whole field, outside
+  the ring, the ring and inside).
 """
 
 import math
@@ -457,6 +464,109 @@ def check_walking(m, grid, probes):
     return ok
 
 
+# The Cradle ring has cover on it (the Ruined Arcs) but you can still walk
+# all the way round: between points every RING_STEP degrees, the walk stays
+# within RING_MAX_DETOUR of the arc between them.
+RING_STEP = 30
+RING_MAX_DETOUR = 1.6
+
+
+def check_ring_circuit(m, grid):
+    print("== Cradle ring: walkable all the way round ==")
+    ring = next(mk for mk in m["markers"] if mk["kind"] == "arena_ring")
+    blocked = grid[0]
+    ok = True
+    stops = []
+    for deg in range(0, 360, RING_STEP):
+        a = math.radians(deg)
+        # The clear spot nearest the centreline across the ring's width.
+        for k in (0, -0.15, 0.15, -0.3, 0.3, -0.42, 0.42):
+            p = ((ring["rx"] + k * ring["width"]) * math.cos(a), (ring["ry"] + k * ring["width"]) * math.sin(a))
+            r, c = int((p[1] + HY) // CELL), int((p[0] + HX) // CELL)
+            if not blocked[r][c]:
+                stops.append((deg, p))
+                break
+        else:
+            print(f"  BLOCKED all the way across at {deg} degrees")
+            ok = False
+    worst = 0.0
+    for (d0, p), (d1, q) in zip(stops, stops[1:] + stops[:1]):
+        walked = walk_distance(m, grid, p, q)
+        if walked is None:
+            print(f"  NO WALK from {d0} to {d1} degrees")
+            ok = False
+            continue
+        detour = walked / max(math.dist(p, q), 1.0)
+        worst = max(worst, detour)
+        if detour > RING_MAX_DETOUR:
+            print(f"  {d0}->{d1} degrees: x{detour:.2f}  <- TOO FAR ROUND")
+            ok = False
+    print(f"  {len(stops)} stops every {RING_STEP} degrees; worst detour x{worst:.2f} (max x{RING_MAX_DETOUR})")
+    return ok
+
+
+# Walks from each Plaza's exits to the Sunken Court floor must stay direct:
+# the center field gets pockets, not a maze. Detour = walked / straight.
+ROUTE_MAX_DETOUR = 1.3
+
+
+def walk_distance(m, grid, a, b):
+    """Shortest walk a -> b (8-connected Dijkstra on the flood grid, one-way
+    ledges honoured), in px, or None."""
+    import heapq
+    blocked, cols, rows = grid
+
+    def cell_of(x, y):
+        return int((y + HY) // CELL), int((x + HX) // CELL)
+
+    def centre(r, c):
+        return (c * CELL - HX + CELL / 2, r * CELL - HY + CELL / 2)
+    s, t = cell_of(*a), cell_of(*b)
+    best = {s: 0.0}
+    heap = [(0.0, s)]
+    while heap:
+        d, (r, c) = heapq.heappop(heap)
+        if (r, c) == t:
+            return d * CELL
+        if d > best.get((r, c), 1e18):
+            continue
+        for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1), (-1, -1)):
+            nr, nc = r + dr, c + dc
+            if not (0 <= nr < rows and 0 <= nc < cols) or blocked[nr][nc]:
+                continue
+            if dr and dc and (blocked[r][nc] or blocked[nr][c]):
+                continue
+            if crosses_ledge_upward(m, centre(r, c), centre(nr, nc)):
+                continue
+            nd = d + (1.4142 if dr and dc else 1.0)
+            if nd < best.get((nr, nc), 1e18):
+                best[(nr, nc)] = nd
+                heapq.heappush(heap, (nd, (nr, nc)))
+    return None
+
+
+def check_base_routes(m, grid):
+    print("== Base routes (Plaza exits -> Sunken Court, on foot) ==")
+    ok = True
+    court = (0, 250)
+    for team, sign in (("A", 1), ("B", -1)):
+        for name, (x, y) in (("north choke", (0, 2290)), ("west gate", (-1600, 2600)),
+                             ("east gate", (1600, 2600))):
+            start = (x * sign, Y(y) * sign)
+            goal = (court[0] * sign, court[1] * sign)
+            walked = walk_distance(m, grid, start, goal)
+            straight = math.dist(start, goal)
+            if walked is None:
+                print(f"  {team} {name}: NO ROUTE")
+                ok = False
+                continue
+            detour = walked / straight
+            flag = "" if detour <= ROUTE_MAX_DETOUR else "  <- TOO WINDING"
+            print(f"  {team} {name:<12} {walked:5.0f}px walked / {straight:5.0f}px straight = x{detour:.2f}{flag}")
+            ok &= detour <= ROUTE_MAX_DETOUR
+    return ok
+
+
 def check_court(m, grid):
     """The Sunken Court: you can walk out of it (by its stairs) from its
     floor, without jump pads, and reach both bases."""
@@ -516,6 +626,134 @@ def report_open_space(m):
         print(f"  {key:<18} {d:5.0f}px at ({p[0]:.0f}, {p[1]:.0f}){flag}")
 
 
+# Center-field sightlines (report only). The basin between the two Plazas and
+# the Wilds' cliffs, minus the Old Colonnades (enclosed side blocks). For
+# sample points in the open, how far can a shot travel? Long clear rays are
+# what let the longest-range hero win every fight there.
+SIGHT_CELL = 25
+SIGHT_STEP = 300          # sample spacing
+SIGHT_DIRS = 32
+SIGHT_CAP = 4000          # px; rays are cut off here
+LONG_RANGE = 1500         # px; a pair this far apart is a long-range duel
+
+
+def shot_raster(m):
+    """A SIGHT_CELL grid of cells that stop a shot (hard walls, crystal,
+    intact glass) or lie off the map."""
+    cols, rows = 2 * HX // SIGHT_CELL, 2 * HY // SIGHT_CELL
+    solid = [[False] * cols for _ in range(rows)]
+    for o in shot_blockers(m):
+        xs = [p[0] for p in o["pts"]]
+        ys = [p[1] for p in o["pts"]]
+        for r in range(max(0, int((min(ys) + HY) // SIGHT_CELL)), min(rows, int((max(ys) + HY) // SIGHT_CELL) + 1)):
+            for c in range(max(0, int((min(xs) + HX) // SIGHT_CELL)), min(cols, int((max(xs) + HX) // SIGHT_CELL) + 1)):
+                if not solid[r][c] and point_in_poly((c * SIGHT_CELL - HX + SIGHT_CELL / 2,
+                                                      r * SIGHT_CELL - HY + SIGHT_CELL / 2), o["pts"]):
+                    solid[r][c] = True
+    return solid
+
+
+def _blocked(solid, x, y):
+    r, c = int((y + HY) // SIGHT_CELL), int((x + HX) // SIGHT_CELL)
+    return not (0 <= r < len(solid) and 0 <= c < len(solid[0])) or solid[r][c]
+
+
+def clear_ray(solid, p, a, cap=SIGHT_CAP):
+    """How far a shot from p at angle a travels before a blocking cell."""
+    dx, dy = math.cos(a), math.sin(a)
+    d = 0.0
+    while d < cap:
+        d += SIGHT_CELL * 0.8
+        if _blocked(solid, p[0] + dx * d, p[1] + dy * d):
+            return d
+    return cap
+
+
+def clear_shot(solid, p, q):
+    n = int(math.dist(p, q) / (SIGHT_CELL * 0.8))
+    for i in range(1, n):
+        t = i / n
+        if _blocked(solid, p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t):
+            return False
+    return True
+
+
+def center_field_points(m):
+    """Walkable sample points of the center field: the basin between the
+    Plazas and the Wilds' cliffs, minus the Old Colonnades (enclosed)."""
+    walls = [o["pts"] for o in walk_blockers(m)]
+    ruins = [r["pts"] for r in m["regions"] if r["kind"] == "ruins"]
+    pts = []
+    y_max = Y(2350)
+    for y in range(-int(y_max) + SIGHT_STEP // 2, int(y_max), SIGHT_STEP):
+        for x in range(-2750 + SIGHT_STEP // 2, 2750, SIGHT_STEP):
+            p = (x, y)
+            if any(point_in_poly(p, r) for r in ruins) or any(dist_to_poly(p, w) < BODY for w in walls):
+                continue
+            pts.append(p)
+    return pts
+
+
+def _in_ring(m, p):
+    """Inside the Cradle ring's outer edge (the ring band and everything it
+    encloses)."""
+    ring = next(mk for mk in m["markers"] if mk["kind"] == "arena_ring")
+    rx, ry = ring["rx"] + ring["width"] / 2, ring["ry"] + ring["width"] / 2
+    return (p[0] / rx) ** 2 + (p[1] / ry) ** 2 <= 1.0
+
+
+def sightline_stats(m, show_map=False, part=None):
+    """(average clear shot px, long-range exposure 0..1, sample count) for
+    one part of the center field: None = all of it, "outside" = outside the
+    Cradle ring, "ring" = the ring band and everything inside it.
+    Average clear shot: how far a shot flies, averaged over the part's
+    sample points and every direction. Long-range exposure: for each of the
+    part's points, the share of all field points LONG_RANGE or more away
+    with a clear shot at it, averaged."""
+    solid = shot_raster(m)
+    pts = center_field_points(m)
+    if part is not None:
+        mine = [p for p in pts if _in_ring(m, p) == (part == "ring")]
+    else:
+        mine = pts
+    total = 0.0
+    for p in mine:
+        total += sum(clear_ray(solid, p, 2 * math.pi * i / SIGHT_DIRS) for i in range(SIGHT_DIRS)) / SIGHT_DIRS
+    seen = {p: [0, 0] for p in pts}
+    for i, p in enumerate(pts):
+        for q in pts[i + 1:]:
+            if math.dist(p, q) < LONG_RANGE:
+                continue
+            clear = clear_shot(solid, p, q)
+            for k in (p, q):
+                seen[k][0] += clear
+                seen[k][1] += 1
+    # Each point: the share of far points with a clear shot at it; the
+    # exposure is the mean over this part's points.
+    shares = [seen[p][0] / seen[p][1] for p in mine if seen[p][1]]
+    exposure = sum(shares) / max(len(shares), 1)
+    if show_map:
+        # Per point: share of far points with a clear shot at it.
+        # ' ' none sampled, '.' < 15%, 'o' < 35%, '#' 35%+.
+        for y in sorted({p[1] for p in pts}):
+            row = ""
+            for x in range(-2750 + SIGHT_STEP // 2, 2750, SIGHT_STEP):
+                v = seen.get((x, y))
+                f = v[0] / v[1] if v and v[1] else None
+                row += " " if f is None else ("#" if f >= 0.35 else "o" if f >= 0.15 else ".")
+            print(f"  {y:6d} {row}")
+    return total / max(len(mine), 1), exposure, len(mine)
+
+
+def report_sightlines(m):
+    print("== Center-field sightlines (report only) ==")
+    print(f"  average clear shot = how far a shot flies, over every sample point and direction;")
+    print(f"  long-range exposure = for a point, the share of points {LONG_RANGE}px+ away with a clear shot at it")
+    for label, part in (("whole field", None), ("outside the ring", "outside"), ("ring + inside", "ring")):
+        avg, exposure, n = sightline_stats(m, part=part)
+        print(f"  {label:<17} {n:4d} points: average clear shot {avg:5.0f}px, long-range exposure {exposure:.0%}")
+
+
 def main():
     m = build()
     # Breakable cover counts as intact full cover for every check below, so
@@ -551,21 +789,9 @@ def main():
             ok = False
     print("  checked", len(pts), "points")
 
-    print("== Cradle arena ring clear of collision ==")
-    circ = next(mk for mk in m["markers"] if mk["kind"] == "arena_ring")
-    bad = 0
-    for i in range(180):
-        a = 2 * math.pi * i / 180
-        for k in (-0.5, 0, 0.5):
-            rx, ry = circ["rx"] + k * circ["width"], circ["ry"] + k * circ["width"]
-            p = (rx * math.cos(a), ry * math.sin(a))
-            if any(point_in_poly(p, o["pts"]) for o in walk_blockers(m)):
-                bad += 1
-    print(f"  {bad} blocked samples")
-    ok &= bad == 0
-
     print("== Reachability (100px body, one-way ledges) ==")
     grid = build_grid(m)
+    ok &= check_ring_circuit(m, grid)
     probes = {
         "A spawn": (-700, 3880), "B spawn": (700, -3880), "Cradle": (0, 0),
         "A Tangle": (-4000, 2000), "B Tangle": (4000, -2000),
@@ -590,8 +816,10 @@ def main():
     ok &= check_objectives(m, grid)
     ok &= check_pieces(m, grid)
     ok &= check_walking(m, grid, probes)
+    ok &= check_base_routes(m, grid)
     ok &= check_court(m, grid)
     report_open_space(m)
+    report_sightlines(m)
 
     # Without pads/teleporters, from the Cradle, the only way up is stairs.
     # Block the stairwells too and the Wilds must become unreachable.

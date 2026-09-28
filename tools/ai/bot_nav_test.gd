@@ -98,6 +98,10 @@ func _check_walking_only(old_map: GameMap, bot: Hero) -> void:
 		"Hollow A": Vector2(-4580, 840), "Hollow B": Vector2(4580, -840),
 		"Fountain Court A": Vector2(2000, 1440), "Fountain Court B": Vector2(-2000, -1440),
 		"Cloister A": Vector2(-2000, 4380), "Promenade A": Vector2(3000, 4080),
+		# Center-field pockets (geometry pass, phase 3).
+		"Pool gate A": Vector2(305, 2060), "Pool gate B": Vector2(-305, -2060),
+		"Ring inner track": Vector2(1072, 877), "Ring outer track": Vector2(1340, 1099),
+		"Behind the flank kiosk": Vector2(2550, 760), "Flank screen, cliff side": Vector2(-2500, 0),
 	}
 	var bad := []
 	for area in areas:
