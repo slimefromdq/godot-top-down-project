@@ -379,6 +379,65 @@ def check_pieces(m, grid):
     return ok
 
 
+def check_court(m, grid):
+    """The Sunken Court: you can walk out of it (by its stairs) from its
+    floor, without jump pads, and reach both bases."""
+    print("== Sunken Court ==")
+    seen, cell_of = flood(m, grid, (0, 250), use_pads=False)
+    ok = True
+    for name, p in (("A spawn", (-700, Y(3880))), ("B spawn", (700, -Y(3880)))):
+        r, c = cell_of(*p)
+        if not seen[r][c]:
+            print(f"  TRAPPED: the court floor can't reach {name}")
+            ok = False
+    print(f"  {len(m['stairs'])} stairwells, {len(m['ledges'])} ledges;"
+          f" the court floor walks out to both bases" if ok else "")
+    return ok
+
+
+# The biggest clear circle (nothing to hide behind or play around) a region
+# may hold before the report calls it out. Report only: it points at where
+# the next piece of cover should go, it doesn't fail the check.
+OPEN_TARGET = 650
+
+
+def report_open_space(m):
+    print("== Open space (largest clear circle per region; report only) ==")
+    structure = [o["pts"] for o in m["full"] + m["low"]]
+    ledge_lines = [(l["a"], l["b"]) for l in m["ledges"]]
+    ring = next(mk for mk in m["markers"] if mk["kind"] == "arena_ring")
+
+    def clearance(p):
+        d = min(dist_to_poly(p, pts) for pts in structure)
+        for a, b in ledge_lines:
+            d = min(d, dist_to_poly(p, [a, b]))
+        return d
+
+    best = {}
+    step = 150
+    for y in range(-int(HY) + step, int(HY), step):
+        for x in range(-int(HX) + step, int(HX), step):
+            p = (x, y)
+            if any(point_in_poly(p, pts) for pts in structure):
+                continue
+            region = None
+            for r in m["regions"]:
+                if point_in_poly(p, r["pts"]):
+                    region = r["kind"]
+            if region is None:
+                continue
+            e = math.hypot(x / ring["rx"], y / ring["ry"])
+            on_ring = abs(e - 1) < ring["width"] / 2 / ring["rx"]
+            d = clearance(p)
+            key = region + (" (ring)" if on_ring else "")
+            if d > best.get(key, (0, None))[0]:
+                best[key] = (d, p)
+    for key in sorted(best):
+        d, p = best[key]
+        flag = "  <- OPEN" if d > OPEN_TARGET and "(ring)" not in key else ""
+        print(f"  {key:<18} {d:5.0f}px at ({p[0]:.0f}, {p[1]:.0f}){flag}")
+
+
 def main():
     m = build()
     # Breakable cover counts as intact full cover for every check below, so
@@ -450,6 +509,8 @@ def main():
     ok &= check_dreamers(m)
     ok &= check_objectives(m, grid)
     ok &= check_pieces(m, grid)
+    ok &= check_court(m, grid)
+    report_open_space(m)
 
     # Without pads/teleporters, from the Cradle, the only way up is stairs.
     # Block the stairwells too and the Wilds must become unreachable.

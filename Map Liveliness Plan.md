@@ -159,6 +159,68 @@ row. Later events (after 15:00) can pick two at once. F1 > Match gets a
   bot matches (`tools/ai`) and compare Mote totals and match length before
   and after.
 
+## Plaza direction
+
+Dream Basin is re-dressed as an open-air **plaza**: a civic square of
+terraces, colonnades, fountain courts, planters and stone balustrades. It is
+**not a shopping mall**: no storefronts, escalators, elevators or mall
+signage. The reference feel is a big airy public space with a sunken centre,
+overlooks and water as a feature. The shapes and systems stay the same
+(regions, ledges, cover, the map pieces above); only their dressing and a
+few new layout features change.
+
+Out of scope for now (decided): new mall-style interactive pieces
+(revolving doors, elevators, skylight reveals, mannequins, cleaning robots,
+store rooms, bubble pods) and mall-themed map events (lights out, flash
+sale, sprinklers, closing time).
+
+### Regions as parts of the plaza
+
+| Now | Plaza version | Dressing and features |
+|---|---|---|
+| The Cradle | **The Sunken Court** (built, below) | A round court one step down, balustrade rim, stairs and drop-offs |
+| Dawn / Dusk Plaza | The team forecourts | Paved forecourt, the Sundial as its centrepiece, planters instead of broken walls |
+| The Tangle | The garden court | Clipped hedge parterres, the fountain |
+| Lullaby Ruins | The old colonnade | An arcade under restoration: columns, scaffold-like breakable panels |
+| Driftfield | The fountain court | **Water stairs**: a stepped cascade, slow to climb, quick to go down |
+| Stilt Ridge | The upper terrace | A belvedere overlooking the plaza; the hut becomes a pavilion |
+| Orchard | The promenade | Tree-lined walk, benches, lamp posts |
+
+Existing pieces keep working as they are and are re-skinned to match: gates
+become iron garden gates, dream-glass becomes glass screens, the
+travelator stays (a moving walkway along the forecourt).
+
+### Steps
+
+1. **The Sunken Court.** *Built.* The Cradle's centre is a round court
+   (radius 600 px) one step down: its rim is a stone balustrade (low cover),
+   broken by four staircases on the diagonals and four one-way drop-offs on
+   the axes; two pairs of planters on its floor. The Nightmare's lair and
+   the Dream Mote spot are on the court floor. `check.py > Sunken Court`
+   proves the floor walks out to both bases. Toppled columns moved out to
+   the terrace.
+2. **Open-space pass.** *Done.* `check.py` reports the largest clear
+   circle in each region (report only, target 650 px; the Cradle ring is
+   exempt). Plaza furniture (benches and planters as low cover, lamp posts
+   as thin full cover) went where it flagged: a bench, lamp and planter on
+   the Cradle's edge by each Driftfield, and on each outskirts back-road
+   corner. Largest clear circle now: 611 px (basin), under the target
+   everywhere.
+3. **Re-dress the regions** per the table: floor tints and cover kinds
+   (balustrade, planter, column, bench) in `layout.py` / the exporter, new
+   region labels, the Ambience profiles retuned for a plaza (fewer
+   wilderness critters, more pigeons and fountain sound).
+4. **Water stairs** in each fountain court: a speed-zone strip that slows
+   you going up and speeds you going down (a `SpeedStrip`-style
+   `boost_velocity`, one direction only).
+5. **Overview art**: refresh `docs/maps/dream_basin_ingame_overview.png` and
+   the region names in `docs/maps/DREAM_BASIN.md`.
+
+The exporter now reproduces the hand-tuned scene exactly (`HAND_TUNED`
+colour table, the Ambience node), so every step goes through
+`tools/dream_basin/layout.py` and a re-export instead of splicing nodes by
+hand.
+
 ## Build order
 
 1. Ambient life

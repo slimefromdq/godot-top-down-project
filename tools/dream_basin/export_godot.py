@@ -17,6 +17,47 @@ import os
 from check import dist_to_poly
 from layout import HX, HY, Y, build
 
+# The map scene's colours were hand-tuned in the editor after the first export.
+# Every exporter colour maps to exactly one tuned colour, so the export swaps
+# them in and a re-export reproduces the tuned scene.
+HAND_TUNED = {
+    "Color(0.122, 0.122, 0.141, 1.0)": "Color(0.2, 0.5, 0.72, 1.0)",
+    "Color(0.796, 0.769, 0.910, 1.0)": "Color(0.785, 0.749, 0.937, 1.0)",
+    "Color(0.851, 0.925, 0.776, 1.0)": "Color(0.854, 0.953, 0.753, 1.0)",
+    "Color(0.812, 0.902, 0.847, 1.0)": "Color(0.809, 0.929, 0.855, 1.0)",
+    "Color(0.722, 0.875, 0.792, 1.0)": "Color(0.696, 0.901, 0.790, 1.0)",
+    "Color(0.624, 0.827, 0.725, 1.0)": "Color(0.580, 0.852, 0.715, 1.0)",
+    "Color(0.812, 0.773, 0.694, 1.0)": "Color(0.836, 0.784, 0.678, 1.0)",
+    "Color(0.937, 0.847, 0.804, 1.0)": "Color(0.965, 0.845, 0.787, 1.0)",
+    "Color(0.925, 0.773, 0.710, 1.0)": "Color(0.953, 0.749, 0.665, 1.0)",
+    "Color(0.890, 0.667, 0.584, 1.0)": "Color(0.917, 0.618, 0.507, 1.0)",
+    "Color(0.639, 0.616, 0.565, 1.0)": "Color(0.570, 0.654, 0.731, 1.0)",
+    "Color(0.561, 0.769, 0.839, 1.0)": "Color(0.493, 0.791, 0.891, 1.0)",
+    "Color(0.722, 0.698, 0.651, 1.0)": "Color(0.622, 0.713, 0.798, 1.0)",
+    "Color(0.788, 0.651, 0.420, 1.0)": "Color(0.850, 0.651, 0.314, 1.0)",
+    "Color(0.184, 0.353, 0.165, 1.0)": "Color(0.178, 0.502, 0.141, 1.0)",
+    "Color(0.847, 0.824, 0.769, 1.0)": "Color(0.700, 0.803, 0.898, 1.0)",
+    "Color(0.247, 0.420, 0.208, 1.0)": "Color(0.247, 0.556, 0.177, 1.0)",
+    "Color(0.478, 0.451, 0.420, 1.0)": "Color(0.602, 0.556, 0.504, 1.0)",
+    "Color(0.612, 0.498, 0.384, 1.0)": "Color(0.710, 0.531, 0.353, 1.0)",
+    "Color(0.553, 0.522, 0.659, 1.0)": "Color(0.585, 0.537, 0.747, 1.0)",
+    "Color(0.478, 0.416, 0.333, 1.0)": "Color(0.602, 0.497, 0.356, 1.0)",
+    "Color(0.361, 0.337, 0.314, 1.0)": "Color(0.509, 0.463, 0.419, 1.0)",
+    "Color(0.831, 0.678, 0.310, 1.0)": "Color(0.885, 0.665, 0.136, 1.0)",
+    "Color(0.184, 0.561, 0.416, 1.0)": "Color(0.062, 0.669, 0.435, 1.0)",
+    "Color(0.416, 0.353, 0.282, 1.0)": "Color(0.553, 0.440, 0.312, 1.0)",
+    "Color(0.561, 0.639, 0.831, 1.0)": "Color(0.497, 0.609, 0.885, 1.0)",
+    "Color(0.753, 0.353, 0.235, 1.0)": "Color(0.822, 0.233, 0.059, 1.0)",
+    "Color(0.169, 0.169, 0.188, 1.0)": "Color(0.090, 0.310, 0.470, 1.0)",
+}
+
+
+def hand_tune(text):
+    for plain, tuned in HAND_TUNED.items():
+        text = text.replace("color = " + plain + "\n", "color = " + tuned + "\n")
+    return text
+
+
 HAZARD_COLORS = {"sleep_fog": "Color(0.7, 0.6, 1, 0.32)", "thorn_bed": "Color(0.45, 0.6, 0.25, 0.45)"}
 
 
@@ -75,11 +116,13 @@ FLOOR = {
     ("plaza", "A"): "b8dfca", ("plaza", "B"): "ecc5b5",
     ("base", "A"): "9fd3b9", ("base", "B"): "e3aa95",
     ("ruins", "A"): "cfc5b1", ("ruins", "B"): "cfc5b1",
+    ("court", None): "a99fd6",
 }
 COVER = {
     "tree": "3f6b35", "hedge": "2f5a2a", "rock": "7a736b", "cliffrock": "5c5650",
     "pillar": "8d85a8", "wall": "4b4b4b", "ruin": "7a6a55", "cloister": "6a5a48",
     "boundary": "2b2b30", "lowrock": "b8b2a6", "lowwall": "a39d90", "crate": "c9a66b",
+    "balustrade": "dcdfe8", "planter": "8fb07a", "bench": "b08a5e", "lamp": "4a4f63",
     "fountain": "8fc4d6", "building": "9c7f62",
 }
 TEAM_COVER = {
@@ -93,6 +136,7 @@ GROUP = {
     "pillar": "Pillars", "wall": "Walls", "ruin": "Walls", "cloister": "Walls",
     "basewall": "Walls", "sundial": "Landmarks", "statue": "Landmarks",
     "boundary": "Boundary", "lowrock": "LowCover", "lowwall": "LowCover", "crate": "LowCover",
+    "balustrade": "Court", "planter": "Furniture", "bench": "Furniture", "lamp": "Furniture",
     "fountain": "Landmarks", "building": "Buildings",
 }
 
@@ -304,6 +348,9 @@ def export_map(m):
             s.node(f"Spawn{i + 1}", f"DreamZones/{name}", "Marker2D", position=v2(p))
 
     # --- overview overlay (shown by MapDebugView) ------------------------------
+    # Map ambience (docs/VISUALS_AND_AUDIO.md > Map ambience).
+    s.node("Ambience", ".", "Node2D", script=s.res("Script", "res://scripts/map/map_ambience.gd"),
+           ambience=s.res("Resource", "res://resources/map/dream_basin_ambience.tres"))
     s.node("Overview", ".", "Node2D", groups=["map_overview"], visible="false", z_index=100)
     for i, ln in enumerate(m["lanes"]):
         s.node(f"Lane{i + 1}", "Overview", "Line2D", points=pva([ln["a"], ln["b"]]), width="28.0",
@@ -320,7 +367,7 @@ def export_map(m):
                   "theme_override_colors/font_outline_color": col("111111"),
                   "theme_override_constants/outline_size": str(size // 4),
                   "theme_override_font_sizes/font_size": str(size)})
-    return s.text()
+    return hand_tune(s.text())
 
 
 def export_world(m):
