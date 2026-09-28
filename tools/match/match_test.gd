@@ -161,6 +161,12 @@ func _test_kill_and_assist() -> void:
 		and killed[0][1] == a1 and killed[0][2] == [a2], str(killed))
 	_check("kill/assist/death counted", manager.get_record(a1).kills == 1 and manager.get_record(a2).assists == 1
 		and manager.get_record(b1).deaths == 1, "")
+	_check("get_kda / get_team_kills for the HUD", manager.get_kda(a1) == Vector3i(1, 0, 0)
+		and manager.get_kda(a2) == Vector3i(0, 0, 1) and manager.get_kda(b1) == Vector3i(0, 1, 0)
+		and manager.get_team_kills(&"a") == 1 and manager.get_team_kills(&"b") == 0, str(manager.get_kda(a1)))
+	var bar := b1.get_node_or_null(^"HealthBar") as HealthBar
+	_check("hero health bar shows exact HP and a level", bar != null and bar.get_hp_text().contains(" / ")
+		and bar.get_owner_level() == b1.get_level(), bar.get_hp_text() if bar != null else "no bar")
 	_check("dead hero stays in the tree, hidden", is_instance_valid(b1) and b1.is_inside_tree() and not b1.visible, "")
 	await _wait_respawn(b1)
 

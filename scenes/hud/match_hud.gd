@@ -20,6 +20,14 @@ class_name MatchHud
 # Shop: a ShopPanel (B) and a "B  Shop" hint under the gold while the player
 # can buy (in base, or dead).
 #
+# Items: the player's item slots above the ability bar, one large
+# square per slot with the item's icon (its colour and glyph) and the active
+# item's key. Empty slots show as dim frames.
+#
+# K/D/A: the player's own kills / deaths / assists under the XP bar, and
+# each team's total kills either side of the clock (every hero's own K/D/A
+# is on its TeamBar card).
+#
 # Read-only: it listens to the MatchManager and polls the player each frame.
 # Hides itself when the scene has no MatchManager.
 
@@ -48,6 +56,12 @@ var _respawn_label: Label
 var _arrows: Control
 var _mote_label: Label
 var _shop_hint: Label
+var _kda_label: Label
+var _score_a: Label
+var _score_b: Label
+var _items_row: HBoxContainer
+## Item slot size on screen.
+@export var item_slot_size := Vector2(56, 56)
 ## Left/right of the clock, empty until the wake meters arrive.
 var wake_slot_a: Control
 var wake_slot_b: Control
@@ -94,6 +108,8 @@ func _process(_delta: float) -> void:
 		return
 	_arrows.queue_redraw()
 	_clock_label.text = clock_text()
+	_score_a.text = str(match_manager.get_team_kills(&"a"))
+	_score_b.text = str(match_manager.get_team_kills(&"b"))
 	match match_manager.state:
 		MatchManager.State.WARMUP:
 			_state_label.text = "Starts in %d" % ceili(match_manager.warmup_left)
@@ -114,6 +130,9 @@ func _process(_delta: float) -> void:
 		var need := match_manager.get_xp_to_next(hero)
 		_xp_bar.value = match_manager.get_xp(hero) / need if need > 0.0 else 1.0
 		_xp_label.text = "%d / %d" % [floori(match_manager.get_xp(hero)), roundi(need)]
+	var kda := match_manager.get_kda(hero)
+	_kda_label.text = "K / D / A   %d / %d / %d" % [kda.x, kda.y, kda.z]
+	_refresh_items(hero)
 	var carrier := MoteCarrier.find_on(hero)
 	var count := carrier.get_mote_count() if carrier != null else 0
 	_mote_label.visible = count > 0
@@ -194,9 +213,20 @@ func _build() -> void:
 	var clock_box := VBoxContainer.new()
 	clock_box.custom_minimum_size.x = 140
 	clock_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var clock_row := HBoxContainer.new()
+	clock_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	clock_row.add_theme_constant_override(&"separation", 12)
+	clock_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_score_a = _label(26)
+	_score_a.modulate = MatchManager.team_color(&"a")
+	clock_row.add_child(_score_a)
 	_clock_label = _label(34)
 	_clock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	clock_box.add_child(_clock_label)
+	clock_row.add_child(_clock_label)
+	_score_b = _label(26)
+	_score_b.modulate = MatchManager.team_color(&"b")
+	clock_row.add_child(_score_b)
+	clock_box.add_child(clock_row)
 	_state_label = _label(16)
 	_state_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	clock_box.add_child(_state_label)
@@ -216,7 +246,7 @@ func _build() -> void:
 	economy.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	economy.offset_left = -510
 	economy.offset_right = -300
-	economy.offset_top = -140
+	economy.offset_top = -170
 	economy.offset_bottom = -24
 	economy.alignment = BoxContainer.ALIGNMENT_END
 	add_child(economy)
@@ -252,6 +282,8 @@ func _build() -> void:
 	economy.add_child(_xp_bar)
 	_xp_label = _label(12)
 	economy.add_child(_xp_label)
+	_kda_label = _label(16)
+	economy.add_child(_kda_label)
 	_shop_hint = _label(16)
 	_shop_hint.text = "%s  Shop" % _action_key(ShopPanel.TOGGLE_ACTION)
 	_shop_hint.modulate = gold_color
@@ -262,6 +294,18 @@ func _build() -> void:
 	_mote_label.visible = false
 	economy.add_child(_mote_label)
 	economy.move_child(_mote_label, 0)
+
+	# Bottom centre, just above the ability bar: the item slots.
+	_items_row = HBoxContainer.new()
+	_items_row.name = "Items"
+	_items_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_items_row.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_items_row.offset_top = -140 - item_slot_size.y
+	_items_row.offset_bottom = -140
+	_items_row.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_items_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	_items_row.add_theme_constant_override(&"separation", 6)
+	add_child(_items_row)
 
 	_arrows = Control.new()
 	_arrows.name = "OffscreenArrows"
@@ -277,6 +321,78 @@ func _build() -> void:
 	_respawn_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_respawn_label.visible = false
 	add_child(_respawn_label)
+
+
+## The items shown in the slots, passives first then the active item (null
+## for an empty slot), for tests.
+func get_item_slots(hero: Hero) -> Array:
+	var inventory := ItemInventory.find_on(hero)
+	if inventory == null:
+		return []
+	var slots: Array = []
+	for item in inventory.get_passive_items():
+		slots.append(item)
+	for i in maxi(inventory.get_rules().item_slots - slots.size(), 0):
+		slots.append(null)
+	slots.append(inventory.get_active_item())
+	return slots
+
+
+var _items_key: String = ""
+
+
+func _refresh_items(hero: Hero) -> void:
+	var slots := get_item_slots(hero)
+	# Rebuild only when the items change.
+	var key := ",".join(slots.map(func(item): return str(item.id) if item != null else "-"))
+	if key == _items_key:
+		return
+	_items_key = key
+	for child in _items_row.get_children():
+		child.queue_free()
+	for i in slots.size():
+		var active := i == slots.size() - 1
+		if active:
+			var gap := Control.new()
+			gap.custom_minimum_size.x = 8
+			gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_items_row.add_child(gap)
+		_items_row.add_child(_item_slot(slots[i], active))
+
+
+func _item_slot(item: ItemData, active: bool) -> Control:
+	var slot := Panel.new()
+	slot.custom_minimum_size = item_slot_size
+	slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var style := StyleBoxFlat.new()
+	style.set_corner_radius_all(8)
+	style.set_border_width_all(2)
+	if item != null:
+		style.bg_color = Color(item.color.darkened(0.45), 0.9)
+		style.border_color = item.color.lightened(0.2)
+		slot.tooltip_text = "%s\n%s" % [item.display_name, item.describe()]
+	else:
+		style.bg_color = Color(0.05, 0.1, 0.18, 0.55)
+		style.border_color = Color(1, 1, 1, 0.3)
+	if active:
+		style.border_color = Color("fbd34d") if item != null else Color(0.98, 0.83, 0.3, 0.4)
+	slot.add_theme_stylebox_override(&"panel", style)
+	if item != null:
+		var glyph := _label(26)
+		glyph.text = item.glyph
+		glyph.modulate = item.color.lightened(0.35)
+		glyph.set_anchors_preset(Control.PRESET_FULL_RECT)
+		glyph.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		glyph.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		slot.add_child(glyph)
+	if active:
+		var key := _label(12)
+		var rules := match_manager.get_rules() if match_manager != null else null
+		var ability_slot := GameRules.current().get_slot(rules.active_item_slot) if rules != null else null
+		key.text = _action_key(ability_slot.input_action) if ability_slot != null else ""
+		key.position = Vector2(4, 1)
+		slot.add_child(key)
+	return slot
 
 
 func _action_key(action: StringName) -> String:
