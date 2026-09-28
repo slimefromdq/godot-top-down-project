@@ -295,7 +295,8 @@ func _bush() -> void:
 func _placements(map: Node) -> void:
 	var glass := get_tree().get_nodes_in_group(BreakableCover.GROUP).filter(func(n): return map.is_ancestor_of(n))
 	var geysers := get_tree().get_nodes_in_group(MoteGeyser.GROUP).filter(func(n): return map.is_ancestor_of(n))
-	check(glass.size() == 6, "Dream Basin has 6 dream-glass panes (%d)" % glass.size())
+	# 6 screens + the Promenade Glasshouse's 3 panes on each side.
+	check(glass.size() == 12, "Dream Basin has 12 dream-glass panes (%d)" % glass.size())
 	check(geysers.size() == 4, "Dream Basin has 4 Mote geysers (%d)" % geysers.size())
 	for group in [glass, geysers]:
 		var mirrored := true
@@ -466,9 +467,16 @@ func _toggles(amb: MapAmbience) -> void:
 func _phase3_placements(map: Node) -> void:
 	var count := func(group: StringName) -> int:
 		return get_tree().get_nodes_in_group(group).filter(func(n): return map.is_ancestor_of(n)).size()
-	check(count.call(ToggleGate.GROUP) == 4, "Dream Basin has 4 toggle gates")
+	# Ruins north gates, Tangle gates and (geometry pass) the Cloister Doors.
+	check(count.call(ToggleGate.GROUP) == 6, "Dream Basin has 6 toggle gates")
 	check(count.call(HazardZone.GROUP) == 4, "Dream Basin has 4 hazards")
 	check(count.call(Travelator.GROUP) == 2, "Dream Basin has 2 travelators")
+	# The Homeways: each never flips and carries you toward its own team's Dreamer.
+	for belt: Travelator in get_tree().get_nodes_in_group(Travelator.GROUP).filter(func(n): return map.is_ancestor_of(n)):
+		var dreamer := Dreamer.find_for(get_tree(), &"a" if belt.global_position.y > 0.0 else &"b")
+		var toward := belt.global_position.direction_to(dreamer.global_position) if dreamer != null else Vector2.ZERO
+		check(belt.data.belt_reverse_period == 0.0 and belt.get_flow() == 1.0, "%s never flips" % belt.name)
+		check(belt.global_transform.x.normalized().dot(toward) > 0.95, "%s carries toward its own Dreamer" % belt.name)
 	var flowers := get_tree().get_nodes_in_group(JumpPad.GROUP).filter(func(n): return map.is_ancestor_of(n) and n.sweep_degrees > 0.0)
 	check(flowers.size() == 2, "Dream Basin has 2 launch flowers")
 
@@ -652,6 +660,12 @@ func _flower() -> void:
 func _water_stairs(map: Node) -> void:
 	var placed := get_tree().get_nodes_in_group(WaterStairs.GROUP).filter(func(n): return map.is_ancestor_of(n))
 	check(placed.size() == 2, "each Fountain Court has water stairs")
+	# The Terrace Falls cascade down a real stairwell (from the Upper Terrace).
+	for falls: WaterStairs in placed:
+		var on_stairs := false
+		for stair in map.find_children("*", "Stairwell", true, false):
+			on_stairs = on_stairs or (stair as Node2D).global_position.distance_to(falls.global_position) < 60.0
+		check(on_stairs, "%s runs down a stairwell" % falls.name)
 	var stairs: WaterStairs = load(WATER_STAIRS).instantiate()
 	add_child(stairs)
 	stairs.rotation = PI / 2    # down = +Y

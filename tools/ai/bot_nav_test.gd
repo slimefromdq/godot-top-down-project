@@ -90,7 +90,7 @@ func _check_walking_only(old_map: GameMap, bot: Hero) -> void:
 		and navigation._links.is_empty())
 	var spawns := [map.get_spawn_points(&"a")[0].global_position, map.get_spawn_points(&"b")[0].global_position]
 	var areas := {
-		"Cradle": Vector2(0, 1320), "Court floor": Vector2(0, 250),
+		"Cradle": Vector2(0, 1320), "Court floor": Vector2(150, 150),
 		"A Garden Court": Vector2(-4000, 2400), "B Garden Court": Vector2(4000, -2400),
 		"Lawn L": Vector2(-3650, -420), "Lawn R": Vector2(3650, 420),
 		"Terrace L": Vector2(-3600, -2400), "Terrace R": Vector2(3600, 2400),

@@ -99,6 +99,10 @@ def export_pieces(s, m):
             props["rotation"] = f'{pc["rot"]:.6f}'
             props["size"] = v2((pc["w"], pc["h"]))
             props["cycle_offset"] = f'{pc["offset"]:.1f}'
+            if pc.get("data"):
+                if pc["data"] not in datas:
+                    datas[pc["data"]] = s.res("Resource", f'res://resources/map/pieces/{pc["data"]}.tres')
+                props["data"] = datas[pc["data"]]
         elif kind == "waterstairs":
             props["rotation"] = f'{pc["rot"]:.6f}'
             props["size"] = v2((pc["w"], pc["h"]))
@@ -133,7 +137,7 @@ COVER = {
     # The obstacle types (CoverBody PIT / CRYSTAL): deep water blue, a dark
     # violet pit, pale see-through crystal.
     "water": "2c5a7a", "pit": "3a2f52", "crystal": "9fe4ff",
-    "arcwall": "9a92b8",
+    "arcwall": "9a92b8", "courtwall": "b3aacb",
 }
 GRASS_COLOR = "73a842"
 TEAM_COVER = {
@@ -149,7 +153,7 @@ GROUP = {
     "boundary": "Boundary", "lowrock": "LowCover", "lowwall": "LowCover", "crate": "LowCover",
     "balustrade": "Court", "planter": "Furniture", "hedgebox": "Furniture", "bench": "Furniture", "lamp": "Furniture",
     "fountain": "Landmarks", "building": "Buildings",
-    "water": "Pits", "pit": "Pits", "crystal": "Crystal", "arcwall": "Arcs",
+    "water": "Pits", "pit": "Pits", "crystal": "Crystal", "arcwall": "Arcs", "courtwall": "Court",
 }
 
 
@@ -249,7 +253,8 @@ def export_map(m):
     s.node("SpeedStrips", "Mobility", "Node2D")
     for i, sp in enumerate(m["speed_strips"]):
         s.node(f"LamplightRoad{i + 1}", "Mobility/SpeedStrips", instance=strip,
-               position=v2((sp["x"], sp["y"])), size=v2((sp["w"], sp["h"])))
+               position=v2((sp["x"], sp["y"])), size=v2((sp["w"], sp["h"])),
+               rotation=f'{sp.get("rot", 0.0):.6f}')
     s.node("JumpPads", "Mobility", "Node2D")
     seen = {}
     for j in m["jump_pads"]:
@@ -394,7 +399,7 @@ def export_map(m):
 def export_world(m):
     spawn = next(mk for mk in m["markers"] if mk["kind"] == "spawn" and mk["team"] == "A")
     # Training dummies: in the Cradle, and one on each Ridge to test long shots.
-    dummies = [(0, Y(-300)), (-420, Y(180)), (420, Y(180)), (3600, Y(1900)), (-3600, Y(-1900))]
+    dummies = [(150, Y(-335)), (-420, Y(180)), (420, Y(180)), (3600, Y(1900)), (-3600, Y(-1900))]
     solids = [o["pts"] for o in m["full"] + m["low"] + m.get("pits", []) + m.get("crystals", [])]
     for d in dummies:
         assert min(dist_to_poly(d, p) for p in solids) > 90, f"dummy at {d} overlaps cover"

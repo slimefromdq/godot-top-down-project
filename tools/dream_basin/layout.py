@@ -168,6 +168,19 @@ def grass(pts):
     L["grass"].append({"pts": pts})
 
 
+def grass_patch(cx, cy, w, h, seed):
+    """An irregular tall-grass patch about w x h (real px) centred on the
+    authored point (cx, cy)."""
+    rng = random.Random(seed)
+    cy = Y(cy)
+    pts = []
+    for i in range(10):
+        a = 2 * math.pi * i / 10
+        k = 1 + rng.uniform(-0.12, 0.08)
+        pts.append((cx + math.cos(a) * w / 2 * k, cy + math.sin(a) * h / 2 * k))
+    grass(pts)
+
+
 def bush(x, y, r=110):
     L["bushes"].append({"x": x, "y": Y(y), "r": r * BUSH_SHRINK})
 
@@ -198,7 +211,15 @@ def teleporter(a, b, two_way, name):
 
 
 def speed_strip(x, y, w, h, direction=(1, 0)):
-    L["speed_strips"].append({"x": x, "y": Y(y), "w": w, "h": h, "dir": direction})
+    L["speed_strips"].append({"x": x, "y": Y(y), "w": w, "h": h, "dir": direction, "rot": 0.0})
+
+
+def road(ax, ay, bx, by, h=170):
+    """A speed strip (Lamplight Road) running straight from A to B (authored
+    points): it starts and ends somewhere, so it reads as a road."""
+    ay, by = Y(ay), Y(by)
+    L["speed_strips"].append({"x": (ax + bx) / 2, "y": (ay + by) / 2, "w": math.dist((ax, ay), (bx, by)),
+                              "h": h, "dir": (1, 0), "rot": math.atan2(by - ay, bx - ax)})
 
 
 def mote_spawn(x, y):
@@ -244,10 +265,11 @@ def hazard(x, y, w, h, data, name, offset=0.0):
                         "name": name, "offset": offset, "rot": 0.0})
 
 
-def travelator(x, y, w, h, name, offset=0.0):
-    """A moving walkway along its long axis (w along x)."""
+def travelator(x, y, w, h, name, offset=0.0, rot=0.0, data=None):
+    """A moving walkway along its long axis (w along x, rotated by rot). data
+    = a MapPieceData in resources/map/pieces (None: the scene's own)."""
     L["pieces"].append({"x": x, "y": Y(y), "kind": "travelator", "w": w, "h": h, "name": name,
-                        "offset": offset, "rot": 0.0})
+                        "offset": offset, "rot": rot, "data": data})
 
 
 def water_stairs(x, y, w, h, name, rot=0.0):
@@ -405,26 +427,44 @@ RING_ARCS = [(-12, 12, "arcwall"), (30, 50, "arcwall"), (68, 76, "crystal"), (10
 for d0, d1, arc_kind in RING_ARCS:
     ring_arc(d0, d1, arc_kind)
 
-# Broken pillar ring inside the circuit. Angles avoid the Moon Aisle diagonal.
-for i, deg in enumerate([15, 72, 102, 172]):
+# The Spokes (geometry pass, phase 4): eight short walls radiating from the
+# Sunken Court (four authored, the rotation makes the rest) split the terrace
+# around it into wedges, each funnelling into one of the court's openings.
+# They sit between the openings (22.5 + 45k degrees), clear of the Moon Aisle.
+# A marble column caps each spoke's outer end. (They replace the old loose
+# column ring and the toppled-column low rocks.)
+SPOKE_R = (760, 1040)                  # real px from the centre
+
+
+def _polar(deg, r):
+    """Real-space polar point as authored coordinates."""
     a = math.radians(deg)
-    full(rock(850 * math.cos(a), 850 * math.sin(a), 105, 60 + i, n=8, jitter=0.12),
-         "pillar")
-# Low toppled-column pieces on the terrace: bash-and-slam fodder for Melody.
-low(rock(1000, 420, 90, 70, stretch=(1.7, 0.6), rot=0.6), "lowrock")
-low(rock(-980, 560, 80, 71, stretch=(1.6, 0.6), rot=-0.5), "lowrock")
+    return r * math.cos(a), r * math.sin(a) / SY
+
+
+for i, deg in enumerate([22.5, 67.5, 112.5, 157.5]):
+    (ax, ay), (bx, by) = _polar(deg, SPOKE_R[0]), _polar(deg, SPOKE_R[1])
+    wall(ax, ay, bx, by, t=80, kind="arcwall")
+    cx, cy = _polar(deg, SPOKE_R[1] + 30)
+    full(rock(cx, cy, 70, 60 + i, n=8, jitter=0.08), "pillar")
 
 # --- The Sunken Court: the Cradle's heart, one step down ------------------
 # A round court sunk into the middle of the Cradle (the Nightmare's lair and
 # the Dream Mote spot sit on its floor). Its rim is a stone balustrade (low
 # cover: shoot over it, can't walk through), broken by eight staircases, on
-# the diagonals and the axes, all walkable both ways. Planters on the court
-# floor give the fight inside something to use. Radius in real units; the
-# helpers take authored y. COURT_DROPS (one-way ledges: hop down, never up)
-# is kept for layouts that want them; Dream Basin has none.
+# the diagonals and the axes, all walkable both ways. Radius in real units;
+# the helpers take authored y. COURT_DROPS (one-way ledges: hop down, never
+# up) is kept for layouts that want them; Dream Basin has none.
+#
+# Geometry pass, phase 4: an arena you fight through, not a circle you stand
+# in. The axis openings are wide (30 degrees, about 310 px), the rim between
+# openings alternates hard wall (COURT_HARD_SPANS: cover to fight round) and
+# balustrade (shoot over), and four pillars on the axes inside mean no stair
+# sees straight across to the lair. Planters on the diagonals stay.
 COURT_R = 600
-COURT_STAIRS = [(-10, 10), (35, 55), (80, 100), (125, 145)]   # degrees, authored half
+COURT_STAIRS = [(-15, 15), (35, 55), (75, 105), (125, 145)]   # degrees, authored half
 COURT_DROPS = []
+COURT_HARD_SPANS = [(15, 35), (105, 125)]                     # the rest is balustrade
 
 
 def _court_pt(deg, r=COURT_R):
@@ -447,9 +487,13 @@ def sunken_court():
         spans.append((a1, b0))
     for d0, d1 in spans:
         arc = _court_arc(d0, d1)
+        hard = (d0, d1) in COURT_HARD_SPANS
         for u, v in zip(arc, arc[1:]):
             (ax, ay), (bx, by) = _court_pt(u), _court_pt(v)
-            lowwall(ax, ay, bx, by, t=40, kind="balustrade")
+            if hard:
+                wall(ax, ay, bx, by, t=60, kind="courtwall")
+            else:
+                lowwall(ax, ay, bx, by, t=40, kind="balustrade")
     for d0, d1 in COURT_DROPS:
         arc = _court_arc(d0, d1)
         for u, v in zip(arc, arc[1:]):
@@ -468,7 +512,11 @@ sunken_court()
 for i, deg in enumerate([0, 90]):
     a = math.radians(deg + 45)
     low(rock(360 * math.cos(a), 360 * math.sin(a) / SY, 55, 75 + i, n=10, jitter=0.05), "planter")
-bush(250, 620, 110)
+# Pillars on the axes, inside the court: they break every straight line from
+# an axis stair to the lair (kept 290+ px clear for the Nightmare's fight).
+for i, deg in enumerate([0, 90]):
+    px, py = _polar(deg, 350)
+    full(rock(px, py, 55, 78 + i, n=8, jitter=0.06), "pillar")
 bush(-1000, 150, 100)
 
 # --- Cradle Steps: the terraces between circuit and plaza choke ---------
@@ -500,6 +548,14 @@ for x0, x1 in ((-1000, -450), (450, 1000)):
 # its Lawn Stairs.
 crystal(rect(1950, -25, 2250, 25))     # Flank Screen (straddles the middle)
 building(2400, 333, 2700, 533)         # Flank Kiosk
+
+# Tall grass on the flank routes (geometry pass, phase 4): places to wait for
+# someone coming round. Beside each Flank Kiosk, below each Lawn Stairs, and
+# at both outer ends of the Reflecting Pools (the way round them).
+grass_patch(2220, 367, 300, 300, 201)       # Kiosk Grass
+grass_patch(-2500, 650, 360, 260, 202)      # Lawn Stairs Grass
+grass_patch(-1180, 1725, 230, 250, 203)     # Pool-end Grass (west)
+grass_patch(1190, 1725, 250, 250, 204)      # Pool-end Grass (east)
 
 # --- Lullaby Ruins (A): x -2750..-1350, y 850..2350, NE corner collapsed ----
 # A roofless chapel. Four ways in: north door, the collapsed north-east breach
@@ -564,8 +620,11 @@ wall(-1600, 2750, -1600, 3300, kind="basewall", team="A")
 wall(1600, 2750, 1600, 3300, kind="basewall", team="A")
 
 # Lamplight Road speed strips (bidirectional), both sides of the plaza.
-speed_strip(-2150, 2560, 900, 170)
-speed_strip(2150, 2600, 900, 170)
+# Each runs straight from a Plaza side gate to the foot of a Wild's stair:
+# west to the Garden Court stair (in the Cloister yard), east to the Upper
+# Terrace stair (in the Promenade). Quick both ways along the road.
+road(-1750, 2583, -3500, 3033)
+road(1750, 2583, 3480, 3050)
 
 # --- A base / spawn room: three exits + one-way comeback teleporter -------
 wall(-1400, 3300, -300, 3300, kind="basewall", team="A")
@@ -604,8 +663,8 @@ bush(-2750, 3100, 100)
 bush(-1900, 3150, 90)
 
 # --- Orchard (east outskirts): open, scattered trees ---------------------
-for i, (x, y, r) in enumerate([(2050, 3150, 110), (2450, 3550, 120), (3100, 3050, 130),
-                               (3700, 3500, 110), (4350, 3100, 120), (2900, 3850, 100),
+for i, (x, y, r) in enumerate([(2050, 3150, 110), (2450, 3550, 120), (2600, 3250, 130),
+                               (3700, 3500, 110), (4350, 3100, 120), (2700, 3900, 100),
                                (4200, 3850, 100)]):
     full(rock(x, y, r, 120 + i), "tree")
 for (bx, by) in [(2250, 2950), (3400, 3350), (4000, 3000), (2000, 3700)]:
@@ -688,20 +747,34 @@ geyser(-2000, 500, "Rim Geyser")
 # Phase 3 (Map Liveliness Plan): the Ruins' north door and the Tangle's main
 # entrance open and close on the clock (offset so they alternate), each with a
 # lever post outside. Sleep-fog drifts over Stilt Ridge now and then; a thorn
-# bed in the Orchard. The Plaza Express, a travelator along the Plaza front,
-# flips direction every half minute. A launch flower on the Driftfield's
+# bed in the Orchard. A launch flower on the Driftfield's
 # inner edge sweeps its landing across the Cradle's inner terrace. It's kept
 # well away from every stair mouth (it used to sit at the foot of the Terrace
 # stairs, so walking up them launched you).
 gate(-2350, -1950, 850, 80, "Ruins North Gate", lever=(-290, -90))
 gate(-3900, -3350, 900, 120, "Tangle Gate", lever=(330, -100), offset=16.0)
+# Something to do in every area (geometry pass, phase 4), starting with the
+# outskirts. The Cloister Door: a gate on the tunnel's side door, with its
+# lever inside the tunnel. Whoever holds the tunnel decides whether the back
+# road can get in (the tunnel's west end always stays open).
+gate(-2310, -1990, 3470, 80, "Cloister Door", lever=(0, 170), offset=8.0)
+# The Glasshouse: a three-sided pavilion of Dream-glass in the Promenade,
+# open toward the road. Hide in it, shoot out of it, or shatter it.
+breakable(2860, 3542, 60, 300, "Glasshouse West")
+breakable(3320, 3542, 60, 300, "Glasshouse East")
+breakable(3090, 3692, 300, 60, "Glasshouse Back")
 hazard(-3600, -1167, 420, 300, "sleep_fog", "Ridge Fog")
 hazard(3600, 3250, 360, 260, "thorn_bed", "Orchard Thorns")
-travelator(0, 1979, 1000, 150, "Plaza Express")
+# The Homeway (geometry pass, phase 4): a belt down each Plaza avenue, from
+# behind the Reflecting Pools' gates to the choke, always running toward that
+# team's own Dreamer. Carriers ride home to bank; attackers pushing the
+# Dreamer walk against it. It never flips (resources/map/pieces/homeway.tres).
+travelator(0, 2062, 600, 150, "Homeway", rot=math.pi / 2, data="homeway")
 flower(1100, 1450, 620, 815, 20, "Driftfield Flower")
-# Plaza direction: water stairs in each Fountain Court, running down (west)
-# toward the Sunken Court: quick going down, slow climbing back up.
-water_stairs(2300, 1917, 560, 180, "Fountain Stairs", rot=math.pi)
+# The Terrace Falls: the cascade down the Upper Terrace stairs into each
+# Fountain Court (it feeds the fountain): quick off the sniper perch into the
+# fight, slow climbing back up. The Lawn Stairs stay plain.
+water_stairs(2590, 1025, 320, 350, "Terrace Falls", rot=math.pi)
 
 # ==========================================================================
 # PLAZA FURNITURE (Map Liveliness Plan > Plaza direction, open-space pass)

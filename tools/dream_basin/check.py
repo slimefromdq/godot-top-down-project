@@ -29,6 +29,9 @@
   the way round (RING_MAX_DETOUR between stops every RING_STEP degrees).
 * Base routes: the walk from each Plaza exit (north choke, both side gates)
   to the Sunken Court floor stays within ROUTE_MAX_DETOUR of a straight line.
+* Roads, belts and cascades lead somewhere: every Lamplight Road runs from a
+  Plaza side gate to a Wild's stair, every belt ends at its own team's
+  Dreamer and never flips, every cascade sits on a real stairwell.
 * Reports (no pass/fail): open space per region, and center-field
   sightlines (average clear shot, long-range exposure: whole field, outside
   the ring, the ring and inside).
@@ -319,7 +322,53 @@ STAIR_CLEARANCE = 400        # pads and flowers stay this far from any stairwell
 
 
 def piece_rect(pc):
-    return _rect(pc["x"] - pc["w"] / 2, pc["y"] - pc["h"] / 2, pc["x"] + pc["w"] / 2, pc["y"] + pc["h"] / 2)
+    """A piece's footprint, turned by its rotation (belts, cascades)."""
+    hw, hh = pc["w"] / 2, pc["h"] / 2
+    rot = pc.get("rot", 0.0) if pc["kind"] in ("travelator", "waterstairs") else 0.0
+    c, s_ = math.cos(rot), math.sin(rot)
+    return [(pc["x"] + x * c - y * s_, pc["y"] + x * s_ + y * c) for x, y in ((-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh))]
+
+
+# Geometry pass, phase 4: things that move you must take you somewhere.
+LEADS_TO = 450          # px: how near a road / belt end must be to where it leads
+
+
+def check_leads_somewhere(m):
+    """Every Lamplight Road runs from a Plaza side gate to the foot of a
+    Wild's stair; every belt (travelator) delivers to its own team's
+    Dreamer (its downstream end near the deposit ring) and never flips;
+    every cascade (water stairs) is a real stairwell's cascade."""
+    print("== Roads, belts and cascades lead somewhere ==")
+    ok = True
+    stairs = [(st["x"], st["y"]) for st in m["stairs"]]
+    gates = [(sx * 1600, sy * Y(2600)) for sx in (1, -1) for sy in (1, -1)]
+    for i, sp in enumerate(m["speed_strips"]):
+        c, s_ = math.cos(sp.get("rot", 0.0)), math.sin(sp.get("rot", 0.0))
+        ends = [(sp["x"] + c * sp["w"] / 2 * k, sp["y"] + s_ * sp["w"] / 2 * k) for k in (-1, 1)]
+        to_stair = min(min(math.dist(e, st) for st in stairs) for e in ends)
+        to_gate = min(min(math.dist(e, g) for g in gates) for e in ends)
+        good = to_stair <= LEADS_TO and to_gate <= LEADS_TO
+        print(f"  road {i + 1}: {to_gate:4.0f}px from a Plaza gate, {to_stair:4.0f}px from a stair"
+              f"{'' if good else '  <- LEADS NOWHERE'}")
+        ok &= good
+    for pc in m["pieces"]:
+        if pc["kind"] == "travelator":
+            rot = pc.get("rot", 0.0)
+            down = (pc["x"] + math.cos(rot) * pc["w"] / 2, pc["y"] + math.sin(rot) * pc["w"] / 2)
+            team = "A" if pc["y"] > 0 else "B"
+            dreamer = next(d for d in m["dreamers"] if d["team"] == team)
+            gap = math.dist(down, (dreamer["x"], dreamer["y"])) - DEPOSIT_RADIUS
+            flips = pc.get("data") in (None, "travelator")    # the stock belt data flips
+            good = gap <= LEADS_TO and not flips
+            print(f"  belt {pc['name']} ({team}): ends {gap:4.0f}px from its own Dreamer's ring"
+                  f"{', never flips' if not flips else ', FLIPS'}{'' if good else '  <- LEADS NOWHERE'}")
+            ok &= good
+        elif pc["kind"] == "waterstairs":
+            near = min(math.dist((pc["x"], pc["y"]), st) for st in stairs)
+            good = near <= 60
+            print(f"  cascade {pc['name']}: {near:3.0f}px from a stairwell{'' if good else '  <- NOT ON STAIRS'}")
+            ok &= good
+    return ok
 
 
 def check_pieces(m, grid):
@@ -407,7 +456,7 @@ def check_pieces(m, grid):
         grid2 = build_grid(closed)
         for team, start in (("A", (-700, Y(3880))), ("B", (700, -Y(3880)))):
             seen2, cell2 = flood(closed, grid2, start, use_pads=False)
-            targets = [("the Cradle", (0, 400 if team == "A" else -400))]
+            targets = [("the Sunken Court", (150, 150) if team == "A" else (-150, -150))]
             targets += [(cp["name"], (cp["x"], cp["y"])) for cp in m["camps"]]
             targets += [(pc["name"], (pc["x"], pc["y"])) for pc in pieces if pc["kind"] == "geyser"]
             for name, q in targets:
@@ -548,7 +597,7 @@ def walk_distance(m, grid, a, b):
 def check_base_routes(m, grid):
     print("== Base routes (Plaza exits -> Sunken Court, on foot) ==")
     ok = True
-    court = (0, 250)
+    court = (150, 150)
     for team, sign in (("A", 1), ("B", -1)):
         for name, (x, y) in (("north choke", (0, 2290)), ("west gate", (-1600, 2600)),
                              ("east gate", (1600, 2600))):
@@ -801,7 +850,7 @@ def main():
         "Cloister A": (-2000, 3650), "Orchard A": (3000, 3400),
         "Driftfield A": (2000, 1200), "Plaza A": (-500, 2600),
         "Hollow A": (-4580, 700), "Hollow B": (4580, -700),
-        "Court floor": (0, 208), "Cloister B": (2000, -3650), "Orchard B": (-3000, -3400),
+        "Court floor": (150, 125), "Cloister B": (2000, -3650), "Orchard B": (-3000, -3400),
         "Driftfield B": (-2000, -1200), "Plaza B": (500, -2600),
     }
     probes = {k: (x, Y(y)) for k, (x, y) in probes.items()}
@@ -817,6 +866,7 @@ def main():
     ok &= check_pieces(m, grid)
     ok &= check_walking(m, grid, probes)
     ok &= check_base_routes(m, grid)
+    ok &= check_leads_somewhere(m)
     ok &= check_court(m, grid)
     report_open_space(m)
     report_sightlines(m)
