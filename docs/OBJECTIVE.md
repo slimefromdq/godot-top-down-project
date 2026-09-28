@@ -17,10 +17,10 @@ one and it flies to you.
 
 - **Where they come from:**
   - small Motes (worth 1) keep appearing all over the map;
-  - every couple of minutes a pair of mirrored regions (both Glades, both
-    Orchards ...) starts **dreaming**: it's announced a few seconds early,
+  - every couple of minutes a pair of mirrored regions (both Lawns, both
+    Promenades ...) starts **dreaming**: it's announced a few seconds early,
     the ground tints and petals drift, and Motes pour in there for a while;
-  - the big **Dream Mote** (worth 10) appears in the Cradle every few
+  - the big **Dream Mote** (worth 10) appears in the Sunken Court every few
     minutes, announced with a pillar of light. Whoever carries it is shown
     to everyone, with a beam of light over them.
   - slain **neutral objectives** burst into Motes that only the killing
@@ -69,12 +69,12 @@ Every number is in the camp's `NeutralData`
 `docs/ITEMS_AND_SHOPS.md`.
 
 - **Jungle camps** (8 on Dream Basin, in mirrored pairs): a
-  **Sleepwalker** in each Glade and on each Stilt Ridge, a pack of three
-  **Dream Wisps** in each Tangle and Driftfield. They come back a minute or
+  **Sleepwalker** in each Lawn and on each Upper Terrace, a pack of three
+  **Dream Wisps** in each Garden Court and Fountain Court. They come back a minute or
   so after they're cleared, and pay a little: gold and XP for the killer and
   their team, a pinch of ultimate charge, and a Mote or two.
 - **The Nightmare** wakes once per match, at 10:00, in the middle of the
-  Cradle. Everyone is warned 30 seconds early (banner, minimap ping, an
+  Sunken Court. Everyone is warned 30 seconds early (banner, minimap ping, an
   off-screen arrow while it's up). It's tough and fights back with volleys
   and a ring of bolts. The team that slays it gets a big gold and XP
   payout, ultimate charge, **12 Motes worth 5 each** (theirs alone for 12
@@ -91,18 +91,18 @@ Every number is in the camp's `NeutralData`
 - **Mote geysers** (4): anyone can hit one. Six hits pop 3 Motes around it
   for anyone to grab, then it rests for 45 seconds. Hits fade if nobody
   keeps hitting it.
-- **Gates** (4): the Lullaby Ruins' north door and the Tangle's main
+- **Gates** (4): the Old Colonnade' north door and the Garden Court's main
   entrance open for 20 seconds and close for 12, the two alternating. They
   flash before they change. Shoot the lever post beside one to flip it for
   8 seconds. A closing gate pushes anyone in the doorway out; it never
   traps you.
-- **Hazards**: sleep-fog rolls over each Stilt Ridge for 15 seconds at a
+- **Hazards**: sleep-fog rolls over each Upper Terrace for 15 seconds at a
   time (30% slower while you're in it; it blinks for 3 seconds first), and
-  a thorn bed in each Orchard nicks whoever stands in it. Push an enemy into
+  a thorn bed in each Promenade nicks whoever stands in it. Push an enemy into
   one and its damage counts as yours.
 - **The Plaza Express** (a travelator along each Plaza front) carries
   whoever stands on it and flips direction every 30 seconds.
-- **Launch flowers** (one past each Driftfield) are jump pads whose landing
+- **Launch flowers** (one past each Fountain Court) are jump pads whose landing
   sweeps back and forth: time your jump.
 
 Every number is in `resources/map/pieces/*.tres`.
