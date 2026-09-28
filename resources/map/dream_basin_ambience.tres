@@ -22,8 +22,8 @@ drift = Vector2(14, -8)
 sway = 14.0
 sway_speed = 0.25
 twinkle = 0.0
-critter_count = 6
-critter_color = Color(0.35, 0.3, 0.45, 0.9)
+critter_count = 5
+critter_color = Color(0.56, 0.58, 0.64, 0.95)
 critter_size = 6.0
 loop = ExtResource("s_glade")
 
@@ -39,9 +39,9 @@ drift = Vector2(90, 10)
 sway = 18.0
 sway_speed = 0.4
 twinkle = 0.0
-critter_count = 4
-critter_color = Color(0.3, 0.3, 0.4, 0.9)
-critter_size = 7.0
+critter_count = 3
+critter_color = Color(0.56, 0.58, 0.64, 0.95)
+critter_size = 6.0
 loop = ExtResource("s_ridge")
 
 [sub_resource type="Resource" id="p_tangle"]
@@ -73,9 +73,9 @@ drift = Vector2(3, -5)
 sway = 8.0
 sway_speed = 0.15
 twinkle = 0.5
-critter_count = 0
-critter_color = Color(1, 1, 1, 0)
-critter_size = 5.0
+critter_count = 4
+critter_color = Color(0.56, 0.58, 0.64, 0.95)
+critter_size = 6.0
 loop = ExtResource("s_ruins")
 
 [sub_resource type="Resource" id="p_driftfield"]
@@ -90,8 +90,8 @@ drift = Vector2(-10, -14)
 sway = 12.0
 sway_speed = 0.3
 twinkle = 0.3
-critter_count = 4
-critter_color = Color(0.35, 0.3, 0.45, 0.9)
+critter_count = 7
+critter_color = Color(0.56, 0.58, 0.64, 0.95)
 critter_size = 6.0
 loop = ExtResource("s_driftfield")
 
@@ -107,8 +107,8 @@ drift = Vector2(20, 16)
 sway = 22.0
 sway_speed = 0.35
 twinkle = 0.0
-critter_count = 5
-critter_color = Color(0.35, 0.3, 0.45, 0.9)
+critter_count = 7
+critter_color = Color(0.56, 0.58, 0.64, 0.95)
 critter_size = 6.0
 loop = ExtResource("s_orchard")
 

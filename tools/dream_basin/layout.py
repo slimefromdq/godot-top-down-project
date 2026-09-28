@@ -231,6 +231,12 @@ def travelator(x, y, w, h, name, offset=0.0):
                         "offset": offset, "rot": 0.0})
 
 
+def water_stairs(x, y, w, h, name, rot=0.0):
+    """A stepped cascade running down along +x rotated by rot (radians)."""
+    L["pieces"].append({"x": x, "y": Y(y), "kind": "waterstairs", "w": w, "h": h, "name": name,
+                        "rot": rot})
+
+
 def flower(x, y, tx, ty, sweep, name):
     """A launch flower: a jump pad whose landing sweeps +-sweep degrees."""
     L["pieces"].append({"x": x, "y": Y(y), "kind": "flower", "w": 0, "h": 0, "tx": tx, "ty": Y(ty),
@@ -466,9 +472,10 @@ full(rock(980, 2290, 640, 101, n=12, jitter=0.12, stretch=(1.0, 0.22)), "cliffro
 full(rock(2330, 2330, 200, 102, stretch=(1.2, 0.5)), "cliffrock")
 # The Sundial: plaza landmark that blocks line of sight into the spawn door.
 full(rock(0, 2900, 190, 103, n=12, jitter=0.05), "sundial", "A")
-# Broken plaza walls: full cover, and they cut the diagonals into the spawn door.
-wall(-950, 2720, -600, 2960, kind="ruin", team="A")
-wall(600, 2960, 950, 2720, kind="ruin", team="A")
+# Hedge planters (were broken walls): full cover, and they cut the diagonals
+# into the spawn door.
+wall(-950, 2720, -600, 2960, t=110, kind="hedgebox", team="A")
+wall(600, 2960, 950, 2720, t=110, kind="hedgebox", team="A")
 bush(-1300, 3100, 110)
 bush(1300, 3100, 110)
 # Gate lanterns by the plaza's side gates (they also cut the long diagonal
@@ -553,18 +560,18 @@ for (mx, my) in [
     mote_spawn(mx, my)
 
 # Dreaming zones: one half each; the rotation makes its mirrored twin.
-dream_zone("glade", "The Glades", rect(-4700, -850, -2850, 850),
+dream_zone("glade", "The Lawns", rect(-4700, -850, -2850, 850),
            [(-3500, -500), (-4300, 300), (-3300, 150), (-4000, -700)])
-dream_zone("ridge", "The Stilt Ridges", rect(-4700, -2650, -2850, -1000),
+dream_zone("ridge", "The Upper Terraces", rect(-4700, -2650, -2850, -1000),
            [(-3500, -1200), (-4350, -1700), (-3200, -2000), (-4000, -2500)])
-dream_zone("tangle", "The Tangles", rect(-4700, 1000, -2850, 2650),
+dream_zone("tangle", "The Garden Courts", rect(-4700, 1000, -2850, 2650),
            [(-3400, 1500), (-4150, 2100), (-3200, 2350), (-4550, 1600)])
-dream_zone("ruins", "The Lullaby Ruins", poly([(-2750, 850), (-1750, 850), (-1350, 1350),
+dream_zone("ruins", "The Old Colonnades", poly([(-2750, 850), (-1750, 850), (-1350, 1350),
                                               (-1350, 2350), (-2750, 2350)]),
            [(-2350, 1250), (-2140, 2200), (-1650, 1750), (-2620, 2030)])
-dream_zone("driftfield", "The Driftfields", rect(1450, 800, 2700, 2300),
+dream_zone("driftfield", "The Fountain Courts", rect(1450, 800, 2700, 2300),
            [(1650, 950), (2420, 1400), (1900, 2150), (2300, 1100)])
-dream_zone("orchard", "The Orchards", rect(2000, 2850, 4700, 3950),
+dream_zone("orchard", "The Promenades", rect(2000, 2850, 4700, 3950),
            [(2750, 3350), (3900, 3200), (4450, 3650), (3350, 3850)])
 
 L["dream_point"].append({"x": 0, "y": 0})
@@ -586,10 +593,10 @@ L["dreamers"].append({"x": 0, "y": Y(2580), "team": "A", "body": 130})
 # ==========================================================================
 L["shops"].append({"x": 0, "y": Y(3960), "team": "A"})
 camp(0, 0, "nightmare", "the Nightmare")
-camp(-4000, 300, "sleepwalker", "Glade Sleepwalker")
-camp(-3750, -1850, "sleepwalker", "Ridge Sleepwalker")
-camp(-4100, 1600, "dream_wisps", "Tangle Wisps")
-camp(1500, 1150, "dream_wisps", "Driftfield Wisps")
+camp(-4000, 300, "sleepwalker", "Lawn Sleepwalker")
+camp(-3750, -1850, "sleepwalker", "Terrace Sleepwalker")
+camp(-4100, 1600, "dream_wisps", "Garden Wisps")
+camp(1500, 1150, "dream_wisps", "Fountain Wisps")
 
 # ==========================================================================
 # MAP PIECES (Map Liveliness Plan, phase 2)
@@ -614,6 +621,9 @@ hazard(-3600, -1167, 420, 300, "sleep_fog", "Ridge Fog")
 hazard(3600, 3250, 360, 260, "thorn_bed", "Orchard Thorns")
 travelator(0, 1979, 1000, 150, "Plaza Express")
 flower(2400, 1000, 1500, 833, 20, "Driftfield Flower")
+# Plaza direction: water stairs in each Fountain Court, running down (west)
+# toward the Sunken Court: quick going down, slow climbing back up.
+water_stairs(2300, 1917, 560, 180, "Fountain Stairs", rot=math.pi)
 
 # ==========================================================================
 # PLAZA FURNITURE (Map Liveliness Plan > Plaza direction, open-space pass)
@@ -642,16 +652,16 @@ lamp(-4200, 4050)
 low(rock(-4600, 4150, 60, 91, n=10, jitter=0.05), "planter")
 
 # Region labels (authored half only; rotated copies get B names below)
-label(-3750, 1450, "THE TANGLE", 150)
-label(-3750, 0, "THE GLADE", 130)
-label(-3750, -1600, "STILT RIDGE", 150)
-label(0, 350, "THE CRADLE", 170)
-label(-2050, 1450, "LULLABY RUINS", 110)
-label(1950, 1650, "DRIFTFIELD", 130)
-label(0, 3150, "DAWN PLAZA", 120)
+label(-3750, 1450, "GARDEN COURT", 150)
+label(-3750, 0, "THE LAWN", 130)
+label(-3750, -1600, "UPPER TERRACE", 150)
+label(0, 350, "SUNKEN COURT", 170)
+label(-2050, 1450, "OLD COLONNADE", 110)
+label(1950, 1650, "FOUNTAIN COURT", 130)
+label(0, 3150, "DAWN FORECOURT", 120)
 label(0, 3950, "A SPAWN", 110)
 label(-3900, 3450, "CLOISTER", 120)
-label(3300, 3600, "ORCHARD", 130)
+label(3300, 3600, "PROMENADE", 130)
 
 
 # ==========================================================================
@@ -719,8 +729,8 @@ def build():
             continue
         out["lanes"].append({"a": _rot(ln["a"]), "b": _rot(ln["b"]),
                              "label": ln["label"].replace("(A)", "(B)")})
-    rename = {"DAWN PLAZA": "DUSK PLAZA", "A SPAWN": "B SPAWN", "THE TANGLE": "THE TANGLE",
-              "THE CRADLE": None}
+    rename = {"DAWN FORECOURT": "DUSK FORECOURT", "A SPAWN": "B SPAWN",
+              "SUNKEN COURT": None}
     for lb in L["labels"]:
         new = rename.get(lb["text"], lb["text"])
         if new is None:

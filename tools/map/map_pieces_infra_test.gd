@@ -19,6 +19,7 @@ const GATE := "res://scenes/map/toggle_gate.tscn"
 const HAZARD := "res://scenes/map/hazard_zone.tscn"
 const TRAVELATOR := "res://scenes/map/travelator.tscn"
 const PAD := "res://scenes/map/jump_pad.tscn"
+const WATER_STAIRS := "res://scenes/map/water_stairs.tscn"
 const THORNS := "res://resources/map/pieces/thorn_bed.tres"
 const KNOCKBACK := "res://heroes/avery/data/avery_cc_knockback.tres"
 ## Far from Dream Basin's cover, for pieces made by the test.
@@ -78,6 +79,7 @@ func _run() -> void:
 	await _hazards()
 	await _travelator()
 	_flower()
+	_water_stairs(map)
 	MapClock.override_time = -1.0
 	_finish()
 
@@ -627,6 +629,22 @@ func _flower() -> void:
 	check(mid.is_equal_approx(pad.to_global(Vector2(800, 0))) and end.is_equal_approx(b), "timed on the map clock")
 	MapClock.override_time = -1.0
 	pad.queue_free()
+
+
+func _water_stairs(map: Node) -> void:
+	var placed := get_tree().get_nodes_in_group(WaterStairs.GROUP).filter(func(n): return map.is_ancestor_of(n))
+	check(placed.size() == 2, "each Fountain Court has water stairs")
+	var stairs: WaterStairs = load(WATER_STAIRS).instantiate()
+	add_child(stairs)
+	stairs.rotation = PI / 2    # down = +Y
+	var down := stairs.boost_velocity(Vector2(0, 100))
+	var up := stairs.boost_velocity(Vector2(0, -100))
+	var across := stairs.boost_velocity(Vector2(100, 0))
+	check(is_equal_approx(down.y, 100 * stairs.data.stairs_down_multiplier), "going down the water stairs is quicker")
+	check(is_equal_approx(up.y, -100 * stairs.data.stairs_up_multiplier), "climbing them is slower")
+	check(across.is_equal_approx(Vector2(100, 0)), "crossing them sideways is unaffected")
+	check(stairs.boost_velocity(Vector2.ZERO) == Vector2.ZERO, "standing still doesn't move you")
+	stairs.queue_free()
 
 
 func _finish() -> void:

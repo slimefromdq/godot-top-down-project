@@ -78,6 +78,12 @@ class_name MapPieceData
 @export var belt_reverse_period: float = 0.0
 @export var belt_flip_time: float = 1.5
 
+@export_group("Water Stairs")
+## Walking down the cascade (along local +X): speed along it x this.
+@export var stairs_down_multiplier: float = 1.45
+## Climbing it (against local +X): speed along it x this.
+@export var stairs_up_multiplier: float = 0.6
+
 @export_group("Cues")
 ## Match cue names (MatchRules.cue_visuals / cue_audio).
 @export var hit_cue: StringName = &"piece_hit"

@@ -19,30 +19,31 @@ from layout import HX, HY, Y, build
 
 # The map scene's colours were hand-tuned in the editor after the first export.
 # Every exporter colour maps to exactly one tuned colour, so the export swaps
-# them in and a re-export reproduces the tuned scene.
+# them in and a re-export reproduces the tuned scene. Entries marked
+# "plaza:" are the plaza re-dress (Map Liveliness Plan > Plaza direction).
 HAND_TUNED = {
     "Color(0.122, 0.122, 0.141, 1.0)": "Color(0.2, 0.5, 0.72, 1.0)",
-    "Color(0.796, 0.769, 0.910, 1.0)": "Color(0.785, 0.749, 0.937, 1.0)",
-    "Color(0.851, 0.925, 0.776, 1.0)": "Color(0.854, 0.953, 0.753, 1.0)",
+    "Color(0.796, 0.769, 0.910, 1.0)": "Color(0.855, 0.835, 0.925, 1.0)",  # plaza: basin: pale paving
+    "Color(0.851, 0.925, 0.776, 1.0)": "Color(0.800, 0.918, 0.735, 1.0)",  # plaza: wilds: garden lawns
     "Color(0.812, 0.902, 0.847, 1.0)": "Color(0.809, 0.929, 0.855, 1.0)",
     "Color(0.722, 0.875, 0.792, 1.0)": "Color(0.696, 0.901, 0.790, 1.0)",
     "Color(0.624, 0.827, 0.725, 1.0)": "Color(0.580, 0.852, 0.715, 1.0)",
-    "Color(0.812, 0.773, 0.694, 1.0)": "Color(0.836, 0.784, 0.678, 1.0)",
+    "Color(0.812, 0.773, 0.694, 1.0)": "Color(0.898, 0.839, 0.722, 1.0)",  # plaza: ruins floor: sandstone
     "Color(0.937, 0.847, 0.804, 1.0)": "Color(0.965, 0.845, 0.787, 1.0)",
     "Color(0.925, 0.773, 0.710, 1.0)": "Color(0.953, 0.749, 0.665, 1.0)",
     "Color(0.890, 0.667, 0.584, 1.0)": "Color(0.917, 0.618, 0.507, 1.0)",
     "Color(0.639, 0.616, 0.565, 1.0)": "Color(0.570, 0.654, 0.731, 1.0)",
     "Color(0.561, 0.769, 0.839, 1.0)": "Color(0.493, 0.791, 0.891, 1.0)",
-    "Color(0.722, 0.698, 0.651, 1.0)": "Color(0.622, 0.713, 0.798, 1.0)",
+    "Color(0.722, 0.698, 0.651, 1.0)": "Color(0.800, 0.800, 0.860, 1.0)",  # plaza: low rocks: low stone
     "Color(0.788, 0.651, 0.420, 1.0)": "Color(0.850, 0.651, 0.314, 1.0)",
     "Color(0.184, 0.353, 0.165, 1.0)": "Color(0.178, 0.502, 0.141, 1.0)",
     "Color(0.847, 0.824, 0.769, 1.0)": "Color(0.700, 0.803, 0.898, 1.0)",
     "Color(0.247, 0.420, 0.208, 1.0)": "Color(0.247, 0.556, 0.177, 1.0)",
-    "Color(0.478, 0.451, 0.420, 1.0)": "Color(0.602, 0.556, 0.504, 1.0)",
-    "Color(0.612, 0.498, 0.384, 1.0)": "Color(0.710, 0.531, 0.353, 1.0)",
-    "Color(0.553, 0.522, 0.659, 1.0)": "Color(0.585, 0.537, 0.747, 1.0)",
-    "Color(0.478, 0.416, 0.333, 1.0)": "Color(0.602, 0.497, 0.356, 1.0)",
-    "Color(0.361, 0.337, 0.314, 1.0)": "Color(0.509, 0.463, 0.419, 1.0)",
+    "Color(0.478, 0.451, 0.420, 1.0)": "Color(0.690, 0.675, 0.720, 1.0)",  # plaza: rocks: garden boulders
+    "Color(0.612, 0.498, 0.384, 1.0)": "Color(0.930, 0.880, 0.800, 1.0)",  # plaza: buildings: pavilions
+    "Color(0.553, 0.522, 0.659, 1.0)": "Color(0.900, 0.890, 0.940, 1.0)",  # plaza: pillars: marble columns
+    "Color(0.478, 0.416, 0.333, 1.0)": "Color(0.800, 0.720, 0.580, 1.0)",  # plaza: ruin walls: colonnade sandstone
+    "Color(0.361, 0.337, 0.314, 1.0)": "Color(0.700, 0.680, 0.740, 1.0)",  # plaza: cliffrock: stone retaining walls
     "Color(0.831, 0.678, 0.310, 1.0)": "Color(0.885, 0.665, 0.136, 1.0)",
     "Color(0.184, 0.561, 0.416, 1.0)": "Color(0.062, 0.669, 0.435, 1.0)",
     "Color(0.416, 0.353, 0.282, 1.0)": "Color(0.553, 0.440, 0.312, 1.0)",
@@ -69,7 +70,8 @@ def export_pieces(s, m):
               "gate": "res://scenes/map/toggle_gate.tscn",
               "hazard": "res://scenes/map/hazard_zone.tscn",
               "travelator": "res://scenes/map/travelator.tscn",
-              "flower": "res://scenes/map/jump_pad.tscn"}
+              "flower": "res://scenes/map/jump_pad.tscn",
+              "waterstairs": "res://scenes/map/water_stairs.tscn"}
     used = {}
     datas = {}
     s.node("MapPieces", ".", "Node2D")
@@ -83,6 +85,7 @@ def export_pieces(s, m):
         hw, hh = pc["w"] / 2, pc["h"] / 2
         box = pva([(-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh)])
         if kind == "gate":
+            props["color"] = "Color(0.3, 0.32, 0.38, 1)"    # plaza: iron garden gate
             props["cycle_offset"] = f'{pc["offset"]:.1f}'
             if pc["lx"] or pc["ly"]:
                 props["lever_offset"] = v2((pc["lx"], pc["ly"]))
@@ -96,6 +99,9 @@ def export_pieces(s, m):
             props["rotation"] = f'{pc["rot"]:.6f}'
             props["size"] = v2((pc["w"], pc["h"]))
             props["cycle_offset"] = f'{pc["offset"]:.1f}'
+        elif kind == "waterstairs":
+            props["rotation"] = f'{pc["rot"]:.6f}'
+            props["size"] = v2((pc["w"], pc["h"]))
         elif kind == "flower":
             props["landing_offset"] = v2((pc["tx"] - pc["x"], pc["ty"] - pc["y"]))
             props["sweep_degrees"] = f'{pc["sweep"]:.1f}'
@@ -122,7 +128,7 @@ COVER = {
     "tree": "3f6b35", "hedge": "2f5a2a", "rock": "7a736b", "cliffrock": "5c5650",
     "pillar": "8d85a8", "wall": "4b4b4b", "ruin": "7a6a55", "cloister": "6a5a48",
     "boundary": "2b2b30", "lowrock": "b8b2a6", "lowwall": "a39d90", "crate": "c9a66b",
-    "balustrade": "dcdfe8", "planter": "8fb07a", "bench": "b08a5e", "lamp": "4a4f63",
+    "balustrade": "dcdfe8", "planter": "8fb07a", "hedgebox": "4f8a3f", "bench": "b08a5e", "lamp": "4a4f63",
     "fountain": "8fc4d6", "building": "9c7f62",
 }
 TEAM_COVER = {
@@ -136,7 +142,7 @@ GROUP = {
     "pillar": "Pillars", "wall": "Walls", "ruin": "Walls", "cloister": "Walls",
     "basewall": "Walls", "sundial": "Landmarks", "statue": "Landmarks",
     "boundary": "Boundary", "lowrock": "LowCover", "lowwall": "LowCover", "crate": "LowCover",
-    "balustrade": "Court", "planter": "Furniture", "bench": "Furniture", "lamp": "Furniture",
+    "balustrade": "Court", "planter": "Furniture", "hedgebox": "Furniture", "bench": "Furniture", "lamp": "Furniture",
     "fountain": "Landmarks", "building": "Buildings",
 }
 

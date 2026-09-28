@@ -206,13 +206,21 @@ travelator stays (a moving walkway along the forecourt).
    the Cradle's edge by each Driftfield, and on each outskirts back-road
    corner. Largest clear circle now: 611 px (basin), under the target
    everywhere.
-3. **Re-dress the regions** per the table: floor tints and cover kinds
-   (balustrade, planter, column, bench) in `layout.py` / the exporter, new
-   region labels, the Ambience profiles retuned for a plaza (fewer
-   wilderness critters, more pigeons and fountain sound).
-4. **Water stairs** in each fountain court: a speed-zone strip that slows
-   you going up and speeds you going down (a `SpeedStrip`-style
-   `boost_velocity`, one direction only).
+3. **Re-dress the regions.** *Done.* New region labels and player-facing
+   names (dreaming-zone announcements, camp names): the Sunken Court, the
+   Old Colonnade, the Fountain Court, the Garden Court, the Lawn, the Upper
+   Terrace, the Dawn/Dusk Forecourts, the Promenade. Palette: pale paving in
+   the basin, garden lawns, sandstone colonnades, marble columns, stone
+   retaining walls, white pavilions, iron gates. The forecourts' broken
+   walls became hedge planters (same job: they cut the diagonals into the
+   spawn door). Ambience: grey pigeons in the paved and lawn areas (and now
+   in the colonnade), fireflies kept in the Garden Court. Internal ids
+   (`pair_id`s, `layout.py` names) keep the old names.
+4. **Water stairs.** *Done.* `WaterStairs` (`scenes/map/water_stairs.tscn`,
+   numbers in `resources/map/pieces/water_stairs.tres`): a speed zone
+   that multiplies the part of your movement along the cascade by 1.45
+   going down and 0.6 going up; crossing is unaffected, standing still does
+   nothing. One per Fountain Court, running down toward the Sunken Court.
 5. **Overview art**: refresh `docs/maps/dream_basin_ingame_overview.png` and
    the region names in `docs/maps/DREAM_BASIN.md`.
 

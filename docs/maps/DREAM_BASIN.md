@@ -15,18 +15,23 @@ Blockout with legend: [dream_basin_blockout.svg](dream_basin_blockout.svg)
 
 ## Regions
 
+Dream Basin is dressed as an open-air plaza (Map Liveliness Plan > Plaza
+direction). The table gives each region's plaza name and, in brackets, its
+old name: code, `layout.py` comments and DreamZone `pair_id`s still use the
+old names (`glade`, `ridge`, `tangle`, `ruins`, `driftfield`, `orchard`).
+
 | Region | Where | Role |
 |---|---|---|
-| **The Cradle** | Basin centre, low ground | The main arena. An open oval ring (600 px wide, collision-free) circles a broken pillar ring. Inside it is the **Sunken Court**: a round court (radius 600 px) one step down, with the Nightmare's lair and the Dream Mote spot on its floor. Its rim is a stone balustrade (low cover: shoot over it), broken by four staircases on the diagonals (both ways) and four drop-offs on the axes (one-way: hop down, never climb up). Two pairs of planters on the floor. |
-| **Lullaby Ruins** | Basin corner (A: lower-left, B: upper-right) | Roofless chapel (1400 × 1800 px). Four ways in: north door, a collapsed corner facing the Cradle, east door, south door, plus dropping in from the Tangle. The inside is roomy: a pillar colonnade, a courtyard with the updraft, and a side chapel with the Dream Rift. **Enclosed.** |
-| **Driftfield** | The other two basin corners | Open field under the Ridge, with a fountain and a ruined gatehouse. Mid-range. |
-| **The Tangle** | Wild third nearest your base (left side for A) | Walled hedge garden. Its perimeter hedges block shots, so you have to come inside to fight. Inside are loose rooms around a fountain, with lanes of 450 px or more. **Enclosed.** |
-| **The Hollow** | Pocket on the outer wall between Tangle and Glade | Hidden exit of your one-way spawn teleporter. |
-| **The Glade** | Middle of each Wild | Mid-range meadow. |
-| **Stilt Ridge** | The other end of each Wild | Open high ground. The sniper perch is a stilt hut behind a row of low rocks. |
-| **Dawn / Dusk Plaza** | In front of each base | Staging area. The sundial and broken walls block every diagonal into the spawn door. |
-| **Cloister** | Base outskirts, Tangle side | Walled tunnel (**close-quarters**) that opens into a colonnade. |
-| **Orchard** | Base outskirts, Ridge side | Open scattered trees. |
+| **The Sunken Court** (the Cradle) | Basin centre | The main arena. An open oval ring (600 px wide, collision-free) circles a ring of marble columns. Inside it the court itself sits one step down (radius 600 px), with the Nightmare's lair and the Dream Mote spot on its floor. Its rim is a stone balustrade (low cover: shoot over it), broken by four staircases on the diagonals (both ways) and four drop-offs on the axes (one-way: hop down, never climb up). Two pairs of planters on the floor. |
+| **The Old Colonnade** (Lullaby Ruins) | Basin corner (A: lower-left, B: upper-right) | A sandstone arcade under restoration (1400 × 1800 px). Four ways in: the north gate, a collapsed corner facing the court, east door, south door, plus dropping in from the Garden Court. Inside: a row of columns, a courtyard with the updraft, and a side chapel with the Dream Rift. **Enclosed.** |
+| **The Fountain Court** (Driftfield) | The other two basin corners | Open paved court under the Upper Terrace, with a fountain and a pavilion. Mid-range. |
+| **The Garden Court** (the Tangle) | Wild third nearest your base (left side for A) | Walled hedge garden. Its perimeter hedges block shots, so you have to come inside to fight. Inside are loose rooms around a fountain, with lanes of 450 px or more. **Enclosed.** |
+| **The Hollow** | Pocket on the outer wall between the Garden Court and the Lawn | Hidden exit of your one-way spawn teleporter. |
+| **The Lawn** (the Glade) | Middle of each Wild | Mid-range lawn with garden boulders. |
+| **The Upper Terrace** (Stilt Ridge) | The other end of each Wild | Open high ground overlooking the plaza. The sniper perch is a pavilion behind a row of low stones. |
+| **Dawn / Dusk Forecourt** (Plaza) | In front of each base | Staging area. The sundial and two hedge planters block every diagonal into the spawn door. |
+| **Cloister** | Base outskirts, Garden Court side | Walled tunnel (**close-quarters**) that opens into a colonnade. |
+| **The Promenade** (Orchard) | Base outskirts, Terrace side | Tree-lined walk. |
 
 ## Shops and neutral camps
 
@@ -45,6 +50,7 @@ cover, reachable on foot, mirrored).
 | **Toggle gate** ×4 | Each Lullaby Ruins' north door and each Tangle's main entrance, with a lever outside (`scenes/map/toggle_gate.tscn`). |
 | **Sleep-fog** ×2 / **Thorn bed** ×2 | Each Stilt Ridge / each Orchard (`scenes/map/hazard_zone.tscn`). |
 | **Travelator** ×2 | The Plaza Express, along each Plaza front (`scenes/map/travelator.tscn`). |
+| **Water stairs** ×2 | Each Fountain Court, running down toward the Sunken Court (`scenes/map/water_stairs.tscn`): x1.45 going down, x0.6 climbing. |
 | **Launch flower** ×2 | Past each Driftfield, landing on the Cradle's side (`scenes/map/jump_pad.tscn` with a sweep). |
 
 `check.py` counts intact glass as full cover for every check (lanes, routes,

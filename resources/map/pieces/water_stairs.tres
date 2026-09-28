@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="MapPieceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/map/map_piece_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Water stairs"
+stairs_down_multiplier = 1.45
+stairs_up_multiplier = 0.6
