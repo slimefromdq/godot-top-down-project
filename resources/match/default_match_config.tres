@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MatchConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/flow/match_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+mode = 0
+team_size = 6
+bot_fill = true
+bot_difficulty = 1
+map_names = PackedStringArray("Dream Basin")
+map_scenes = PackedStringArray("res://scenes/dream_basin_world.tscn")
+map_index = 0
+practice_scene = "res://scenes/training_grounds_world.tscn"
+hero_select_time = 30.0
+bot_pick_interval = 0.6
+start_delay = 2.0

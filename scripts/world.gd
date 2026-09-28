@@ -4,9 +4,17 @@ const WINDOWED_SIZE := Vector2i(1280, 720)
 
 @onready var player: Actor = $Player
 @onready var game_over_screen: GameOverScreen = $GameOverScreen
+var pause_menu: PauseMenu
+var end_screen: EndMatchScreen
 
 
 func _ready() -> void:
+	# First child, so the shop and HUD see Esc before the pause menu does.
+	pause_menu = PauseMenu.new()
+	add_child(pause_menu)
+	move_child(pause_menu, 0)
+	end_screen = EndMatchScreen.new()
+	add_child(end_screen)
 	# The world owns both the player and the UI, so it connects them. The
 	# player only reports that it died; it never reaches into the UI itself.
 	player.health_component.died.connect(_on_player_died)
@@ -34,6 +42,7 @@ func _on_player_died() -> void:
 		return
 	# Pausing stops every node whose process_mode is Inherit or Pausable:
 	# enemies, bullets and timers freeze. GameOverScreen is set to Always.
+	pause_menu.close()
 	get_tree().paused = true
 	game_over_screen.show_screen()
 
@@ -48,12 +57,19 @@ func _on_player_died() -> void:
 
 
 func _on_match_ended(winner_team: StringName) -> void:
+	pause_menu.close()
+	pause_menu.enabled = false
 	var woken := false
 	for node in get_tree().get_nodes_in_group(Dreamer.GROUP):
 		woken = woken or (node as Dreamer).woken_by != &""
 	if woken:
 		await _play_wake_sequence()
 	get_tree().paused = true
+	# Launched from the menus: the end-of-match screen, back to the menu.
+	var manager := MatchManager.find(get_tree())
+	if GameState.in_launched_game and manager != null:
+		end_screen.show_result(GameState.finish_match(manager, winner_team))
+		return
 	var title := "%s VICTORY" % MatchManager.team_name(winner_team).to_upper()
 	game_over_screen.show_screen(title, MatchManager.team_color(winner_team))
 

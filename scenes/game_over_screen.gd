@@ -33,4 +33,9 @@ func _on_restart_button_pressed() -> void:
 	# Pausing belongs to the SceneTree, not the current scene, so it survives
 	# a reload. Unpause first or the new scene starts frozen.
 	get_tree().paused = false
+	# Launched from the menus: relaunch with the same hero (a plain reload
+	# would bring back the scene's default hero).
+	if GameState.in_launched_game:
+		GameState.launch()
+		return
 	get_tree().reload_current_scene()

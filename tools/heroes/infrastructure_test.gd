@@ -17,6 +17,8 @@ var dummy: TrainingDummy
 
 
 func _ready() -> void:
+	# Check the authored numbers, not the global TTK knob.
+	GameRules.current().ttk_damage_multiplier = 1.0
 	_run.call_deferred()
 
 

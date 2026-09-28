@@ -197,6 +197,7 @@ godot --headless res://tools/ai/bot_match_smoke_test.tscn
 godot --headless res://tools/visuals/rig_bake_test.tscn
 godot --headless res://tools/visuals/live_rig_test.tscn
 godot --headless res://tools/map/map_pieces_infra_test.tscn
+godot --headless res://tools/flow/flow_test.tscn
 ```
 
 Each exits with the number of failed checks (0 = all passed).

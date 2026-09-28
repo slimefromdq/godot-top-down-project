@@ -82,6 +82,9 @@ class Record:
 	var kills: int = 0
 	var deaths: int = 0
 	var assists: int = 0
+	## Mote value this hero put into their own Dreamer / the enemy's.
+	var motes_banked: int = 0
+	var motes_delivered: int = 0
 	## Attacker hero -> time of their latest damage (for assists).
 	var damaged_by: Dictionary = {}
 	## Seconds until respawn while dead (< 0 = not waiting).
@@ -578,6 +581,17 @@ func register_dreamer(dreamer: Dreamer) -> void:
 	dreamer.settled.connect(func(how): settled.emit(t, how))
 	dreamer.woke.connect(func(_attackers): woke.emit(t))
 	dreamer.wake_milestone.connect(func(mark): wake_milestone.emit(t, mark))
+	dreamer.deposit_finished.connect(_on_deposit_finished)
+
+
+func _on_deposit_finished(hero: Hero, total: int, delivered: bool) -> void:
+	var record: Record = _records.get(hero)
+	if record == null:
+		return
+	if delivered:
+		record.motes_delivered += total
+	else:
+		record.motes_banked += total
 
 
 func get_dreamer(team: StringName) -> Dreamer:

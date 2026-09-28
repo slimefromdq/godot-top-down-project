@@ -4,7 +4,8 @@ Godot 4.7 top-down hero shooter. Read `docs/HOW_TO_ADD_A_HERO.md` before
 touching a hero, `docs/VISUALS_AND_AUDIO.md` before touching looks or sound,
 and `docs/BALANCE_TOOLS.md` for the debug panel, CSV export and test list.
 Items, shops and neutral objectives (jungle camps, the Nightmare) are in
-`docs/ITEMS_AND_SHOPS.md`; the match objective is `docs/OBJECTIVE.md`.
+`docs/ITEMS_AND_SHOPS.md`; the match objective is `docs/OBJECTIVE.md`; menus and the scene flow
+(GameState) are `docs/MENUS_AND_FLOW.md`.
 The current design work is in `Six New Heroes Implementation Plan.md` and
 its phase prompts in `Implementation prompts.md`; map work is in
 `Map Liveliness Plan.md` and `Map Liveliness Prompts.md`.

@@ -20,6 +20,8 @@ var cues: Array = []    # [cue, context]
 
 
 func _ready() -> void:
+	# Check the authored numbers, not the global TTK knob.
+	GameRules.current().ttk_damage_multiplier = 1.0
 	CombatEvents.damage_dealt.connect(func(info: DamageInfo): hits_log.append(info))
 	_run.call_deferred()
 
