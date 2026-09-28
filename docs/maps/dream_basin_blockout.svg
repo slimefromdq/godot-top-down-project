@@ -630,27 +630,33 @@
 <rect x="1060.0" y="374" width="30" height="20" fill="url(#stairs)" stroke="#8a6d2f"/>
 <text x="1102.0" y="389" font-size="16" fill="#222">Stairwell (climb in arrow direction)</text>
 <rect x="1060.0" y="408" width="30" height="20" fill="#5c5650" stroke="#888"/>
-<text x="1102.0" y="423" font-size="16" fill="#222">Full cover: blocks move + shots</text>
+<text x="1102.0" y="423" font-size="16" fill="#222">Hard wall: blocks move, shots, sight</text>
 <rect x="1060.0" y="442" width="30" height="20" fill="#b8b2a6" stroke="#5a5347" stroke-dasharray="3 1.5"/>
-<text x="1102.0" y="457" font-size="16" fill="#222">Low cover: blocks move, not shots</text>
-<circle cx="1075.0" cy="486" r="10" fill="#6fae5a" fill-opacity="0.45" stroke="#4d8a3c" stroke-dasharray="2 2"/>
-<text x="1102.0" y="491" font-size="16" fill="#222">Bush: hides you, blocks nothing</text>
-<circle cx="1075.0" cy="520" r="9" fill="#fbbf24" stroke="#b45309" stroke-width="2"/>
-<text x="1102.0" y="525" font-size="16" fill="#222">Jump pad (arc to landing ring)</text>
-<circle cx="1075.0" cy="554" r="10" fill="#c4b5fd" stroke="#7c3aed" stroke-width="2.5"/>
-<text x="1102.0" y="559" font-size="16" fill="#222">Teleporter (arrow = one-way)</text>
-<rect x="1060.0" y="580" width="30" height="16" fill="#fde68a" stroke="#d97706"/>
-<text x="1102.0" y="593" font-size="16" fill="#222">Speed strip (both directions)</text>
-<line x1="1060.0" y1="622" x2="1090.0" y2="622" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="6 3"/>
-<text x="1102.0" y="627" font-size="16" fill="#222">Long sight lane</text>
-<rect x="1060.0" y="648" width="30" height="16" fill="#a79be6" fill-opacity="0.35" stroke="#7c6fd0" stroke-dasharray="4 3"/>
-<text x="1102.0" y="661" font-size="16" fill="#222">Cradle ring (kept open)</text>
-<circle cx="1075.0" cy="690" r="6" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
-<text x="1102.0" y="695" font-size="16" fill="#222">Mote trickle point</text>
-<rect x="1060.0" y="714" width="30" height="20" fill="#c4b5fd" fill-opacity="0.25" stroke="#8b5cf6" stroke-dasharray="6 4"/>
-<text x="1102.0" y="729" font-size="16" fill="#222">Dreaming zone (mirrored pairs)</text>
-<circle cx="1075.0" cy="758" r="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="3"/>
-<text x="1102.0" y="763" font-size="16" fill="#222">Dream Mote spot</text>
-<circle cx="1075.0" cy="792" r="7" fill="#2f8f6a"/><circle cx="1075.0" cy="792" r="12" fill="none" stroke="#2f8f6a" stroke-dasharray="3 2"/>
-<text x="1102.0" y="797" font-size="16" fill="#222">Dreamer + deposit ring</text>
+<text x="1102.0" y="457" font-size="16" fill="#222">Low cover (props): blocks move only</text>
+<rect x="1060.0" y="476" width="30" height="20" fill="#2c5a7a" stroke="#b9d7ea" stroke-width="1.6"/>
+<text x="1102.0" y="491" font-size="16" fill="#222">Pit / water: blocks move; shoot across</text>
+<rect x="1060.0" y="510" width="30" height="20" fill="#9fe4ff" fill-opacity="0.4" stroke="#3a8fb5" stroke-width="1.8"/>
+<text x="1102.0" y="525" font-size="16" fill="#222">Crystal: blocks move + shots; see through</text>
+<rect x="1060.0" y="544" width="30" height="20" fill="#73a842" fill-opacity="0.5" stroke="#4d7a2c" stroke-dasharray="2 2"/>
+<text x="1102.0" y="559" font-size="16" fill="#222">Tall grass: hides you, blocks nothing</text>
+<circle cx="1075.0" cy="588" r="10" fill="#6fae5a" fill-opacity="0.45" stroke="#4d8a3c" stroke-dasharray="2 2"/>
+<text x="1102.0" y="593" font-size="16" fill="#222">Bush: hides you, blocks nothing</text>
+<circle cx="1075.0" cy="622" r="9" fill="#fbbf24" stroke="#b45309" stroke-width="2"/>
+<text x="1102.0" y="627" font-size="16" fill="#222">Jump pad (arc to landing ring)</text>
+<circle cx="1075.0" cy="656" r="10" fill="#c4b5fd" stroke="#7c3aed" stroke-width="2.5"/>
+<text x="1102.0" y="661" font-size="16" fill="#222">Teleporter (arrow = one-way)</text>
+<rect x="1060.0" y="682" width="30" height="16" fill="#fde68a" stroke="#d97706"/>
+<text x="1102.0" y="695" font-size="16" fill="#222">Speed strip (both directions)</text>
+<line x1="1060.0" y1="724" x2="1090.0" y2="724" stroke="#dc2626" stroke-width="2.2" stroke-dasharray="6 3"/>
+<text x="1102.0" y="729" font-size="16" fill="#222">Long sight lane</text>
+<rect x="1060.0" y="750" width="30" height="16" fill="#a79be6" fill-opacity="0.35" stroke="#7c6fd0" stroke-dasharray="4 3"/>
+<text x="1102.0" y="763" font-size="16" fill="#222">Cradle ring (kept open)</text>
+<circle cx="1075.0" cy="792" r="6" fill="#fde047" stroke="#a16207" stroke-width="1.5"/>
+<text x="1102.0" y="797" font-size="16" fill="#222">Mote trickle point</text>
+<rect x="1060.0" y="816" width="30" height="20" fill="#c4b5fd" fill-opacity="0.25" stroke="#8b5cf6" stroke-dasharray="6 4"/>
+<text x="1102.0" y="831" font-size="16" fill="#222">Dreaming zone (mirrored pairs)</text>
+<circle cx="1075.0" cy="860" r="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="3"/>
+<text x="1102.0" y="865" font-size="16" fill="#222">Dream Mote spot</text>
+<circle cx="1075.0" cy="894" r="7" fill="#2f8f6a"/><circle cx="1075.0" cy="894" r="12" fill="none" stroke="#2f8f6a" stroke-dasharray="3 2"/>
+<text x="1102.0" y="899" font-size="16" fill="#222">Dreamer + deposit ring</text>
 </svg>

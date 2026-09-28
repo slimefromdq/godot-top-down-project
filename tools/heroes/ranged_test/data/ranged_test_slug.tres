@@ -7,4 +7,5 @@ script = ExtResource("1_48atp")
 speed = 3000.0
 lifetime = 0.4
 pierce = 1
+knockback = 900.0
 radius = 18.0

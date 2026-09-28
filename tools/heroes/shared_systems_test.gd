@@ -9,6 +9,11 @@ extends Node2D
 #   S3b invisibility (StatusEffect.invisible): sight, drawing, reveals; the
 #       test hero's Cloak (Ranged Test (auto), item key)
 #   S4 viewer-filtered status VFX (StatusEffect.vfx_visible_to)
+#   S5 grass patches (Bush.polygon): hide, reveal radius, reveal on firing
+#   S6 the four obstacle types (hard wall, pit, crystal, grass): walking,
+#      dashes, jump arcs, sight, shots and a real piercing projectile
+#   S7 wall slams (MovementComponent.wall_impact): pushes and knockback into
+#      hard walls and crystal count; pits, low cover and your own dash don't
 #
 #   godot --headless res://tools/heroes/shared_systems_test.tscn
 #
@@ -18,6 +23,10 @@ const HERO := "res://tools/heroes/ranged_test/ranged_test_hero.tscn"
 const DUMMY := "res://scenes/training_dummy.tscn"
 const WALL := "res://scenes/wall.tscn"
 const VFX := "res://effects/shocked_sparks.tscn"
+const HARD_WALL := "res://scenes/map/hard_wall.tscn"
+const PIT := "res://scenes/map/pit.tscn"
+const CRYSTAL := "res://scenes/map/crystal_wall.tscn"
+const GRASS := "res://scenes/map/grass_patch.tscn"
 const EPS := 0.02
 
 var failures := 0
@@ -39,6 +48,9 @@ func _run() -> void:
 	await _test_invisibility()
 	_test_shape_batch()
 	await _test_vfx_filter()
+	await _test_grass()
+	await _test_obstacle_types()
+	await _test_wall_slams()
 
 	LocalView.clear_viewer()
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
@@ -376,6 +388,238 @@ func _hero(at: Vector2, team: StringName) -> Hero:
 	add_child(h)
 	h.global_position = at
 	return h
+
+
+# --- S5 Grass patches -------------------------------------------------------------
+
+func _test_grass() -> void:
+	print("\n-- S5 Grass patches")
+	var rules := GameRules.current()
+	hero.global_position = Vector2.ZERO
+	var enemy := _dummy(Vector2(700, 0))
+	enemy.team = &"b"
+	var grass: Bush = _obstacle(GRASS, Vector2(700, 0), _box(160, 140)) as Bush
+	await _physics_frames(3)
+	_check("a grass patch is a Bush with a polygon", grass.is_patch() and grass.has_occupant(enemy), "")
+	_check("grass hides who's inside (sight)", not CombatQueries.has_line_of_sight(hero, enemy), "")
+	_check("grass hides who's inside (drawing)", CombatQueries.is_hidden_from(enemy, hero), "")
+	_check("from inside grass you see out", CombatQueries.has_line_of_sight(enemy, hero), "")
+	hero.global_position = Vector2(700 - rules.grass_reveal_radius + 30, 0)
+	await _physics_frames(2)
+	_check("within the reveal radius you see into grass", CombatQueries.has_line_of_sight(hero, enemy)
+		and not CombatQueries.is_hidden_from(enemy, hero), "%.0f px" % rules.grass_reveal_radius)
+	hero.global_position = Vector2(700 - rules.grass_reveal_radius - 60, 0)
+	await _physics_frames(2)
+	_check("just outside it you don't", not CombatQueries.has_line_of_sight(hero, enemy), "")
+	var ally := _hero(Vector2(700, rules.grass_reveal_radius - 40), &"a")
+	spawned.append(ally)
+	await _physics_frames(2)
+	_check("a teammate within the radius shares it", not CombatQueries.is_hidden_from(enemy, hero), "")
+	ally.global_position = Vector2(-600, 0)
+	await _physics_frames(2)
+
+	Bush.note_fired(enemy)
+	_check("firing reveals you in grass", CombatQueries.has_line_of_sight(hero, enemy)
+		and not CombatQueries.is_hidden_from(enemy, hero), "")
+	await _seconds(rules.grass_fire_reveal_time + 0.15)
+	_check("the reveal wears off", not CombatQueries.has_line_of_sight(hero, enemy), "%.1f s" % rules.grass_fire_reveal_time)
+
+	# A real ability use counts as firing: the hero in grass, seen from outside.
+	enemy.global_position = Vector2(-700, 0)
+	hero.global_position = Vector2(700, 0)
+	await _seconds(0.6)
+	await _physics_frames(3)
+	_check("the hero is hidden in grass before shooting", not CombatQueries.has_line_of_sight(enemy, hero), "")
+	hero.aim_direction = Vector2.LEFT
+	hero.request_slot(&"primary", Vector2(-700, 0))
+	_check("using an ability reveals you", CombatQueries.has_line_of_sight(enemy, hero), "")
+	hero.global_position = Vector2.ZERO
+	_clear()
+	await _seconds(0.6)
+
+
+# --- S6 Obstacle types ---------------------------------------------------------------
+
+func _test_obstacle_types() -> void:
+	print("\n-- S6 Obstacle types")
+	# [name, scene, layer, sight passes, shots pass, jump arc passes]
+	var cases := [
+		["hard wall", HARD_WALL, MapLayers.WORLD, false, false, false],
+		["pit", PIT, MapLayers.PITS, true, true, true],
+		["crystal", CRYSTAL, MapLayers.CRYSTAL, true, false, false],
+	]
+	for c: Array in cases:
+		hero.global_position = Vector2.ZERO
+		var target := _dummy(Vector2(700, 0))
+		var body := _obstacle(c[1], Vector2(350, 0), _box(60, 260)) as CoverBody
+		await _physics_frames(3)
+		_check("%s is on its own layer" % c[0], body.collision_layer == c[2], "layer %d" % body.collision_layer)
+		_check("%s: sight %s" % [c[0], "passes" if c[3] else "blocked"],
+			CombatQueries.has_line_of_sight(hero, target) == c[3], "")
+		_check("%s: shots %s" % [c[0], "pass" if c[4] else "blocked"], CombatQueries.shot_clear(hero, target) == c[4], "")
+
+		# A real piercing shot (pierce 3): walls stop it whatever its pierce.
+		var shot := ProjectileData.new()
+		shot.speed = 3000.0
+		shot.lifetime = 0.5
+		shot.pierce = 3
+		shot.radius = 12.0
+		var before := target.health_component.current_health
+		Projectile.fire(hero, shot, Vector2(60, 0), Vector2.RIGHT, DamageInfo.create(10.0, hero))
+		await _seconds(0.45)
+		var hit := target.health_component.current_health < before
+		_check("%s: a piercing projectile %s" % [c[0], "crosses it" if c[4] else "stops at it"], hit == c[4], "")
+
+		# Walking (a dash) stops at all three.
+		target.global_position = Vector2(700, 0)
+		target.return_to_anchor = false
+		await _physics_frames(2)
+		target.movement_component.displace(Vector2.LEFT, 600.0, 0.4)
+		await _seconds(0.6)
+		_check("%s: a dash stops at it" % c[0], target.global_position.x > 380.0 + 30.0,
+			"x=%.0f" % target.global_position.x)
+
+		# A jump arc flies over pits (MapLayers.JUMPABLE), not walls or crystal.
+		hero.global_position = Vector2(0, 60)
+		await _physics_frames(2)
+		hero.launch(Vector2(600, 60), 0.5, 100.0)
+		await _seconds(0.8)
+		_check("%s: a jump arc %s" % [c[0], "flies over it" if c[5] else "is stopped"],
+			(hero.global_position.x > 500.0) == c[5], "x=%.0f" % hero.global_position.x)
+		_clear()
+		await _physics_frames(3)
+
+	hero.global_position = Vector2.ZERO
+	var walker := _dummy(Vector2(700, 0))
+	walker.return_to_anchor = false
+	var grass := _obstacle(GRASS, Vector2(350, 0), _box(100, 200))
+	await _physics_frames(3)
+	var target_hp := walker.health_component.current_health
+	walker.movement_component.displace(Vector2.LEFT, 600.0, 0.4)
+	await _seconds(0.6)
+	_check("grass: you walk (dash) through it", walker.global_position.x < 200.0, "x=%.0f" % walker.global_position.x)
+	walker.global_position = Vector2(700, 0)
+	await _physics_frames(2)
+	_check("grass: shots and sight pass (from outside to outside)", CombatQueries.shot_clear(hero, walker)
+		and CombatQueries.has_line_of_sight(hero, walker), "")
+	Projectile.fire(hero, _plain_shot(), Vector2(60, 0), Vector2.RIGHT, DamageInfo.create(10.0, hero))
+	await _seconds(0.45)
+	_check("grass: a projectile flies through it", walker.health_component.current_health < target_hp, "")
+	grass.queue_free()
+	_clear()
+	await _physics_frames(3)
+
+
+# --- S7 Wall slams -------------------------------------------------------------------
+
+func _test_wall_slams() -> void:
+	print("\n-- S7 Wall slams")
+	var rules := GameRules.current()
+	_check("rules hold the numbers", rules.wall_impact_mask & MapLayers.WORLD != 0
+		and rules.wall_impact_mask & MapLayers.CRYSTAL != 0 and rules.wall_impact_mask & MapLayers.PITS == 0
+		and rules.wall_impact_min_speed > 0.0, "mask %d, min %.0f px/s" % [rules.wall_impact_mask, rules.wall_impact_min_speed])
+	var push := _status(&"test_push", 0.3)
+	push.displace_distance = 350.0
+	push.displace_duration = 0.25
+	push.displace_direction = StatusEffect.DisplaceDirection.AWAY_FROM_SOURCE
+	# [name, scene, height override (-1 = scene's), slams]
+	var cases := [
+		["hard wall", HARD_WALL, -1, true],
+		["crystal", CRYSTAL, -1, true],
+		["pit", PIT, -1, false],
+		["low cover", HARD_WALL, CoverBody.Height.LOW, false],
+	]
+	for c: Array in cases:
+		hero.global_position = Vector2.ZERO
+		var victim := _dummy(Vector2(400, 0))
+		victim.return_to_anchor = false
+		var body := _obstacle(c[1], Vector2(620, 0), _box(40, 300)) as CoverBody
+		if c[2] >= 0:
+			body.height = c[2]
+		var impacts := []
+		var cues := []
+		victim.movement_component.wall_impact.connect(func(n, speed, source, wall): impacts.append([n, speed, source, wall]))
+		victim.cue_triggered.connect(func(cue, context): if cue == &"wall_impact": cues.append(context))
+		await _physics_frames(3)
+		victim.status_component.apply(push, hero)
+		await _seconds(0.5)
+		var ok: bool = impacts.size() == 1 if c[3] else impacts.is_empty()
+		_check("pushed into %s: %s" % [c[0], "a wall slam" if c[3] else "no slam"], ok, "%d impacts" % impacts.size())
+		if c[3] and impacts.size() == 1:
+			var impact: Array = impacts[0]
+			_check("  %s slam reports who, which way, how hard" % c[0], impact[2] == hero and impact[3] == body
+				and impact[0].dot(Vector2.LEFT) > 0.9 and impact[1] >= rules.wall_impact_min_speed,
+				"%.0f px/s" % impact[1])
+			_check("  %s slam fires the wall_impact cue" % c[0], cues.size() == 1 and cues[0].get("knocked_by") == hero, "")
+		victim.status_component.clear()
+		_clear()
+		await _physics_frames(3)
+
+	# A hit's knockback impulse (not a timed push) into a wall.
+	var victim2 := _dummy(Vector2(450, 0))
+	victim2.return_to_anchor = false
+	_obstacle(HARD_WALL, Vector2(620, 0), _box(40, 300))
+	var impacts2 := []
+	victim2.movement_component.wall_impact.connect(func(n, speed, source, wall): impacts2.append(source))
+	await _physics_frames(3)
+	var info := DamageInfo.create(1.0, hero)
+	info.knockback = Vector2(1400, 0)
+	(victim2.get_node(^"Hurtbox") as HurtboxComponent).take_hit(info)
+	await _seconds(0.4)
+	_check("a knockback impulse into a wall is a slam", impacts2.size() == 1 and impacts2[0] == hero, "%d" % impacts2.size())
+
+	# Your own dash into a wall is not.
+	victim2.global_position = Vector2(450, 0)
+	await _physics_frames(2)
+	impacts2.clear()
+	victim2.movement_component.displace(Vector2.RIGHT, 300.0, 0.2)
+	await _seconds(0.4)
+	_check("your own dash into a wall is no slam", impacts2.is_empty(), "")
+
+	# A soft nudge (under the minimum speed) is no slam either.
+	victim2.global_position = Vector2(560, 0)
+	await _physics_frames(2)
+	var nudge := _status(&"test_nudge", 0.5)
+	nudge.displace_distance = 40.0
+	nudge.displace_duration = 0.4
+	nudge.displace_direction = StatusEffect.DisplaceDirection.AWAY_FROM_SOURCE
+	victim2.status_component.apply(nudge, hero)
+	await _seconds(0.6)
+	_check("a slow nudge into a wall is no slam", impacts2.is_empty(), "")
+	_clear()
+	await _physics_frames(3)
+
+
+func _obstacle(path: String, at: Vector2, polygon: PackedVector2Array) -> Node2D:
+	var node: Node2D = load(path).instantiate()
+	node.position = at
+	if node is Bush:
+		(node as Bush).polygon = polygon
+	else:
+		(node.get_node(^"Shape") as CollisionPolygon2D).polygon = polygon
+	add_child(node)
+	spawned.append(node)
+	return node
+
+
+func _box(half_w: float, half_h: float) -> PackedVector2Array:
+	return PackedVector2Array([Vector2(-half_w, -half_h), Vector2(half_w, -half_h),
+		Vector2(half_w, half_h), Vector2(-half_w, half_h)])
+
+
+func _plain_shot() -> ProjectileData:
+	var shot := ProjectileData.new()
+	shot.speed = 3000.0
+	shot.lifetime = 0.5
+	shot.radius = 12.0
+	return shot
+
+
+func _seconds(t: float) -> void:
+	var waited := 0.0
+	while waited < t:
+		await get_tree().physics_frame
+		waited += get_physics_process_delta_time()
 
 
 func _dummy(at: Vector2, hp: float = 5000.0) -> TrainingDummy:

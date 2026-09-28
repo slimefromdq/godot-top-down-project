@@ -38,6 +38,7 @@ func take_hit(info: DamageInfo) -> void:
 	if movement_component != null and info.knockback != Vector2.ZERO:
 		movement_component.apply_knockback(info.knockback
 			* StatusEffectComponent.multiplier_of(status_component, StatusEffect.DISPLACEMENT_TAKEN))
+		movement_component.begin_knockback(info.source, GameRules.current().wall_impact_window)
 
 
 # Abilities use this to reject targets that are already dead.

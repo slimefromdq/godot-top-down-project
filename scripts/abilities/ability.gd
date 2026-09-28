@@ -379,6 +379,8 @@ func start_cast(target_position: Vector2) -> bool:
 		_fail(failure)
 		return false
 
+	# Using any ability (a shot included) gives away a spot in the grass.
+	Bush.note_fired(actor)
 	# A movement ability breaks the caster out of breakable formations.
 	if is_movement_ability() and actor.status_component != null:
 		actor.status_component.on_movement_ability_used()

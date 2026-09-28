@@ -172,6 +172,8 @@ debug_meter={
 2d_physics/layer_6="Low Cover"
 2d_physics/layer_7="Ledges"
 2d_physics/layer_8="Barriers"
+2d_physics/layer_9="Pits"
+2d_physics/layer_10="Crystal"
 
 [physics]
 

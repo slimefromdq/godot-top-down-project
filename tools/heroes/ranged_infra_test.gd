@@ -37,6 +37,7 @@ func _run() -> void:
 	await _test_auto_and_per_round_reload()
 	await _test_manual_reload_and_instant()
 	await _test_fire_rate_and_full_reload()
+	await _test_charged_shot_wall_slam()
 	await _test_charge()
 	await _test_compel()
 	await _test_compel_on_enemy()
@@ -300,6 +301,39 @@ func _test_fire_rate_and_full_reload() -> void:
 	await _seconds(0.9)
 	_check("FULL reload refills the magazine", gun.get_ammo() == 24 and not gun.is_reloading(), str(gun.get_ammo()))
 	rifle_hero.queue_free()
+
+
+# --- Wall slam: the Charged Shot's slug knocks back (ProjectileData.knockback)
+# a dummy into a hard wall: MovementComponent.wall_impact names the shooter.
+
+func _test_charged_shot_wall_slam() -> void:
+	var dummy := _spawn_dummy(Vector2(350, 0))
+	dummy.return_to_anchor = false
+	var wall: Node2D = load("res://scenes/map/hard_wall.tscn").instantiate()
+	wall.position = Vector2(470, 0)
+	(wall.get_node(^"Shape") as CollisionPolygon2D).polygon = PackedVector2Array(
+		[Vector2(-20, -200), Vector2(20, -200), Vector2(20, 200), Vector2(-20, 200)])
+	add_child(wall)
+	var slams := []
+	dummy.movement_component.wall_impact.connect(func(_n, _speed, source, _wall): slams.append(source))
+	await _frames(3)
+	var shot := hero.get_ability(&"ability_1") as RangedAttackAbility
+	shot.reset_cooldown()
+	_aim(hero, dummy.global_position)
+	var started := hero.request_slot(&"ability_1", dummy.global_position)
+	await _seconds(0.4)
+	var released := hero.release_slot(&"ability_1", dummy.global_position)
+	await _seconds(0.5)
+	_check("Charged Shot fires (for the wall slam)", started and released, "")
+	_check("Charged Shot knocks a dummy into a wall: a wall slam by the shooter", slams.size() == 1 and slams[0] == hero,
+		"%d slams" % slams.size())
+	# Let the shot's recovery finish so the next test starts idle.
+	await _seconds(1.0)
+	shot.reset_cooldown()
+	cues.clear()
+	dummy.queue_free()
+	wall.queue_free()
+	await _frames(2)
 
 
 # --- Charge -----------------------------------------------------------------

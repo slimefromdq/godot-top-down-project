@@ -87,6 +87,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	velocity = movement_component.get_velocity(velocity, move_direction, delta)
 	move_and_slide()
+	movement_component.after_slide(self)
 
 
 # The one entry point for "use the ability in this slot".

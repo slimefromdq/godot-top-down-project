@@ -874,7 +874,8 @@ func _run_tactics(delta: float) -> void:
 	# An enemy hero always comes first; otherwise a neutral.
 	var foe: Node2D = target if target != null else neutral_target
 	var fight := foe != null and _time >= _reaction_until and not rules.strategy_only
-	var can_attack := fight and CombatQueries.has_line_of_sight(hero, foe)
+	# Seen through crystal isn't enough: the shot has to get through.
+	var can_attack := fight and CombatQueries.has_line_of_sight(hero, foe) and CombatQueries.shot_clear(hero, foe)
 	# Travelling bots (deliver, bank, retreat) shoot on the move; an escort
 	# only turns to fight near its carrier.
 	var chase := can_attack and stance != &"avoid" and stance != &"travel"
@@ -1069,7 +1070,7 @@ func _path_destination(wanted: Vector2) -> Vector2:
 func _avoid_walls(direction: Vector2) -> Vector2:
 	var rules := BotRules.current()
 	var state := hero.get_world_2d().direct_space_state
-	var mask := MapLayers.WORLD | MapLayers.LOW_COVER | MapLayers.LEDGES | MapLayers.BARRIERS
+	var mask := MapLayers.WALK_BLOCKERS | MapLayers.BARRIERS
 	var from := hero.global_position
 	var query := PhysicsRayQueryParameters2D.create(from, from + direction * rules.obstacle_probe_distance, mask)
 	query.exclude = [hero.get_rid()]

@@ -57,7 +57,7 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	collision_mask |= MapLayers.BARRIERS
+	collision_mask |= MapLayers.CHARACTER_EXTRA
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	if home == Vector2.ZERO:
 		home = global_position
@@ -122,6 +122,7 @@ func _physics_process(delta: float) -> void:
 			_returning = false
 	velocity = movement_component.get_velocity(velocity, steer, delta)
 	move_and_slide()
+	movement_component.after_slide(self)
 
 
 func _still_fighting(hero: Hero) -> bool:

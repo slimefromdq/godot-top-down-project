@@ -53,14 +53,30 @@ const DEFAULT_PATH := "res://resources/rules/game_rules.tres"
 ## then decide who can actually be hit. (Layers 3 and 5 are the legacy
 ## "Player Hurtbox" / "Enemy Hurtbox" layers.)
 @export_flags_2d_physics var hurtbox_mask: int = 4 | 16
-## Layers that stop projectiles and dashes. Low cover and ledges are left out on
-## purpose: projectiles fly over them. Barriers (8: a ContainmentRing) stop
+## Layers that stop projectiles and dashes. Low cover, ledges and pits are
+## left out on purpose: projectiles fly over them. Barriers (8: a
+## ContainmentRing) and crystal (10: see-through, not shoot-through) stop
 ## shots too.
-@export_flags_2d_physics var wall_mask: int = 1 | 128
+@export_flags_2d_physics var wall_mask: int = 1 | 128 | 512
 ## Layers that block line of sight (CombatQueries.has_line_of_sight). Full
-## cover only by default: you can see over low cover and ledges. Bushes block
-## sight by their own rule, not by layer.
+## cover only by default: you can see over low cover, ledges and pits, and
+## through crystal. Bushes block sight by their own rule, not by layer.
 @export_flags_2d_physics var sight_mask: int = 1
+
+@export_group("Walls and grass")
+## Layers a knocked-back body can slam into (MovementComponent.wall_impact):
+## hard walls, crystal and ability walls. Pits and low cover just stop you.
+@export_flags_2d_physics var wall_impact_mask: int = 1 | 128 | 512
+## Slower than this (px/s, into the wall) and it's a nudge, not a slam.
+@export var wall_impact_min_speed: float = 250.0
+## A hit's knockback (an impulse, not a timed push) still counts as a
+## knockback for this long (s), while it slides to a stop.
+@export var wall_impact_window: float = 0.35
+## Grass (Bush): an enemy this close (px) sees you inside it anyway.
+@export var grass_reveal_radius: float = 220.0
+## Grass: using any ability (shooting included) shows you to everyone for
+## this long (s), even from inside it.
+@export var grass_fire_reveal_time: float = 1.0
 
 
 static var _current: GameRules

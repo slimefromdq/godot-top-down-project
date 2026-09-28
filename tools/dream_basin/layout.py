@@ -33,8 +33,11 @@ BASIN_Y = 2350      # |y| where the basin meets the plazas / back road
 # --------------------------------------------------------------------------
 L = {
     "regions": [],      # floor tint polygons: {pts, kind, label}
-    "full": [],         # full cover: blocks movement AND shots {pts, kind}
-    "low": [],          # low cover: blocks movement only {pts, kind}
+    "full": [],         # hard walls: block movement, shots AND sight {pts, kind}
+    "low": [],          # low cover (props): blocks movement only {pts, kind}
+    "pits": [],         # pits / water: block movement only, shoot across {pts, kind}
+    "crystals": [],     # crystal: blocks movement and shots, not sight {pts, kind}
+    "grass": [],        # tall grass patches: hide who's inside, block nothing {pts}
     "bushes": [],       # concealment only {x, y, r}
     "ledges": [],       # one-way cliff edges {a, b, drop} drop = unit vec high->low
     "stairs": [],       # {x, y, w, d, up} up = unit vec low->high
@@ -147,6 +150,22 @@ def hedge(ax, ay, bx, by, t=120):
 
 def lowwall(ax, ay, bx, by, t=50, kind="lowwall", team=None):
     low(seg(ax, ay, bx, by, t), kind, team)
+
+
+def pit(pts, kind="water", team=None):
+    """A pit or pool (kind "water" or "pit"): can't walk in, shoot across.
+    `pts` in real space (use rect/poly/circle)."""
+    L["pits"].append({"pts": pts, "kind": kind, "team": team})
+
+
+def crystal(pts, team=None):
+    """A crystal wall: see through it, can't shoot or walk through it."""
+    L["crystals"].append({"pts": pts, "kind": "crystal", "team": team})
+
+
+def grass(pts):
+    """A tall-grass patch (any shape): hides whoever's inside it."""
+    L["grass"].append({"pts": pts})
 
 
 def bush(x, y, r=110):
@@ -687,9 +706,11 @@ def build():
     out = {k: list(v) for k, v in L.items()}
     for r in L["regions"]:
         out["regions"].append({**r, "pts": [_rot(p) for p in r["pts"]], "team": _swap(r["team"])})
-    for key in ("full", "low"):
+    for key in ("full", "low", "pits", "crystals"):
         for o in L[key]:
             out[key].append({**o, "pts": [_rot(p) for p in o["pts"]], "team": _swap(o["team"])})
+    for g in L["grass"]:
+        out["grass"].append({"pts": [_rot(p) for p in g["pts"]]})
     for b in L["bushes"]:
         out["bushes"].append({**b, "x": -b["x"], "y": -b["y"]})
     for l in L["ledges"]:

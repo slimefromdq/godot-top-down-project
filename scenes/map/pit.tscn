@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/map/cover_body.gd" id="1_script"]
+
+[node name="Pit" type="StaticBody2D"]
+script = ExtResource("1_script")
+height = 2
+fill_color = Color(0.17, 0.35, 0.48, 1)
+
+[node name="Shape" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(-250, -150, 250, -150, 250, 150, -250, 150)

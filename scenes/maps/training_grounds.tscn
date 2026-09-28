@@ -10,6 +10,9 @@
 [ext_resource type="PackedScene" path="res://scenes/map/travelator.tscn" id="8_travelator"]
 [ext_resource type="PackedScene" path="res://scenes/map/jump_pad.tscn" id="9_pad"]
 [ext_resource type="Resource" path="res://resources/map/pieces/thorn_bed.tres" id="10_thorns"]
+[ext_resource type="PackedScene" path="res://scenes/map/pit.tscn" id="11_pit"]
+[ext_resource type="PackedScene" path="res://scenes/map/crystal_wall.tscn" id="12_crystal"]
+[ext_resource type="PackedScene" path="res://scenes/map/grass_patch.tscn" id="13_grass"]
 
 [node name="TrainingGrounds" type="Node2D"]
 script = ExtResource("1_map")
@@ -214,4 +217,32 @@ offset_bottom = 1200
 theme_override_colors/font_color = Color(0.3, 0.26, 0.2, 0.85)
 theme_override_font_sizes/font_size = 22
 text = "MAP PIECES  -  glass shatters and regrows  |  hit the geyser for Motes  |  gate (west, shoot its lever), fog (east), thorns, travelator (north), launch flower"
+horizontal_alignment = 1
+
+[node name="Obstacles" type="Node2D" parent="."]
+
+[node name="Grass" parent="Obstacles" instance=ExtResource("13_grass")]
+position = Vector2(800, 980)
+polygon = PackedVector2Array(-200, -110, 190, -130, 220, 90, -170, 110)
+
+[node name="Crystal" parent="Obstacles" instance=ExtResource("12_crystal")]
+position = Vector2(1200, 980)
+
+[node name="Shape" parent="Obstacles/Crystal"]
+polygon = PackedVector2Array(-25, -150, 25, -150, 25, 150, -25, 150)
+
+[node name="Pit" parent="Obstacles" instance=ExtResource("11_pit")]
+position = Vector2(1520, 980)
+
+[node name="Shape" parent="Obstacles/Pit"]
+polygon = PackedVector2Array(-130, -130, 130, -130, 130, 130, -130, 130)
+
+[node name="ObstaclesSign" type="Label" parent="Signs"]
+offset_left = 500
+offset_top = 1215
+offset_right = 1750
+offset_bottom = 1255
+theme_override_colors/font_color = Color(0.3, 0.26, 0.2, 0.85)
+theme_override_font_sizes/font_size = 20
+text = "OBSTACLES  -  grass hides you  |  crystal: see through, can't shoot through  |  pit: shoot across, walk around"
 horizontal_alignment = 1

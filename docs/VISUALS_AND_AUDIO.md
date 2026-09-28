@@ -265,6 +265,7 @@ ultimate charge.
 | `fire` | Weapon fired (legacy WeaponComponent) | position (muzzle), direction |
 | `reload` / `reload_done` | Reload started / finished (legacy) | |
 | `dry_fire` | Tried to fire with an empty magazine (legacy) | |
+| `wall_impact` | Knocked, pushed or pulled into a hard wall or crystal (`MovementComponent.wall_impact`); on the body that hit the wall | position (contact point), direction (into the wall), normal, impact_speed, knocked_by |
 | `<id>_fire` | A RangedAttackAbility shot | position (muzzle), direction, muzzle_index, ammo, max_ammo, charge_ratio, perfect, extra (fired by another ability via fire_extra_shot) |
 | `<id>_perfect` | A perfect charged release fired | same as `<id>_fire` |
 | `<id>_hit` | One of its projectiles hit | position, target, damage |

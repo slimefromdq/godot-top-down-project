@@ -14,8 +14,9 @@ class_name TargetedAbility
 @export var pick_radius: float = 70.0
 ## Which hurtboxes count as valid targets (Enemy Hurtbox for the player).
 @export_flags_2d_physics var target_mask: int = 16
-## Layers that block line of sight. Set to 0 to ignore walls.
-@export_flags_2d_physics var line_of_sight_mask: int = 1
+## Layers that block the cast. Set to 0 to ignore walls. Hard walls and
+## crystal by default (you can see through crystal, not hit through it).
+@export_flags_2d_physics var line_of_sight_mask: int = 1 | 512
 @export var status_effect: StatusEffect
 
 var _pick_shape := CircleShape2D.new()

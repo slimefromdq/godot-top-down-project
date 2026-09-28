@@ -71,7 +71,7 @@ func _build() -> void:
 	cell_size = rules.navigation_cell_size
 	_shape.radius = rules.navigation_actor_radius
 	_query.shape = _shape
-	_query.collision_mask = MapLayers.WORLD | MapLayers.LOW_COVER | MapLayers.LEDGES
+	_query.collision_mask = MapLayers.WALK_BLOCKERS
 	_query.collide_with_areas = false
 	_query.collide_with_bodies = true
 	for gate in map.get_tree().get_nodes_in_group(ToggleGate.GROUP):
