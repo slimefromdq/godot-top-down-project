@@ -193,6 +193,27 @@ volume_db = -4.0
 pitch_min = 1.2
 pitch_max = 1.3
 
+[sub_resource type="Resource" id="Sound_gate_open"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("5_dash")])
+volume_db = -6.0
+pitch_min = 0.6
+pitch_max = 0.65
+
+[sub_resource type="Resource" id="Sound_gate_close"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("20_wall_hit")])
+volume_db = -4.0
+pitch_min = 0.55
+pitch_max = 0.6
+
+[sub_resource type="Resource" id="Sound_hazard_on"]
+script = ExtResource("1_sound")
+streams = Array[AudioStream]([ExtResource("7_fail")])
+volume_db = -12.0
+pitch_min = 0.7
+pitch_max = 0.7
+
 [resource]
 script = ExtResource("3_profile")
 cues = Dictionary[StringName, ExtResource("1_sound")]({
@@ -204,7 +225,10 @@ cues = Dictionary[StringName, ExtResource("1_sound")]({
 &"dream_mote_spawn": SubResource("Sound_dream_mote_spawn"),
 &"dreamer_mumble": SubResource("Sound_dreamer_mumble"),
 &"dream_mote_warning": SubResource("Sound_dream_mote_warning"),
+&"gate_close": SubResource("Sound_gate_close"),
+&"gate_open": SubResource("Sound_gate_open"),
 &"geyser_pop": SubResource("Sound_geyser_pop"),
+&"hazard_on": SubResource("Sound_hazard_on"),
 &"glass_restore": SubResource("Sound_glass_restore"),
 &"glass_shatter": SubResource("Sound_glass_shatter"),
 &"level_up": SubResource("Sound_level_up"),

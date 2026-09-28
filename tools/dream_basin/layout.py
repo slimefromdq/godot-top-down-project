@@ -53,7 +53,8 @@ L = {
     "shops": [],        # {x, y, team} one per team, in its spawn room
     "camps": [],        # neutral camps {x, y, kind, name}; kind = a NeutralData file
     # Map pieces (Map Liveliness Plan): breakable cover and Mote geysers
-    "pieces": [],       # {x, y, kind, w, h, name}; kind = "breakable" | "geyser"
+    "pieces": [],       # {x, y, kind, w, h, name, ...}; kind = "breakable" | "geyser" |
+                        # "gate" | "hazard" | "travelator" | "flower" (see helpers)
 }
 
 
@@ -209,6 +210,31 @@ def breakable(x, y, w, h, name):
 def geyser(x, y, name):
     """A Mote geyser: hit it to pop Motes for anyone. Kept clear of cover."""
     L["pieces"].append({"x": x, "y": Y(y), "kind": "geyser", "w": 0, "h": 0, "name": name})
+
+
+def gate(x0, x1, y, t, name, lever=(0, 0), offset=0.0):
+    """A toggle gate filling a horizontal doorway x0..x1 at authored y, t thick.
+    lever: the lever post's offset from the gate centre (authored units)."""
+    L["pieces"].append({"x": (x0 + x1) / 2, "y": Y(y), "kind": "gate", "w": abs(x1 - x0), "h": t,
+                        "name": name, "lx": lever[0], "ly": lever[1] * 1.0, "offset": offset, "rot": 0.0})
+
+
+def hazard(x, y, w, h, data, name, offset=0.0):
+    """A hazard patch (data = a MapPieceData file in resources/map/pieces)."""
+    L["pieces"].append({"x": x, "y": Y(y), "kind": "hazard", "w": w, "h": h, "data": data,
+                        "name": name, "offset": offset, "rot": 0.0})
+
+
+def travelator(x, y, w, h, name, offset=0.0):
+    """A moving walkway along its long axis (w along x)."""
+    L["pieces"].append({"x": x, "y": Y(y), "kind": "travelator", "w": w, "h": h, "name": name,
+                        "offset": offset, "rot": 0.0})
+
+
+def flower(x, y, tx, ty, sweep, name):
+    """A launch flower: a jump pad whose landing sweeps +-sweep degrees."""
+    L["pieces"].append({"x": x, "y": Y(y), "kind": "flower", "w": 0, "h": 0, "tx": tx, "ty": Y(ty),
+                        "sweep": sweep, "name": name, "rot": 0.0})
 
 
 def lane(a, b, text):
@@ -522,6 +548,18 @@ breakable(1400, 1417, 60, 320, "Driftfield Glass")
 breakable(-3300, -833, 320, 60, "Ridge Glass")
 geyser(-3400, -500, "Glade Geyser")
 geyser(-2000, 500, "Rim Geyser")
+# Phase 3 (Map Liveliness Plan): the Ruins' north door and the Tangle's main
+# entrance open and close on the clock (offset so they alternate), each with a
+# lever post outside. Sleep-fog drifts over Stilt Ridge now and then; a thorn
+# bed in the Orchard. The Plaza Express, a travelator along the Plaza front,
+# flips direction every half minute. A launch flower on the Driftfield's far
+# side sweeps its landing across the Cradle's east side.
+gate(-2350, -1950, 850, 80, "Ruins North Gate", lever=(-290, -90))
+gate(-3900, -3350, 900, 120, "Tangle Gate", lever=(330, -100), offset=16.0)
+hazard(-3600, -1167, 420, 300, "sleep_fog", "Ridge Fog")
+hazard(3600, 3250, 360, 260, "thorn_bed", "Orchard Thorns")
+travelator(0, 1979, 1000, 150, "Plaza Express")
+flower(2400, 1000, 1500, 833, 20, "Driftfield Flower")
 
 # Region labels (authored half only; rotated copies get B names below)
 label(-3750, 1450, "THE TANGLE", 150)
@@ -585,7 +623,14 @@ def build():
             continue  # the centre is its own twin
         out["camps"].append({**cp, "x": -cp["x"], "y": -cp["y"]})
     for pc in L["pieces"]:
-        out["pieces"].append({**pc, "x": -pc["x"], "y": -pc["y"]})
+        twin = {**pc, "x": -pc["x"], "y": -pc["y"]}
+        if "lx" in pc:
+            twin["lx"], twin["ly"] = -pc["lx"], -pc["ly"]
+        if "tx" in pc:
+            twin["tx"], twin["ty"] = -pc["tx"], -pc["ty"]
+        if "rot" in pc:
+            twin["rot"] = pc["rot"] + math.pi
+        out["pieces"].append(twin)
     for z in L["dream_zones"]:
         out["dream_zones"].append({**z, "pts": [_rot(p) for p in z["pts"]],
                                    "spawns": [_rot(p) for p in z["spawns"]]})

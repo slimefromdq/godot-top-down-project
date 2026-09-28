@@ -12,6 +12,11 @@ class_name BotNavigation
 ## cost_scale is large enough that the engine's straight-line heuristic
 ## never overestimates, even across the longest shortcut, so routes are
 ## still the cheapest ones.
+##
+## Toggle gates (ToggleGate) are left out of the obstacle scan, so the graph
+## runs through their doorways; every path() call then switches off the
+## points in each closed gate's doorway, so bots route around closed gates
+## and through open ones.
 
 
 static var _shared: Dictionary = {}
@@ -27,6 +32,8 @@ var width: int
 var height: int
 var cell_size: float
 var _next_id: int = 1
+var _gate_points: Dictionary = {}  # ToggleGate -> PackedInt32Array of point ids
+var _excluded: Array[RID] = []
 var _shape := CircleShape2D.new()
 var _query := PhysicsShapeQueryParameters2D.new()
 
@@ -48,6 +55,7 @@ static func for_actor(actor: Hero) -> BotNavigation:
 
 
 func path(from: Vector2, to: Vector2) -> PackedVector2Array:
+	_sync_gates()
 	var start := _nearest(from)
 	var finish := _nearest(to)
 	if start == 0 or finish == 0:
@@ -66,6 +74,10 @@ func _build() -> void:
 	_query.collision_mask = MapLayers.WORLD | MapLayers.LOW_COVER | MapLayers.LEDGES
 	_query.collide_with_areas = false
 	_query.collide_with_bodies = true
+	for gate in map.get_tree().get_nodes_in_group(ToggleGate.GROUP):
+		if map.is_ancestor_of(gate):
+			_excluded.append(gate.get_rid())
+	_query.exclude = _excluded
 	origin = map.to_global(map.bounds.position)
 	width = maxi(1, ceili(map.bounds.size.x / cell_size))
 	height = maxi(1, ceili(map.bounds.size.y / cell_size))
@@ -93,6 +105,37 @@ func _build() -> void:
 				_add_link(portal.global_position, portal.partner.global_position)
 				teleport_entries[portal.global_position] = portal.partner.global_position
 	_apply_weights()
+	_find_gate_points()
+
+
+func _find_gate_points() -> void:
+	var margin := _shape.radius
+	for gate in map.get_tree().get_nodes_in_group(ToggleGate.GROUP):
+		if not map.is_ancestor_of(gate):
+			continue
+		var polygon: PackedVector2Array = gate.get_block_polygon()
+		var grown := Geometry2D.offset_polygon(polygon, margin)
+		var area: PackedVector2Array = grown[0] if not grown.is_empty() else polygon
+		var ids := PackedInt32Array()
+		for id in graph.get_point_ids():
+			if Geometry2D.is_point_in_polygon(graph.get_point_position(id), area):
+				ids.append(id)
+		_gate_points[gate] = ids
+
+
+func _sync_gates() -> void:
+	for gate in _gate_points:
+		if not is_instance_valid(gate):
+			continue
+		var closed_now: bool = gate.is_closed()
+		for id in _gate_points[gate]:
+			if graph.is_point_disabled(id) != closed_now:
+				graph.set_point_disabled(id, closed_now)
+
+
+## Point ids a gate switches off while closed (tests, the bot overlay).
+func get_gate_points(gate: Node) -> PackedInt32Array:
+	return _gate_points.get(gate, PackedInt32Array())
 
 
 # [entry id, exit id] of every link, for _apply_weights.
@@ -123,7 +166,7 @@ func _clear(point: Vector2) -> bool:
 
 
 func _edge_clear(from: Vector2, to: Vector2) -> bool:
-	var query := PhysicsRayQueryParameters2D.create(from, to, _query.collision_mask)
+	var query := PhysicsRayQueryParameters2D.create(from, to, _query.collision_mask, _excluded)
 	return map.get_world_2d().direct_space_state.intersect_ray(query).is_empty()
 
 
@@ -143,7 +186,7 @@ func _nearest(point: Vector2) -> int:
 	for y in range(-2, 3):
 		for x in range(-2, 3):
 			var id: int = cells.get(center + Vector2i(x, y), 0)
-			if id == 0:
+			if id == 0 or graph.is_point_disabled(id):
 				continue
 			var d := graph.get_point_position(id).distance_squared_to(point)
 			if d < distance:

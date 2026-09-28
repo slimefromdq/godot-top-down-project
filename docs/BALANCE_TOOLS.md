@@ -63,7 +63,8 @@ values.
     follows the shop rules), clear your items, open the shop, make every bot
     shop now, and **Shop anywhere** (lifts the in-base rule).
   * **Map pieces**: shatter or restore every dream-glass pane, pop every
-    Mote geyser.
+    Mote geyser, hold every toggle gate open or closed for a minute, or put
+    them back on their cycles.
   * **Dreamers**: for each team, set the wake meter, force a stir, finish
     or fail its Lullaby, grant Sweet Dreams now, and a **Deposit / Lullaby
     rings** overlay.

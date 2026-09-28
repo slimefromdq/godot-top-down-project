@@ -17,19 +17,51 @@ import os
 from check import dist_to_poly
 from layout import HX, HY, Y, build
 
+HAZARD_COLORS = {"sleep_fog": "Color(0.7, 0.6, 1, 0.32)", "thorn_bed": "Color(0.45, 0.6, 0.25, 0.45)"}
+
+
 def export_pieces(s, m):
-    """Map pieces (Map Liveliness Plan): breakable cover and Mote geysers."""
-    scenes = {"breakable": s.res("PackedScene", "res://scenes/map/breakable_cover.tscn"),
-              "geyser": s.res("PackedScene", "res://scenes/map/mote_geyser.tscn")}
+    """Map pieces (Map Liveliness Plan): breakable cover, Mote geysers, toggle
+    gates, hazards, travelators and launch flowers."""
+    scenes = {"breakable": "res://scenes/map/breakable_cover.tscn",
+              "geyser": "res://scenes/map/mote_geyser.tscn",
+              "gate": "res://scenes/map/toggle_gate.tscn",
+              "hazard": "res://scenes/map/hazard_zone.tscn",
+              "travelator": "res://scenes/map/travelator.tscn",
+              "flower": "res://scenes/map/jump_pad.tscn"}
+    used = {}
+    datas = {}
     s.node("MapPieces", ".", "Node2D")
     for pc in m["pieces"]:
+        kind = pc["kind"]
+        if kind not in used:
+            used[kind] = s.res("PackedScene", scenes[kind])
         side = "A" if pc["y"] > 0 or (pc["y"] == 0 and pc["x"] < 0) else "B"
         name = pc["name"].title().replace(" ", "") + side
-        s.node(name, "MapPieces", instance=scenes[pc["kind"]], position=v2((pc["x"], pc["y"])))
-        if pc["kind"] == "breakable":
-            hw, hh = pc["w"] / 2, pc["h"] / 2
-            s.node("Shape", f"MapPieces/{name}",
-                   polygon=pva([(-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh)]))
+        props = {"position": v2((pc["x"], pc["y"]))}
+        hw, hh = pc["w"] / 2, pc["h"] / 2
+        box = pva([(-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh)])
+        if kind == "gate":
+            props["cycle_offset"] = f'{pc["offset"]:.1f}'
+            if pc["lx"] or pc["ly"]:
+                props["lever_offset"] = v2((pc["lx"], pc["ly"]))
+        elif kind == "hazard":
+            if pc["data"] not in datas:
+                datas[pc["data"]] = s.res("Resource", f'res://resources/map/pieces/{pc["data"]}.tres')
+            props["data"] = datas[pc["data"]]
+            props["cycle_offset"] = f'{pc["offset"]:.1f}'
+            props["color"] = HAZARD_COLORS.get(pc["data"], "Color(1, 0.5, 0.5, 0.3)")
+        elif kind == "travelator":
+            props["rotation"] = f'{pc["rot"]:.6f}'
+            props["size"] = v2((pc["w"], pc["h"]))
+            props["cycle_offset"] = f'{pc["offset"]:.1f}'
+        elif kind == "flower":
+            props["landing_offset"] = v2((pc["tx"] - pc["x"], pc["ty"] - pc["y"]))
+            props["sweep_degrees"] = f'{pc["sweep"]:.1f}'
+            props["color"] = "Color(0.95, 0.45, 0.7, 1)"
+        s.node(name, "MapPieces", instance=used[kind], **props)
+        if kind in ("breakable", "gate", "hazard"):
+            s.node("Shape", f"MapPieces/{name}", polygon=box)
 
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..")

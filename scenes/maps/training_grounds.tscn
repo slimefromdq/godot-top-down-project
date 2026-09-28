@@ -5,6 +5,11 @@
 [ext_resource type="Script" path="res://scripts/map/cover_body.gd" id="3_cover"]
 [ext_resource type="PackedScene" path="res://scenes/map/breakable_cover.tscn" id="4_glass"]
 [ext_resource type="PackedScene" path="res://scenes/map/mote_geyser.tscn" id="5_geyser"]
+[ext_resource type="PackedScene" path="res://scenes/map/toggle_gate.tscn" id="6_gate"]
+[ext_resource type="PackedScene" path="res://scenes/map/hazard_zone.tscn" id="7_hazard"]
+[ext_resource type="PackedScene" path="res://scenes/map/travelator.tscn" id="8_travelator"]
+[ext_resource type="PackedScene" path="res://scenes/map/jump_pad.tscn" id="9_pad"]
+[ext_resource type="Resource" path="res://resources/map/pieces/thorn_bed.tres" id="10_thorns"]
 
 [node name="TrainingGrounds" type="Node2D"]
 script = ExtResource("1_map")
@@ -170,12 +175,43 @@ position = Vector2(-350, 1050)
 [node name="Geyser" parent="MapPieces" instance=ExtResource("5_geyser")]
 position = Vector2(400, 1050)
 
+[node name="Gate" parent="MapPieces" instance=ExtResource("6_gate")]
+position = Vector2(-1500, 0)
+lever_offset = Vector2(160, -220)
+
+[node name="Shape" parent="MapPieces/Gate"]
+polygon = PackedVector2Array(-30, -160, 30, -160, 30, 160, -30, 160)
+
+[node name="Fog" parent="MapPieces" instance=ExtResource("7_hazard")]
+position = Vector2(1500, 0)
+
+[node name="Shape" parent="MapPieces/Fog"]
+polygon = PackedVector2Array(-150, -150, 150, -150, 150, 150, -150, 150)
+
+[node name="Thorns" parent="MapPieces" instance=ExtResource("7_hazard")]
+position = Vector2(-1500, 650)
+data = ExtResource("10_thorns")
+color = Color(0.45, 0.6, 0.25, 0.45)
+
+[node name="Shape" parent="MapPieces/Thorns"]
+polygon = PackedVector2Array(-130, -110, 130, -110, 130, 110, -130, 110)
+
+[node name="Travelator" parent="MapPieces" instance=ExtResource("8_travelator")]
+position = Vector2(0, -1000)
+size = Vector2(800, 130)
+
+[node name="LaunchFlower" parent="MapPieces" instance=ExtResource("9_pad")]
+position = Vector2(1500, -400)
+landing_offset = Vector2(-600, -150)
+sweep_degrees = 20.0
+color = Color(0.95, 0.45, 0.7, 1)
+
 [node name="MapPiecesSign" type="Label" parent="Signs"]
-offset_left = -500
+offset_left = -900
 offset_top = 1160
-offset_right = 600
+offset_right = 900
 offset_bottom = 1200
 theme_override_colors/font_color = Color(0.3, 0.26, 0.2, 0.85)
 theme_override_font_sizes/font_size = 22
-text = "MAP PIECES  -  dream-glass shatters and regrows  |  hit the geyser to pop Motes"
+text = "MAP PIECES  -  glass shatters and regrows  |  hit the geyser for Motes  |  gate (west, shoot its lever), fog (east), thorns, travelator (north), launch flower"
 horizontal_alignment = 1

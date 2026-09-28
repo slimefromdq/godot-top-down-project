@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MapPieceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/map/map_piece_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Travelator"
+belt_speed = 260.0
+belt_reverse_period = 30.0
+belt_flip_time = 1.5

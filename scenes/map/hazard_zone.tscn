@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/map/hazard_zone.gd" id="1_script"]
+[ext_resource type="Resource" path="res://resources/map/pieces/sleep_fog.tres" id="2_data"]
+
+[node name="HazardZone" type="Area2D"]
+script = ExtResource("1_script")
+data = ExtResource("2_data")
+
+[node name="Shape" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(-200, -150, 200, -150, 200, 150, -200, 150)

@@ -60,6 +60,9 @@ var _arc_height: float = 0.0
 var _mask_before_launch: int = 0
 var _air_time: float = 0.0
 var _launch_target := Vector2.ZERO
+# The latest displacement (displaced signal): who, and when (msec).
+var _last_displacer: Node
+var _last_displaced_msec: int = -1
 
 
 func _ready() -> void:
@@ -68,6 +71,7 @@ func _ready() -> void:
 	collision_mask |= MapLayers.BARRIERS
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	health_component.died.connect(_on_died)
+	displaced.connect(_remember_displacer)
 	if weapon_component != null:
 		weapon_component.fired.connect(_on_weapon_fired)
 		weapon_component.reload_started.connect(trigger_cue.bind(&"reload"))
@@ -93,6 +97,21 @@ func _on_weapon_fired(muzzle_position: Vector2, direction: Vector2) -> void:
 # Move instantly to `point` (a blink, a map teleporter, a rescue pull).
 # Refused (returns false, nothing moves) if it would cross a ContainmentRing:
 # "nobody in or out" includes teleports.
+func _remember_displacer(source: Node, _distance: float) -> void:
+	_last_displacer = source
+	_last_displaced_msec = Time.get_ticks_msec()
+
+
+## Who last pushed, pulled or carried this actor, if it was within `seconds`
+## and they're still around (else null). Map hazards use it for credit.
+func get_last_displacer(seconds: float) -> Node:
+	if _last_displaced_msec < 0 or not is_instance_valid(_last_displacer):
+		return null
+	if Time.get_ticks_msec() - _last_displaced_msec > seconds * 1000.0:
+		return null
+	return _last_displacer
+
+
 func teleport_to(point: Vector2) -> bool:
 	if ContainmentRing.crosses_any(get_tree(), global_position, point):
 		return false

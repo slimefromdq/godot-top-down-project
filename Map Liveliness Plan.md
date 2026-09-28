@@ -98,6 +98,14 @@ decorative layers).
 `check.py` gains rules: no gate state may cut off a base from the Cradle,
 and no gate state may open a sight lane onto a spawn door.
 
+**Status: built**, with one change: Dream Basin has no gaps for a drifting
+platform to ferry across, so it became a **travelator** (a moving walkway
+that carries whoever stands on it, flipping direction on the clock), which
+also suits the plaza theme. Everything cycles on `MapClock` (the match
+clock), so a debug clock jump moves gates, hazards, belts and flowers with
+it. Bots route around closed gates (`BotNavigation`); pushing someone into
+a hazard credits the pusher (`Actor.get_last_displacer`).
+
 ## Phase 4: claimable shrines
 
 The only team-owned piece.

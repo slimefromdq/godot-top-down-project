@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MapPieceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/map/map_piece_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Gate"
+gate_open_time = 20.0
+gate_closed_time = 12.0
+gate_warning = 2.5
+lever_hold_time = 8.0
+lever_cooldown = 3.0
+gate_blocks_shots = true
+gate_push_margin = 40.0
+hit_cue = &"piece_hit"
+open_cue = &"gate_open"
+close_cue = &"gate_close"

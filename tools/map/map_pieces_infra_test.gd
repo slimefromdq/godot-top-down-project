@@ -15,6 +15,12 @@ const AMBIENCE := "res://resources/map/dream_basin_ambience.tres"
 const HERO := "res://tools/heroes/ranged_test/ranged_test_hero.tscn"
 const GLASS := "res://scenes/map/breakable_cover.tscn"
 const GEYSER := "res://scenes/map/mote_geyser.tscn"
+const GATE := "res://scenes/map/toggle_gate.tscn"
+const HAZARD := "res://scenes/map/hazard_zone.tscn"
+const TRAVELATOR := "res://scenes/map/travelator.tscn"
+const PAD := "res://scenes/map/jump_pad.tscn"
+const THORNS := "res://resources/map/pieces/thorn_bed.tres"
+const KNOCKBACK := "res://heroes/avery/data/avery_cc_knockback.tres"
 ## Far from Dream Basin's cover, for pieces made by the test.
 const TEST_SPOT := Vector2(30000, 30000)
 
@@ -66,6 +72,13 @@ func _run() -> void:
 	await _geyser()
 	await _clock_jump(amb)
 	await _toggles(amb)
+	_phase3_placements(map)
+	await _gates()
+	await _gate_navigation()
+	await _hazards()
+	await _travelator()
+	_flower()
+	MapClock.override_time = -1.0
 	_finish()
 
 
@@ -428,6 +441,192 @@ func _toggles(amb: MapAmbience) -> void:
 	cam.queue_free()
 	VisualToggles.set_all(true, get_tree())
 	check(VisualToggles.is_on(&"mood") and grid[0].visible, "all on restores everything")
+
+
+func _phase3_placements(map: Node) -> void:
+	var count := func(group: StringName) -> int:
+		return get_tree().get_nodes_in_group(group).filter(func(n): return map.is_ancestor_of(n)).size()
+	check(count.call(ToggleGate.GROUP) == 4, "Dream Basin has 4 toggle gates")
+	check(count.call(HazardZone.GROUP) == 4, "Dream Basin has 4 hazards")
+	check(count.call(Travelator.GROUP) == 2, "Dream Basin has 2 travelators")
+	var flowers := get_tree().get_nodes_in_group(JumpPad.GROUP).filter(func(n): return map.is_ancestor_of(n) and n.sweep_degrees > 0.0)
+	check(flowers.size() == 2, "Dream Basin has 2 launch flowers")
+
+
+func _settle() -> void:
+	for i in 3:
+		await get_tree().physics_frame
+
+
+func _gates() -> void:
+	var gate: ToggleGate = load(GATE).instantiate()
+	gate.data = gate.data.duplicate()
+	gate.data.gate_open_time = 2.0
+	gate.data.gate_closed_time = 2.0
+	gate.data.gate_warning = 0.5
+	gate.data.lever_hold_time = 3.0
+	gate.data.lever_cooldown = 1.0
+	gate.lever_offset = Vector2(0, -150)
+	MapClock.override_time = 0.5
+	add_child(gate)
+	gate.global_position = TEST_SPOT + Vector2(0, 2000)
+	await _settle()
+	check(not gate.is_closed() and gate.collision_layer == 0, "a gate starts its cycle open")
+	check(is_equal_approx(gate.get_time_to_change(), 1.5), "and knows when it will change")
+	# Someone in the doorway when it shuts.
+	hero.global_position = gate.global_position + Vector2(30, 10)
+	await _settle()
+	MapClock.override_time = 2.5
+	await _settle()
+	check(gate.is_closed() and gate.collision_layer == MapLayers.WORLD, "on its cycle it closes (full cover)")
+	var offset := hero.global_position - gate.global_position
+	check(absf(offset.y) >= 40.0 + gate.data.gate_push_margin - 1.0, "a hero in the doorway is pushed out, not crushed")
+	check(offset.y > 0.0, "to the nearer side")
+	MapClock.override_time = 4.2
+	await _settle()
+	check(not gate.is_closed(), "and opens again")
+	# The lever: a hit flips it and holds it.
+	gate.lever.take_damage(1.0)
+	await _settle()
+	check(gate.is_closed() and gate.is_held(), "a hit on the lever flips it (closed) and holds it")
+	gate.lever.take_damage(1.0)
+	await _settle()
+	check(gate.is_closed(), "the lever has a cooldown")
+	MapClock.override_time = 5.0    # cycle says closed; the hold says closed too
+	await _settle()
+	MapClock.override_time = 7.5    # hold over; cycle (7.5 mod 4 = 3.5) says closed
+	await _settle()
+	check(not gate.is_held() and gate.is_closed(), "after the hold it rejoins its cycle")
+	gate.force(false, 2.0)
+	await _settle()
+	check(not gate.is_closed(), "force() holds it open against its cycle")
+	gate.on_clock_jumped(0.0, 7.5)
+	await _settle()
+	check(gate.is_closed() and not gate.is_held(), "a clock jump drops holds")
+	gate.queue_free()
+	MapClock.override_time = -1.0
+
+
+func _gate_navigation() -> void:
+	hero.global_position = Vector2(0, 3000)
+	await _settle()
+	var nav := BotNavigation.for_actor(hero as Hero)
+	check(nav != null, "bots have a navigation graph on Dream Basin")
+	if nav == null:
+		return
+	var gate := get_tree().get_first_node_in_group(ToggleGate.GROUP) as ToggleGate
+	var points := nav.get_gate_points(gate)
+	check(points.size() > 0, "the graph runs through a gate's doorway (%d points)" % points.size())
+	gate.force(true, 60.0)
+	await _settle()
+	nav.path(Vector2.ZERO, Vector2(100, 0))
+	check(points.size() > 0 and nav.graph.is_point_disabled(points[0]), "bots can't path through a closed gate")
+	gate.force(false, 60.0)
+	await _settle()
+	nav.path(Vector2.ZERO, Vector2(100, 0))
+	check(points.size() > 0 and not nav.graph.is_point_disabled(points[0]), "and can through an open one")
+	gate.release()
+
+
+func _hazards() -> void:
+	var zone: HazardZone = load(HAZARD).instantiate()
+	add_child(zone)
+	zone.global_position = TEST_SPOT + Vector2(3000, 2000)
+	var fog := zone.data
+	zone.data = fog.duplicate()
+	zone.data.hazard_active_time = 2.0
+	zone.data.hazard_dormant_time = 2.0
+	zone.data.hazard_telegraph = 1.0
+	MapClock.override_time = 3.0
+	await _settle()
+	check(not zone.is_active(), "a cycling hazard rests between bursts")
+	MapClock.override_time = 1.0
+	hero.global_position = zone.global_position
+	await _settle()
+	check(zone.is_active() and zone.get_occupants().has(hero), "and turns on; a hero inside is caught")
+	zone.tick()
+	check(hero.status_component.has_status(fog.hazard_status.id), "sleep-fog slows whoever is inside")
+	# Thorns: damage, and credit for a push in.
+	var thorns: HazardZone = load(HAZARD).instantiate()
+	thorns.data = load(THORNS)
+	add_child(thorns)
+	thorns.global_position = TEST_SPOT + Vector2(3000, 3000)
+	var enemy: Actor = load(HERO).instantiate()
+	add_child(enemy)
+	enemy.global_position = TEST_SPOT + Vector2(3000, 3600)
+	hero.team = &"a"
+	enemy.team = &"b"
+	await _settle()
+	hero.health_component.reset()
+	# A real push: an enemy knockback status reports Actor.displaced.
+	hero.global_position = TEST_SPOT + Vector2(3000, 2600)
+	hero.status_component.apply(load(KNOCKBACK), enemy, Vector2.DOWN)
+	check(hero.get_last_displacer(3.0) == enemy, "a knockback records who pushed")
+	hero.global_position = thorns.global_position
+	await _settle()
+	check(thorns.get_credit(hero) == enemy, "pushed into a hazard by an enemy: the enemy gets the credit")
+	var before := hero.health_component.current_health
+	thorns.tick()
+	check(is_equal_approx(before - hero.health_component.current_health, thorns.data.hazard_damage),
+		"thorns deal their tick damage (true damage)")
+	check(hero.health_component.last_damage_source == enemy, "and it counts as the pusher's damage")
+	hero.global_position = TEST_SPOT
+	await _settle()
+	check(thorns.get_credit(hero) == null, "credit ends when they leave")
+	enemy.queue_free()
+	zone.queue_free()
+	thorns.queue_free()
+	hero.health_component.reset()
+	MapClock.override_time = -1.0
+
+
+func _travelator() -> void:
+	var belt: Travelator = load(TRAVELATOR).instantiate()
+	belt.data = belt.data.duplicate()
+	belt.data.belt_reverse_period = 0.0
+	add_child(belt)
+	belt.global_position = TEST_SPOT + Vector2(6000, 0)
+	var rider: Actor = load(HERO).instantiate()
+	add_child(rider)
+	rider.global_position = belt.global_position + Vector2(-300, 0)
+	await _settle()
+	check(rider.movement_component._speed_zones.has(belt), "a body on a travelator rides it")
+	var start := rider.global_position
+	await get_tree().create_timer(0.5).timeout
+	var moved := rider.global_position - start
+	check(moved.x > belt.data.belt_speed * 0.25, "standing on a travelator carries you along it (%.0f px)" % moved.x)
+	check(absf(moved.y) < 5.0, "only along the belt")
+	belt.data.belt_reverse_period = 10.0
+	belt.data.belt_flip_time = 2.0
+	MapClock.override_time = 5.0
+	check(is_equal_approx(belt.get_flow(), 1.0), "a reversing belt runs full speed mid-cycle")
+	MapClock.override_time = 15.0
+	check(is_equal_approx(belt.get_flow(), -1.0), "then the other way")
+	MapClock.override_time = 10.0
+	check(absf(belt.get_flow()) < 0.01, "and eases through a stop at each flip")
+	MapClock.override_time = -1.0
+	rider.queue_free()
+	belt.queue_free()
+
+
+func _flower() -> void:
+	var pad: JumpPad = load(PAD).instantiate()
+	pad.landing_offset = Vector2(800, 0)
+	pad.sweep_degrees = 20.0
+	pad.sweep_period = 4.0
+	add_child(pad)
+	pad.global_position = TEST_SPOT + Vector2(0, 5000)
+	var a := pad.get_landing_at(-1.0)
+	var b := pad.get_landing_at(1.0)
+	check(a.distance_to(b) > 200.0, "a launch flower's landing sweeps")
+	check(is_equal_approx(a.distance_to(pad.global_position), 800.0), "at the same distance")
+	MapClock.override_time = 0.0
+	var mid := pad.get_landing_position()
+	MapClock.override_time = 1.0
+	var end := pad.get_landing_position()
+	check(mid.is_equal_approx(pad.to_global(Vector2(800, 0))) and end.is_equal_approx(b), "timed on the map clock")
+	MapClock.override_time = -1.0
+	pad.queue_free()
 
 
 func _finish() -> void:

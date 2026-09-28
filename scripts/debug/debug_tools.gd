@@ -355,6 +355,18 @@ func restore_all_glass() -> int:
 	return count
 
 
+## Hold every toggle gate open (closed = false) or closed for a minute, or
+## (release) hand them back to their cycles.
+func force_all_gates(closed_state: bool, release: bool = false) -> int:
+	var gates := get_tree().get_nodes_in_group(ToggleGate.GROUP)
+	for gate in gates:
+		if release:
+			gate.release()
+		else:
+			gate.force(closed_state, 60.0)
+	return gates.size()
+
+
 func pop_all_geysers() -> int:
 	var count := 0
 	for node in get_tree().get_nodes_in_group(MoteGeyser.GROUP):
@@ -1063,6 +1075,9 @@ func _match_tab(hero: Hero) -> Control:
 	pieces.add_child(_button("Shatter all glass", shatter_all_glass))
 	pieces.add_child(_button("Restore all glass", restore_all_glass))
 	pieces.add_child(_button("Pop all geysers", pop_all_geysers))
+	pieces.add_child(_button("Open all gates (60 s)", func(): force_all_gates(false)))
+	pieces.add_child(_button("Close all gates (60 s)", func(): force_all_gates(true)))
+	pieces.add_child(_button("Gates back on their cycle", func(): force_all_gates(false, true)))
 	box.add_child(pieces)
 
 	box.add_child(_label("Items (local player)", 15))

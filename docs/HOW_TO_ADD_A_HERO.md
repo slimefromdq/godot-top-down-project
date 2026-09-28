@@ -140,6 +140,7 @@ For each slot in the definition's `abilities` dictionary, point at an
 | an ultimate charged by playing in a match (no cooldown there) | nothing: the `ultimate` slot has `SlotDefinition.ultimate_charge`, and `MatchRules` > Ultimate sets the rates. A script that starts the ultimate itself (a passive revive) calls `_spend_cooldown()`, which spends the charge in a match | none |
 | heal over time / regen (a buff that restores health each tick) | `StatusEffect.tick_heal_ratio` (share of max HP per `tick_interval`, times stacks) | none |
 | read how many Motes someone carries (show a count, scale an effect) | `MoteCarrier.find_on(actor).get_mote_count()` / `get_mote_value()` / `changed` signal | a small script |
+| credit for pushing someone into a map hazard (thorns, sleep-fog) | nothing: any enemy push, pull or carry that reports `Actor.displaced` makes the `HazardZone`'s ticks count as yours while they stay in it (`Actor.get_last_displacer`, window `MapPieceData.displacement_credit_time`) | none |
 | knock Motes loose (Jostle) | nothing: any enemy status push or pull of at least `MatchRules.jostle_min_distance`, a carry, or an abduction (`MinigameHost.play(game, source)`) already reports `Actor.displaced(source, distance)` | none |
 | can't be jostled (Iron Will) | `StatusEffect.DISPLACEMENT_TAKEN` 0 in `stat_multipliers` | none |
 | an always-on multiplier that survives death and cleanses (an item's fire rate) | `status_component.set_persistent_multipliers(source_id, {stat: mult})` / `remove_persistent_multipliers(source_id)` | a small script |

@@ -42,10 +42,17 @@ cover, reachable on foot, mirrored).
 
 | **Dream-glass** ×6 | Screening each Plaza approach, at each Driftfield's inner edge, on each Glade/Ridge border (`scenes/map/breakable_cover.tscn`). |
 | **Mote geyser** ×4 | Each Glade and each Cradle rim (`scenes/map/mote_geyser.tscn`). |
+| **Toggle gate** ×4 | Each Lullaby Ruins' north door and each Tangle's main entrance, with a lever outside (`scenes/map/toggle_gate.tscn`). |
+| **Sleep-fog** ×2 / **Thorn bed** ×2 | Each Stilt Ridge / each Orchard (`scenes/map/hazard_zone.tscn`). |
+| **Travelator** ×2 | The Plaza Express, along each Plaza front (`scenes/map/travelator.tscn`). |
+| **Launch flower** ×2 | Past each Driftfield, landing on the Cradle's side (`scenes/map/jump_pad.tscn` with a sweep). |
 
 `check.py` counts intact glass as full cover for every check (lanes, routes,
 standable points), so nothing depends on it being broken, and keeps every
-piece mirrored, clear of cover and off the Cradle ring.
+piece mirrored, clear of cover and off the Cradle ring. With every gate
+closed at once, both bases must still reach the Cradle, every camp and every
+geyser; hazards and belts stay off spawns, Dreamers, camps and pad ends; a
+launch flower must land clear at both ends of its sweep and the middle.
 
 The exporter's colours have drifted from the hand-tuned ones in
 `scenes/maps/dream_basin.tscn`, so these nodes were spliced into the scene

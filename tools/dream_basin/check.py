@@ -303,24 +303,79 @@ def check_pieces(m, grid):
         ok = False
     ring = next(mk for mk in m["markers"] if mk["kind"] == "arena_ring")
     seen, cell_of = flood(m, grid, (-700, Y(3880)), use_pads=False)
-    others = [o for o in m["full"] + m["low"] if o.get("kind") != "breakable"]
+    others = [o for o in m["full"] + m["low"] if o.get("kind") not in ("breakable", "gate")]
+
+    def gap(p):
+        return min(dist_to_poly(p, o["pts"]) for o in others)
+
+    def reachable(p):
+        r, c = cell_of(*p)
+        return seen[r][c]
+
+    # Things a hazard or belt must not sit on.
+    keep_clear = [(mk["x"], mk["y"]) for mk in m["markers"] if mk["kind"] == "spawn"]
+    keep_clear += [(d["x"], d["y"]) for d in m["dreamers"]] + [(cp["x"], cp["y"]) for cp in m["camps"]]
+    for j in m["jump_pads"]:
+        keep_clear += [(j["x"], j["y"]), (j["tx"], j["ty"])]
     for pc in pieces:
         p = (pc["x"], pc["y"])
-        d = min(dist_to_poly(p, o["pts"]) for o in others) - max(pc["w"], pc["h"]) / 2
-        if d < PIECE_CLEARANCE:
-            print(f"  PIECE TOO CLOSE TO COVER: {pc['name']} at {p} ({d:.0f}px)")
-            ok = False
-        e = math.hypot(p[0] / ring["rx"], p[1] / ring["ry"])
-        inner = (ring["rx"] - ring["width"] / 2 - max(pc["w"], pc["h"]) / 2) / ring["rx"]
-        outer = (ring["rx"] + ring["width"] / 2 + max(pc["w"], pc["h"]) / 2) / ring["rx"]
-        if inner < e < outer:
-            print(f"  PIECE ON THE CRADLE RING: {pc['name']} at {p}")
-            ok = False
-        if pc["kind"] == "geyser":
-            r, c = cell_of(*p)
-            if not seen[r][c]:
+        kind = pc["kind"]
+        if kind in ("breakable", "geyser"):
+            d = gap(p) - max(pc["w"], pc["h"]) / 2
+            if d < PIECE_CLEARANCE:
+                print(f"  PIECE TOO CLOSE TO COVER: {pc['name']} at {p} ({d:.0f}px)")
+                ok = False
+            e = math.hypot(p[0] / ring["rx"], p[1] / ring["ry"])
+            inner = (ring["rx"] - ring["width"] / 2 - max(pc["w"], pc["h"]) / 2) / ring["rx"]
+            outer = (ring["rx"] + ring["width"] / 2 + max(pc["w"], pc["h"]) / 2) / ring["rx"]
+            if inner < e < outer:
+                print(f"  PIECE ON THE CRADLE RING: {pc['name']} at {p}")
+                ok = False
+            if kind == "geyser" and not reachable(p):
                 print(f"  GEYSER UNREACHABLE ON FOOT: {pc['name']} at {p}")
                 ok = False
+        elif kind in ("hazard", "travelator"):
+            rect = piece_rect(pc)
+            corners = rect + [p]
+            if any(point_in_poly(q, o["pts"]) for q in corners for o in others):
+                print(f"  {kind.upper()} OVERLAPS COVER: {pc['name']} at {p}")
+                ok = False
+            for q in keep_clear:
+                if point_in_poly(q, rect) or dist_to_poly(q, rect) < 150:
+                    print(f"  {kind.upper()} ON A KEY SPOT: {pc['name']} near {q}")
+                    ok = False
+            if not reachable(p):
+                print(f"  {kind.upper()} UNREACHABLE: {pc['name']} at {p}")
+                ok = False
+        elif kind == "flower":
+            for f in (-1.0, 0.0, 1.0):
+                a = math.radians(pc["sweep"] * f)
+                dx, dy = pc["tx"] - pc["x"], pc["ty"] - pc["y"]
+                land = (pc["x"] + dx * math.cos(a) - dy * math.sin(a), pc["y"] + dx * math.sin(a) + dy * math.cos(a))
+                if gap(land) < BODY + 10 or any(point_in_poly(land, o["pts"]) for o in others):
+                    print(f"  FLOWER LANDS IN COVER: {pc['name']} at sweep {f:+.0f} -> {land}")
+                    ok = False
+            if gap(p) < BODY + 10 or not reachable(p):
+                print(f"  FLOWER PAD BLOCKED OR UNREACHABLE: {pc['name']} at {p}")
+                ok = False
+    # Every gate closed at once (the worst case): the Cradle, every camp,
+    # geyser and Dreamer ring must still be reachable on foot from each base.
+    gates = [{"pts": piece_rect(pc), "kind": "gate"} for pc in pieces if pc["kind"] == "gate"]
+    if gates:
+        closed = {**m, "full": m["full"] + gates}
+        grid2 = build_grid(closed)
+        for team, start in (("A", (-700, Y(3880))), ("B", (700, -Y(3880)))):
+            seen2, cell2 = flood(closed, grid2, start, use_pads=False)
+            targets = [("the Cradle", (0, 400 if team == "A" else -400))]
+            targets += [(cp["name"], (cp["x"], cp["y"])) for cp in m["camps"]]
+            targets += [(pc["name"], (pc["x"], pc["y"])) for pc in pieces if pc["kind"] == "geyser"]
+            for name, q in targets:
+                r, c = cell2(*q)
+                if not seen2[r][c]:
+                    print(f"  ALL GATES CLOSED CUTS {team} OFF FROM {name} at {q}")
+                    ok = False
+        print(f"  all {len(gates)} gates closed: every objective still reachable from both bases"
+              if ok else "  (gate check failed)")
     return ok
 
 

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="MapPieceData" format=3]
+
+[ext_resource type="Script" path="res://scripts/map/map_piece_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Thorn bed"
+hazard_tick = 0.5
+hazard_damage = 10.0
+hazard_active_time = 0.0
+hazard_dormant_time = 0.0
+displacement_credit_time = 3.0
