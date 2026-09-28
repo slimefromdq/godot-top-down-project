@@ -19,6 +19,7 @@ FLOOR = {
     ("plaza", "A"): "#c6e8d8", ("plaza", "B"): "#f2cdbf",
     ("base", "A"): "#a9dcc4", ("base", "B"): "#eab6a3",
     ("ruins", "A"): "#d9d2c4", ("ruins", "B"): "#d9d2c4",
+    ("court", None): "#c9c1ec",
 }
 TEAM_INK = {"A": "#2f8f6a", "B": "#c05a3c", None: "#555"}
 

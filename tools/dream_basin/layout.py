@@ -349,9 +349,63 @@ for i, deg in enumerate([15, 72, 102, 172]):
     a = math.radians(deg)
     full(rock(850 * math.cos(a), 850 * math.sin(a), 105, 60 + i, n=8, jitter=0.12),
          "pillar")
-# Low toppled-column pieces near pillars: bash-and-slam fodder for Melody.
-low(rock(560, 380, 90, 70, stretch=(1.7, 0.6), rot=0.6), "lowrock")
-low(rock(-620, 470, 80, 71, stretch=(1.6, 0.6), rot=-0.5), "lowrock")
+# Low toppled-column pieces on the terrace: bash-and-slam fodder for Melody.
+low(rock(1000, 420, 90, 70, stretch=(1.7, 0.6), rot=0.6), "lowrock")
+low(rock(-980, 560, 80, 71, stretch=(1.6, 0.6), rot=-0.5), "lowrock")
+
+# --- The Sunken Court: the Cradle's heart, one step down ------------------
+# A round court sunk into the middle of the Cradle (the Nightmare's lair and
+# the Dream Mote spot sit on its floor). Its rim is a stone balustrade (low
+# cover: shoot over it, can't walk through), broken by four staircases on
+# the diagonals (both ways) and four drop-offs on the axes (one-way ledges:
+# hop down, never up). Planters on the court floor give the fight inside
+# something to use. Radius in real units; the helpers take authored y.
+COURT_R = 600
+COURT_STAIRS = [(35, 55), (125, 145)]          # degrees, authored half
+COURT_DROPS = [(-10, 10), (80, 100)]
+
+
+def _court_pt(deg, r=COURT_R):
+    a = math.radians(deg)
+    return r * math.cos(a), r * math.sin(a) / SY    # authored y
+
+
+def _court_arc(d0, d1, step=10):
+    n = max(1, round((d1 - d0) / step))
+    return [d0 + (d1 - d0) * i / n for i in range(n + 1)]
+
+
+def sunken_court():
+    L["regions"].append({"pts": [(COURT_R * math.cos(math.radians(d)), COURT_R * math.sin(math.radians(d)))
+                                 for d in range(0, 181, 10)], "kind": "court", "label": "", "team": None})
+    edges = sorted(COURT_STAIRS + COURT_DROPS)
+    # Balustrade between the openings (authored half: -10..170 degrees).
+    spans = []
+    for (a0, a1), (b0, _b1) in zip(edges, edges[1:] + [(edges[0][0] + 180, 0)]):
+        spans.append((a1, b0))
+    for d0, d1 in spans:
+        arc = _court_arc(d0, d1)
+        for u, v in zip(arc, arc[1:]):
+            (ax, ay), (bx, by) = _court_pt(u), _court_pt(v)
+            lowwall(ax, ay, bx, by, t=40, kind="balustrade")
+    for d0, d1 in COURT_DROPS:
+        arc = _court_arc(d0, d1)
+        for u, v in zip(arc, arc[1:]):
+            (ax, ay), (bx, by) = _court_pt(u), _court_pt(v)
+            mid = math.radians((u + v) / 2)
+            ledge(ax, ay, bx, by, (-math.cos(mid), -math.sin(mid)))
+    for d0, d1 in COURT_STAIRS:
+        mid = math.radians((d0 + d1) / 2)
+        cx, cy = _court_pt((d0 + d1) / 2)
+        width = 2 * COURT_R * math.sin(math.radians(d1 - d0) / 2)
+        stair(cx, cy, width, 90, (math.cos(mid), math.sin(mid)))
+
+
+sunken_court()
+# Planters on the court floor (low cover), clear of the lair in the middle.
+for i, deg in enumerate([0, 90]):
+    a = math.radians(deg + 45)
+    low(rock(360 * math.cos(a), 360 * math.sin(a) / SY, 55, 75 + i, n=10, jitter=0.05), "planter")
 bush(250, 620, 110)
 bush(-1000, 150, 100)
 

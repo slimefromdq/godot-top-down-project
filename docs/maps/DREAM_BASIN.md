@@ -17,7 +17,7 @@ Blockout with legend: [dream_basin_blockout.svg](dream_basin_blockout.svg)
 
 | Region | Where | Role |
 |---|---|---|
-| **The Cradle** | Basin centre, low ground | The main arena. An open oval ring (600 px wide, collision-free) circles a broken pillar ring. It is kept clear for whatever the objective becomes. |
+| **The Cradle** | Basin centre, low ground | The main arena. An open oval ring (600 px wide, collision-free) circles a broken pillar ring. Inside it is the **Sunken Court**: a round court (radius 600 px) one step down, with the Nightmare's lair and the Dream Mote spot on its floor. Its rim is a stone balustrade (low cover: shoot over it), broken by four staircases on the diagonals (both ways) and four drop-offs on the axes (one-way: hop down, never climb up). Two pairs of planters on the floor. |
 | **Lullaby Ruins** | Basin corner (A: lower-left, B: upper-right) | Roofless chapel (1400 × 1800 px). Four ways in: north door, a collapsed corner facing the Cradle, east door, south door, plus dropping in from the Tangle. The inside is roomy: a pillar colonnade, a courtyard with the updraft, and a side chapel with the Dream Rift. **Enclosed.** |
 | **Driftfield** | The other two basin corners | Open field under the Ridge, with a fountain and a ruined gatehouse. Mid-range. |
 | **The Tangle** | Wild third nearest your base (left side for A) | Walled hedge garden. Its perimeter hedges block shots, so you have to come inside to fight. Inside are loose rooms around a fountain, with lanes of 450 px or more. **Enclosed.** |
@@ -54,9 +54,13 @@ closed at once, both bases must still reach the Cradle, every camp and every
 geyser; hazards and belts stay off spawns, Dreamers, camps and pad ends; a
 launch flower must land clear at both ends of its sweep and the middle.
 
-The exporter's colours have drifted from the hand-tuned ones in
-`scenes/maps/dream_basin.tscn`, so these nodes were spliced into the scene
-rather than re-exporting the whole file.
+`python3 tools/dream_basin/export_godot.py` rewrites the map scene from
+`layout.py`; it reproduces the hand-tuned colours (the exporter's
+`HAND_TUNED` table) and the Ambience node, so edit the layout and re-export
+rather than editing the scene by hand. (It also rewrites
+`scenes/dream_basin_world.tscn`; to leave that alone, write only the map:
+`export_map(build())` to `MAP_OUT`.) `check.py` also reports the largest
+clear circle per region, to show where more cover would help.
 
 ## Sight lanes
 
