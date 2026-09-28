@@ -14,6 +14,7 @@ extends Node2D
 #      dashes, jump arcs, sight, shots and a real piercing projectile
 #   S7 wall slams (MovementComponent.wall_impact): pushes and knockback into
 #      hard walls and crystal count; pits, low cover and your own dash don't
+#   S8 the global TTK knob (GameRules.ttk_damage_multiplier)
 #
 #   godot --headless res://tools/heroes/shared_systems_test.tscn
 #
@@ -51,10 +52,28 @@ func _run() -> void:
 	await _test_grass()
 	await _test_obstacle_types()
 	await _test_wall_slams()
+	await _test_ttk_multiplier()
 
 	LocalView.clear_viewer()
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
 	get_tree().quit(failures)
+
+
+# --- S8 TTK multiplier -----------------------------------------------------------
+
+func _test_ttk_multiplier() -> void:
+	print("\n-- S8 TTK multiplier")
+	var rules := GameRules.current()
+	var authored := rules.ttk_damage_multiplier
+	_check("the rules start at 1.15", is_equal_approx(authored, 1.15), "x%.2f" % authored)
+	var dummy := _dummy(Vector2(300, 0))
+	await _physics_frames(2)
+	var dealt := dummy.health_component.apply_damage(DamageInfo.create(100.0, hero, DamageInfo.Type.TRUE))
+	_check("every hit is multiplied by it", is_equal_approx(dealt, 100.0 * authored), "%.1f" % dealt)
+	rules.ttk_damage_multiplier = 1.0
+	dealt = dummy.health_component.apply_damage(DamageInfo.create(100.0, hero, DamageInfo.Type.TRUE))
+	_check("1.0 turns it off", is_equal_approx(dealt, 100.0), "%.1f" % dealt)
+	rules.ttk_damage_multiplier = authored
 
 
 # --- S1 Resolve ---------------------------------------------------------------

@@ -23,6 +23,12 @@ const DEFAULT_PATH := "res://resources/rules/game_rules.tres"
 ## worth the same amount of effective HP, which keeps tank stacking linear.
 @export var resistance_constant: float = 100.0
 
+@export_group("Damage")
+## Global time-to-kill knob: every hit on anything is multiplied by this,
+## after resistances and damage-taken statuses, before shields
+## (HealthComponent.mitigate). 1.0 = off.
+@export var ttk_damage_multiplier: float = 1.15
+
 @export_group("Crowd control")
 ## Resolve: after a stun, root or taunt (StatusEffect.is_hard_cc) ends on an
 ## actor, they carry resolve_status for this many seconds. 0 turns the rule off.

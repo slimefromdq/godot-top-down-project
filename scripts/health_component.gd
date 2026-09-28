@@ -7,7 +7,8 @@ class_name HealthComponent
 #   1. ignore if already dead, invulnerable or in god mode
 #   2. resistances (Armor for physical, Magic Resist for magic, none for true)
 #   3. status multipliers: damage_taken (all types), then the per-type
-#      damage_taken_physical / damage_taken_magic (Moonlit, a weapon resist)
+#      damage_taken_physical / damage_taken_magic (Moonlit, a weapon resist),
+#      then the global GameRules.ttk_damage_multiplier
 #   4. shields (StatusEffect.shield_amount) soak what's left; a hit fully
 #      absorbed stops here (no damage reported, CombatEvents.damage_absorbed)
 #   5. if this would kill: emit about_to_die; a listener may cancel it
@@ -95,6 +96,8 @@ func mitigate(amount: float, damage_type: DamageInfo.Type) -> float:
 	var per_type := StatusEffect.damage_taken_stat(damage_type)
 	if per_type != &"":
 		result *= StatusEffectComponent.multiplier_of(status_component, per_type)
+	# Global TTK knob (GameRules.ttk_damage_multiplier).
+	result *= GameRules.current().ttk_damage_multiplier
 	return result
 
 
