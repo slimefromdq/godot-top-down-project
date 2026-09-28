@@ -122,7 +122,7 @@ COVER = {
     "tree": "3f6b35", "hedge": "2f5a2a", "rock": "7a736b", "cliffrock": "5c5650",
     "pillar": "8d85a8", "wall": "4b4b4b", "ruin": "7a6a55", "cloister": "6a5a48",
     "boundary": "2b2b30", "lowrock": "b8b2a6", "lowwall": "a39d90", "crate": "c9a66b",
-    "balustrade": "dcdfe8", "planter": "8fb07a",
+    "balustrade": "dcdfe8", "planter": "8fb07a", "bench": "b08a5e", "lamp": "4a4f63",
     "fountain": "8fc4d6", "building": "9c7f62",
 }
 TEAM_COVER = {
@@ -136,7 +136,7 @@ GROUP = {
     "pillar": "Pillars", "wall": "Walls", "ruin": "Walls", "cloister": "Walls",
     "basewall": "Walls", "sundial": "Landmarks", "statue": "Landmarks",
     "boundary": "Boundary", "lowrock": "LowCover", "lowwall": "LowCover", "crate": "LowCover",
-    "balustrade": "Court", "planter": "Court",
+    "balustrade": "Court", "planter": "Furniture", "bench": "Furniture", "lamp": "Furniture",
     "fountain": "Landmarks", "building": "Buildings",
 }
 

@@ -615,6 +615,32 @@ hazard(3600, 3250, 360, 260, "thorn_bed", "Orchard Thorns")
 travelator(0, 1979, 1000, 150, "Plaza Express")
 flower(2400, 1000, 1500, 833, 20, "Driftfield Flower")
 
+# ==========================================================================
+# PLAZA FURNITURE (Map Liveliness Plan > Plaza direction, open-space pass)
+#   Benches (low cover), lamp posts (thin full cover) and planters (low
+#   cover) where check.py's open-space report found a clear circle over
+#   OPEN_TARGET. Rotated copies furnish the other half.
+# ==========================================================================
+def bench(x, y, w=170, rot=0.0):
+    c, s_ = math.cos(rot), math.sin(rot)
+    pts = [(-w / 2, -25), (w / 2, -25), (w / 2, 25), (-w / 2, 25)]
+    low([(x + px * c - py * s_, Y(y) + px * s_ + py * c) for px, py in pts], "bench")
+
+
+def lamp(x, y):
+    full(circle(x, y, 28, 8), "lamp")
+
+
+# The Cradle's east edge by the Driftfield: a bench pair under a lamp.
+bench(2150, -120, rot=1.2)
+lamp(2000, -330)
+low(rock(2350, -330, 60, 90, n=10, jitter=0.05), "planter")
+
+# Back-road corners of the outskirts: benches and a lamp along the walk.
+bench(-4500, 3800, rot=0.0)
+lamp(-4200, 4050)
+low(rock(-4600, 4150, 60, 91, n=10, jitter=0.05), "planter")
+
 # Region labels (authored half only; rotated copies get B names below)
 label(-3750, 1450, "THE TANGLE", 150)
 label(-3750, 0, "THE GLADE", 130)

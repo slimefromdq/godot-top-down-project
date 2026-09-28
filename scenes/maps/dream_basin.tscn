@@ -542,22 +542,24 @@ fill_color = Color(0.863, 0.875, 0.910, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Court/Balustrade8"]
 polygon = PackedVector2Array(43, 76, -5, -88, -43, -76, 5, 88)
 
-[node name="Planter1" type="StaticBody2D" parent="Cover/Court"]
+[node name="Furniture" type="Node2D" parent="Cover"]
+
+[node name="Planter1" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(254, 255)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.561, 0.690, 0.478, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Court/Planter1"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter1"]
 polygon = PackedVector2Array(54, -1, 50, 24, 14, 53, -16, 52, -49, 26, -56, 3, -44, -28, -21, -50, 23, -49, 45, -29)
 
-[node name="Planter2" type="StaticBody2D" parent="Cover/Court"]
+[node name="Planter2" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(-252, 253)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.561, 0.690, 0.478, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Court/Planter2"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter2"]
 polygon = PackedVector2Array(54, -1, 44, 28, 15, 52, -16, 56, -45, 33, -55, -5, -42, -34, -16, -51, 17, -51, 44, -26)
 
 [node name="Lowwall3" type="StaticBody2D" parent="Cover/LowCover"]
@@ -667,6 +669,42 @@ fill_color = Color(0.622, 0.713, 0.798, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock13"]
 polygon = PackedVector2Array(114, 1, 103, 37, 17, 35, -41, 39, -122, 9, -116, -17, -75, -38, 30, -37, 91, -29)
+
+[node name="Bench1" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(2150, -144)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.690, 0.541, 0.369, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Bench1"]
+polygon = PackedVector2Array(-7, -88, 54, 70, 7, 88, -54, -70)
+
+[node name="Planter3" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(2351, -396)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.561, 0.690, 0.478, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter3"]
+polygon = PackedVector2Array(56, -6, 45, 38, 14, 56, -19, 58, -52, 28, -58, 5, -44, -38, -16, -60, 24, -53, 49, -29)
+
+[node name="Bench2" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(-4500, 4560)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.690, 0.541, 0.369, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Bench2"]
+polygon = PackedVector2Array(-85, -25, 85, -25, 85, 25, -85, 25)
+
+[node name="Planter4" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(-4602, 4980)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.561, 0.690, 0.478, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter4"]
+polygon = PackedVector2Array(59, -9, 46, 37, 11, 60, -21, 55, -49, 28, -57, -2, -48, -36, -22, -55, 25, -53, 55, -26)
 
 [node name="Lowwall5" type="StaticBody2D" parent="Cover/LowCover"]
 position = Vector2(2550, 1464)
@@ -848,22 +886,22 @@ fill_color = Color(0.863, 0.875, 0.910, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Court/Balustrade16"]
 polygon = PackedVector2Array(-43, -76, 5, 88, 43, 76, -5, -88)
 
-[node name="Planter3" type="StaticBody2D" parent="Cover/Court"]
+[node name="Planter5" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(-254, -255)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.561, 0.690, 0.478, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Court/Planter3"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter5"]
 polygon = PackedVector2Array(-54, 1, -50, -24, -14, -53, 16, -52, 49, -26, 56, -3, 44, 28, 21, 50, -23, 49, -45, 29)
 
-[node name="Planter4" type="StaticBody2D" parent="Cover/Court"]
+[node name="Planter6" type="StaticBody2D" parent="Cover/Furniture"]
 position = Vector2(252, -253)
 script = ExtResource("3_cover_body")
 height = 1
 fill_color = Color(0.561, 0.690, 0.478, 1.0)
 
-[node name="Shape" type="CollisionPolygon2D" parent="Cover/Court/Planter4"]
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter6"]
 polygon = PackedVector2Array(-54, 1, -44, -28, -15, -52, 16, -56, 45, -33, 55, 5, 42, 34, 16, 51, -17, 51, -44, 26)
 
 [node name="Lowwall7" type="StaticBody2D" parent="Cover/LowCover"]
@@ -973,6 +1011,42 @@ fill_color = Color(0.622, 0.713, 0.798, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/LowCover/Lowrock26"]
 polygon = PackedVector2Array(-114, -1, -103, -37, -17, -35, 41, -39, 122, -9, 116, 17, 75, 38, -30, 37, -91, 29)
+
+[node name="Bench3" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(-2150, 144)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.690, 0.541, 0.369, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Bench3"]
+polygon = PackedVector2Array(7, 88, -54, -70, -7, -88, 54, 70)
+
+[node name="Planter7" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(-2351, 396)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.561, 0.690, 0.478, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter7"]
+polygon = PackedVector2Array(-56, 6, -45, -38, -14, -56, 19, -58, 52, -28, 58, -5, 44, 38, 16, 60, -24, 53, -49, 29)
+
+[node name="Bench4" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(4500, -4560)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.690, 0.541, 0.369, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Bench4"]
+polygon = PackedVector2Array(85, 25, -85, 25, -85, -25, 85, -25)
+
+[node name="Planter8" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(4602, -4980)
+script = ExtResource("3_cover_body")
+height = 1
+fill_color = Color(0.561, 0.690, 0.478, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Planter8"]
+polygon = PackedVector2Array(-59, 9, -46, -37, -11, -60, 21, -55, 49, -28, 57, 2, 48, 36, 22, 55, -25, 53, -55, 26)
 
 [node name="Hedges" type="Node2D" parent="Cover"]
 
@@ -1724,6 +1798,24 @@ fill_color = Color(0.247, 0.556, 0.177, 1.0)
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree21"]
 polygon = PackedVector2Array(68, 3, 54, 47, 10, 67, -25, 53, -55, 18, -66, -26, -44, -63, 6, -63, 53, -36)
 
+[node name="Lamp1" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(2000, -396)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.290, 0.310, 0.388, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Lamp1"]
+polygon = PackedVector2Array(28, 0, 20, 20, 0, 28, -20, 20, -28, 0, -20, -20, 0, -28, 20, -20)
+
+[node name="Lamp2" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(-4200, 4860)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.290, 0.310, 0.388, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Lamp2"]
+polygon = PackedVector2Array(28, 0, 20, 20, 0, 28, -20, 20, -28, 0, -20, -20, 0, -28, 20, -20)
+
 [node name="Hedge8" type="StaticBody2D" parent="Cover/Hedges"]
 position = Vector2(4350, -1080)
 script = ExtResource("3_cover_body")
@@ -2461,6 +2553,24 @@ fill_color = Color(0.247, 0.556, 0.177, 1.0)
 
 [node name="Shape" type="CollisionPolygon2D" parent="Cover/Trees/Tree42"]
 polygon = PackedVector2Array(-68, -3, -54, -47, -10, -67, 25, -53, 55, -18, 66, 26, 44, 63, -6, 63, -53, 36)
+
+[node name="Lamp3" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(-2000, 396)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.290, 0.310, 0.388, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Lamp3"]
+polygon = PackedVector2Array(-28, -0, -20, -20, 0, -28, 20, -20, 28, -0, 20, 20, 0, 28, -20, 20)
+
+[node name="Lamp4" type="StaticBody2D" parent="Cover/Furniture"]
+position = Vector2(4200, -4860)
+script = ExtResource("3_cover_body")
+height = 0
+fill_color = Color(0.290, 0.310, 0.388, 1.0)
+
+[node name="Shape" type="CollisionPolygon2D" parent="Cover/Furniture/Lamp4"]
+polygon = PackedVector2Array(-28, 0, -20, -20, 0, -28, 20, -20, 28, 0, 20, 20, 0, 28, -20, 20)
 
 [node name="Boundary" type="Node2D" parent="Cover"]
 

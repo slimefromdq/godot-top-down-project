@@ -60,7 +60,8 @@ launch flower must land clear at both ends of its sweep and the middle.
 rather than editing the scene by hand. (It also rewrites
 `scenes/dream_basin_world.tscn`; to leave that alone, write only the map:
 `export_map(build())` to `MAP_OUT`.) `check.py` also reports the largest
-clear circle per region, to show where more cover would help.
+clear circle per region, to show where more cover would help (target
+650 px; plaza furniture — benches, planters, lamp posts — fills the gaps).
 
 ## Sight lanes
 

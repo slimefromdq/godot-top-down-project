@@ -199,11 +199,13 @@ travelator stays (a moving walkway along the forecourt).
    the Dream Mote spot are on the court floor. `check.py > Sunken Court`
    proves the floor walks out to both bases. Toppled columns moved out to
    the terrace.
-2. **Open-space pass.** `check.py` now reports the largest clear circle in
-   each region (report only, target 650 px; the Cradle ring is exempt).
-   Place plaza furniture (benches, planters, lamp posts, low walls) until
-   no region is flagged. Currently flagged: the Cradle's east edge by the
-   Driftfield (~756 px) and the far outskirts corners (~712 px).
+2. **Open-space pass.** *Done.* `check.py` reports the largest clear
+   circle in each region (report only, target 650 px; the Cradle ring is
+   exempt). Plaza furniture (benches and planters as low cover, lamp posts
+   as thin full cover) went where it flagged: a bench, lamp and planter on
+   the Cradle's edge by each Driftfield, and on each outskirts back-road
+   corner. Largest clear circle now: 611 px (basin), under the target
+   everywhere.
 3. **Re-dress the regions** per the table: floor tints and cover kinds
    (balustrade, planter, column, bench) in `layout.py` / the exporter, new
    region labels, the Ambience profiles retuned for a plaza (fewer
