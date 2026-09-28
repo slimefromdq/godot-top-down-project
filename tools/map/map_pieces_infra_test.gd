@@ -46,6 +46,23 @@ func _frames(n: int) -> void:
 		await get_tree().process_frame
 
 
+# The training grounds shows one of each map obstacle type (hard walls are
+# its pillars); each sits on its own physics layer.
+func _obstacle_gallery() -> void:
+	var grounds: Node = load("res://scenes/maps/training_grounds.tscn").instantiate()
+	var pit := grounds.get_node_or_null(^"Obstacles/Pit") as CoverBody
+	var crystal := grounds.get_node_or_null(^"Obstacles/Crystal") as CoverBody
+	var grass := grounds.get_node_or_null(^"Obstacles/Grass") as Bush
+	var pillar := grounds.get_node_or_null(^"Cover/PillarEast") as CoverBody
+	check(pit != null and pit.height == CoverBody.Height.PIT and pit.collision_layer == MapLayers.PITS,
+		"training grounds: a pit on the Pits layer")
+	check(crystal != null and crystal.height == CoverBody.Height.CRYSTAL and crystal.collision_layer == MapLayers.CRYSTAL,
+		"training grounds: a crystal wall on the Crystal layer")
+	check(grass != null and grass.is_patch(), "training grounds: a grass patch")
+	check(pillar != null and pillar.collision_layer == MapLayers.WORLD, "training grounds: pillars are hard walls")
+	grounds.free()
+
+
 func _run() -> void:
 	print("Map pieces infra test")
 	_mood_profile()
@@ -80,6 +97,7 @@ func _run() -> void:
 	await _travelator()
 	_flower()
 	_water_stairs(map)
+	_obstacle_gallery()
 	MapClock.override_time = -1.0
 	_finish()
 

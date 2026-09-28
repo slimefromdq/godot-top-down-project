@@ -130,7 +130,11 @@ COVER = {
     "boundary": "2b2b30", "lowrock": "b8b2a6", "lowwall": "a39d90", "crate": "c9a66b",
     "balustrade": "dcdfe8", "planter": "8fb07a", "hedgebox": "4f8a3f", "bench": "b08a5e", "lamp": "4a4f63",
     "fountain": "8fc4d6", "building": "9c7f62",
+    # The obstacle types (CoverBody PIT / CRYSTAL): deep water blue, a dark
+    # violet pit, pale see-through crystal.
+    "water": "2c5a7a", "pit": "3a2f52", "crystal": "9fe4ff",
 }
+GRASS_COLOR = "73a842"
 TEAM_COVER = {
     "basewall": {"A": "2f8f6a", "B": "c05a3c"},
     "sundial": {"A": "d4ad4f", "B": "8fa3d4"},   # Dawn sun-dial / Dusk moon-dial
@@ -144,6 +148,7 @@ GROUP = {
     "boundary": "Boundary", "lowrock": "LowCover", "lowwall": "LowCover", "crate": "LowCover",
     "balustrade": "Court", "planter": "Furniture", "hedgebox": "Furniture", "bench": "Furniture", "lamp": "Furniture",
     "fountain": "Landmarks", "building": "Buildings",
+    "water": "Pits", "pit": "Pits", "crystal": "Crystal",
 }
 
 
@@ -277,8 +282,10 @@ def export_map(m):
         [(-HX - edge, -HY), (-HX, -HY), (-HX, HY), (-HX - edge, HY)],
         [(HX, -HY), (HX + edge, -HY), (HX + edge, HY), (HX, HY)],
     ]
-    # Low cover first so full cover (taller) draws on top where they overlap.
-    items = [(o, 1) for o in m["low"]] + [(o, 0) for o in m["full"]] + \
+    # Pits first (they're below the floor), then low cover, crystal and full
+    # cover (tallest) on top where they overlap. Heights are CoverBody.Height.
+    items = [(o, 2) for o in m.get("pits", [])] + [(o, 1) for o in m["low"]] + \
+            [(o, 3) for o in m.get("crystals", [])] + [(o, 0) for o in m["full"]] + \
             [({"pts": p, "kind": "boundary", "team": None}, 0) for p in boundary]
     for o, height in items:
         kind = o["kind"]
@@ -300,6 +307,13 @@ def export_map(m):
     s.node("Bushes", ".", "Node2D")
     for i, b in enumerate(m["bushes"]):
         s.node(f"Bush{i + 1}", "Bushes", instance=bush, position=v2((b["x"], b["y"])), radius=f'{b["r"]:.0f}')
+    # Tall-grass patches: Bush with a polygon (hides, blocks nothing).
+    if m.get("grass"):
+        s.node("Grass", ".", "Node2D")
+        for i, g in enumerate(m["grass"]):
+            c = centroid(g["pts"])
+            s.node(f"Grass{i + 1}", "Grass", instance=bush, position=v2(c), color=col(GRASS_COLOR),
+                   polygon=pva([(x - c[0], y - c[1]) for x, y in g["pts"]]))
 
     # --- spawns ---------------------------------------------------------------
     s.node("SpawnPoints", ".", "Node2D")
@@ -380,7 +394,7 @@ def export_world(m):
     spawn = next(mk for mk in m["markers"] if mk["kind"] == "spawn" and mk["team"] == "A")
     # Training dummies: in the Cradle, and one on each Ridge to test long shots.
     dummies = [(0, Y(-300)), (-420, Y(180)), (420, Y(180)), (3600, Y(1900)), (-3600, Y(-1900))]
-    solids = [o["pts"] for o in m["full"] + m["low"]]
+    solids = [o["pts"] for o in m["full"] + m["low"] + m.get("pits", []) + m.get("crystals", [])]
     for d in dummies:
         assert min(dist_to_poly(d, p) for p in solids) > 90, f"dummy at {d} overlaps cover"
 

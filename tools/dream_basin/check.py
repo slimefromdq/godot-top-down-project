@@ -2,7 +2,9 @@
 
     python3 tools/dream_basin/check.py
 
-* Sight lanes must be clear of full cover, and are reported in screens.
+* Sight lanes must be clear of hard walls and crystal (shots must get
+  through), and are reported in screens. Pits, crystal and every other
+  obstacle block walking in the flood fills below; grass blocks nothing.
 * Every jump-pad launch/landing and teleporter end must be standable.
 * Walking: every area is reachable on foot from both spawns and can walk
   back to both, and every jump pad / launch flower is an optional shortcut
@@ -35,6 +37,18 @@ CELL = 25
 MOTE_DOOR_CLEARANCE = 1200   # about one screen from any spawn door
 DEPOSIT_RADIUS = 300         # MatchRules.deposit_radius
 CAMP_CLEARANCE = 160         # a camp's monsters need room to stand and be circled
+
+
+def walk_blockers(m):
+    """Everything a body can't walk through: hard walls, low cover (props),
+    pits / water and crystal. Grass blocks nothing."""
+    return m["full"] + m["low"] + m.get("pits", []) + m.get("crystals", [])
+
+
+def shot_blockers(m):
+    """Everything a shot can't pass: hard walls and crystal (you see through
+    crystal but can't shoot through it; shots fly over pits and low cover)."""
+    return m["full"] + m.get("crystals", [])
 
 
 def seg_hits_poly(a, b, pts):
@@ -81,7 +95,7 @@ def dist_to_poly(p, pts):
 def build_grid(m):
     cols, rows = 2 * HX // CELL, 2 * HY // CELL
     blocked = [[False] * cols for _ in range(rows)]
-    for o in m["full"] + m["low"]:
+    for o in walk_blockers(m):
         xs = [p[0] for p in o["pts"]]
         ys = [p[1] for p in o["pts"]]
         c0 = max(0, int((min(xs) - BODY + HX) // CELL))
@@ -282,7 +296,7 @@ def check_objectives(m, grid):
     seen, cell_of = flood(m, grid, (-700, Y(3880)), use_pads=False)
     for cp in m["camps"]:
         p = (cp["x"], cp["y"])
-        d = min(dist_to_poly(p, o["pts"]) for o in m["full"] + m["low"])
+        d = min(dist_to_poly(p, o["pts"]) for o in walk_blockers(m))
         r, c = cell_of(*p)
         if d < CAMP_CLEARANCE:
             print(f"  CAMP TOO CLOSE TO COVER: {cp['name']} at {p} ({d:.0f}px)")
@@ -294,6 +308,7 @@ def check_objectives(m, grid):
 
 
 PIECE_CLEARANCE = 120        # room to walk around a piece and shoot it
+STAIR_CLEARANCE = 400        # pads and flowers stay this far from any stairwell
 
 
 def piece_rect(pc):
@@ -312,7 +327,7 @@ def check_pieces(m, grid):
         ok = False
     ring = next(mk for mk in m["markers"] if mk["kind"] == "arena_ring")
     seen, cell_of = flood(m, grid, (-700, Y(3880)), use_pads=False)
-    others = [o for o in m["full"] + m["low"] if o.get("kind") not in ("breakable", "gate")]
+    others = [o for o in walk_blockers(m) if o.get("kind") not in ("breakable", "gate")]
 
     def gap(p):
         return min(dist_to_poly(p, o["pts"]) for o in others)
@@ -366,6 +381,16 @@ def check_pieces(m, grid):
                     ok = False
             if gap(p) < BODY + 10 or not reachable(p):
                 print(f"  FLOWER PAD BLOCKED OR UNREACHABLE: {pc['name']} at {p}")
+                ok = False
+    # No pad or flower in a stair mouth: walking up the stairs must never
+    # launch you somewhere else.
+    pads = [(j["name"], (j["x"], j["y"])) for j in m["jump_pads"]]
+    pads += [(pc["name"], (pc["x"], pc["y"])) for pc in pieces if pc["kind"] == "flower"]
+    for name, p in pads:
+        for st in m["stairs"]:
+            d = math.dist(p, (st["x"], st["y"])) - max(st["w"], st["d"]) / 2
+            if d < STAIR_CLEARANCE:
+                print(f"  PAD IN A STAIR MOUTH: {name} at {p} ({d:.0f}px from the stairs at ({st['x']:.0f}, {st['y']:.0f}))")
                 ok = False
     # Every gate closed at once (the worst case): the Cradle, every camp,
     # geyser and Dreamer ring must still be reachable on foot from each base.
@@ -456,7 +481,7 @@ OPEN_TARGET = 650
 
 def report_open_space(m):
     print("== Open space (largest clear circle per region; report only) ==")
-    structure = [o["pts"] for o in m["full"] + m["low"]]
+    structure = [o["pts"] for o in walk_blockers(m)]
     ledge_lines = [(l["a"], l["b"]) for l in m["ledges"]]
     ring = next(mk for mk in m["markers"] if mk["kind"] == "arena_ring")
 
@@ -500,7 +525,7 @@ def main():
     # Dreamer bodies block walking like low cover.
     m["low"] = m["low"] + [{"pts": _circle(d["x"], d["y"], d["body"]), "kind": "dreamer"} for d in m["dreamers"]]
     ok = True
-    solid = [o["pts"] for o in m["full"]]
+    solid = [o["pts"] for o in shot_blockers(m)]
 
     print("== Sight lanes ==")
     for ln in m["lanes"]:
@@ -520,7 +545,7 @@ def main():
         if mk["kind"] == "spawn":
             pts.append((mk["kind"], (mk["x"], mk["y"])))
     for name, p in pts:
-        d = min(dist_to_poly(p, o["pts"]) for o in m["full"] + m["low"])
+        d = min(dist_to_poly(p, o["pts"]) for o in walk_blockers(m))
         if d < BODY + 10:
             print(f"  TOO CLOSE: {name} at {p} ({d:.0f}px from cover)")
             ok = False
@@ -534,7 +559,7 @@ def main():
         for k in (-0.5, 0, 0.5):
             rx, ry = circ["rx"] + k * circ["width"], circ["ry"] + k * circ["width"]
             p = (rx * math.cos(a), ry * math.sin(a))
-            if any(point_in_poly(p, o["pts"]) for o in m["full"] + m["low"]):
+            if any(point_in_poly(p, o["pts"]) for o in walk_blockers(m)):
                 bad += 1
     print(f"  {bad} blocked samples")
     ok &= bad == 0

@@ -140,6 +140,14 @@ def render(m):
     for c in m["low"]:
         o.append(poly(c["pts"], fill={"crate": "#c9b88f", "fountain": "#8fc4d6"}.get(c["kind"], "#b8b2a6"),
                       stroke="#5a5347", stroke_width="1.2", stroke_dasharray="3 1.5"))
+    for c in m.get("pits", []):
+        o.append(poly(c["pts"], fill="#3a2f52" if c["kind"] == "pit" else "#2c5a7a",
+                      stroke="#b9d7ea", stroke_width="1.6"))
+    for c in m.get("crystals", []):
+        o.append(poly(c["pts"], fill="#9fe4ff", fill_opacity="0.4", stroke="#3a8fb5", stroke_width="1.8"))
+    for g in m.get("grass", []):
+        o.append(poly(g["pts"], fill="#73a842", fill_opacity="0.5", stroke="#4d7a2c", stroke_width="1",
+                      stroke_dasharray="2 2"))
 
     # sight lanes
     for ln in m["lanes"]:
@@ -229,8 +237,11 @@ def _legend(x0):
         ("rect", "#d9d2c4", "Lullaby Ruins floor"),
         ("ledge", "", "One-way ledge (drop toward arrow)"),
         ("stairs", "", "Stairwell (climb in arrow direction)"),
-        ("rect", "#5c5650", "Full cover: blocks move + shots"),
-        ("dash", "#b8b2a6", "Low cover: blocks move, not shots"),
+        ("rect", "#5c5650", "Hard wall: blocks move, shots, sight"),
+        ("dash", "#b8b2a6", "Low cover (props): blocks move only"),
+        ("pit", "#2c5a7a", "Pit / water: blocks move; shoot across"),
+        ("crystal", "#9fe4ff", "Crystal: blocks move + shots; see through"),
+        ("grass", "#73a842", "Tall grass: hides you, blocks nothing"),
         ("bush", "", "Bush: hides you, blocks nothing"),
         ("pad", "", "Jump pad (arc to landing ring)"),
         ("tp", "", "Teleporter (arrow = one-way)"),
@@ -257,6 +268,12 @@ def _legend(x0):
             o.append(f'<rect x="{x}" y="{cy - 10}" width="30" height="8" fill="#6b7f4a"/>'
                      f'<line x1="{x}" y1="{cy - 2}" x2="{x + 30}" y2="{cy - 2}" stroke="#3b4a26" stroke-width="2"/>'
                      f'<line x1="{x + 15}" y1="{cy - 6}" x2="{x + 15}" y2="{cy + 10}" stroke="#3b4a26" marker-end="url(#arr)"/>')
+        elif kind == "pit":
+            o.append(f'<rect x="{x}" y="{cy - 10}" width="30" height="20" fill="{col}" stroke="#b9d7ea" stroke-width="1.6"/>')
+        elif kind == "crystal":
+            o.append(f'<rect x="{x}" y="{cy - 10}" width="30" height="20" fill="{col}" fill-opacity="0.4" stroke="#3a8fb5" stroke-width="1.8"/>')
+        elif kind == "grass":
+            o.append(f'<rect x="{x}" y="{cy - 10}" width="30" height="20" fill="{col}" fill-opacity="0.5" stroke="#4d7a2c" stroke-dasharray="2 2"/>')
         elif kind == "stairs":
             o.append(f'<rect x="{x}" y="{cy - 10}" width="30" height="20" fill="url(#stairs)" stroke="#8a6d2f"/>')
         elif kind == "bush":

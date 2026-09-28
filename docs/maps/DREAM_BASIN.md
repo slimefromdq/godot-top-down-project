@@ -51,7 +51,7 @@ cover, reachable on foot, mirrored).
 | **Sleep-fog** ×2 / **Thorn bed** ×2 | Each Stilt Ridge / each Orchard (`scenes/map/hazard_zone.tscn`). |
 | **Travelator** ×2 | The Plaza Express, along each Plaza front (`scenes/map/travelator.tscn`). |
 | **Water stairs** ×2 | Each Fountain Court, running down toward the Sunken Court (`scenes/map/water_stairs.tscn`): x1.45 going down, x0.6 climbing. |
-| **Launch flower** ×2 | Past each Driftfield, landing on the Cradle's side (`scenes/map/jump_pad.tscn` with a sweep). |
+| **Launch flower** ×2 | Each Fountain Court's inner edge, landing on the Cradle's inner terrace (`scenes/map/jump_pad.tscn` with a sweep). No pad or flower sits within 400 px of a stairwell (`check.py`), so walking up stairs never launches you. |
 
 ## Getting around on foot
 
@@ -133,16 +133,36 @@ Momentum still exists. Knockback, dash carry and speed strips all go through the
 
 ### Collision layers
 
-| Layer | Name | Blocks characters | Blocks shots | Used by |
-|---|---|---|---|---|
-| 1 | World | yes | yes | Walls, rocks, trees, hedges, map boundary |
-| 6 | Low Cover | yes | no | Low walls, crates, low rocks |
-| 7 | Ledges | only when climbing | no | Cliff edges |
+| Layer | Name | Blocks characters | Blocks shots | Blocks sight | Used by |
+|---|---|---|---|---|---|
+| 1 | World | yes | yes | yes | **Hard walls**: walls, rocks, trees, hedges, map boundary |
+| 6 | Low Cover | yes | no | no | Props: low walls, crates, benches, low rocks |
+| 7 | Ledges | only when climbing | no | no | Cliff edges |
+| 8 | Barriers | yes | yes | no | Ability walls (ContainmentRing) |
+| 9 | Pits | yes | no | no | **Pits / water** |
+| 10 | Crystal | yes | yes | no | **Crystal / glass** |
 
-- **Characters** (`actor.tscn`) mask layers 1, 6 and 7. The player also masks layer 2, so it collides with other characters.
-- **Projectiles** only mask layer 1 plus hurtboxes, so they fly over low cover and ledges.
-- **Arc Zap** checks line of sight against layer 1 only, which matches the projectiles.
+- **Characters** mask 1, 6 and 7 in `actor.tscn`, and add 8, 9 and 10 in code (`MapLayers.CHARACTER_EXTRA`). The player also masks layer 2, so it collides with other characters.
+- **Projectiles** stop at `GameRules.wall_mask` (1, 8, 10), so they fly over low cover, ledges and pits. That includes piercing shots: pierce only counts targets.
+- **Sight** (`CombatQueries.has_line_of_sight`) is blocked by `GameRules.sight_mask` (1) and grass. Click-targeted casts (`TargetedAbility.line_of_sight_mask`) and bots' "can I shoot it" (`CombatQueries.shot_clear`) also stop at crystal.
 - The bit values are named in `scripts/map/map_layers.gd`.
+
+### The four obstacle types
+
+| Type | Scene | Walk | Shoot | See | Looks like |
+|---|---|---|---|---|---|
+| **Hard wall** | `scenes/map/hard_wall.tscn` (`CoverBody`, FULL) | no | no | no | solid fill, tall shadow, thick outline |
+| **Pit / water** | `scenes/map/pit.tscn` (`CoverBody`, PIT) | no | yes | yes | dark sunken pool, lit rim, ripples, no shadow |
+| **Crystal** | `scenes/map/crystal_wall.tscn` (`CoverBody`, CRYSTAL) | no | no | yes | pale see-through fill, white outline, glints |
+| **Tall grass** | `scenes/map/grass_patch.tscn` (`Bush` with a `polygon`) | yes | yes | no (hides who's inside) | green patch with blade tufts |
+
+- **To place one:** drop the scene in and edit its `Shape` polygon (grass: its `polygon`). In `layout.py`, use `wall()` / `full()`, `pit()`, `crystal()` and `grass()`.
+- **Dashes and knockback** stop at all three solid types. Jump pad arcs fly over pits (`MapLayers.JUMPABLE`), not walls or crystal.
+- **Wall slams:** a knockback, push or pull into a hard wall or crystal (`GameRules.wall_impact_mask`) at `wall_impact_min_speed` or more emits `MovementComponent.wall_impact(normal, speed, source, wall)` and the `wall_impact` cue, once per knock. Pits and low cover just stop you. Your own dash never counts.
+- **Grass:** you can't see into it from outside; from inside you see out. Two people in the same patch see each other, and vision is shared with teammates. Grass stops hiding you:
+  - when an enemy is within `GameRules.grass_reveal_radius` (220 px),
+  - for `grass_fire_reveal_time` (1 s) after you use any ability, shooting included.
+- **Try them:** the training grounds' south-east corner has a grass patch, a crystal wall and a pit next to the pillars (hard walls).
 
 ### One-way ledges
 
@@ -203,7 +223,7 @@ Natural pieces are drawn smaller than authored, controlled by `SHRINK` in `layou
 
 - **Cover** (`CoverBody`, `scripts/map/cover_body.gd`): a `StaticBody2D` whose `CollisionPolygon2D` child is its shape.
   - Edit the polygon in the editor and the drawing follows.
-  - `height` FULL or LOW picks the layer and the look.
+  - `height` (FULL, LOW, PIT or CRYSTAL) picks the layer and the look; see the four obstacle types above.
   - `scenes/map/cover_block.tscn` is a blank block you can drop in.
 - **Bushes** (`bush.tscn`): block nothing. They draw over characters and fade while the player is inside.
 - **Debug view** (`MapDebugView`, `scripts/map/map_debug_view.gd`):

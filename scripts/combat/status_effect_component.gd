@@ -601,6 +601,8 @@ func _displace(effect: StatusEffect, source: Node, direction: Vector2) -> void:
 # Actor.displaced, for anything that cares who pushed (Mote Jostle).
 func _report_displaced(source: Node, distance: float) -> void:
 	var root := _get_root()
+	if distance > 0.0 and movement_component != null and source != root:
+		movement_component.begin_knockback(source, movement_component.get_forced_time_left())
 	if distance > 0.0 and root != null and root.has_signal(&"displaced"):
 		root.displaced.emit(source, distance)
 

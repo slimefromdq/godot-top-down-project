@@ -45,6 +45,7 @@ func _physics_process(delta: float) -> void:
 	# CharacterBody2D movement belongs on the same physics tick that calculates
 	# velocity so collision behavior remains consistent.
 	move_and_slide()
+	movement_component.after_slide(self)
 
 
 func _process(_delta: float) -> void:

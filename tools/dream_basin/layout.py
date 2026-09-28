@@ -33,8 +33,11 @@ BASIN_Y = 2350      # |y| where the basin meets the plazas / back road
 # --------------------------------------------------------------------------
 L = {
     "regions": [],      # floor tint polygons: {pts, kind, label}
-    "full": [],         # full cover: blocks movement AND shots {pts, kind}
-    "low": [],          # low cover: blocks movement only {pts, kind}
+    "full": [],         # hard walls: block movement, shots AND sight {pts, kind}
+    "low": [],          # low cover (props): blocks movement only {pts, kind}
+    "pits": [],         # pits / water: block movement only, shoot across {pts, kind}
+    "crystals": [],     # crystal: blocks movement and shots, not sight {pts, kind}
+    "grass": [],        # tall grass patches: hide who's inside, block nothing {pts}
     "bushes": [],       # concealment only {x, y, r}
     "ledges": [],       # one-way cliff edges {a, b, drop} drop = unit vec high->low
     "stairs": [],       # {x, y, w, d, up} up = unit vec low->high
@@ -147,6 +150,22 @@ def hedge(ax, ay, bx, by, t=120):
 
 def lowwall(ax, ay, bx, by, t=50, kind="lowwall", team=None):
     low(seg(ax, ay, bx, by, t), kind, team)
+
+
+def pit(pts, kind="water", team=None):
+    """A pit or pool (kind "water" or "pit"): can't walk in, shoot across.
+    `pts` in real space (use rect/poly/circle)."""
+    L["pits"].append({"pts": pts, "kind": kind, "team": team})
+
+
+def crystal(pts, team=None):
+    """A crystal wall: see through it, can't shoot or walk through it."""
+    L["crystals"].append({"pts": pts, "kind": "crystal", "team": team})
+
+
+def grass(pts):
+    """A tall-grass patch (any shape): hides whoever's inside it."""
+    L["grass"].append({"pts": pts})
 
 
 def bush(x, y, r=110):
@@ -619,14 +638,16 @@ geyser(-2000, 500, "Rim Geyser")
 # entrance open and close on the clock (offset so they alternate), each with a
 # lever post outside. Sleep-fog drifts over Stilt Ridge now and then; a thorn
 # bed in the Orchard. The Plaza Express, a travelator along the Plaza front,
-# flips direction every half minute. A launch flower on the Driftfield's far
-# side sweeps its landing across the Cradle's east side.
+# flips direction every half minute. A launch flower on the Driftfield's
+# inner edge sweeps its landing across the Cradle's inner terrace. It's kept
+# well away from every stair mouth (it used to sit at the foot of the Terrace
+# stairs, so walking up them launched you).
 gate(-2350, -1950, 850, 80, "Ruins North Gate", lever=(-290, -90))
 gate(-3900, -3350, 900, 120, "Tangle Gate", lever=(330, -100), offset=16.0)
 hazard(-3600, -1167, 420, 300, "sleep_fog", "Ridge Fog")
 hazard(3600, 3250, 360, 260, "thorn_bed", "Orchard Thorns")
 travelator(0, 1979, 1000, 150, "Plaza Express")
-flower(2400, 1000, 1500, 833, 20, "Driftfield Flower")
+flower(1100, 1450, 620, 815, 20, "Driftfield Flower")
 # Plaza direction: water stairs in each Fountain Court, running down (west)
 # toward the Sunken Court: quick going down, slow climbing back up.
 water_stairs(2300, 1917, 560, 180, "Fountain Stairs", rot=math.pi)
@@ -685,9 +706,11 @@ def build():
     out = {k: list(v) for k, v in L.items()}
     for r in L["regions"]:
         out["regions"].append({**r, "pts": [_rot(p) for p in r["pts"]], "team": _swap(r["team"])})
-    for key in ("full", "low"):
+    for key in ("full", "low", "pits", "crystals"):
         for o in L[key]:
             out[key].append({**o, "pts": [_rot(p) for p in o["pts"]], "team": _swap(o["team"])})
+    for g in L["grass"]:
+        out["grass"].append({"pts": [_rot(p) for p in g["pts"]]})
     for b in L["bushes"]:
         out["bushes"].append({**b, "x": -b["x"], "y": -b["y"]})
     for l in L["ledges"]:

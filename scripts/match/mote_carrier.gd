@@ -315,7 +315,7 @@ func _clear_point(from: Vector2, direction: Vector2, distance: float) -> Vector2
 	var to := from + direction * distance
 	if not actor.is_inside_tree():
 		return to
-	var query := PhysicsRayQueryParameters2D.create(from, to, GameRules.current().wall_mask | MapLayers.LOW_COVER)
+	var query := PhysicsRayQueryParameters2D.create(from, to, GameRules.current().wall_mask | MapLayers.LOW_COVER | MapLayers.PITS)
 	query.exclude = [actor.get_rid()]
 	var hit := actor.get_world_2d().direct_space_state.intersect_ray(query)
 	if hit.is_empty():

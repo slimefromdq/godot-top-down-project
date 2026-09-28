@@ -160,15 +160,18 @@ For each slot in the definition's `abilities` dictionary, point at an
 | a minigame that takes over one player's input for a few seconds | a `MinigameInstance` subclass + `MinigameData`, played by `MinigameHost.find_or_create(actor).play(...)`; see the airlock | a script per minigame |
 | hard CC that can't be chained forever | automatic: **Resolve** (`GameRules.resolve_duration` / `resolve_cc_multiplier`) halves a stun, root or taunt that lands within 2 s of the last one ending. Carries, self-applied CC, walk-out-able pulls and formations are exempt; `StatusEffect.ignores_resolve` exempts any other | none |
 | "can A see B?" (a stalker passive, a sight-gated autofire) | `CombatQueries.has_line_of_sight(from, to)`: walls on `GameRules.sight_mask`, and bushes (can't see in from outside; from inside you see out) | none |
-| hide in bushes / reveal someone | bushes hide their occupants automatically (`CombatQueries.is_hidden_from`, drawn per viewer by `VisualsComponent`); a `StatusEffect` with `reveals` shows them anyway | none |
+| hide in bushes / reveal someone | bushes and grass patches hide their occupants automatically (`CombatQueries.is_hidden_from`, drawn per viewer by `VisualsComponent`), except from enemies within `GameRules.grass_reveal_radius` and for `grass_fire_reveal_time` after any ability use (`Bush.note_fired`); a `StatusEffect` with `reveals` shows them anyway | none |
+| react to knocking someone into a wall (a wall slam, a grab-throw combo) | `target.movement_component.wall_impact(normal, impact_speed, source, wall)`: any knockback, push or pull into a hard wall or crystal at `GameRules.wall_impact_min_speed`+, once per knock (the Ranged Test hero's Charged Shot knocks back to try it); the `wall_impact` cue for the thud | a small script |
+| "could my shot reach B?" (crystal: seen but not hittable) | `CombatQueries.shot_clear(from, to)`: nothing on `GameRules.wall_mask` between them | none |
 | turn invisible to enemies (a cloak, a stalker's stealth) | a `StatusEffect` with `invisible` (pair it with `body_alpha` so the team sees a ghost): enemies' sight fails and they don't draw it, even in the open; `reveals` beats it. Test hero: Ranged Test (auto)'s Cloak on the item key | none, or a small script to decide when it ends (Pike's Obsession) |
 | a status VFX only some players see (a mark only its target and caster see) | `StatusEffect.vfx_visible_to`: EVERYONE, TARGET_ALLIES, TARGET_ENEMIES, TARGET_AND_APPLIER, or LISTED + `status_component.set_vfx_viewers(id, actors)` | none (LISTED: a small script) |
 | something new | extend `Ability` (or `MeleeAttackAbility` / `RangedAttackAbility`) | a small script |
 
 `tools/heroes/ranged_test/` is a test-only hero that uses every ability row
 above (pick it with **F1 → Play as → Ranged Test (test)**). The rules and
-queries that aren't abilities (Resolve, line of sight, bushes, filtered VFX)
-are covered by `tools/heroes/shared_systems_test`. Short recipes follow.
+queries that aren't abilities (Resolve, line of sight, bushes and grass,
+filtered VFX, the map obstacle types, wall slams) are covered by
+`tools/heroes/shared_systems_test`. Short recipes follow.
 
 **A gun.** `RangedAttackData`: `projectile` (a `ProjectileData`), `damage`
 (per projectile), `fire_mode` AUTO (hold) or SEMI (click; early clicks within

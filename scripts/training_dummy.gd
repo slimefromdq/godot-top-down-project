@@ -96,7 +96,7 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	add_to_group(&"minimap_units")
 	add_to_group(&"training_dummies")
-	collision_mask |= MapLayers.BARRIERS
+	collision_mask |= MapLayers.CHARACTER_EXTRA
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	anchor = global_position
 	health_component.damaged.connect(_on_damaged)
@@ -153,6 +153,7 @@ func _physics_process(delta: float) -> void:
 		steer = to_anchor.normalized() * clampf(to_anchor.length() / anchor_slowdown_distance, 0.0, 1.0)
 	velocity = movement_component.get_velocity(velocity, steer, delta)
 	move_and_slide()
+	movement_component.after_slide(self)
 	if fight_back and not health_component.is_dead():
 		_attack_timer -= delta
 		if _attack_timer <= 0.0:

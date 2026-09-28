@@ -58,5 +58,5 @@ func _spot_behind(beloved: Node2D) -> Vector2:
 func _is_free(point: Vector2) -> bool:
 	var query := PhysicsPointQueryParameters2D.new()
 	query.position = point
-	query.collision_mask = MapLayers.WORLD | MapLayers.LOW_COVER
+	query.collision_mask = MapLayers.WORLD | MapLayers.LOW_COVER | MapLayers.PITS | MapLayers.CRYSTAL
 	return actor.get_world_2d().direct_space_state.intersect_point(query, 1).is_empty()

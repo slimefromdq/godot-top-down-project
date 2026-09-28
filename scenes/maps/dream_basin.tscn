@@ -3165,8 +3165,8 @@ size = Vector2(1000, 150)
 cycle_offset = 0.0
 
 [node name="DriftfieldFlowerA" parent="MapPieces" instance=ExtResource("24_jump_pad")]
-position = Vector2(2400, 1200)
-landing_offset = Vector2(-900, -200)
+position = Vector2(1100, 1740)
+landing_offset = Vector2(-480, -762)
 sweep_degrees = 20.0
 color = Color(0.95, 0.45, 0.7, 1)
 
@@ -3242,8 +3242,8 @@ size = Vector2(1000, 150)
 cycle_offset = 0.0
 
 [node name="DriftfieldFlowerB" parent="MapPieces" instance=ExtResource("24_jump_pad")]
-position = Vector2(-2400, -1200)
-landing_offset = Vector2(900, 200)
+position = Vector2(-1100, -1740)
+landing_offset = Vector2(480, 762)
 sweep_degrees = 20.0
 color = Color(0.95, 0.45, 0.7, 1)
 

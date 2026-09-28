@@ -215,11 +215,24 @@ func _draw_static_shapes(canvas: ShapeBatch) -> void:
 
 	for node in _descendants(CoverBody):
 		var body := node as CoverBody
-		var full := body.height == CoverBody.Height.FULL
-		var color := body.fill_color.darkened(0.25) if full else Color(body.fill_color.lightened(0.1), 0.8)
+		var color: Color
+		match body.height:
+			CoverBody.Height.FULL:
+				color = body.fill_color.darkened(0.25)
+			CoverBody.Height.PIT:
+				color = body.fill_color.darkened(0.1)
+			CoverBody.Height.CRYSTAL:
+				color = Color(body.fill_color, 0.55)
+			_:
+				color = Color(body.fill_color.lightened(0.1), 0.8)
 		for child in body.get_children():
 			if child is CollisionPolygon2D and child.polygon.size() >= 3:
 				canvas.draw_colored_polygon((to_map * child.get_global_transform()) * child.polygon, color)
+
+	for node in _descendants(Bush):
+		var grass := node as Bush
+		if grass.is_patch():
+			canvas.draw_colored_polygon((to_map * grass.get_global_transform()) * grass.polygon, Color(grass.color, 0.45))
 
 	for node in _descendants(Ledge):
 		var ledge := node as Ledge

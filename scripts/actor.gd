@@ -67,8 +67,9 @@ var _last_displaced_msec: int = -1
 
 func _ready() -> void:
 	add_to_group(&"minimap_units")
-	# Ability walls (ContainmentRing) stop every character, launched or not.
-	collision_mask |= MapLayers.BARRIERS
+	# Ability walls (ContainmentRing), pits and crystal stop every character
+	# (a jump pad's arc lifts the pit bit: MapLayers.JUMPABLE).
+	collision_mask |= MapLayers.CHARACTER_EXTRA
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	health_component.died.connect(_on_died)
 	displaced.connect(_remember_displacer)
@@ -91,6 +92,7 @@ func trigger_cue(cue: StringName, context: Dictionary = {}) -> void:
 
 
 func _on_weapon_fired(muzzle_position: Vector2, direction: Vector2) -> void:
+	Bush.note_fired(self)
 	trigger_cue(&"fire", {"position": muzzle_position, "direction": direction})
 
 

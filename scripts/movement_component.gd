@@ -19,6 +19,18 @@ class_name MovementComponent
 #
 # Every controller (player hero, enemy AI, dummy, jungle creature) steers
 # through get_velocity(), so they all obey 0-4 without knowing about them.
+#
+# Wall slams: while someone else is moving this body (begin_knockback: a hit's
+# knockback impulse, a status push or pull), hitting a wall on
+# GameRules.wall_impact_mask (hard walls, crystal, ability walls; not pits or
+# low cover) at GameRules.wall_impact_min_speed or more emits wall_impact,
+# once per knock, and the body's `wall_impact` cue. The body calls
+# after_slide() right after move_and_slide().
+
+## Knocked into a wall (see above). `impact_speed` is the speed into the wall
+## (px/s), `source` who knocked the body (may be null or freed), `collider`
+## the wall.
+signal wall_impact(normal: Vector2, impact_speed: float, source: Node, collider: Object)
 
 @export var move_speed: float = 300.0
 @export var acceleration: float = 1200.0
@@ -53,6 +65,13 @@ var _cruise_requester: Object
 var _cruise_direction := Vector2.ZERO
 var _cruise_speed: float = 0.0
 var _cruise_acceleration: float = -1.0
+# Wall slams: who is knocking this body, for how much longer (s), and
+# whether this knock already slammed.
+var _knock_source: Node
+var _knock_left: float = 0.0
+var _knock_reported := false
+# The velocity get_velocity() last handed out (before walls cut it).
+var _intended_velocity := Vector2.ZERO
 # Was carried last tick: stop dead when the carry ends (a drop, not a slide).
 var _was_carried := false
 
@@ -76,6 +95,10 @@ func is_forced_moving() -> bool:
 	return _forced_time_left > 0.0
 
 
+func get_forced_time_left() -> float:
+	return maxf(_forced_time_left, 0.0)
+
+
 # Move exactly `distance` along `direction` over `duration` seconds. Used by
 # dashes, attack lunges and CC displacement. Walls still stop it.
 #
@@ -84,6 +107,9 @@ func is_forced_moving() -> bool:
 func displace(direction: Vector2, distance: float, duration: float, carry_momentum: bool = false) -> void:
 	if distance <= 0.0 or direction == Vector2.ZERO:
 		return
+	# A new move of its own ends any knock (a status push calls
+	# begin_knockback again right after).
+	_knock_left = 0.0
 	var tick := 1.0 / Engine.physics_ticks_per_second
 	var ticks := maxi(1, roundi(duration / tick))
 	duration = ticks * tick
@@ -93,6 +119,45 @@ func displace(direction: Vector2, distance: float, duration: float, carry_moment
 
 func apply_knockback(impulse: Vector2) -> void:
 	_pending_impulse += impulse
+
+
+## Someone else is now moving this body (a knockback, push or pull) for
+## `duration` seconds: a wall hit in that time is a slam (wall_impact).
+func begin_knockback(source: Node, duration: float) -> void:
+	_knock_source = source
+	_knock_left = maxf(duration, 0.0)
+	_knock_reported = false
+
+
+func is_knocked_back() -> bool:
+	return _knock_left > 0.0
+
+
+## Call right after the body's move_and_slide(): checks this tick's wall
+## contacts for a slam (see wall_impact).
+func after_slide(body: CharacterBody2D) -> void:
+	if _knock_left <= 0.0:
+		return
+	_knock_left -= body.get_physics_process_delta_time()
+	if _knock_reported:
+		return
+	var rules := GameRules.current()
+	for i in body.get_slide_collision_count():
+		var hit := body.get_slide_collision(i)
+		var wall := hit.get_collider() as CollisionObject2D
+		if wall == null or wall.collision_layer & rules.wall_impact_mask == 0:
+			continue
+		var speed := -_intended_velocity.dot(hit.get_normal())
+		if speed < rules.wall_impact_min_speed:
+			continue
+		_knock_reported = true
+		var source := _knock_source if is_instance_valid(_knock_source) else null
+		wall_impact.emit(hit.get_normal(), speed, source, wall)
+		# A cue for the body's VisualProfile / AudioProfile (a thud, dust).
+		if body.has_method(&"trigger_cue"):
+			body.trigger_cue(&"wall_impact", {"position": hit.get_position(), "direction": -hit.get_normal(),
+				"normal": hit.get_normal(), "impact_speed": speed, "knocked_by": source})
+		return
 
 
 func add_speed_zone(zone: Node) -> void:
@@ -159,6 +224,11 @@ func get_velocity(
 	input_direction: Vector2,
 	delta: float
 ) -> Vector2:
+	_intended_velocity = _steer(current_velocity, input_direction, delta)
+	return _intended_velocity
+
+
+func _steer(current_velocity: Vector2, input_direction: Vector2, delta: float) -> Vector2:
 
 	var carried: Variant = _carry_velocity(delta)
 	if carried != null:
