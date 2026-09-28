@@ -193,7 +193,9 @@ def export_map(m):
         counts[kind] = counts.get(kind, 0) + 1
         name = f"{kind.capitalize()}{counts[kind]}"
         c = centroid(o["pts"])
+        # Fountains are tagged so MapAmbience can ripple their water.
         s.node(name, f"Cover/{group}", "StaticBody2D", position=v2(c), script=cover,
+               groups=["fountains"] if kind == "fountain" else None,
                height=str(height), fill_color=col(color))
         s.node("Shape", f"Cover/{group}/{name}", "CollisionPolygon2D",
                polygon=pva([(x - c[0], y - c[1]) for x, y in o["pts"]]))

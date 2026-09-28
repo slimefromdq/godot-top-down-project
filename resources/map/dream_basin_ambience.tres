@@ -1,0 +1,130 @@
+[gd_resource type="Resource" script_class="AmbienceSet" format=3]
+
+[ext_resource type="Script" path="res://scripts/map/ambience_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scripts/map/ambience_profile.gd" id="2_profile"]
+[ext_resource type="Script" path="res://scripts/map/map_mood_profile.gd" id="3_mood"]
+[ext_resource type="AudioStream" path="res://audio/ambience/glade.wav" id="s_glade"]
+[ext_resource type="AudioStream" path="res://audio/ambience/ridge.wav" id="s_ridge"]
+[ext_resource type="AudioStream" path="res://audio/ambience/tangle.wav" id="s_tangle"]
+[ext_resource type="AudioStream" path="res://audio/ambience/ruins.wav" id="s_ruins"]
+[ext_resource type="AudioStream" path="res://audio/ambience/driftfield.wav" id="s_driftfield"]
+[ext_resource type="AudioStream" path="res://audio/ambience/orchard.wav" id="s_orchard"]
+
+[sub_resource type="Resource" id="p_glade"]
+script = ExtResource("2_profile")
+density = 40.0
+color = Color(1, 0.96, 0.6, 0.55)
+color_alt = Color(1, 1, 1, 0.4)
+size_min = 2.5
+size_max = 5.0
+stretch = 1.0
+drift = Vector2(14, -8)
+sway = 14.0
+sway_speed = 0.25
+twinkle = 0.0
+critter_count = 6
+critter_color = Color(0.35, 0.3, 0.45, 0.9)
+critter_size = 6.0
+loop = ExtResource("s_glade")
+
+[sub_resource type="Resource" id="p_ridge"]
+script = ExtResource("2_profile")
+density = 18.0
+color = Color(1, 1, 1, 0.22)
+color_alt = Color(0.9, 0.95, 1, 0.16)
+size_min = 3.0
+size_max = 6.0
+stretch = 4.0
+drift = Vector2(90, 10)
+sway = 18.0
+sway_speed = 0.4
+twinkle = 0.0
+critter_count = 4
+critter_color = Color(0.3, 0.3, 0.4, 0.9)
+critter_size = 7.0
+loop = ExtResource("s_ridge")
+
+[sub_resource type="Resource" id="p_tangle"]
+script = ExtResource("2_profile")
+density = 14.0
+color = Color(0.9, 0.85, 1, 0.14)
+color_alt = Color(1, 1, 1, 0.1)
+size_min = 18.0
+size_max = 34.0
+stretch = 2.5
+drift = Vector2(10, 4)
+sway = 30.0
+sway_speed = 0.1
+twinkle = 0.0
+critter_count = 10
+critter_color = Color(0.9, 1, 0.55, 0.95)
+critter_size = 3.0
+loop = ExtResource("s_tangle")
+
+[sub_resource type="Resource" id="p_ruins"]
+script = ExtResource("2_profile")
+density = 30.0
+color = Color(1, 0.92, 0.75, 0.35)
+color_alt = Color(0.85, 0.8, 1, 0.3)
+size_min = 1.5
+size_max = 3.5
+stretch = 1.0
+drift = Vector2(3, -5)
+sway = 8.0
+sway_speed = 0.15
+twinkle = 0.5
+critter_count = 0
+critter_color = Color(1, 1, 1, 0)
+critter_size = 5.0
+loop = ExtResource("s_ruins")
+
+[sub_resource type="Resource" id="p_driftfield"]
+script = ExtResource("2_profile")
+density = 22.0
+color = Color(0.75, 0.95, 1, 0.4)
+color_alt = Color(1, 1, 1, 0.35)
+size_min = 2.0
+size_max = 4.5
+stretch = 1.0
+drift = Vector2(-10, -14)
+sway = 12.0
+sway_speed = 0.3
+twinkle = 0.3
+critter_count = 4
+critter_color = Color(0.35, 0.3, 0.45, 0.9)
+critter_size = 6.0
+loop = ExtResource("s_driftfield")
+
+[sub_resource type="Resource" id="p_orchard"]
+script = ExtResource("2_profile")
+density = 26.0
+color = Color(1, 0.8, 0.9, 0.55)
+color_alt = Color(1, 0.95, 0.97, 0.5)
+size_min = 3.0
+size_max = 5.5
+stretch = 1.6
+drift = Vector2(20, 16)
+sway = 22.0
+sway_speed = 0.35
+twinkle = 0.0
+critter_count = 5
+critter_color = Color(0.35, 0.3, 0.45, 0.9)
+critter_size = 6.0
+loop = ExtResource("s_orchard")
+
+[sub_resource type="Resource" id="mood"]
+script = ExtResource("3_mood")
+times = PackedFloat32Array(0, 300, 570, 600, 660, 900, 1200)
+colors = PackedColorArray(1, 1, 1, 1, 0.98, 0.95, 1, 1, 0.9, 0.86, 0.98, 1, 0.96, 0.8, 0.9, 1, 0.9, 0.84, 0.97, 1, 0.84, 0.86, 1, 1, 0.8, 0.82, 0.98, 1)
+
+[resource]
+script = ExtResource("1_set")
+regions = Dictionary[StringName, ExtResource("2_profile")]({
+&"glade": SubResource("p_glade"), 
+&"ridge": SubResource("p_ridge"), 
+&"tangle": SubResource("p_tangle"), 
+&"ruins": SubResource("p_ruins"), 
+&"driftfield": SubResource("p_driftfield"), 
+&"orchard": SubResource("p_orchard")
+})
+mood = SubResource("mood")
