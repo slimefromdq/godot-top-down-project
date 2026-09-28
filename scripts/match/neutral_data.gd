@@ -60,6 +60,9 @@ class_name NeutralData
 ## this far from the camp point, dies, or nobody has hit it for reset_time.
 @export var leash_radius: float = 900.0
 @export var reset_time: float = 7.0
+## Share of missing HP healed when it gives up (1 = full heal, 0 = keeps the
+## damage it has taken, so a fight can be finished in several goes).
+@export_range(0.0, 1.0) var reset_heal_fraction: float = 1.0
 ## Walking speed (home, and toward its target while out of attack range).
 ## 0 = stays put.
 @export var move_speed: float = 0.0

@@ -11,7 +11,7 @@ class_name NeutralMonster
 #   * a volley at them every attack_interval while they're in range, and a
 #     ring of bolts every ring_interval (0 = none);
 #   * with move_speed above 0 it walks toward them when out of range;
-#   * it gives up (walks home, heals to full) when they die, leave
+#   * it gives up (walks home, heals, see reset_heal_fraction) when they die, leave
 #     leash_radius of its home, or nobody has hit it for reset_time.
 #
 # Like the training dummy it isn't an Actor: any node with the components
@@ -132,13 +132,18 @@ func _still_fighting(hero: Hero) -> bool:
 	return _since_hit <= data.reset_time
 
 
-# Drop the fight: walk home and heal to full, so poking it from outside the
-# leash never whittles it down.
+# Drop the fight: walk home and heal (to full by default, reset_heal_fraction
+# of missing HP), so poking it from outside the leash never whittles it down.
 func _give_up() -> void:
 	target = null
 	_returning = true
 	status_component.clear()
-	health_component.reset()
+	if data.reset_heal_fraction >= 1.0:
+		health_component.reset()
+	else:
+		var missing := health_component.max_health - health_component.current_health
+		health_component.heal(missing * data.reset_heal_fraction, self)
+		health_component.last_damage_source = null
 	MatchManager.play_world_cue(self, &"neutral_reset", {"position": global_position})
 
 

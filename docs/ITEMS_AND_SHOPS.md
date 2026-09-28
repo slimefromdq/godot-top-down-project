@@ -146,7 +146,7 @@ Cues (match profiles): `<id>_warning`, `<id>_spawn`, `<id>_slain`,
 |---|---|---|
 | **Sleepwalker** | Each Glade and Stilt Ridge (4) | 900 HP (+110/level), 10 armor/MR. Up at 1:00, back 75 s after a clear. Killer 60 gold / 120 XP, team 60 / 150, 2 Motes. |
 | **Dream Wisps** | Each Tangle and Driftfield (4) | A pack of 3, 350 HP each (+45/level), they chase a little. Up at 0:45, back 60 s after. Per wisp: killer 25 / 50, team 20 / 50, 1 Mote. |
-| **The Nightmare** | The Cradle's centre (1) | 6000 HP (+450/level), 40 armor/MR, one level ahead of the heroes. Once, at 10:00, warned 30 s early. Volleys of 3 plus a 16-bolt ring every 6 s. Killer 300 / 400, team 1000 / 2000, ult charge, 12 Motes worth 5 (claimed 12 s), Nightmare's Bane for 120 s (+15% damage, -10% damage taken, +5% move speed). |
+| **The Nightmare** | The Cradle's centre (1) | 5000 HP (+450/level, no heal when it resets: damage sticks between attempts), 40 armor/MR, one level ahead of the heroes. Once, at 10:00, warned 30 s early. Volleys of 3 plus a 16-bolt ring every 6 s. Killer 300 / 400, team 1000 / 2000, ult charge, 12 Motes worth 5 (claimed 12 s), Nightmare's Bane for 120 s (+15% damage, -10% damage taken, +5% move speed). |
 
 ### Adding a camp
 

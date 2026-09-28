@@ -82,6 +82,11 @@ func _place_pad(at: Vector2, landing: Vector2) -> JumpPad:
 	return trampoline.pads.back() if trampoline.pads.size() > before else null
 
 
+func _pad_previews() -> Array:
+	return get_tree().current_scene.find_children("*", "PadPreviewEffect", true, false) \
+		.filter(func(n): return not n.is_queued_for_deletion())
+
+
 func _test_trampoline_ally() -> void:
 	print("\n-- Trampoline (ally)")
 	_reset(Vector2(0, 0))
@@ -101,6 +106,18 @@ func _test_trampoline_ally() -> void:
 	_check("...and lands on the dragged spot", ally.global_position.distance_to(Vector2(800, 400)) < 20.0,
 		str(ally.global_position))
 
+	var trampoline := tilly.get_ability(&"ability_1") as PlacePadAbility
+	_aim(Vector2(-300, 300))
+	tilly.request_slot(&"ability_1", Vector2(-300, 300))
+	await _physics_frames(3)
+	var previewing := _pad_previews().size() == 1
+	tilly.release_slot(&"ability_1", Vector2(-300, 800))
+	await _physics_frames(3)
+	await get_tree().process_frame
+	_check("holding shows one place + landing preview, gone on release", previewing
+		and _pad_previews().is_empty(), "")
+	trampoline.reduce_cooldown(trampoline.cooldown_remaining)
+
 	var far := await _place_pad(Vector2(-300, 0), Vector2(-300, -3000))
 	_check("the landing is clamped to 700 px", far != null
 		and absf(far.get_landing_position().distance_to(far.global_position) - 700.0) < 1.0, "")
@@ -118,8 +135,8 @@ func _test_trampoline_expires_and_charges() -> void:
 		and tilly.get_ability(&"ability_1").get_hud_pips() == Vector2i(2, 2), "")
 	var ally := _ally(Vector2(-300, 3000))
 	var pad := await _place_pad(Vector2(300, 3000), Vector2(800, 3000))
-	_check("placing spends a charge and starts the 16 s recharge", trampoline.get_charges() == 1
-		and trampoline.cooldown_remaining > 15.0 and trampoline.is_ready(), "")
+	_check("placing spends a charge and starts the 11 s recharge", trampoline.get_charges() == 1
+		and trampoline.cooldown_remaining > 10.0 and trampoline.is_ready(), "")
 	for i in 4:
 		if not is_instance_valid(pad):
 			break
@@ -135,7 +152,7 @@ func _test_trampoline_expires_and_charges() -> void:
 	trampoline.reduce_cooldown(trampoline.cooldown_remaining - 0.05)
 	await _physics_frames(6)
 	_check("the recharge brings back one charge and keeps going", trampoline.get_charges() == 1
-		and trampoline.cooldown_remaining > 15.0, "%d, %.1f s" % [trampoline.get_charges(), trampoline.cooldown_remaining])
+		and trampoline.cooldown_remaining > 10.0, "%d, %.1f s" % [trampoline.get_charges(), trampoline.cooldown_remaining])
 	await _seconds(0.2)
 	var lifetime_pad := second
 	_check("pads also expire on their own after 10 s", is_instance_valid(lifetime_pad) and _near(lifetime_pad.lifetime, 10.0), "")

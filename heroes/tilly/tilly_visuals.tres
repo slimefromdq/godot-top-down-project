@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="3_x"]
 [ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="4_x"]
 [ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="5_x"]
+[ext_resource type="PackedScene" path="res://effects/feel/pad_preview.tscn" id="6_x"]
 
 [sub_resource type="Resource" id="Cue_hurt"]
 script = ExtResource("2_x")
@@ -28,6 +29,11 @@ script = ExtResource("2_x")
 effect_scene = ExtResource("5_x")
 tint = Color(1, 0.95, 0.5, 1)
 
+[sub_resource type="Resource" id="Cue_pad_preview"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("6_x")
+align_to_direction = false
+
 [resource]
 script = ExtResource("1_x")
 texture = ExtResource("placeholder_body")
@@ -39,5 +45,6 @@ cues = Dictionary[StringName, ExtResource("2_x")]({
 &"death": SubResource("Cue_death"),
 &"all_eyes_on_me_applied": SubResource("Cue_spin"),
 &"crumple_zone_landed": SubResource("Cue_flip"),
-&"cartwheel_trick": SubResource("Cue_flip")
+&"cartwheel_trick": SubResource("Cue_flip"),
+&"trampoline_charge_start": SubResource("Cue_pad_preview")
 })

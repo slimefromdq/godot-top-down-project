@@ -54,11 +54,11 @@ func _test_assembled() -> void:
 	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 558.0) and _near(stats.health.value_at(10), 1035.0, 0.1)
 		and _near(stats.weapon.value_at(10), 45.0) and _near(stats.magic.value_at(1), 40.0) and _near(stats.magic.value_at(10), 110.0)
 		and _near(stats.armor.value_at(10), 38.0) and _near(stats.magic_resist.value_at(10), 40.0), "")
-	var cooldowns := [[&"ability_1", 9.0], [&"movement", 14.0], [&"cc", 12.0], [&"ultimate", 80.0]]
+	var cooldowns := [[&"ability_1", 9.0], [&"movement", 12.0], [&"cc", 12.0], [&"ultimate", 80.0]]
 	var ok := true
 	for pair in cooldowns:
 		ok = ok and _near(sam.get_ability(pair[0]).data.cooldown, pair[1])
-	_check("cooldowns 9 / 14 / 12 / 80 s", ok, "")
+	_check("cooldowns 9 / 12 / 12 / 80 s", ok, "")
 
 
 # --- Hello! ------------------------------------------------------------------------------------
@@ -136,57 +136,44 @@ func _beam(at: Vector2) -> void:
 func _test_tractor_beam() -> void:
 	print("\n-- Tractor Beam")
 	_reset(Vector2(0, 2000))
-	var friend := _other(Vector2(150, 2000), &"a")
+	var friend := _other(Vector2(600, 2000), &"a")
 	await _physics_frames(2)
-	var start := friend.global_position
 	var hp := friend.health_component.current_health
 	_aim(Vector2(1000, 2000))
-	_beam(friend.global_position)
-	var carried := false
+	_beam(Vector2(1000, 2000))
+	var pulled := false
 	var untargetable := false
-	for i in 40:
+	for i in 60:
 		await get_tree().physics_frame
 		if friend.status_component.has_status(&"sam_beam_ally"):
-			carried = true
+			pulled = true
 			untargetable = untargetable or friend.status_component.is_untargetable()
 			_hurt(friend, 100.0)
-	await _seconds(0.3)
-	var moved := friend.global_position.x - start.x
-	_check("Tractor Beam lifts an ally (carried, untargetable)", carried and untargetable, "")
-	_check("...carries them about 400 px along the aim", moved > 340.0 and moved < 460.0, "%.0f px" % moved)
-	_check("...and they take no damage meanwhile", _near(friend.health_component.current_health, hp), "%.1f / %.1f" % [friend.health_component.current_health, hp])
-	_check("...released on arrival", not friend.status_component.has_status(&"sam_beam_ally"), "")
-	_check("...14 s cooldown", _near(sam.get_ability(&"movement").cooldown_remaining, 14.0, 1.0),
+	var gap := friend.global_position.distance_to(sam.global_position)
+	_check("Tractor Beam catches an ally (untargetable while pulled)", pulled and untargetable, "")
+	_check("...and sucks them in to Sam", gap < 200.0, "%.0f px away" % gap)
+	_check("...they take no damage meanwhile", _near(friend.health_component.current_health, hp), "%.1f / %.1f" % [friend.health_component.current_health, hp])
+	_check("...Sam doesn't move (not a dash)", absf(sam.global_position.x) < 20.0, "%.0f" % sam.global_position.x)
+	_check("...12 s cooldown", _near(sam.get_ability(&"movement").cooldown_remaining, 11.0, 1.2),
 		"%.2f" % sam.get_ability(&"movement").cooldown_remaining)
 	_clear()
 	await _physics_frames(2)
 
 	_reset(Vector2(0, 2600))
-	var enemy := _other(Vector2(150, 2600), &"b")
+	var enemy := _other(Vector2(600, 2600), &"b")
 	await _physics_frames(2)
-	start = enemy.global_position
 	_aim(Vector2(1000, 2600))
-	_beam(enemy.global_position)
+	_beam(Vector2(1000, 2600))
 	var stunned := false
-	for i in 40:
+	for i in 60:
 		await get_tree().physics_frame
 		if enemy.status_component.has_status(&"sam_beam_enemy"):
 			stunned = stunned or enemy.status_component.is_stunned()
-	await _seconds(0.3)
-	moved = enemy.global_position.x - start.x
-	_check("an enemy is stunned while carried", stunned, "")
-	_check("...and carried about 400 px", moved > 340.0 and moved < 460.0, "%.0f px" % moved)
+	gap = enemy.global_position.distance_to(sam.global_position)
+	_check("an enemy is stunned and sucked in", stunned and gap < 200.0, "%.0f px away" % gap)
 	_check("...still targetable (it's a disable, not a rescue)", not enemy.status_component.has_status(&"sam_beam_ally"), "")
 	_clear()
 	await _physics_frames(2)
-
-	_reset(Vector2(0, 3200))
-	await _physics_frames(2)
-	_aim(Vector2(1000, 3200))
-	_beam(Vector2(1000, 3200))
-	await _seconds(0.8)
-	var dash := sam.global_position.x
-	_check("with no one there, a short hover-dash (220 px)", dash > 180.0 and dash < 260.0, "%.0f px" % dash)
 
 
 # --- Friendship Bracelet -----------------------------------------------------------------------
