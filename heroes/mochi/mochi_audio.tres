@@ -1,0 +1,65 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_bebg0"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="2_6e6e1"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="3_8betc"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="4_fd2nf"]
+[ext_resource type="AudioStream" path="res://audio/sfx/skillshot.wav" id="5_n5qpa"]
+[ext_resource type="AudioStream" path="res://audio/sfx/zap.wav" id="6_4tfqd"]
+[ext_resource type="AudioStream" path="res://audio/sfx/overdrive.wav" id="7_0fefa"]
+[ext_resource type="AudioStream" path="res://audio/sfx/dash.wav" id="8_lh4c0"]
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="9_srw4a"]
+
+[sub_resource type="Resource" id="Resource_6ghka"]
+script = ExtResource("1_bebg0")
+streams = Array[AudioStream]([ExtResource("5_n5qpa")])
+volume_db = -12.0
+pitch_min = 1.4
+pitch_max = 1.6
+min_interval = 0.08
+
+[sub_resource type="Resource" id="Resource_q1s7r"]
+script = ExtResource("1_bebg0")
+streams = Array[AudioStream]([ExtResource("6_4tfqd")])
+volume_db = -4.0
+pitch_min = 0.8
+pitch_max = 0.85
+
+[sub_resource type="Resource" id="Resource_e4665"]
+script = ExtResource("1_bebg0")
+streams = Array[AudioStream]([ExtResource("7_0fefa")])
+volume_db = -3.0
+pitch_min = 1.6
+pitch_max = 1.7
+
+[sub_resource type="Resource" id="Resource_uyr57"]
+script = ExtResource("1_bebg0")
+streams = Array[AudioStream]([ExtResource("5_n5qpa")])
+pitch_min = 0.5
+pitch_max = 0.55
+
+[sub_resource type="Resource" id="Resource_ee2ch"]
+script = ExtResource("1_bebg0")
+streams = Array[AudioStream]([ExtResource("8_lh4c0")])
+pitch_min = 0.6
+pitch_max = 0.65
+
+[sub_resource type="Resource" id="Resource_3sgm5"]
+script = ExtResource("1_bebg0")
+streams = Array[AudioStream]([ExtResource("7_0fefa")])
+pitch_min = 0.45
+pitch_max = 0.45
+
+[resource]
+script = ExtResource("9_srw4a")
+cues = Dictionary[StringName, ExtResource("1_bebg0")]({
+&"ability_failed": ExtResource("2_6e6e1"),
+&"cone_stare_windup": SubResource("Resource_3sgm5"),
+&"death": ExtResource("4_fd2nf"),
+&"hurt": ExtResource("3_8betc"),
+&"madness_burst": SubResource("Resource_e4665"),
+&"mercy_fire": SubResource("Resource_q1s7r"),
+&"tentacle_placed": SubResource("Resource_uyr57"),
+&"tentacle_swap": SubResource("Resource_ee2ch"),
+&"whisper_bolts_fire": SubResource("Resource_6ghka")
+})

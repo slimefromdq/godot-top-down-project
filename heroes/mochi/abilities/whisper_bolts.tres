@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://heroes/mochi/abilities/madness_bolts.gd" id="1_strrc"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_k5pom"]
+[ext_resource type="Resource" path="res://heroes/mochi/data/mochi_whisper.tres" id="3_c0nb7"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="4_o7mft"]
+
+[sub_resource type="Resource" id="Resource_uj1mt"]
+script = ExtResource("2_k5pom")
+base = 9.0
+per_level = 0.8
+magic_ratio = 0.12
+
+[sub_resource type="Resource" id="Resource_eor4f"]
+script = ExtResource("2_k5pom")
+base = 5.0
+
+[sub_resource type="Resource" id="Resource_8k8y4"]
+script = ExtResource("2_k5pom")
+base = 3.0
+
+[sub_resource type="Resource" id="Resource_4gm5j"]
+script = ExtResource("2_k5pom")
+base = 1.5
+
+[sub_resource type="Resource" id="Resource_e1a4l"]
+script = ExtResource("2_k5pom")
+base = 40.0
+per_level = 4.0
+magic_ratio = 0.4
+
+[resource]
+script = ExtResource("4_o7mft")
+projectile = ExtResource("3_c0nb7")
+shots_per_second = 3.5
+id = &"whisper_bolts"
+display_name = "Whisper Bolts"
+description = "Magic bolts that build Madness. 5 hits (within 3 s of each other) and the target explodes for a burst of magic damage, then can't go mad again for 1.5 s."
+ability_script = ExtResource("1_strrc")
+cooldown = 0.0
+damage = SubResource("Resource_uj1mt")
+damage_type = 1
+tags = Array[StringName]([&"basic_attack"])
+values = Dictionary[StringName, ExtResource("2_k5pom")]({
+&"madness_burst": SubResource("Resource_e1a4l"),
+&"madness_decay": SubResource("Resource_8k8y4"),
+&"madness_hits": SubResource("Resource_eor4f"),
+&"madness_immunity": SubResource("Resource_4gm5j")
+})
+feel_preset = &"gun"

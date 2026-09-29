@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_xfohn"]
+[ext_resource type="Resource" path="res://heroes/catgirl/data/catgirl_marbled.tres" id="2_823gj"]
+[ext_resource type="Resource" path="res://heroes/catgirl/data/catgirl_marble_bag.tres" id="3_0l02r"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="4_i3aj8"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="5_v1b6s"]
+
+[resource]
+script = ExtResource("4_i3aj8")
+projectile = ExtResource("3_0l02r")
+fire_mode = 1
+shots_per_second = 2.0
+id = &"marbles"
+display_name = "Marbles"
+description = "Scatter a bag of marbles on the cursor: for 4 s, enemies in 100 px are 40% slower and have 60% less grip, so they slide around."
+ability_script = ExtResource("1_xfohn")
+cooldown = 10.0
+on_hit_status = ExtResource("2_823gj")
+tags = Array[StringName]([&"ability"])
+feel_preset = &"cast"

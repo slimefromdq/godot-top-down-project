@@ -94,6 +94,9 @@ class Entry:
 	var shield_remaining: float = 0.0
 	# carry_enabled: where the target rides relative to the applier.
 	var carry_offset := Vector2.ZERO
+	# Contact ram: snapshot damage and when each target was last rammed.
+	var contact_amount: float = 0.0
+	var contact_hits: Dictionary = {}    # target instance id -> physics time
 
 
 # `source` is who applied it (for DoT kill credit and snapshotting their
@@ -159,6 +162,8 @@ func apply(effect: StatusEffect, source: Node = null, direction: Vector2 = Vecto
 	entry.source = source
 	if effect.tick_damage != null:
 		entry.tick_amount = effect.tick_damage.evaluate(StatsComponent.find_on(source))
+	if effect.contact_damage != null:
+		entry.contact_amount = effect.contact_damage.evaluate(StatsComponent.find_on(source))
 	_apply_modifiers(entry)
 
 	# A shared status taken over by a new applier: the old one's status
@@ -439,6 +444,14 @@ func is_silenced() -> bool:
 	return _any(func(e: StatusEffect): return e.silences or e.stuns)
 
 
+# Silenced for this slot: a silence_spares_primary silence lets the primary
+# (basic fire) through.
+func is_silenced_for(slot_id: StringName) -> bool:
+	if slot_id != &"primary":
+		return is_silenced()
+	return _any(func(e: StatusEffect): return e.stuns or (e.silences and not e.silence_spares_primary))
+
+
 # The compel currently steering this actor (the most recently applied one),
 # or null. MovementComponent reads this every physics tick.
 func get_compel_effect() -> StatusEffect:
@@ -491,6 +504,7 @@ func _physics_process(delta: float) -> void:
 			continue
 		_tick_damage(entry, delta)
 		_tick_heal(entry, delta)
+		_tick_contact(entry)
 		entry.time_left -= delta
 		if entry.time_left <= 0.0 and _active.get(key) == entry:
 			_end(entry, REASON_EXPIRED)
@@ -511,6 +525,36 @@ func _tick_damage(entry: Entry, delta: float) -> void:
 		info.label = effect.tick_label if effect.tick_label != &"" else effect.id
 		info.weight = 0.0    # DoT ticks never trigger hitstop / shake
 		health_component.apply_damage(info)
+
+
+# StatusEffect contact ram: while the actor moves fast enough, every enemy
+# touching it takes the contact hit (once per contact_rehit_time each).
+func _tick_contact(entry: Entry) -> void:
+	var effect := entry.effect
+	var root := _get_root() as Node2D
+	if effect.contact_radius <= 0.0 or root == null or not root.is_inside_tree():
+		return
+	var velocity = root.get(&"velocity")
+	if not velocity is Vector2 or velocity.length() < effect.contact_min_speed:
+		return
+	var now := ZoneRamp.now()
+	var direction: Vector2 = velocity.normalized()
+	for hurtbox in Hitbox.query(root, root.global_position, direction, HitShape.circle(effect.contact_radius), root):
+		var target := ZoneRamp.target_of(hurtbox)
+		var id := target.get_instance_id() if target != null else 0
+		if now - float(entry.contact_hits.get(id, -INF)) < effect.contact_rehit_time:
+			continue
+		entry.contact_hits[id] = now
+		var info := DamageInfo.create(entry.contact_amount, root)
+		info.label = effect.contact_label
+		info.direction = direction
+		info.hit_position = hurtbox.global_position
+		info.tags.append(DamageInfo.TAG_MELEE)
+		info.add_status(effect.contact_status)
+		hurtbox.take_hit(info)
+		if root.has_method(&"trigger_cue"):
+			root.trigger_cue(StringName(str(effect.id) + "_contact"), {"position": hurtbox.global_position,
+				"direction": direction, "target": target})
 
 
 # StatusEffect.tick_heal_ratio: a share of max HP every tick_interval.

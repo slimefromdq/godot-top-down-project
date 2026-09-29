@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="MeleeAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/melee_attack_ability.gd" id="1_0twxv"]
+[ext_resource type="Script" path="res://scripts/abilities/attack_step.gd" id="2_dbl45"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_tsmwj"]
+[ext_resource type="Resource" path="res://heroes/computer/data/computer_emp.tres" id="4_l86ey"]
+[ext_resource type="Script" path="res://scripts/abilities/melee_attack_data.gd" id="5_xtxdj"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="6_6npeu"]
+
+[sub_resource type="Resource" id="Resource_a0u3w"]
+script = ExtResource("3_tsmwj")
+kind = 1
+radius = 300.0
+
+[resource]
+script = ExtResource("5_xtxdj")
+id = &"emp"
+display_name = "EMP"
+description = "Turn the lights off: every enemy within 300 px is silenced for 3 s (they can still shoot)."
+ability_script = ExtResource("1_0twxv")
+cooldown = 60.0
+hit_shape = SubResource("Resource_a0u3w")
+on_hit_status = ExtResource("4_l86ey")
+tags = Array[StringName]([&"ability", &"ultimate"])
+feel_preset = &"emp"

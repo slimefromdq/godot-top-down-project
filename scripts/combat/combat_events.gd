@@ -14,3 +14,6 @@ signal death_prevented(victim: Node, event: DeathEvent)
 ## A shield soaked damage. `shield_source` applied the shield; `info` is the
 ## hit (may be null).
 signal damage_absorbed(amount: float, shield_source: Node, target: Node, status_id: StringName, info: DamageInfo)
+## A slam-capable knock drove `victim` into a wall (see WallSlam): `bonus`
+## damage dealt, `impact_speed` px/s. For VFX, sound and meters.
+signal wall_slammed(victim: Node, source: Node, bonus: float, impact_speed: float, at: Vector2)

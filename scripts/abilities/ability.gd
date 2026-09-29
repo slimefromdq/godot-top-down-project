@@ -144,6 +144,13 @@ func is_dormant() -> bool:
 	return _dormant
 
 
+# Bots (BotHeroInput) ask this before casting a ready ability at
+# `target_point`: false = hold it for now. Override for a recast whose
+# timing matters (a swap, a detonation). Players are never asked.
+func bot_should_use(_target_point: Vector2) -> bool:
+	return true
+
+
 # A 0-1 bar for the ability bar (a meter like hunger or heat). < 0 = none.
 func get_hud_meter() -> float:
 	return -1.0
@@ -338,7 +345,7 @@ func get_block_reason() -> String:
 	if status != null:
 		if status.is_stunned():
 			return "Stunned"
-		if status.is_silenced():
+		if status.is_silenced_for(slot_id):
 			return "Silenced"
 		if is_movement_ability() and status.is_rooted():
 			return "Rooted"
@@ -367,6 +374,8 @@ func start_cast(target_position: Vector2) -> bool:
 		_fail("Not enough %s" % data.cost_type)
 		return false
 
+	if actor.has_method(&"limit_aim_point"):
+		target_position = actor.limit_aim_point(target_position)
 	cast_target = target_position
 	cast_direction = (target_position - actor.global_position).normalized()
 	if cast_direction == Vector2.ZERO:
@@ -598,7 +607,7 @@ func _advance(delta: float) -> void:
 		_advance_charge()
 		return
 	if current_feel != null and not current_feel.lock_aim and phase != Phase.RECOVERY:
-		cast_direction = actor.aim_direction
+		cast_direction = _live_aim()
 	if phase == Phase.ACTIVE:
 		_on_active_tick(delta)
 
@@ -644,7 +653,7 @@ func _check_tether() -> void:
 
 func _advance_charge() -> void:
 	# Aim always follows while charging; it's locked (or not) after release.
-	cast_direction = actor.aim_direction
+	cast_direction = _live_aim()
 	cast_target = actor.aim_point
 	_charge_ratio = clampf(phase_time / data.charge_time_max, 0.0, 1.0) if data.charge_time_max > 0.0 else 1.0
 	if _charge_ratio >= 1.0 and not _charge_full_announced:
@@ -652,6 +661,15 @@ func _advance_charge() -> void:
 		actor.trigger_cue(StringName(str(ability_id) + "_charge_full"), _cue_context())
 	if _charge_ratio >= 1.0 and data.charge_auto_release_at_max:
 		release_charge(Vector2.INF, true)
+
+
+# The actor's aim, turned no faster than a TURN_RATE slow allows (Hero).
+func _live_aim() -> Vector2:
+	if actor.has_method(&"limit_aim_point"):
+		var turned: Vector2 = actor.limit_aim_point(actor.global_position + actor.aim_direction * 100.0) - actor.global_position
+		if turned != Vector2.ZERO:
+			return turned.normalized()
+	return actor.aim_direction
 
 
 func _phase_duration(which: Phase) -> float:

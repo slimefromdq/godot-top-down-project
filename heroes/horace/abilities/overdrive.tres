@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SelfStatusData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/self_status_ability.gd" id="1_5bagr"]
+[ext_resource type="Script" path="res://scripts/abilities/self_status_data.gd" id="2_dhfse"]
+[ext_resource type="Resource" path="res://heroes/horace/data/horace_overdrive.tres" id="3_0ra22"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="4_3w27h"]
+
+[resource]
+script = ExtResource("2_dhfse")
+self_status = ExtResource("3_0ra22")
+count_radius = 600.0
+id = &"overdrive"
+display_name = "Overdrive"
+description = "For 6 s: +30% damage, +25% fire rate, twice as accurate, but you turn at half speed. Flankers will notice."
+ability_script = ExtResource("1_5bagr")
+cooldown = 18.0
+tags = Array[StringName]([&"ability"])
+feel_preset = &"quick"

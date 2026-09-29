@@ -42,6 +42,15 @@ const DISPLACEMENT_TAKEN := &"displacement_taken"
 ## How far a loose Mote can be from this hero and still fly to them (1.5 =
 ## 50% wider than MoteData.magnet_radius). The Black Market's Mote Magnet.
 const MOTE_PICKUP_RADIUS := &"mote_pickup_radius"
+## How quickly this actor's velocity follows its input (MovementComponent
+## traction): 0.4 = 60% less grip, it slides (marbles, ice). Multiplies
+## acceleration and friction; only actors hit by such a status feel it.
+const TRACTION := &"traction"
+## How fast the hero's aim may turn (1 = unlimited, the default; 0.5 = half
+## of GameRules.limited_turn_rate_degrees). A turn slow (Overdrive).
+const TURN_RATE := &"turn_rate"
+## Gun spread multiplier (0.5 = twice as accurate).
+const SPREAD := &"spread"
 
 ## What happens when the same status is applied again while active.
 enum StackRule {
@@ -109,6 +118,9 @@ enum VfxVisibleTo {
 @export var roots: bool = false
 ## No casting abilities; walking is still allowed.
 @export var silences: bool = false
+## With `silences`: the primary slot (basic fire) still works; only abilities
+## are blocked (an EMP). Off = the classic silence that blocks everything.
+@export var silence_spares_primary: bool = false
 ## Can't be hit or targeted at all (hits, zones and statuses skip the
 ## hurtbox) while active. Not invisibility: pair it with body_alpha.
 @export var untargetable: bool = false
@@ -119,6 +131,9 @@ enum VfxVisibleTo {
 ## A cleanse (Second Wind) removes this status if it is harmful (is_debuff).
 ## Off for a self-inflicted drawback that must stay (Glass Cannon's lost HP).
 @export var cleansable: bool = true
+## Counts as harmful (cleansable, a debuff) even with no CC, DoT or
+## multiplier: a mark or a sticky bomb whose harm comes later.
+@export var harmful: bool = false
 
 @export_group("Parry")
 ## While active, the first enemy hit is caught instead of landing, and the
@@ -149,6 +164,12 @@ enum VfxVisibleTo {
 ## TOWARD_SOURCE only: a pull stops this far from the attacker so it doesn't
 ## drag the target through them.
 @export var pull_stop_distance: float = 80.0
+
+## Slam-capable: if this push drives the target into a wall
+## (MovementComponent.wall_impact), it takes this share of the hit's damage
+## again, scaled by impact speed up to GameRules.wall_slam_full_speed
+## (0.5 = +50% at full speed). 0 = not slam-capable. See WallSlam.
+@export var slam_bonus_ratio: float = 0.0
 
 @export_group("Compel")
 ## Forced march: the target walks toward the applier's CURRENT position every
@@ -189,6 +210,18 @@ enum VfxVisibleTo {
 ## Fastest a carried target may move to get back onto its carry point (after
 ## being held up by a wall).
 @export var carry_max_speed: float = 4000.0
+
+@export_group("Contact ram")
+## While active, the actor rams enemies it touches (a drifting bike, a
+## rolling boulder): each enemy within contact_radius takes contact_damage
+## (the APPLIER's stats) and contact_status, at most once per
+## contact_rehit_time, and only while the actor moves at contact_min_speed+.
+@export var contact_damage: ScalingValue
+@export var contact_radius: float = 0.0
+@export var contact_min_speed: float = 200.0
+@export var contact_rehit_time: float = 1.0
+@export var contact_status: StatusEffect
+@export var contact_label: StringName = &"contact"
 
 @export_group("Shield")
 ## Damage absorbed before health, snapshotted from the APPLIER's stats when
@@ -277,7 +310,7 @@ func is_hard_cc() -> bool:
 func is_debuff() -> bool:
 	if not cleansable:
 		return false
-	if is_crowd_control() or silences or tick_damage != null:
+	if harmful or is_crowd_control() or silences or tick_damage != null:
 		return true
 	for stat in stat_multipliers:
 		var mult: float = get_stat_multiplier(stat)
@@ -307,6 +340,10 @@ func validate() -> PackedStringArray:
 		problems.append("status '%s' has negative timings/distances" % id)
 	if tick_heal_ratio < 0.0:
 		problems.append("status '%s' tick_heal_ratio is negative" % id)
+	if slam_bonus_ratio < 0.0 or contact_radius < 0.0 or contact_rehit_time < 0.0:
+		problems.append("status '%s' has negative slam/contact values" % id)
+	if contact_radius > 0.0 and contact_damage == null and contact_status == null:
+		problems.append("status '%s' rams on contact but deals and applies nothing" % id)
 	if tick_damage != null and tick_damage.has_negative():
 		problems.append("status '%s' tick_damage has negative numbers" % id)
 	if compel_enabled and (compel_speed_multiplier <= 0.0 or compel_stop_distance < 0.0):

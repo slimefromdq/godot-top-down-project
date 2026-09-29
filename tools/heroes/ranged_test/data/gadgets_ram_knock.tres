@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_cf6w7"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_vsht2"]
+
+[resource]
+script = ExtResource("1_cf6w7")
+id = &"gadgets_ram_knock"
+duration = 0.2
+displace_distance = 200.0
+slam_bonus_ratio = 0.5

@@ -1,0 +1,66 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_opgj7"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="2_4c4xh"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="3_ragj0"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="4_5idaq"]
+[ext_resource type="AudioStream" path="res://audio/sfx/skillshot.wav" id="5_n72vc"]
+[ext_resource type="AudioStream" path="res://audio/sfx/reload.wav" id="6_3ion5"]
+[ext_resource type="AudioStream" path="res://audio/sfx/rifle_shot.wav" id="7_76r03"]
+[ext_resource type="AudioStream" path="res://audio/sfx/zap.wav" id="8_4f5r0"]
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="9_yjf8p"]
+
+[sub_resource type="Resource" id="Resource_8p4jc"]
+script = ExtResource("1_opgj7")
+streams = Array[AudioStream]([ExtResource("5_n72vc")])
+volume_db = -8.0
+pitch_min = 0.7
+pitch_max = 0.8
+min_interval = 0.2
+
+[sub_resource type="Resource" id="Resource_rwp8t"]
+script = ExtResource("1_opgj7")
+streams = Array[AudioStream]([ExtResource("6_3ion5")])
+volume_db = -4.0
+
+[sub_resource type="Resource" id="Resource_58q66"]
+script = ExtResource("1_opgj7")
+streams = Array[AudioStream]([ExtResource("7_76r03")])
+volume_db = -16.0
+pitch_min = 1.5
+pitch_max = 1.6
+min_interval = 0.1
+
+[sub_resource type="Resource" id="Resource_md6l6"]
+script = ExtResource("1_opgj7")
+streams = Array[AudioStream]([ExtResource("6_3ion5")])
+volume_db = -4.0
+pitch_min = 1.3
+pitch_max = 1.3
+
+[sub_resource type="Resource" id="Resource_mycfy"]
+script = ExtResource("1_opgj7")
+streams = Array[AudioStream]([ExtResource("8_4f5r0")])
+volume_db = -8.0
+pitch_min = 1.8
+pitch_max = 1.9
+
+[sub_resource type="Resource" id="Resource_vqt7k"]
+script = ExtResource("1_opgj7")
+streams = Array[AudioStream]([ExtResource("8_4f5r0")])
+pitch_min = 0.4
+pitch_max = 0.45
+
+[resource]
+script = ExtResource("9_yjf8p")
+cues = Dictionary[StringName, ExtResource("1_opgj7")]({
+&"ability_failed": ExtResource("2_4c4xh"),
+&"death": ExtResource("4_5idaq"),
+&"emp_active": SubResource("Resource_vqt7k"),
+&"grenades_fire": SubResource("Resource_8p4jc"),
+&"gun_turret_fire": SubResource("Resource_58q66"),
+&"gun_turret_placed": SubResource("Resource_rwp8t"),
+&"hurt": ExtResource("3_ragj0"),
+&"mote_drone_placed": SubResource("Resource_mycfy"),
+&"repair_turret_placed": SubResource("Resource_md6l6")
+})

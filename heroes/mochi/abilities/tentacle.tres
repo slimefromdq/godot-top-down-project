@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="DeployData" format=3]
+
+[ext_resource type="Script" path="res://heroes/mochi/abilities/tentacle_ability.gd" id="1_1axil"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_yxreb"]
+[ext_resource type="Script" path="res://heroes/mochi/abilities/tentacle.gd" id="3_25u1w"]
+[ext_resource type="Script" path="res://scripts/abilities/deploy_data.gd" id="4_fmlev"]
+
+[sub_resource type="Resource" id="Resource_7ci8o"]
+script = ExtResource("2_yxreb")
+base = 180.0
+per_level = 15.0
+magic_ratio = 0.4
+
+[sub_resource type="Resource" id="Resource_06l52"]
+script = ExtResource("2_yxreb")
+base = 0.35
+
+[resource]
+script = ExtResource("4_fmlev")
+deployable_script = ExtResource("3_25u1w")
+deploy_health = SubResource("Resource_7ci8o")
+lifetime = 8.0
+place_range = 550.0
+body_radius = 26.0
+color = Color(0.45, 0.15, 0.55, 1)
+id = &"tentacle"
+display_name = "Tentacle"
+description = "Grow a tentacle at the cursor for 8 s. It fires your bolts and Mercy at your cursor whenever you do, with its own Madness count. Press again to swap places with it (it's gone after)."
+ability_script = ExtResource("1_1axil")
+cooldown = 12.0
+tags = Array[StringName]([&"ability"])
+values = Dictionary[StringName, ExtResource("2_yxreb")]({
+&"bot_swap_health": SubResource("Resource_06l52")
+})
+feel_preset = &"cast"

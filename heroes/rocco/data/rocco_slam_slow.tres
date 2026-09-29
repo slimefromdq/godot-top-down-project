@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_roere"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_mkwio"]
+
+[resource]
+script = ExtResource("1_roere")
+id = &"rocco_slam_slow"
+display_name = "Rattled"
+duration = 1.0
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 0.6
+})

@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="MeleeAttackData" format=3]
+
+[ext_resource type="Script" path="res://heroes/catgirl/abilities/swipe.gd" id="1_kexnp"]
+[ext_resource type="Script" path="res://scripts/abilities/attack_step.gd" id="2_6x88u"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_ydovc"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="4_crimi"]
+[ext_resource type="Script" path="res://scripts/abilities/melee_attack_data.gd" id="5_dbsmk"]
+
+[sub_resource type="Resource" id="Resource_5isdh"]
+script = ExtResource("3_ydovc")
+base = 25.0
+per_level = 2.5
+weapon_ratio = 0.35
+
+[sub_resource type="Resource" id="Resource_ykoeu"]
+script = ExtResource("4_crimi")
+radius = 130.0
+arc_degrees = 110.0
+
+[sub_resource type="Resource" id="Resource_6e2f2"]
+script = ExtResource("3_ydovc")
+base = 5.0
+
+[resource]
+script = ExtResource("5_dbsmk")
+id = &"swipe"
+display_name = "Swipe"
+description = "A quick claw swipe (130 px) that steals up to 5 of the target's carried Motes into your own stack (your carry limit applies)."
+ability_script = ExtResource("1_kexnp")
+hit_shape = SubResource("Resource_ykoeu")
+damage = SubResource("Resource_5isdh")
+tags = Array[StringName]([&"ability", &"melee"])
+values = Dictionary[StringName, ExtResource("3_ydovc")]({
+&"steal_count": SubResource("Resource_6e2f2")
+})
+feel_preset = &"swipe"

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="1_7vpco"]
+[ext_resource type="Resource" path="res://heroes/catgirl/data/catgirl_marbles.tres" id="2_ayf5o"]
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="3_vjxe4"]
+
+[sub_resource type="Resource" id="Resource_u6gd0"]
+script = ExtResource("1_7vpco")
+kind = 1
+radius = 100.0
+
+[resource]
+script = ExtResource("3_vjxe4")
+speed = 900.0
+lifetime = 0.7
+radius = 12.0
+lobbed = true
+explode_on_expire = true
+explosion_shape = SubResource("Resource_u6gd0")
+explosion_zone = ExtResource("2_ayf5o")

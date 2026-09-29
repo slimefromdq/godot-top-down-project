@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="MeleeAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/melee_attack_ability.gd" id="1_8smnu"]
+[ext_resource type="Script" path="res://scripts/abilities/attack_step.gd" id="2_fn8c0"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_43xou"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="4_hdt32"]
+[ext_resource type="Resource" path="res://heroes/rocco/data/rocco_cheap_knock.tres" id="5_16icr"]
+[ext_resource type="Script" path="res://scripts/abilities/melee_attack_data.gd" id="6_7vu66"]
+
+[sub_resource type="Resource" id="Resource_hajnx"]
+script = ExtResource("3_43xou")
+base = 50.0
+per_level = 3.5
+weapon_ratio = 0.35
+
+[sub_resource type="Resource" id="Resource_7oimy"]
+script = ExtResource("4_hdt32")
+radius = 125.0
+arc_degrees = 80.0
+
+[resource]
+script = ExtResource("6_7vu66")
+id = &"cheap_shot"
+display_name = "Cheap Shot"
+description = "A quick dirty punch: 50 damage, a small knockback, and it heals you for 40% of the damage."
+ability_script = ExtResource("1_8smnu")
+cooldown = 6.0
+hit_shape = SubResource("Resource_7oimy")
+damage = SubResource("Resource_hajnx")
+on_hit_status = ExtResource("5_16icr")
+lifesteal = 0.4
+tags = Array[StringName]([&"ability", &"melee"])
+feel_preset = &"cheap"

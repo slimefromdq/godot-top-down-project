@@ -1,0 +1,126 @@
+[gd_resource type="Resource" script_class="FeelProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="1_oh1mf"]
+[ext_resource type="Script" path="res://scripts/feel/feel_profile.gd" id="2_nmrl2"]
+
+[sub_resource type="Resource" id="Resource_akgrm"]
+resource_name = "gun"
+script = ExtResource("1_oh1mf")
+windup = 0.0
+active = 0.02
+recovery = 0.04
+move_multiplier = 0.9
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+weight = 0.25
+windup_lean = 0.0
+windup_squash = 0.0
+release_snap = -3.0
+hitstop = 0.0
+shake_on_hit = 0.02
+camera_nudge = 1.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Resource_6goh0"]
+resource_name = "cast"
+script = ExtResource("1_oh1mf")
+active = 0.05
+recovery = 0.12
+move_multiplier = 0.7
+lunge_distance = 0.0
+ability_cancel_after = 0.05
+weight = 0.8
+hitstop = 0.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Resource_dgdt7"]
+resource_name = "quick"
+script = ExtResource("1_oh1mf")
+windup = 0.0
+active = 0.02
+recovery = 0.05
+move_multiplier = 1.0
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+weight = 0.5
+hitstop = 0.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Resource_njcdd"]
+resource_name = "dash"
+script = ExtResource("1_oh1mf")
+windup = 0.02
+active = 0.3
+recovery = 0.05
+move_multiplier = 1.0
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+weight = 0.9
+hitstop = 0.03
+trail_particles = 12
+
+[sub_resource type="Resource" id="Resource_b0amj"]
+resource_name = "jab"
+script = ExtResource("1_oh1mf")
+windup = 0.04
+active = 0.06
+move_multiplier = 0.6
+lunge_distance = 35.0
+lunge_duration = 0.06
+movement_cancel_after = 0.1
+ability_cancel_after = 0.08
+weight = 0.7
+trail_color = Color(1, 0.85, 0.4, 0.9)
+
+[sub_resource type="Resource" id="Resource_1vu3e"]
+resource_name = "jab_finisher"
+script = ExtResource("1_oh1mf")
+windup = 0.08
+active = 0.06
+recovery = 0.22
+move_multiplier = 0.5
+lunge_distance = 50.0
+lunge_duration = 0.07
+movement_cancel_after = 0.12
+weight = 1.2
+hitstop = 0.06
+trail_color = Color(1, 0.7, 0.2, 0.9)
+
+[sub_resource type="Resource" id="Resource_g65lh"]
+resource_name = "cheap"
+script = ExtResource("1_oh1mf")
+windup = 0.03
+active = 0.06
+recovery = 0.12
+move_multiplier = 0.8
+lunge_distance = 25.0
+ability_cancel_after = 0.0
+
+[sub_resource type="Resource" id="Resource_svfdx"]
+resource_name = "punch_dash"
+script = ExtResource("1_oh1mf")
+windup = 0.05
+active = 0.3
+recovery = 0.12
+move_multiplier = 1.0
+lunge_distance = 0.0
+movement_cancel_after = 0.05
+ability_cancel_after = 0.05
+weight = 1.6
+hitstop = 0.08
+shake_on_hit = 0.4
+trail_particles = 20
+
+[resource]
+script = ExtResource("2_nmrl2")
+presets = Dictionary[StringName, ExtResource("1_oh1mf")]({
+&"cast": SubResource("Resource_6goh0"),
+&"cheap": SubResource("Resource_g65lh"),
+&"dash": SubResource("Resource_njcdd"),
+&"gun": SubResource("Resource_akgrm"),
+&"jab": SubResource("Resource_b0amj"),
+&"jab_finisher": SubResource("Resource_1vu3e"),
+&"punch_dash": SubResource("Resource_svfdx"),
+&"quick": SubResource("Resource_dgdt7")
+})

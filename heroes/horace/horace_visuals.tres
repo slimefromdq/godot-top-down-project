@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_pq3g0"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="2_p0su7"]
+[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="3_jkif1"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="4_2out1"]
+[ext_resource type="PackedScene" path="res://effects/overdrive_burst.tscn" id="5_j7y24"]
+[ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="6_objel"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="7_n26sr"]
+[ext_resource type="Texture2D" path="res://sprites/heroes/horace.svg" id="8_xw5r8"]
+
+[sub_resource type="Resource" id="Resource_l1h55"]
+script = ExtResource("1_pq3g0")
+flash_color = Color(1, 0.3, 0.25, 0.9)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_becyn"]
+script = ExtResource("1_pq3g0")
+effect_scene = ExtResource("2_p0su7")
+tint = Color(0.85, 0.9, 1, 1)
+
+[sub_resource type="Resource" id="Resource_67ms0"]
+script = ExtResource("1_pq3g0")
+effect_scene = ExtResource("3_jkif1")
+tint = Color(0.7, 0.55, 0.35, 1)
+
+[sub_resource type="Resource" id="Resource_st1yp"]
+script = ExtResource("1_pq3g0")
+effect_scene = ExtResource("4_2out1")
+align_to_direction = false
+tint = Color(0.85, 0.9, 1, 1)
+
+[sub_resource type="Resource" id="Resource_ev1xs"]
+script = ExtResource("1_pq3g0")
+effect_scene = ExtResource("5_j7y24")
+tint = Color(1, 0.8, 0.3, 1)
+
+[sub_resource type="Resource" id="Resource_4gu4x"]
+script = ExtResource("1_pq3g0")
+effect_scene = ExtResource("4_2out1")
+align_to_direction = false
+tint = Color(1, 0.4, 0.05, 1)
+screen_shake = 0.4
+
+[resource]
+script = ExtResource("7_n26sr")
+texture = ExtResource("8_xw5r8")
+flip_to_face_aim = false
+cues = Dictionary[StringName, ExtResource("1_pq3g0")]({
+&"death": SubResource("Resource_becyn"),
+&"dragonfire_fire": SubResource("Resource_4gu4x"),
+&"hurt": SubResource("Resource_l1h55"),
+&"overdrive_applied": SubResource("Resource_ev1xs"),
+&"shield_wall_placed": SubResource("Resource_st1yp"),
+&"steed_active": SubResource("Resource_67ms0")
+})

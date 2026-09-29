@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/combat/overhead_marker.tscn" id="1_0c31t"]
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="2_05dky"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="3_jl5tc"]
+
+[sub_resource type="Resource" id="Resource_bb4f5"]
+script = ExtResource("3_jl5tc")
+stat = &"magic_resist"
+percent = -0.3
+
+[resource]
+script = ExtResource("2_05dky")
+id = &"mochi_shred"
+display_name = "Unravelled"
+duration = 5.0
+stat_modifiers = Array[ExtResource("3_jl5tc")]([SubResource("Resource_bb4f5")])
+attached_vfx = ExtResource("1_0c31t")
+body_tint = Color(0.6, 0.2, 0.8, 0.2)

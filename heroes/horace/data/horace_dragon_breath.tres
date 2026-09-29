@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="1_hv48h"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_rxfy3"]
+[ext_resource type="Resource" path="res://heroes/horace/data/horace_dragonfire.tres" id="3_3en3p"]
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="4_wuq4b"]
+
+[sub_resource type="Resource" id="Resource_5mhom"]
+script = ExtResource("2_rxfy3")
+kind = 1
+radius = 220.0
+
+[resource]
+script = ExtResource("4_wuq4b")
+speed = 1400.0
+lifetime = 0.7
+lobbed = true
+explode_on_expire = true
+explosion_shape = SubResource("Resource_5mhom")
+explosion_label = &"dragonfire"
+explosion_effect = ExtResource("1_hv48h")
+explosion_zone = ExtResource("3_3en3p")

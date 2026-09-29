@@ -1,0 +1,68 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="1_dahtx"]
+[ext_resource type="Resource" path="res://heroes/horace/abilities/minigun.tres" id="2_jrval"]
+[ext_resource type="Resource" path="res://heroes/horace/abilities/shield_wall.tres" id="3_41bv0"]
+[ext_resource type="Resource" path="res://heroes/horace/abilities/steed.tres" id="4_dllx8"]
+[ext_resource type="Resource" path="res://heroes/horace/abilities/overdrive.tres" id="5_o6xcv"]
+[ext_resource type="Resource" path="res://heroes/horace/abilities/dragonfire.tres" id="6_3kylx"]
+[ext_resource type="Resource" path="res://heroes/horace/horace_audio.tres" id="7_be7ie"]
+[ext_resource type="Resource" path="res://heroes/horace/horace_feel.tres" id="8_awxvv"]
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="9_pgkih"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="10_5amm8"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="11_3q32c"]
+[ext_resource type="Resource" path="res://heroes/horace/horace_visuals.tres" id="12_q0p4d"]
+
+[sub_resource type="Resource" id="Resource_s0k7o"]
+script = ExtResource("10_5amm8")
+base = 22.0
+growth = 2.2222
+
+[sub_resource type="Resource" id="Resource_qmp0w"]
+script = ExtResource("10_5amm8")
+base = 540.0
+growth = 51.1111
+
+[sub_resource type="Resource" id="Resource_udkfv"]
+script = ExtResource("10_5amm8")
+base = 10.0
+growth = 0.8889
+
+[sub_resource type="Resource" id="Resource_v1n5k"]
+script = ExtResource("10_5amm8")
+base = 18.0
+growth = 1.3333000000000002
+
+[sub_resource type="Resource" id="Resource_7pnmt"]
+script = ExtResource("10_5amm8")
+base = 44.0
+growth = 6.2222
+
+[sub_resource type="Resource" id="Resource_b28am"]
+script = ExtResource("11_3q32c")
+health = SubResource("Resource_qmp0w")
+weapon = SubResource("Resource_7pnmt")
+magic = SubResource("Resource_udkfv")
+armor = SubResource("Resource_s0k7o")
+magic_resist = SubResource("Resource_v1n5k")
+
+[resource]
+script = ExtResource("9_pgkih")
+hero_id = &"horace"
+display_name = "Horace"
+title = "The Knight with the Minigun"
+role = 1
+description = "An old-school knight, proud and courteous, who happens to carry a minigun. Slow and sturdy: he plants a shield wall, spins up, and shreds anything in front of him."
+stats = SubResource("Resource_b28am")
+move_speed = 420.0
+acceleration = 2200.0
+abilities = Dictionary[StringName, ExtResource("1_dahtx")]({
+&"ability_1": ExtResource("3_41bv0"),
+&"cc": ExtResource("5_o6xcv"),
+&"movement": ExtResource("4_dllx8"),
+&"primary": ExtResource("2_jrval"),
+&"ultimate": ExtResource("6_3kylx")
+})
+feel_profile = ExtResource("8_awxvv")
+visual_profile = ExtResource("12_q0p4d")
+audio_profile = ExtResource("7_be7ie")

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="1_arcpm"]
+[ext_resource type="Resource" path="res://heroes/biker/data/biker_oil_pool.tres" id="2_0b1cs"]
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="3_vn2wi"]
+
+[sub_resource type="Resource" id="Resource_fahnk"]
+script = ExtResource("1_arcpm")
+kind = 1
+radius = 90.0
+
+[resource]
+script = ExtResource("3_vn2wi")
+speed = 1000.0
+lifetime = 0.8
+radius = 14.0
+lobbed = true
+explode_on_expire = true
+explosion_shape = SubResource("Resource_fahnk")
+explosion_zone = ExtResource("2_0b1cs")

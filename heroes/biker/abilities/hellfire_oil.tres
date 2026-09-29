@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_n3vde"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_bcdyt"]
+[ext_resource type="Resource" path="res://heroes/biker/data/biker_oil_flask.tres" id="3_f1ioj"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="4_gsjmj"]
+
+[sub_resource type="Resource" id="Resource_ctfx3"]
+script = ExtResource("2_bcdyt")
+base = 10.0
+per_level = 1.0
+weapon_ratio = 0.1
+
+[resource]
+script = ExtResource("4_gsjmj")
+projectile = ExtResource("3_f1ioj")
+fire_mode = 1
+shots_per_second = 2.0
+id = &"hellfire_oil"
+display_name = "Hellfire Oil"
+description = "Lob a 90 px pool of oil to the cursor (6 s, at most 2): 35% slow and a burn. Driving over it under Burnout detonates it for a big blast and a 3 s hellfire burn."
+ability_script = ExtResource("1_n3vde")
+cooldown = 7.0
+damage = SubResource("Resource_ctfx3")
+tags = Array[StringName]([&"ability"])
+feel_preset = &"cast"

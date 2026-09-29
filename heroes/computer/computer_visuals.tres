@@ -1,0 +1,64 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_oiyxl"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="2_3uba6"]
+[ext_resource type="PackedScene" path="res://effects/feel/area_telegraph.tscn" id="3_ax1jh"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="4_r0fkd"]
+[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="5_ia7xg"]
+[ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="6_cn4kg"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="7_80w1i"]
+[ext_resource type="Texture2D" path="res://sprites/heroes/computer.svg" id="8_pa1dk"]
+
+[sub_resource type="Resource" id="Resource_uuirs"]
+script = ExtResource("1_oiyxl")
+flash_color = Color(1, 0.3, 0.25, 0.9)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_fvoli"]
+script = ExtResource("1_oiyxl")
+effect_scene = ExtResource("2_3uba6")
+tint = Color(0.9, 0.86, 0.72, 1)
+
+[sub_resource type="Resource" id="Resource_045dv"]
+script = ExtResource("1_oiyxl")
+effect_scene = ExtResource("3_ax1jh")
+attach_to_actor = true
+align_to_direction = false
+tint = Color(0.5, 0.8, 1, 1)
+
+[sub_resource type="Resource" id="Resource_mwhlj"]
+script = ExtResource("1_oiyxl")
+effect_scene = ExtResource("4_r0fkd")
+align_to_direction = false
+tint = Color(0.5, 0.8, 1, 1)
+screen_shake = 0.3
+
+[sub_resource type="Resource" id="Resource_sfmry"]
+script = ExtResource("1_oiyxl")
+effect_scene = ExtResource("5_ia7xg")
+tint = Color(0.9, 0.86, 0.72, 1)
+
+[sub_resource type="Resource" id="Resource_f5mcd"]
+script = ExtResource("1_oiyxl")
+effect_scene = ExtResource("4_r0fkd")
+align_to_direction = false
+tint = Color(0.5, 1, 0.6, 1)
+
+[sub_resource type="Resource" id="Resource_lrqbm"]
+script = ExtResource("1_oiyxl")
+effect_scene = ExtResource("5_ia7xg")
+tint = Color(1, 0.5, 0.4, 1)
+
+[resource]
+script = ExtResource("7_80w1i")
+texture = ExtResource("8_pa1dk")
+flip_to_face_aim = false
+cues = Dictionary[StringName, ExtResource("1_oiyxl")]({
+&"death": SubResource("Resource_fvoli"),
+&"emp_active": SubResource("Resource_mwhlj"),
+&"emp_windup": SubResource("Resource_045dv"),
+&"gun_turret_placed": SubResource("Resource_sfmry"),
+&"hurt": SubResource("Resource_uuirs"),
+&"mote_drone_scared": SubResource("Resource_lrqbm"),
+&"repair_turret_pulse": SubResource("Resource_f5mcd")
+})

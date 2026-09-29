@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_2h8bj"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="2_ee2jn"]
+[ext_resource type="PackedScene" path="res://effects/feel/cone_telegraph.tscn" id="3_vytxy"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="4_3nqlr"]
+[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="5_kaiki"]
+[ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="6_ox16n"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="7_h2pey"]
+[ext_resource type="Texture2D" path="res://sprites/heroes/mochi.svg" id="8_2w885"]
+
+[sub_resource type="Resource" id="Resource_y4crl"]
+script = ExtResource("1_2h8bj")
+flash_color = Color(1, 0.3, 0.25, 0.9)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_24uj7"]
+script = ExtResource("1_2h8bj")
+effect_scene = ExtResource("2_ee2jn")
+tint = Color(0.95, 0.5, 0.85, 1)
+
+[sub_resource type="Resource" id="Resource_jvfm6"]
+script = ExtResource("1_2h8bj")
+effect_scene = ExtResource("3_vytxy")
+attach_to_actor = true
+align_to_direction = false
+
+[sub_resource type="Resource" id="Resource_bd6mk"]
+script = ExtResource("1_2h8bj")
+effect_scene = ExtResource("4_3nqlr")
+align_to_direction = false
+tint = Color(0.7, 0.2, 0.9, 1)
+screen_shake = 0.2
+
+[sub_resource type="Resource" id="Resource_4seit"]
+script = ExtResource("1_2h8bj")
+effect_scene = ExtResource("5_kaiki")
+tint = Color(0.55, 0.2, 0.6, 1)
+
+[sub_resource type="Resource" id="Resource_nx5u7"]
+script = ExtResource("1_2h8bj")
+effect_scene = ExtResource("5_kaiki")
+tint = Color(0.95, 0.5, 0.85, 1)
+
+[resource]
+script = ExtResource("7_h2pey")
+texture = ExtResource("8_2w885")
+flip_to_face_aim = false
+cues = Dictionary[StringName, ExtResource("1_2h8bj")]({
+&"cone_stare_windup": SubResource("Resource_jvfm6"),
+&"death": SubResource("Resource_24uj7"),
+&"hurt": SubResource("Resource_y4crl"),
+&"madness_burst": SubResource("Resource_bd6mk"),
+&"slip_active": SubResource("Resource_nx5u7"),
+&"tentacle_swap": SubResource("Resource_4seit")
+})

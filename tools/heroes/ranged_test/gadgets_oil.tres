@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_tdboa"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_7fcyf"]
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="3_ok0im"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/gadgets_flask.tres" id="4_rcuom"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="5_li27b"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/gadgets_recoil.tres" id="6_2o0db"]
+
+[sub_resource type="Resource" id="Resource_ob5i0"]
+script = ExtResource("2_7fcyf")
+base = 5.0
+
+[sub_resource type="Resource" id="Resource_bwp6o"]
+script = ExtResource("3_ok0im")
+windup = 0.0
+active = 0.02
+recovery = 0.05
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+
+[resource]
+script = ExtResource("5_li27b")
+projectile = ExtResource("4_rcuom")
+self_status_on_fire = ExtResource("6_2o0db")
+fire_mode = 1
+shots_per_second = 2.0
+id = &"gadget_oil"
+display_name = "Oil"
+description = "TEST: a lobbed pool with detonation (by driving over it), max 2 per owner; self_status_on_fire = a silence that spares the primary."
+ability_script = ExtResource("1_tdboa")
+cooldown = 2.0
+damage = SubResource("Resource_ob5i0")
+feel_override = SubResource("Resource_bwp6o")

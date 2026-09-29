@@ -1,0 +1,70 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="1_igjui"]
+[ext_resource type="Resource" path="res://heroes/catgirl/abilities/smg.tres" id="2_r5dlv"]
+[ext_resource type="Resource" path="res://heroes/catgirl/abilities/swipe.tres" id="3_i80uq"]
+[ext_resource type="Resource" path="res://heroes/catgirl/abilities/scamper.tres" id="4_chsnd"]
+[ext_resource type="Resource" path="res://heroes/catgirl/abilities/marbles.tres" id="5_6d4eb"]
+[ext_resource type="Resource" path="res://heroes/catgirl/abilities/sticky_bomb.tres" id="6_boxr7"]
+[ext_resource type="Resource" path="res://heroes/catgirl/catgirl_audio.tres" id="7_ax5pf"]
+[ext_resource type="Resource" path="res://heroes/catgirl/catgirl_feel.tres" id="8_3veae"]
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="9_65ems"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="10_dbav1"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="11_783bx"]
+[ext_resource type="Resource" path="res://heroes/catgirl/catgirl_visuals.tres" id="12_psutn"]
+
+[sub_resource type="Resource" id="Resource_qlw6w"]
+script = ExtResource("10_dbav1")
+base = 16.0
+growth = 1.5556
+
+[sub_resource type="Resource" id="Resource_xhlpf"]
+script = ExtResource("10_dbav1")
+base = 480.0
+growth = 46.6667
+
+[sub_resource type="Resource" id="Resource_n7tgy"]
+script = ExtResource("10_dbav1")
+base = 10.0
+growth = 0.8889
+
+[sub_resource type="Resource" id="Resource_t5nqy"]
+script = ExtResource("10_dbav1")
+base = 16.0
+growth = 1.3333000000000002
+
+[sub_resource type="Resource" id="Resource_baxf2"]
+script = ExtResource("10_dbav1")
+base = 36.0
+growth = 5.7778
+
+[sub_resource type="Resource" id="Resource_8qv65"]
+script = ExtResource("11_783bx")
+health = SubResource("Resource_xhlpf")
+weapon = SubResource("Resource_baxf2")
+magic = SubResource("Resource_n7tgy")
+armor = SubResource("Resource_qlw6w")
+magic_resist = SubResource("Resource_t5nqy")
+
+[resource]
+script = ExtResource("9_65ems")
+hero_id = &"catgirl"
+display_name = "Catgirl"
+title = "The Broke Thief"
+role = 2
+description = "A broke catgirl thief and the fastest thing on the map. Four dashes, an SMG, a swipe that lifts Motes right off a carrier, marbles to make chasers slide, and a sticky bomb she's always got charged."
+stats = SubResource("Resource_8qv65")
+move_speed = 620.0
+acceleration = 3200.0
+friction = 3200.0
+ult_charge_rate = 2.0
+abilities = Dictionary[StringName, ExtResource("1_igjui")]({
+&"ability_1": ExtResource("3_i80uq"),
+&"cc": ExtResource("5_6d4eb"),
+&"movement": ExtResource("4_chsnd"),
+&"primary": ExtResource("2_r5dlv"),
+&"ultimate": ExtResource("6_boxr7")
+})
+feel_profile = ExtResource("8_3veae")
+visual_profile = ExtResource("12_psutn")
+audio_profile = ExtResource("7_ax5pf")

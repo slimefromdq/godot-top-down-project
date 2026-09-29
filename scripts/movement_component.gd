@@ -26,6 +26,15 @@ class_name MovementComponent
 # low cover) at GameRules.wall_impact_min_speed or more emits wall_impact,
 # once per knock, and the body's `wall_impact` cue. The body calls
 # after_slide() right after move_and_slide().
+#
+# Slam bonus: a slam-capable push (StatusEffect.slam_bonus_ratio) arms the
+# knock with bonus damage (arm_slam); a slam then deals it, scaled by impact
+# speed (see WallSlam), and CombatEvents.wall_slammed reports it.
+#
+# Traction: `traction` (1 = normal grip) and the TRACTION status multiplier
+# scale acceleration and friction together. Low traction = velocity follows
+# the input slowly, so the body drifts and slides (a bike, marbles on the
+# floor). Only actors that set it or get such a status are affected.
 
 ## Knocked into a wall (see above). `impact_speed` is the speed into the wall
 ## (px/s), `source` who knocked the body (may be null or freed), `collider`
@@ -35,6 +44,9 @@ signal wall_impact(normal: Vector2, impact_speed: float, source: Node, collider:
 @export var move_speed: float = 300.0
 @export var acceleration: float = 1200.0
 @export var friction: float = 1600.0
+## Grip: scales acceleration and friction (1 = unchanged). Heroes set it from
+## HeroDefinition.traction; the TRACTION status multiplier stacks on top.
+@export var traction: float = 1.0
 ## Optional. Reads the move_speed multiplier and root/stun from active statuses.
 @export var status_component: StatusEffectComponent
 
@@ -70,6 +82,8 @@ var _cruise_acceleration: float = -1.0
 var _knock_source: Node
 var _knock_left: float = 0.0
 var _knock_reported := false
+# Slam bonus armed for the current knock (arm_slam): damage at full speed.
+var _slam_damage: float = 0.0
 # The velocity get_velocity() last handed out (before walls cut it).
 var _intended_velocity := Vector2.ZERO
 # Was carried last tick: stop dead when the carry ends (a drop, not a slide).
@@ -127,6 +141,23 @@ func begin_knockback(source: Node, duration: float) -> void:
 	_knock_source = source
 	_knock_left = maxf(duration, 0.0)
 	_knock_reported = false
+	_slam_damage = 0.0
+
+
+## The current knock is slam-capable: a wall hit during it deals up to
+## `damage` bonus (scaled by impact speed). Call right after the knock began.
+func arm_slam(damage: float) -> void:
+	if _knock_left > 0.0 and not _knock_reported:
+		_slam_damage = maxf(_slam_damage, damage)
+
+
+func get_armed_slam() -> float:
+	return _slam_damage if _knock_left > 0.0 else 0.0
+
+
+## Grip right now: traction times the TRACTION status multiplier.
+func get_traction() -> float:
+	return maxf(traction * StatusEffectComponent.multiplier_of(status_component, StatusEffect.TRACTION), 0.01)
 
 
 func is_knocked_back() -> bool:
@@ -157,6 +188,11 @@ func after_slide(body: CharacterBody2D) -> void:
 		if body.has_method(&"trigger_cue"):
 			body.trigger_cue(&"wall_impact", {"position": hit.get_position(), "direction": -hit.get_normal(),
 				"normal": hit.get_normal(), "impact_speed": speed, "knocked_by": source})
+		# A slam-capable knock (arm_slam) deals its bonus.
+		if _slam_damage > 0.0:
+			var armed := _slam_damage
+			_slam_damage = 0.0
+			WallSlam.resolve(body, source, armed, speed, hit.get_position(), hit.get_normal())
 		return
 
 
@@ -259,7 +295,9 @@ func _steer(current_velocity: Vector2, input_direction: Vector2, delta: float) -
 		input_direction = Vector2.ZERO
 
 	var speed := get_move_speed()
-	var accel := acceleration
+	var grip := get_traction()
+	var accel := acceleration * grip
+	var brake := friction * grip
 	if can_walk() and is_cruising():
 		input_direction = _cruise_direction
 		speed = _cruise_speed * StatusEffectComponent.multiplier_of(status_component, StatusEffect.MOVE_SPEED)
@@ -298,12 +336,12 @@ func _steer(current_velocity: Vector2, input_direction: Vector2, delta: float) -
 	if input_direction != Vector2.ZERO or compel_velocity != Vector2.ZERO:
 		# Faster than we want to go (e.g. a swing just slowed us): brake with
 		# friction rather than acceleration so the slow bites immediately.
-		var rate := accel if current_velocity.length() <= target_velocity.length() else maxf(accel, friction)
+		var rate := accel if current_velocity.length() <= target_velocity.length() else maxf(accel, brake)
 		return current_velocity.move_toward(target_velocity, rate * delta)
 
 	return current_velocity.move_toward(
 		drift,
-		friction * delta
+		brake * delta
 	)
 
 

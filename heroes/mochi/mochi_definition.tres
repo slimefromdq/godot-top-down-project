@@ -1,0 +1,67 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="1_ohfvk"]
+[ext_resource type="Resource" path="res://heroes/mochi/abilities/whisper_bolts.tres" id="2_0j2tb"]
+[ext_resource type="Resource" path="res://heroes/mochi/abilities/mercy.tres" id="3_1eo57"]
+[ext_resource type="Resource" path="res://heroes/mochi/abilities/slip.tres" id="4_1tl8c"]
+[ext_resource type="Resource" path="res://heroes/mochi/abilities/tentacle.tres" id="5_go883"]
+[ext_resource type="Resource" path="res://heroes/mochi/abilities/cone_stare.tres" id="6_ussn8"]
+[ext_resource type="Resource" path="res://heroes/mochi/mochi_audio.tres" id="7_c6cn6"]
+[ext_resource type="Resource" path="res://heroes/mochi/mochi_feel.tres" id="8_mxi11"]
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="9_heswe"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="10_odn0d"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="11_3sjhj"]
+[ext_resource type="Resource" path="res://heroes/mochi/mochi_visuals.tres" id="12_q58yo"]
+
+[sub_resource type="Resource" id="Resource_q1w6u"]
+script = ExtResource("10_odn0d")
+base = 14.0
+growth = 1.7778
+
+[sub_resource type="Resource" id="Resource_1nunv"]
+script = ExtResource("10_odn0d")
+base = 450.0
+growth = 41.1111
+
+[sub_resource type="Resource" id="Resource_8521v"]
+script = ExtResource("10_odn0d")
+base = 30.0
+growth = 8.6667
+
+[sub_resource type="Resource" id="Resource_vklnn"]
+script = ExtResource("10_odn0d")
+base = 20.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_tnimf"]
+script = ExtResource("10_odn0d")
+base = 8.0
+growth = 0.8889
+
+[sub_resource type="Resource" id="Resource_5oaj5"]
+script = ExtResource("11_3sjhj")
+health = SubResource("Resource_1nunv")
+weapon = SubResource("Resource_tnimf")
+magic = SubResource("Resource_8521v")
+armor = SubResource("Resource_q1w6u")
+magic_resist = SubResource("Resource_vklnn")
+
+[resource]
+script = ExtResource("9_heswe")
+hero_id = &"mochi"
+display_name = "Mochi"
+title = "The Sweet Thing"
+role = 1
+description = "An eldritch monster who looks like a cute girl. Every tool builds to a burst of magic damage: Madness that explodes, a bolt that finishes the wounded, a tentacle that doubles her fire, and a stare that freezes."
+stats = SubResource("Resource_5oaj5")
+move_speed = 486.0
+abilities = Dictionary[StringName, ExtResource("1_ohfvk")]({
+&"ability_1": ExtResource("3_1eo57"),
+&"cc": ExtResource("5_go883"),
+&"movement": ExtResource("4_1tl8c"),
+&"primary": ExtResource("2_0j2tb"),
+&"ultimate": ExtResource("6_ussn8")
+})
+feel_profile = ExtResource("8_mxi11")
+visual_profile = ExtResource("12_q58yo")
+audio_profile = ExtResource("7_c6cn6")

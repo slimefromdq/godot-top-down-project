@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/combat/overhead_marker.tscn" id="1_fxde1"]
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="2_wbvbk"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="3_3y5cq"]
+
+[resource]
+script = ExtResource("2_wbvbk")
+id = &"catgirl_sticky_bomb"
+display_name = "Sticky Bomb"
+duration = 2.0
+stack_rule = 3
+stack_per_applier = true
+harmful = true
+attached_vfx = ExtResource("1_fxde1")
+body_tint = Color(1, 0.2, 0.2, 0.35)

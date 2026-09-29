@@ -65,6 +65,20 @@ class_name GroundZoneData
 ## zone is freed without ending (a map change).
 @export var leaves_zone: GroundZoneData
 
+@export_group("Detonation")
+## The zone can be detonated (GroundZone.detonate(), or the trigger below):
+## this explosion template (its Explosion group: shape, explosion_damage,
+## explosion_status...) goes off at the zone's centre as the owner's hit,
+## and the zone is consumed. Empty = can't be detonated.
+@export var detonation: ProjectileData
+## Detonates by itself when its OWNER stands in it while carrying a status
+## with this id (a bike's Burnout driving over its own oil). Empty = only
+## scripts detonate it.
+@export var detonated_by_owner_status: StringName = &""
+## Most zones of this data (by meter_label) one owner may have; spawning
+## another ends the oldest. 0 = no cap.
+@export var max_per_owner: int = 0
+
 @export_group("Ownership")
 ## Stay centred on the owner (the actor that spawned it) every tick.
 @export var follow_owner: bool = false
@@ -105,7 +119,7 @@ func get_ramp_key() -> StringName:
 
 func has_negative() -> bool:
 	return duration < 0.0 or tick_interval < 0.0 or max_duration < 0.0 \
-		or ramp_per_tick < 0.0 or ramp_reset_after < 0.0 \
+		or ramp_per_tick < 0.0 or ramp_reset_after < 0.0 or max_per_owner < 0 \
 		or (shape != null and shape.has_negative()) \
 		or (tick_damage != null and tick_damage.has_negative())
 

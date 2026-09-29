@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SelfStatusData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/self_status_ability.gd" id="1_o7rqf"]
+[ext_resource type="Script" path="res://scripts/abilities/self_status_data.gd" id="2_7yjy8"]
+[ext_resource type="Resource" path="res://heroes/biker/data/biker_brake.tres" id="3_3k27w"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="4_aeaty"]
+
+[resource]
+script = ExtResource("2_7yjy8")
+self_status = ExtResource("3_3k27w")
+count_radius = 600.0
+hold_to_keep = true
+id = &"brake"
+display_name = "Brake"
+description = "Hold to brake: 4x grip, so you can drift, slide and whip around. Anyone the bike hits while you're moving fast takes 40 damage and is knocked away (once per second each); into a wall, it slams."
+ability_script = ExtResource("1_o7rqf")
+cooldown = 0.0
+feel_preset = &"quick"

@@ -1,0 +1,66 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="1_puhj6"]
+[ext_resource type="Resource" path="res://heroes/computer/abilities/grenades.tres" id="2_t3ffy"]
+[ext_resource type="Resource" path="res://heroes/computer/abilities/gun_turret.tres" id="3_f3vao"]
+[ext_resource type="Resource" path="res://heroes/computer/abilities/repair_turret.tres" id="4_drok5"]
+[ext_resource type="Resource" path="res://heroes/computer/abilities/mote_drone.tres" id="5_c143u"]
+[ext_resource type="Resource" path="res://heroes/computer/abilities/emp.tres" id="6_j2736"]
+[ext_resource type="Resource" path="res://heroes/computer/computer_audio.tres" id="7_v28si"]
+[ext_resource type="Resource" path="res://heroes/computer/computer_feel.tres" id="8_vaybv"]
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="9_8y6yb"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="10_ltnds"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="11_xh3sq"]
+[ext_resource type="Resource" path="res://heroes/computer/computer_visuals.tres" id="12_8y04e"]
+
+[sub_resource type="Resource" id="Resource_qq5o8"]
+script = ExtResource("10_ltnds")
+base = 20.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_l8ccu"]
+script = ExtResource("10_ltnds")
+base = 540.0
+growth = 53.3333
+
+[sub_resource type="Resource" id="Resource_amevw"]
+script = ExtResource("10_ltnds")
+base = 38.0
+growth = 6.4444
+
+[sub_resource type="Resource" id="Resource_us7qf"]
+script = ExtResource("10_ltnds")
+base = 22.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_opje1"]
+script = ExtResource("10_ltnds")
+base = 28.0
+growth = 3.3333000000000004
+
+[sub_resource type="Resource" id="Resource_tw7wr"]
+script = ExtResource("11_xh3sq")
+health = SubResource("Resource_l8ccu")
+weapon = SubResource("Resource_opje1")
+magic = SubResource("Resource_amevw")
+armor = SubResource("Resource_qq5o8")
+magic_resist = SubResource("Resource_us7qf")
+
+[resource]
+script = ExtResource("9_8y6yb")
+hero_id = &"computer"
+display_name = "Computer"
+title = "The Sentient Beige Box"
+description = "A beige sentient computer with a taped-on smiley face. Deploys a gun turret, a repair turret and a drone that fetches Motes, lobs floppy-disk grenades, and turns the lights off on enemy casters."
+stats = SubResource("Resource_tw7wr")
+move_speed = 460.0
+abilities = Dictionary[StringName, ExtResource("1_puhj6")]({
+&"ability_1": ExtResource("3_f3vao"),
+&"cc": ExtResource("4_drok5"),
+&"movement": ExtResource("5_c143u"),
+&"primary": ExtResource("2_t3ffy"),
+&"ultimate": ExtResource("6_j2736")
+})
+feel_profile = ExtResource("8_vaybv")
+visual_profile = ExtResource("12_8y04e")
+audio_profile = ExtResource("7_v28si")

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_d8iw7"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_nboae"]
+
+[resource]
+script = ExtResource("1_d8iw7")
+id = &"biker_ram"
+display_name = "Run over"
+duration = 0.2
+displace_distance = 180.0
+slam_bonus_ratio = 0.5

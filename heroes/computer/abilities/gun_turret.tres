@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="DeployData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/deploy_ability.gd" id="1_0rdln"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_admwy"]
+[ext_resource type="Script" path="res://scripts/deployables/turret_deployable.gd" id="3_bajna"]
+[ext_resource type="Resource" path="res://heroes/computer/data/computer_turret_bolt.tres" id="4_3m2e1"]
+[ext_resource type="Script" path="res://scripts/abilities/deploy_data.gd" id="5_ul24l"]
+
+[sub_resource type="Resource" id="Resource_rbn6t"]
+script = ExtResource("2_admwy")
+base = 8.0
+per_level = 0.4
+weapon_ratio = 0.04
+magic_ratio = 0.03
+
+[sub_resource type="Resource" id="Resource_a2kj3"]
+script = ExtResource("2_admwy")
+base = 300.0
+
+[sub_resource type="Resource" id="Resource_ythf1"]
+script = ExtResource("2_admwy")
+base = 550.0
+
+[sub_resource type="Resource" id="Resource_31o5i"]
+script = ExtResource("2_admwy")
+base = 4.0
+
+[resource]
+script = ExtResource("5_ul24l")
+deployable_script = ExtResource("3_bajna")
+deploy_health = SubResource("Resource_a2kj3")
+lifetime = 12.0
+place_range = 400.0
+body_radius = 30.0
+projectile = ExtResource("4_3m2e1")
+color = Color(0.75, 0.72, 0.6, 1)
+id = &"gun_turret"
+display_name = "Gun Turret"
+description = "Deploy a turret (300 HP, 12 s) that shoots the nearest enemy in 550 px four times a second. One at a time."
+ability_script = ExtResource("1_0rdln")
+cooldown = 6.0
+damage = SubResource("Resource_rbn6t")
+tags = Array[StringName]([&"ability"])
+meter_label = &"gun_turret"
+values = Dictionary[StringName, ExtResource("2_admwy")]({
+&"fire_rate": SubResource("Resource_31o5i"),
+&"range": SubResource("Resource_ythf1")
+})
+feel_preset = &"cast"

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_jviy0"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_otxfg"]
+
+[resource]
+script = ExtResource("1_jviy0")
+id = &"horace_overdrive"
+display_name = "Overdrive"
+duration = 6.0
+stat_multipliers = Dictionary[StringName, float]({
+&"damage": 1.3,
+&"fire_rate": 1.25,
+&"spread": 0.5,
+&"turn_rate": 0.5
+})
+body_tint = Color(1, 0.8, 0.3, 0.3)

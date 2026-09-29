@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="1_24177"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/gadgets_oil.tres" id="2_mmx0o"]
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="3_p3s5p"]
+
+[sub_resource type="Resource" id="Resource_7v14p"]
+script = ExtResource("1_24177")
+kind = 1
+radius = 90.0
+
+[resource]
+script = ExtResource("3_p3s5p")
+speed = 1000.0
+lifetime = 0.8
+lobbed = true
+explode_on_expire = true
+explosion_shape = SubResource("Resource_7v14p")
+explosion_zone = ExtResource("2_mmx0o")

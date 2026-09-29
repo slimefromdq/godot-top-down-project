@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="1_vi2n2"]
+
+[resource]
+script = ExtResource("1_vi2n2")
+speed = 1900.0
+lifetime = 0.34
+radius = 10.0

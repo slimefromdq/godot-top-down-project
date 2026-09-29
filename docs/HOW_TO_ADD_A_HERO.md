@@ -169,10 +169,30 @@ For each slot in the definition's `abilities` dictionary, point at an
 | remove every harmful status from someone (a cleanse) | `hero.status_component.cleanse()` (ends stuns, slows, DoTs, vulnerability; `StatusEffect.cleansable = false` opts a drawback out) | none |
 | widen how far loose Motes fly to a hero | `StatusEffect.MOTE_PICKUP_RADIUS` (`mote_pickup_radius`) in `stat_multipliers` (2.0 = twice `MoteData.magnet_radius`) | none |
 | a status VFX only some players see (a mark only its target and caster see) | `StatusEffect.vfx_visible_to`: EVERYONE, TARGET_ALLIES, TARGET_ENEMIES, TARGET_AND_APPLIER, or LISTED + `status_component.set_vfx_viewers(id, actors)` | none (LISTED: a small script) |
+| a drifty, slippery mover (velocity follows input slowly) | `HeroDefinition.traction` (< 1); `StatusEffect.TRACTION` in `stat_multipliers` for a slippery patch (marbles, ice). Both scale acceleration and friction; nobody else is affected | none |
+| a knockback that hurts more into a wall (a wall slam) | `StatusEffect.slam_bonus_ratio` on the push status (0.5 = +50% of the hit at `GameRules.wall_slam_full_speed`, scaled by impact speed; `WallSlam`); `CombatEvents.wall_slammed` and the victim's `wall_slam` cue for VFX/sound | none |
+| hits that build a meter on a target and burst when full (Madness) | `StackCounter.add(owner, key, target, max, decay_after, immunity)` returns true on the filling hit; per owner, so a summon keeps its own count | a small script |
+| place a turret, a healing post, a drone, anything with health that can be shot | `DeployData` + `DeployAbility` with `deployable_script` = `TurretDeployable`, `AuraDeployable`, `MoteDrone` or your own `Deployable` (owner, health, lifetime, `max_per_owner`, removed on owner death, `cooldown_after_gone`) | none (a small `Deployable` for a new kind) |
+| a zone you can blow up (oil) | `GroundZoneData.detonation` (an explosion `ProjectileData`), `GroundZone.detonate()`; `detonated_by_owner_status` sets it off when its owner stands in it with that status; `max_per_owner` caps them | none |
+| a wind-up weapon (a minigun): fire rate and accuracy ramp while held | `RangedAttackData` Spin up group (`spin_up_time`, `spin_start_rate`, `spin_cold_spread_degrees`, `spin_down_time`); the bar shows the spin | none |
+| a placed shield wall that eats N projectiles | `PlaceBarrierData` + `PlaceBarrierAbility` (a `PlacedBarrier`: charges, recharge, lifetime) | none |
+| a turn slow, or a gun that gets more accurate | `StatusEffect.TURN_RATE` (aim turns at `GameRules.limited_turn_rate_degrees` x it) / `StatusEffect.SPREAD` in `stat_multipliers` | none |
+| ram enemies you touch while moving fast (a drifting bike) | `StatusEffect` Contact ram group (`contact_radius`, `contact_damage`, `contact_min_speed`, `contact_rehit_time`, `contact_status`) on a self status | none |
+| hold a key on a draining meter, optionally leaving a trail | `SelfStatusData.hold_meter_seconds` / `hold_meter_recharge_seconds` / `hold_meter_min`, `hold_trail_zone` + `hold_trail_spacing` (with `hold_to_keep`) | none |
+| a leap that slams on landing | `LaunchData.landing_hit_shape` + `damage` + `on_hit_status` | none |
+| a status on the shooter every shot (recoil, bailing off a bike) | `RangedAttackData.self_status_on_fire` | none |
+| a silence that still lets them shoot | `StatusEffect.silence_spares_primary` (the classic silence blocks the primary too) | none |
+| a mark with no effect until later that a cleanse removes (a sticky bomb) | `StatusEffect.harmful` | none |
+| steal Motes from a carrier / collect Motes with a non-hero | `MoteCarrier.steal_from(victim, n)` (carry cap applies); `Mote.can_be_taken_by_agent(team)` / `take_by_agent(team)` | a small script (`MoteDrone` does the agent part) |
+| an ultimate that charges faster (or slower) | `HeroDefinition.ult_charge_rate` (2 = twice as fast in a match) | none |
+| a cone warning on the ground during a windup | `effects/feel/cone_telegraph.tscn` (`ConeTelegraphEffect`) on `<id>_windup`, attached | none |
 | something new | extend `Ability` (or `MeleeAttackAbility` / `RangedAttackAbility`) | a small script |
 
 `tools/heroes/ranged_test/` is a test-only hero that uses every ability row
-above (pick it with **F1 → Play as → Ranged Test (test)**). The rules and
+above (pick it with **F1 → Play as → Ranged Test (test)**); the batch-2 rows
+(spin-up gun, barrier, deployables, landing slam, hold meter, traction, turn
+rate, contact ram, detonatable oil) are on **Ranged Test (gadgets)**, and
+`tools/heroes/batch2_infra_test` checks each of them alone. The rules and
 queries that aren't abilities (Resolve, line of sight, bushes and grass,
 filtered VFX, the map obstacle types, wall slams) are covered by
 `tools/heroes/shared_systems_test`. Short recipes follow.
@@ -430,6 +450,95 @@ FeelProfile, not the cue profiles. Give every hero an `audio_profile` (sounds in
   hero automatically.
 
 ---
+
+## Hero batch 2 (Biker, Horace, Mochi, Computer, Catgirl, Rocco)
+
+Built from `MOTE GARDEN: Hero Batch 2`. The shared pieces they needed are the
+rows above from "a drifty, slippery mover" down; `tools/heroes/batch2_infra_test`
+covers them alone, Ranged Test (gadgets) plays them, each hero has its own
+`<name>_test`, and `tools/ai/batch2_bot_test` has bots play all six.
+Placeholder bodies are `sprites/heroes/<name>.svg` (the sprite slot: a
+top-down badge that never turns with the aim).
+
+### What the Biker took
+
+A TEMPO (title: The Hellrider). Always on the bike: 640 speed, `traction` 0.5.
+Only the ultimate's bail-out needed anything new, and that was data too.
+
+| Slot | Data | Script |
+|---|---|---|
+| primary | `hellfire_smg.tres`: AUTO 10/s, spin group used for spread only (5° → 12° over 1.5 s) | generic `RangedAttackAbility` |
+| ability_1 (RMB) | `burnout.tres`: `SelfStatusData` hold with a 3 s meter (5 s refill), +40% speed status `burnout`, `hold_trail_zone` = a 2 s fire trail (14 burn/s) | generic `SelfStatusAbility` |
+| cc (E) | `hellfire_oil.tres`: lobbed flask → `biker_oil_pool` (90 px, 6 s, 35% slow, burn, `max_per_owner` 2, `detonation` = 150 px blast + 3 s hellburn, `detonated_by_owner_status` = `burnout`) | generic `RangedAttackAbility` |
+| movement (Shift) | `brake.tres`: `SelfStatusData` hold; the status has `traction` x4 and a contact ram (40 dmg, 1 s per target, slam-capable 180 px knock) | generic `SelfStatusAbility` |
+| ultimate | `hellbound.tres`: 0.5 s rev (feel), a lobbed 900 px bike (1.5 s flight, a projectile so nothing can touch it), 220 px blast; `self_status_on_fire` = `biker_bailed` | generic `RangedAttackAbility` |
+
+Judgment call (Hellbound): she bails out at the launch point: 1.6 s at 45%
+speed with extra grip, silenced for abilities but free to shoot
+(`silence_spares_primary`), then the new bike arrives (the status ends).
+Alternative if that feels bad: she rides it (a `LaunchData` leap with the
+landing slam, untargetable `self_status`) and lands in the blast.
+
+### What Horace took
+
+A slow gun CARRY (title: The Knight with the Minigun). No scripts at all.
+
+| Slot | Data | Script |
+|---|---|---|
+| primary | `minigun.tres`: 20/s at full spin, `spin_start_rate` 0.15 (3/s cold), spread 12° → 4° over 2 s | generic `RangedAttackAbility` |
+| ability_1 | `shield_wall.tres`: `PlaceBarrierData`, 3 charges, 3 s per charge, 4 s, 10 s cooldown | shared `PlaceBarrierAbility` |
+| movement | `steed.tres`: `ChargeData` 700 px ride (no shooting: the dash is a cast), 25 s | generic `ChargeAbility` |
+| cc | `overdrive.tres`: `SelfStatusData`, 6 s: damage 1.3, fire_rate 1.25, spread 0.5, turn_rate 0.5 | generic `SelfStatusAbility` |
+| ultimate | `dragonfire.tres`: a lobbed breath onto the cursor leaving a 220 px, 5 s fire zone (~40/s + burn) that never moves | generic `RangedAttackAbility` |
+
+### What Mochi took
+
+A burst mage CARRY (title: The Sweet Thing).
+
+| Slot | Data | Script |
+|---|---|---|
+| primary | `whisper_bolts.tres`: AUTO magic bolts; `values/madness_hits` 5, `madness_decay` 3, `madness_immunity` 1.5, `madness_burst` (40 + 4/lvl + 40% Magic ≈ 120 at L10) | `madness_bolts.gd`: `StackCounter` per shooter, the burst, mirrors to the tentacle |
+| ability_1 | `mercy.tres`: 60 magic, `values/missing_health_bonus` 1.0 | `mercy_bolt.gd`: x(1 + bonus x missing health), mirrors to the tentacle |
+| movement | `slip.tres`: 350 px roll, 0.3 s i-frames | generic `ChargeAbility` |
+| cc | `tentacle.tres`: `DeployData` (8 s, max 1, 12 s) | `tentacle_ability.gd` (place, or swap onto it once) + `tentacle.gd` (a `Deployable` that fires her shots at her cursor with its own counter) |
+| ultimate | `cone_stare.tres` (`MochiGazeData`): 300 px 90° cone, 0.6 s telegraphed windup (`cone_telegraph`), 1.5 s stun, `shred_status` -30% Magic Resist 5 s | `cone_stare.gd`: adds the shred |
+
+### What the Computer took
+
+A deployer FLEX (title: The Sentient Beige Box). No scripts at all.
+
+| Slot | Data | Script |
+|---|---|---|
+| primary | `grenades.tres`: slow grenades, `explode_on_hit` + `explode_on_expire` (1.5 s fuse), 80 px | generic `RangedAttackAbility` |
+| ability_1 | `gun_turret.tres`: `TurretDeployable`, 300 HP, 12 s, 4 shots/s in 550 px, 6 s | shared `DeployAbility` |
+| cc | `repair_turret.tres`: `AuraDeployable`, 200 HP, 10 s, ~20 heal/s in 200 px, 14 s | shared `DeployAbility` |
+| movement | `mote_drone.tres`: `MoteDrone`, 100 HP, `block_while_capped`, `cooldown_after_gone` (20 s after it dies) | shared `DeployAbility` |
+| ultimate | `emp.tres`: CC-only 300 px circle, 3 s silence that spares basic fire | generic `MeleeAttackAbility` |
+
+### What Catgirl took
+
+A TEMPO thief (title: The Broke Thief). 620 speed, `ult_charge_rate` 2.
+
+| Slot | Data | Script |
+|---|---|---|
+| primary | `smg.tres`: 12/s, 14° spread, falloff 250 → 500 px | generic `RangedAttackAbility` |
+| movement | `scamper.tres`: 200 px roll, `max_charges` 4, 3 s each | generic `ChargeAbility` |
+| ability_1 | `swipe.tres`: 130 px claw, `values/steal_count` 5 | `swipe.gd`: `MoteCarrier.steal_from` |
+| cc | `marbles.tres`: lobbed bag → a 100 px, 4 s zone: 40% slow, `traction` 0.4 | generic `RangedAttackAbility` |
+| ultimate | `sticky_bomb.tres`: the bomb is a `harmful` 2 s status everyone sees; `values/bomb_damage` (~350 at L10) | `sticky_bomb.gd`: detonates on `status_expired` (a cleanse or death defuses it) |
+
+### What Rocco took
+
+A TEMPO brawler (title: The Heel). No scripts: his passive is that every
+knockback status has `slam_bonus_ratio` 0.5.
+
+| Slot | Data | Script |
+|---|---|---|
+| primary | `jab_combo.tres`: 3 steps of 18, lunging presets, a small slam-capable push | generic `MeleeAttackAbility` |
+| ability_1 | `haymaker.tres`: charged `ChargeData` (1.2 s), 150 → 450 px, 120 → 280 damage, 400 px knock | generic `ChargeAbility` |
+| movement | `jumping_slam.tres`: `LaunchData` 450 px, `landing_hit_shape` 170 px, 40% slow 1 s | shared `LaunchAbility` |
+| cc | `cheap_shot.tres`: 50 damage, 140 px knock, `lifesteal` 0.4 | generic `MeleeAttackAbility` |
+| ultimate | `main_event.tres`: 1500 px `ChargeData`, 300 damage, 750 px knock | generic `ChargeAbility` |
 
 ## What Sam took
 

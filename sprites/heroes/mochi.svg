@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<!-- SPRITE SLOT: placeholder body (glossy aero badge) for mochi (carry). Silhouette = role, colour + letter = hero. True top-down: never rotates with the aim. Replace with final art at this path. -->
+<defs>
+<radialGradient id="aero-body" cx="0.4" cy="0.3" r="0.8">
+<stop offset="0" stop-color="#ffd6f2"/><stop offset="0.55" stop-color="#f59ad8"/><stop offset="1" stop-color="#9c3f82"/>
+</radialGradient>
+<linearGradient id="aero-gloss" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.05"/>
+</linearGradient>
+<clipPath id="aero-clip"><circle cx="64" cy="64" r="54" /></clipPath>
+</defs>
+<circle cx="64" cy="64" r="54" fill="url(#aero-body)" stroke="#16304f" stroke-width="7" stroke-linejoin="round"/>
+<ellipse cx="64" cy="36" rx="46" ry="26" fill="url(#aero-gloss)" clip-path="url(#aero-clip)"/>
+<text x="64" y="84" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="56" fill="#ffffff" stroke="#16304f" stroke-width="6" paint-order="stroke">M</text>
+</svg>

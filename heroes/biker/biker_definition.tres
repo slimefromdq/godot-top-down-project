@@ -1,0 +1,70 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="1_dktti"]
+[ext_resource type="Resource" path="res://heroes/biker/abilities/hellfire_smg.tres" id="2_o7fio"]
+[ext_resource type="Resource" path="res://heroes/biker/abilities/burnout.tres" id="3_46e8y"]
+[ext_resource type="Resource" path="res://heroes/biker/abilities/hellfire_oil.tres" id="4_1pfip"]
+[ext_resource type="Resource" path="res://heroes/biker/abilities/brake.tres" id="5_virud"]
+[ext_resource type="Resource" path="res://heroes/biker/abilities/hellbound.tres" id="6_klngg"]
+[ext_resource type="Resource" path="res://heroes/biker/biker_audio.tres" id="7_ijs44"]
+[ext_resource type="Resource" path="res://heroes/biker/biker_feel.tres" id="8_vyem6"]
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="9_gkumn"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="10_nbukr"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="11_e15e1"]
+[ext_resource type="Resource" path="res://heroes/biker/biker_visuals.tres" id="12_wq5g7"]
+
+[sub_resource type="Resource" id="Resource_y2xww"]
+script = ExtResource("10_nbukr")
+base = 18.0
+growth = 1.7778
+
+[sub_resource type="Resource" id="Resource_4bxpe"]
+script = ExtResource("10_nbukr")
+base = 504.0
+growth = 49.0
+
+[sub_resource type="Resource" id="Resource_kbjxv"]
+script = ExtResource("10_nbukr")
+base = 10.0
+growth = 0.8889
+
+[sub_resource type="Resource" id="Resource_0ajwx"]
+script = ExtResource("10_nbukr")
+base = 16.0
+growth = 1.3333000000000002
+
+[sub_resource type="Resource" id="Resource_k6ek6"]
+script = ExtResource("10_nbukr")
+base = 38.0
+growth = 6.0
+
+[sub_resource type="Resource" id="Resource_yj01y"]
+script = ExtResource("11_e15e1")
+health = SubResource("Resource_4bxpe")
+weapon = SubResource("Resource_k6ek6")
+magic = SubResource("Resource_kbjxv")
+armor = SubResource("Resource_y2xww")
+magic_resist = SubResource("Resource_0ajwx")
+
+[resource]
+script = ExtResource("9_gkumn")
+hero_id = &"biker"
+display_name = "Biker"
+title = "The Hellrider"
+role = 2
+description = "A demon girl who never gets off her screaming hellfire bike. Very fast and drifty: she brakes to slide and ram, burns rubber to leave fire, and detonates her own oil slicks."
+stats = SubResource("Resource_yj01y")
+move_speed = 640.0
+acceleration = 2000.0
+friction = 1300.0
+traction = 0.5
+abilities = Dictionary[StringName, ExtResource("1_dktti")]({
+&"ability_1": ExtResource("3_46e8y"),
+&"cc": ExtResource("4_1pfip"),
+&"movement": ExtResource("5_virud"),
+&"primary": ExtResource("2_o7fio"),
+&"ultimate": ExtResource("6_klngg")
+})
+feel_profile = ExtResource("8_vyem6")
+visual_profile = ExtResource("12_wq5g7")
+audio_profile = ExtResource("7_ijs44")

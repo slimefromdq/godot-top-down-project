@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/charge_ability.gd" id="1_i1k2c"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_r1kgq"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_77ie5"]
+[ext_resource type="Resource" path="res://heroes/rocco/data/rocco_haymaker_knock.tres" id="4_oswrc"]
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="5_0wxuj"]
+
+[sub_resource type="Resource" id="Resource_l8u03"]
+script = ExtResource("2_r1kgq")
+base = 120.0
+per_level = 5.0
+weapon_ratio = 0.3
+
+[sub_resource type="Resource" id="Resource_h7l4c"]
+script = ExtResource("3_77ie5")
+kind = 1
+radius = 85.0
+
+[sub_resource type="Resource" id="Resource_0wn22"]
+script = ExtResource("2_r1kgq")
+base = 280.0
+per_level = 10.0
+weapon_ratio = 0.6
+
+[resource]
+script = ExtResource("5_0wxuj")
+distance = 450.0
+min_distance = 150.0
+speed = 1900.0
+id = &"haymaker"
+display_name = "Haymaker"
+description = "Hold to wind up (up to 1.2 s), release to dash-punch 150-450 px. 120 damage, up to 280 at full charge, and a 400 px knockback. Into a wall is extra."
+ability_script = ExtResource("1_i1k2c")
+cooldown = 9.0
+hit_shape = SubResource("Resource_h7l4c")
+damage = SubResource("Resource_l8u03")
+on_hit_status = ExtResource("4_oswrc")
+tags = Array[StringName]([&"ability", &"melee"])
+ability_range = 450.0
+values = Dictionary[StringName, ExtResource("2_r1kgq")]({
+&"damage_full": SubResource("Resource_0wn22")
+})
+charge_enabled = true
+charge_time_max = 1.2
+charge_below_min = 1
+charge_move_speed_multiplier = 0.5
+feel_preset = &"punch_dash"

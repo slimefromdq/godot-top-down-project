@@ -1,0 +1,51 @@
+[gd_resource type="Resource" script_class="DeployData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/deploy_ability.gd" id="1_llitl"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_qxwmi"]
+[ext_resource type="Script" path="res://scripts/deployables/turret_deployable.gd" id="3_rhv2r"]
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="4_f1gc4"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_bullet.tres" id="5_64wth"]
+[ext_resource type="Script" path="res://scripts/abilities/deploy_data.gd" id="6_b5ekp"]
+
+[sub_resource type="Resource" id="Resource_64gsn"]
+script = ExtResource("2_qxwmi")
+base = 6.0
+
+[sub_resource type="Resource" id="Resource_bn33x"]
+script = ExtResource("2_qxwmi")
+base = 200.0
+
+[sub_resource type="Resource" id="Resource_bwp6o"]
+script = ExtResource("4_f1gc4")
+windup = 0.0
+active = 0.02
+recovery = 0.05
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+
+[sub_resource type="Resource" id="Resource_j5rei"]
+script = ExtResource("2_qxwmi")
+base = 500.0
+
+[sub_resource type="Resource" id="Resource_jbd8l"]
+script = ExtResource("2_qxwmi")
+base = 3.0
+
+[resource]
+script = ExtResource("6_b5ekp")
+deployable_script = ExtResource("3_rhv2r")
+deploy_health = SubResource("Resource_bn33x")
+max_per_owner = 2
+projectile = ExtResource("5_64wth")
+id = &"gadget_turret"
+display_name = "Turret"
+description = "TEST: DeployData + TurretDeployable (200 HP, 10 s, max 2)."
+ability_script = ExtResource("1_llitl")
+cooldown = 2.0
+damage = SubResource("Resource_64gsn")
+values = Dictionary[StringName, ExtResource("2_qxwmi")]({
+&"fire_rate": SubResource("Resource_jbd8l"),
+&"range": SubResource("Resource_j5rei")
+})
+feel_override = SubResource("Resource_bwp6o")

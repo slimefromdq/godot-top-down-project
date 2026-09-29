@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="1_wrvh6"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_62vd7"]
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="3_o44sp"]
+
+[sub_resource type="Resource" id="Resource_6m8ih"]
+script = ExtResource("2_62vd7")
+kind = 1
+radius = 80.0
+
+[resource]
+script = ExtResource("3_o44sp")
+speed = 620.0
+lifetime = 1.5
+radius = 16.0
+explode_on_hit = true
+explode_on_expire = true
+explosion_shape = SubResource("Resource_6m8ih")
+explosion_label = &"grenade"
+explosion_effect = ExtResource("1_wrvh6")

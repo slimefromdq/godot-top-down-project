@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_1gipa"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_gudxo"]
+
+[resource]
+script = ExtResource("1_1gipa")
+id = &"rocco_haymaker"
+display_name = "Haymaker"
+duration = 0.25
+displace_distance = 400.0
+displace_duration = 0.2
+slam_bonus_ratio = 0.5

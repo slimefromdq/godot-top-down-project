@@ -1047,6 +1047,8 @@ func _use_abilities(engaging: bool = true) -> void:
 			continue
 		if not ability.is_ready() and not ability.repeats_while_held(slot.hold_to_repeat):
 			continue
+		if not ability.bot_should_use(target_point):
+			continue
 		if hero.request_slot(slot.id, target_point):
 			if ability.is_charging():
 				_charge_started[slot.id] = _time

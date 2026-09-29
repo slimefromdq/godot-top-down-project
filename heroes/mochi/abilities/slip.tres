@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/charge_ability.gd" id="1_gucff"]
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="2_q3pge"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_xeapt"]
+
+[resource]
+script = ExtResource("2_q3pge")
+direction_mode = 1
+distance = 350.0
+speed = 1800.0
+invulnerable_duration = 0.3
+id = &"slip"
+display_name = "Slip"
+description = "Slip 350 px the way you're moving, untouchable for the first 0.3 s."
+ability_script = ExtResource("1_gucff")
+cooldown = 6.0
+tags = Array[StringName]([&"movement"])
+feel_preset = &"dash"

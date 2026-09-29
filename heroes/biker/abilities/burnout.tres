@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="SelfStatusData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/self_status_ability.gd" id="1_5378y"]
+[ext_resource type="Resource" path="res://heroes/biker/data/biker_flame_trail.tres" id="2_p5ub8"]
+[ext_resource type="Script" path="res://scripts/abilities/self_status_data.gd" id="3_wwau5"]
+[ext_resource type="Resource" path="res://heroes/biker/data/biker_burnout.tres" id="4_i2bjf"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="5_jc4vg"]
+
+[resource]
+script = ExtResource("3_wwau5")
+self_status = ExtResource("4_i2bjf")
+count_radius = 600.0
+hold_to_keep = true
+hold_meter_seconds = 3.0
+hold_meter_min = 0.15
+hold_trail_zone = ExtResource("2_p5ub8")
+hold_trail_spacing = 55.0
+id = &"burnout"
+display_name = "Burnout"
+description = "Hold: pin the throttle. +40% top speed and a 2 s trail of hellfire behind you (14 burn/s). Drains a 3 s meter that refills in 5 s once released. Drive over your own oil to detonate it."
+ability_script = ExtResource("1_5378y")
+cooldown = 0.0
+feel_preset = &"quick"

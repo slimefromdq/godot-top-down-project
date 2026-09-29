@@ -542,7 +542,7 @@ func add_ultimate_charge(hero: Hero, amount: float) -> void:
 		return
 	var charge := UltimateCharge.find_on(hero)
 	if charge != null:
-		charge.add(amount)
+		charge.add(amount * (hero.definition.ult_charge_rate if hero.definition != null else 1.0))
 
 
 ## 0..1, or -1 when the match doesn't use ultimate charge.

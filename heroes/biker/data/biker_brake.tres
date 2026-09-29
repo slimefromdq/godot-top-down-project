@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="1_dh4q6"]
+[ext_resource type="Resource" path="res://heroes/biker/data/biker_ram_knock.tres" id="2_qykgd"]
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="3_3t4py"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="4_mplkj"]
+
+[sub_resource type="Resource" id="Resource_15qew"]
+script = ExtResource("1_dh4q6")
+base = 40.0
+per_level = 3.0
+weapon_ratio = 0.3
+
+[resource]
+script = ExtResource("3_3t4py")
+id = &"brake"
+display_name = "Brake"
+duration = 6.0
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 0.8,
+&"traction": 4.0
+})
+contact_damage = SubResource("Resource_15qew")
+contact_radius = 75.0
+contact_min_speed = 260.0
+contact_status = ExtResource("2_qykgd")
+contact_label = &"bike_ram"
