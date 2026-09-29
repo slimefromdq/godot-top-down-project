@@ -88,6 +88,7 @@ func _draw() -> void:
 	var visible_k := visibility_at(player.global_position.distance_to(global_position))
 	if visible_k <= 0.0:
 		return
+	var color := rules.island_portal_color if rules != null else Color("f59e0b")
 	var full := visible_k >= 1.0
 	# A shimmer: a few drifting, faint arcs. Fully visible: a swirling door.
 	var radius := 90.0
@@ -95,12 +96,12 @@ func _draw() -> void:
 		for i in 4:
 			var a := _t * 0.9 + i * TAU / 4.0
 			draw_arc(Vector2.ZERO, radius * (0.55 + 0.1 * sin(_t * 2.0 + i)), a, a + 0.9, 12,
-				Color(0.85, 0.75, 1.0, visible_k * 0.35), 3.0, true)
+				Color(color.lightened(0.5), visible_k * 0.35), 3.0, true)
 		return
 	draw_circle(Vector2(6, 10), radius, Color(0, 0, 0, 0.2))
-	draw_circle(Vector2.ZERO, radius, Color("3b1d6e"))
-	draw_circle(Vector2.ZERO, radius * 0.8, Color("8b5cf6"))
+	draw_circle(Vector2.ZERO, radius, color.darkened(0.6))
+	draw_circle(Vector2.ZERO, radius * 0.8, color)
 	for k in 4:
 		var start := _t * 2.2 + k * TAU / 4.0
 		draw_arc(Vector2.ZERO, radius * (0.25 + 0.13 * k), start, start + 1.6, 18, Color(1, 1, 1, 0.75), 5.0, true)
-	draw_arc(Vector2.ZERO, radius + 8.0, 0.0, TAU, 48, Color(0.9, 0.8, 1.0, 0.7 + 0.2 * sin(_t * 3.0)), 4.0, true)
+	draw_arc(Vector2.ZERO, radius + 8.0, 0.0, TAU, 48, Color(color.lightened(0.6), 0.7 + 0.2 * sin(_t * 3.0)), 4.0, true)

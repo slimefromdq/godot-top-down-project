@@ -239,7 +239,8 @@ func _draw_tell() -> void:
 	var alpha := 0.22 * sin(k * PI)
 	var size := _tell.size
 	var band := 70.0
-	var color := Color(0.75, 0.6, 1.0, alpha)
+	var tint := events.get_rules().island_portal_color
+	var color := Color(tint.lightened(0.3), alpha)
 	var clear := Color(color, 0.0)
 	_tell.draw_polygon(PackedVector2Array([Vector2(0, 0), Vector2(size.x, 0), Vector2(size.x, band), Vector2(0, band)]),
 		PackedColorArray([color, color, clear, clear]))
