@@ -246,6 +246,8 @@ func play_body_animation(animation: StringName) -> void:
 			body.hurt()
 		elif animation == &"death":
 			body.die()
+		elif animation == &"shoot":
+			body.shoot()
 		return
 	if body is AnimatedSprite2D and body.sprite_frames.has_animation(animation):
 		_playing_one_shot = not body.sprite_frames.get_animation_loop(animation)

@@ -28,6 +28,7 @@ func _run() -> void:
 	_test_direction_of()
 	_test_pick_legs()
 	await _test_rig()
+	_test_poses()
 	await _test_in_game()
 	print("live_rig_test: %d failed" % failures)
 	get_tree().quit(failures)
@@ -275,6 +276,41 @@ func _test_rig() -> void:
 
 	rig.get_lower().get_node(^"Up").free()
 	_check("a missing facing set is refused", not rig.validate().is_empty(), "")
+	rig.queue_free()
+
+
+# --- Walk cycle and shoot pose textures (walk_textures / shoot_texture) -------------
+
+func _tex(color: Color) -> Texture2D:
+	return ImageTexture.create_from_image(Image.create_empty(2, 2, false, Image.FORMAT_RGBA8))
+
+
+func _test_poses() -> void:
+	var rig := _make_rig()
+	add_child(rig)
+	var idle := _tex(Color.WHITE)
+	var walk_a := _tex(Color.RED)
+	var walk_b := _tex(Color.BLUE)
+	var shoot := _tex(Color.YELLOW)
+	var body := Sprite2D.new()
+	body.name = "Body"
+	body.texture = idle
+	body.set_meta(&"walk_textures", [walk_a, walk_b])
+	body.set_meta(&"shoot_texture", shoot)
+	rig.get_upper().get_node(^"Right").add_child(body)
+	_step(rig, Vector2.RIGHT, Vector2.ZERO, 0.2)
+	_check("a posed sprite idles on its own texture", body.texture == idle, "")
+	var seen := {}
+	for i in 60:
+		rig.update(Vector2.RIGHT, Vector2(200, 0), 1.0 / 60.0)
+		seen[body.texture] = true
+	_check("walking cycles walk_textures, one per step", seen.size() == 2 and seen.has(walk_a) and seen.has(walk_b),
+			"%d textures" % seen.size())
+	rig.shoot()
+	rig.update(Vector2.RIGHT, Vector2(200, 0), 1.0 / 60.0)
+	_check("shoot() shows the shoot texture over the walk", body.texture == shoot, "")
+	_step(rig, Vector2.RIGHT, Vector2.ZERO, rig.motion.shoot_pose_time + 0.3)
+	_check("the shoot pose ends and the sprite returns to idle", body.texture == idle, "")
 	rig.queue_free()
 
 

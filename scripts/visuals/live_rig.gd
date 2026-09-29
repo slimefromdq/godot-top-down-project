@@ -19,6 +19,10 @@ class_name LiveRig
 # Tags (node metadata, set in the Inspector):
 #   sway: float           rotates on a sine wave (cape, wings); value = strength
 #   stride_texture: Texture2D   a Sprite2D swaps to it every other step (legs)
+#   walk_textures: Array[Texture2D]   a Sprite2D shows these in turn, one per
+#                         step, while walking (its own texture is the idle pose)
+#   shoot_texture: Texture2D   a Sprite2D shows it for `shoot_pose_time` after
+#                         shoot() (wins over the walk poses)
 #   rest_angle: float     on the aim part: which way its art points at rotation
 #                         0, degrees (90 = hanging down)
 # The aim part is the node named `aim_part_name` in the visible Upper set; it
@@ -52,6 +56,7 @@ var _t := 0.0
 var _walk_phase := 0.0
 var _move_blend := 0.0
 var _hurt_left := 0.0
+var _shoot_left := 0.0
 var _dead_t := -1.0
 var _upper_rest := Vector2.ZERO
 var _lower_rest := Vector2.ZERO
@@ -183,6 +188,11 @@ func hurt() -> void:
 	_hurt_left = motion.hurt_time
 
 
+## Holds the shoot pose (sprites tagged `shoot_texture`) briefly.
+func shoot() -> void:
+	_shoot_left = motion.shoot_pose_time
+
+
 func die() -> void:
 	if _dead_t < 0.0:
 		_dead_t = 0.0
@@ -192,6 +202,7 @@ func die() -> void:
 func revive() -> void:
 	_dead_t = -1.0
 	_hurt_left = 0.0
+	_shoot_left = 0.0
 	rotation = 0.0
 	modulate = _alive_modulate
 	var upper := get_upper()
@@ -237,6 +248,7 @@ func _animate(velocity: Vector2, delta: float) -> void:
 
 	var sway_deg := lerpf(motion.idle_sway_deg, motion.walk_sway_deg, _move_blend)
 	var odd_step := walking and posmod(floori(_walk_phase), 2) == 1
+	_shoot_left = maxf(_shoot_left - delta, 0.0)
 	for half in [upper, lower]:
 		var active := get_active_set(half, direction if half == upper else legs_direction)
 		if active == null:
@@ -247,14 +259,32 @@ func _animate(velocity: Vector2, delta: float) -> void:
 				node.set_meta(&"_rest_rotation", rest)
 				node.rotation = rest + deg_to_rad(sway_deg * float(node.get_meta(&"sway"))) \
 						* sin(_t * TAU * motion.sway_hz)
-			if node is Sprite2D and node.has_meta(&"stride_texture"):
-				var rest_tex: Texture2D = node.get_meta(&"_rest_texture", node.texture)
-				node.set_meta(&"_rest_texture", rest_tex)
-				node.texture = node.get_meta(&"stride_texture") if odd_step else rest_tex
+			if node is Sprite2D:
+				_pose_sprite(node, walking, odd_step)
 
 	_hurt_left = maxf(_hurt_left - delta, 0.0)
 	var hurt_k := sin(PI * (1.0 - _hurt_left / motion.hurt_time)) if _hurt_left > 0.0 else 0.0
 	rotation = -deg_to_rad(motion.hurt_tilt_deg) * hurt_k * _facing_sign()
+
+
+# Picks a sprite's texture: shoot pose, else the walk cycle, else its rest one.
+func _pose_sprite(node: Sprite2D, walking: bool, odd_step: bool) -> void:
+	var tagged := node.has_meta(&"stride_texture") or node.has_meta(&"walk_textures") \
+			or node.has_meta(&"shoot_texture")
+	if not tagged:
+		return
+	var rest_tex: Texture2D = node.get_meta(&"_rest_texture", node.texture)
+	node.set_meta(&"_rest_texture", rest_tex)
+	var tex := rest_tex
+	if _shoot_left > 0.0 and node.has_meta(&"shoot_texture"):
+		tex = node.get_meta(&"shoot_texture")
+	elif walking and node.has_meta(&"walk_textures"):
+		var poses: Array = node.get_meta(&"walk_textures")
+		if not poses.is_empty():
+			tex = poses[posmod(floori(_walk_phase), poses.size())]
+	elif odd_step and node.has_meta(&"stride_texture"):
+		tex = node.get_meta(&"stride_texture")
+	node.texture = tex
 
 
 func _animate_death(delta: float) -> void:

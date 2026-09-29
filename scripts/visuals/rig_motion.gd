@@ -31,6 +31,10 @@ class_name RigMotion
 @export var hurt_tilt_deg: float = 12.0
 @export var hurt_time: float = 0.3
 
+@export_group("Shoot")
+## Seconds the shoot pose (a `shoot_texture` sprite) holds after a shot.
+@export var shoot_pose_time: float = 0.15
+
 @export_group("Death")
 @export var death_tip_deg: float = 80.0
 @export var death_time: float = 0.45

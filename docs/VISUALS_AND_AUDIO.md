@@ -187,7 +187,7 @@ Pose each facing's set with that facing's parts; child order is draw order
 the right ones mirrored. Set **Preview Direction** (0 = right, clockwise to
 7 = up-right) to see a facing in the editor. Tag nodes with metadata:
 `sway` (float) swings on a sine wave, `stride_texture` (Texture2D) is swapped
-in every other step, and the aim part (a node named **Aim Part Name**,
+in every other step, `walk_textures` (Array of Texture2D) cycles one per step while walking and `shoot_texture` shows for `shoot_pose_time` after a cue with Body Animation `shoot` (for full-body pose sheets like Jose's, cut without trimming so the poses share an anchor), and the aim part (a node named **Aim Part Name**,
 default `AimArm`, origin at the shoulder) takes `rest_angle` (degrees its art
 points at rotation 0, default 90).
 

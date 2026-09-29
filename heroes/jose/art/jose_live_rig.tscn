@@ -1,0 +1,80 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/live_rig.gd" id="1_rig"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/idle/down.png" id="2_idle_down"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/walk1/down.png" id="3_walk1_down"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/walk2/down.png" id="4_walk2_down"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/shoot/down.png" id="5_shoot_down"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/idle/down_right.png" id="6_idle_down_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/walk1/down_right.png" id="7_walk1_down_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/walk2/down_right.png" id="8_walk2_down_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/shoot/down_right.png" id="9_shoot_down_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/idle/right.png" id="10_idle_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/walk1/right.png" id="11_walk1_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/walk2/right.png" id="12_walk2_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/shoot/right.png" id="13_shoot_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/idle/up_right.png" id="14_idle_up_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/walk1/up_right.png" id="15_walk1_up_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/walk2/up_right.png" id="16_walk2_up_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/shoot/up_right.png" id="17_shoot_up_right"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/idle/up.png" id="18_idle_up"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/walk1/up.png" id="19_walk1_up"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/walk2/up.png" id="20_walk2_up"]
+[ext_resource type="Texture2D" path="res://heroes/jose/art/directions/shoot/up.png" id="21_shoot_up"]
+
+[node name="JoseLiveRig" type="Node2D"]
+script = ExtResource("1_rig")
+
+[node name="Lower" type="Node2D" parent="."]
+
+[node name="Down" type="Node2D" parent="Lower"]
+
+[node name="DownRight" type="Node2D" parent="Lower"]
+
+[node name="Right" type="Node2D" parent="Lower"]
+
+[node name="UpRight" type="Node2D" parent="Lower"]
+
+[node name="Up" type="Node2D" parent="Lower"]
+
+[node name="Upper" type="Node2D" parent="."]
+
+[node name="Down" type="Node2D" parent="Upper"]
+
+[node name="Body" type="Sprite2D" parent="Upper/Down"]
+position = Vector2(0, 5)
+texture = ExtResource("2_idle_down")
+metadata/walk_textures = [ExtResource("3_walk1_down"), ExtResource("4_walk2_down")]
+metadata/shoot_texture = ExtResource("5_shoot_down")
+
+[node name="DownRight" type="Node2D" parent="Upper"]
+
+[node name="Body" type="Sprite2D" parent="Upper/DownRight"]
+position = Vector2(0, 5)
+texture = ExtResource("6_idle_down_right")
+metadata/walk_textures = [ExtResource("7_walk1_down_right"), ExtResource("8_walk2_down_right")]
+metadata/shoot_texture = ExtResource("9_shoot_down_right")
+
+[node name="Right" type="Node2D" parent="Upper"]
+
+[node name="Body" type="Sprite2D" parent="Upper/Right"]
+position = Vector2(0, 5)
+texture = ExtResource("10_idle_right")
+metadata/walk_textures = [ExtResource("11_walk1_right"), ExtResource("12_walk2_right")]
+metadata/shoot_texture = ExtResource("13_shoot_right")
+
+[node name="UpRight" type="Node2D" parent="Upper"]
+
+[node name="Body" type="Sprite2D" parent="Upper/UpRight"]
+position = Vector2(0, 5)
+texture = ExtResource("14_idle_up_right")
+metadata/walk_textures = [ExtResource("15_walk1_up_right"), ExtResource("16_walk2_up_right")]
+metadata/shoot_texture = ExtResource("17_shoot_up_right")
+
+[node name="Up" type="Node2D" parent="Upper"]
+
+[node name="Body" type="Sprite2D" parent="Upper/Up"]
+position = Vector2(0, 5)
+texture = ExtResource("18_idle_up")
+metadata/walk_textures = [ExtResource("19_walk1_up"), ExtResource("20_walk2_up")]
+metadata/shoot_texture = ExtResource("21_shoot_up")
