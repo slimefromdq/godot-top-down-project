@@ -3,12 +3,14 @@
 [ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="1_p"]
 [ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="2_p"]
 [ext_resource type="PackedScene" path="res://effects/wall_puff.tscn" id="3_p"]
+[ext_resource type="PackedScene" path="res://heroes/nimbus/vfx/comet_round.tscn" id="vis_comet"]
 
 [resource]
 script = ExtResource("1_p")
 speed = 3000.0
-lifetime = 0.6
+lifetime = 0.69
 pierce = 1
-radius = 14.0
+radius = 18.9
 hit_effect = ExtResource("2_p")
 expire_effect = ExtResource("3_p")
+visual_scene = ExtResource("vis_comet")

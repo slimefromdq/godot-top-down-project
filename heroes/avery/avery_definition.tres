@@ -15,18 +15,18 @@
 
 [sub_resource type="Resource" id="Sub_1"]
 script = ExtResource("3_x")
-base = 648.0
-growth = 64.8
+base = 612.0
+growth = 60.8
 
 [sub_resource type="Resource" id="Sub_2"]
 script = ExtResource("3_x")
 base = 48.0
-growth = 4.0
+growth = 3.6
 
 [sub_resource type="Resource" id="Sub_3"]
 script = ExtResource("3_x")
 base = 30.0
-growth = 5.0
+growth = 4.5
 
 [sub_resource type="Resource" id="Sub_4"]
 script = ExtResource("3_x")

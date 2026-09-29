@@ -22,7 +22,7 @@ Main menu ─ Play ──> Match setup ──> Hero select ──> Match ──>
 | Bot picks and spawning | `scripts/ai/bot_draft.gd` | shared with the F1 Bots tab's "Fill with bots" |
 | Settings | `scripts/flow/settings_panel.gd`, `scripts/flow/user_settings.gd` | volumes (Master, Music, SFX buses) and fullscreen, saved to `user://settings.cfg` |
 | Pause (Esc) | `scripts/flow/pause_menu.gd` | Resume, Settings, Leave match; added by `world.gd` |
-| End of match | `scripts/flow/end_match_screen.gd` | Victory/Defeat, your K/D/A and Motes, team totals, Back to menu |
+| End of match | `scripts/flow/end_match_screen.gd` | Victory/Defeat, the **MVP** (best score on the winning team) and the **ACE** (best on the losing team) in spotlight cards, a scoreboard of both teams (K/D/A, damage dealt and taken, healing, Motes banked/delivered, gold), Play again, Back to menu. Scores are `MatchRules.mvp_score` (weights in `MatchRules` > MVP); the stats come from `MatchManager.Record`. |
 
 ## How a match is launched
 

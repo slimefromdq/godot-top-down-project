@@ -8,7 +8,7 @@
 
 [sub_resource type="Resource" id="Resource_yyvbn"]
 script = ExtResource("2_ulhrg")
-base = 8.0
+base = 8.64
 
 [sub_resource type="Resource" id="Resource_g17rq"]
 script = ExtResource("2_ulhrg")

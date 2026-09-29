@@ -55,9 +55,9 @@ func _test_assembled() -> void:
 	_check("listed in hero selection (F1 > Play as)",
 		HeroScaffold.find_definitions().any(func(d): return d.hero_id == &"pike"), "")
 	var stats := definition.stats
-	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 504.0) and _near(stats.health.value_at(10), 945.0, 0.1)
-		and _near(stats.weapon.value_at(10), 95.0) and _near(stats.magic.value_at(10), 18.0)
-		and _near(stats.armor.value_at(10), 34.0) and _near(stats.magic_resist.value_at(10), 28.0), "")
+	_check("L1 -> L10 stats match the design", _near(stats.health.value_at(1), 480.0) and _near(stats.health.value_at(10), 894.0, 0.1)
+		and _near(stats.weapon.value_at(10), 90.4) and _near(stats.magic.value_at(10), 18.0)
+		and _near(stats.armor.value_at(10), 32.4) and _near(stats.magic_resist.value_at(10), 28.0), "")
 	var knives := pike.get_ranged_ability()
 	_check("knives: 4/s, 5 rounds, regen 1 per 0.5 s", _near(knives.get_ranged_data().shots_per_second, 4.0)
 		and knives.get_max_ammo() == 5 and knives.is_regen() and _near(knives.get_ranged_data().regen_interval, 0.5), "")

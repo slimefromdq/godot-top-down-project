@@ -26,6 +26,7 @@ signal faded
 const GROUP := &"motes"
 const SCENE := "res://scenes/match/mote.tscn"
 const LOOK_RANGE := 500.0
+const MAX_REACH_MULTIPLIER := 4.0
 const LAND_TIME := 0.35
 ## Cosmetic: how long the spawn / landing pop wobbles.
 const POP_TIME := 0.45
@@ -193,10 +194,14 @@ func _physics_process(delta: float) -> void:
 
 
 func _process(_delta: float) -> void:
+	# Cosmetic (the eyes follow the nearest hero): off screen nobody sees it.
+	if not ScreenCull.is_near(self, 60.0):
+		return
 	var nearest: Node2D = null
 	var best := LOOK_RANGE
-	for node in get_tree().get_nodes_in_group(&"heroes"):
-		var hero := node as Hero
+	for hero in _heroes(false):
+		if not is_instance_valid(hero):
+			continue
 		var d := hero.global_position.distance_to(global_position)
 		if d < best and not hero.health_component.is_dead():
 			best = d
@@ -243,12 +248,35 @@ func fade() -> void:
 	queue_free()
 
 
+# The heroes group as typed Heroes, built once per frame for every Mote
+# (`physics` picks which frame counter): dozens of Motes ask each frame.
+static var _hero_cache: Array[Hero] = []
+static var _hero_cache_frame: int = -1
+static var _hero_cache_physics: bool = false
+
+
+func _heroes(physics: bool) -> Array[Hero]:
+	var frame := Engine.get_physics_frames() if physics else Engine.get_process_frames()
+	if frame != _hero_cache_frame or physics != _hero_cache_physics:
+		_hero_cache_frame = frame
+		_hero_cache_physics = physics
+		_hero_cache.clear()
+		for node in get_tree().get_nodes_in_group(&"heroes"):
+			_hero_cache.append(node as Hero)
+	return _hero_cache
+
+
 func _nearest_taker() -> Hero:
 	var best: Hero = null
 	var best_distance := INF
-	for node in get_tree().get_nodes_in_group(&"heroes"):
-		var hero := node as Hero
+	for hero in _heroes(true):
+		if not is_instance_valid(hero):
+			continue
 		var d := hero.global_position.distance_to(global_position)
+		# Reach is at most this many times the base radius (a status can
+		# widen it, Mote Magnet 2x): farther heroes need no status lookup.
+		if d > data.magnet_radius * MAX_REACH_MULTIPLIER:
+			continue
 		# A status can widen a hero's reach (Mote Magnet).
 		var reach := data.magnet_radius * StatusEffectComponent.multiplier_of(hero.status_component,
 			StatusEffect.MOTE_PICKUP_RADIUS)

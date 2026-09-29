@@ -8,8 +8,8 @@
 [resource]
 script = ExtResource("3_a8wwt")
 speed = 1400.0
-lifetime = 0.6
-radius = 20.0
+lifetime = 0.69
+radius = 27.0
 visual_scene = ExtResource("4_aqlvt")
 hit_effect = ExtResource("2_nqsyn")
 expire_effect = ExtResource("1_a6qpt")

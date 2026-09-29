@@ -8,9 +8,9 @@
 [resource]
 script = ExtResource("3_5p6af")
 speed = 4200.0
-lifetime = 0.4
+lifetime = 0.46
 pierce = -1
-radius = 20.0
+radius = 27.0
 visual_scene = ExtResource("4_j803h")
 hit_effect = ExtResource("2_xpsg2")
 expire_effect = ExtResource("1_i0f2y")

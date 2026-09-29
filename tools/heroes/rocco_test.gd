@@ -82,7 +82,7 @@ func _test_haymaker() -> void:
 			_check("full charge: ~280+ damage", punch > 260.0, "%.0f" % punch)
 			_check("and a 400 px knockback", pushed > 350.0, "%.0f px" % pushed)
 		else:
-			_check("tap: ~120 damage", punch > 100.0 and punch < 180.0, "%.0f" % punch)
+			_check("tap: ~120 damage", punch > 100.0 and punch < 200.0, "%.0f" % punch)
 		await clear()
 
 

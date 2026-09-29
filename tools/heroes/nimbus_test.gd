@@ -24,6 +24,7 @@ var spawned: Array[Node] = []
 
 
 func _ready() -> void:
+	GameRules.current().ammo_enabled = true    # this test checks the magazine and reload code
 	CombatEvents.damage_dealt.connect(func(info: DamageInfo): hits_log.append(info))
 	_run.call_deferred()
 
@@ -88,7 +89,7 @@ func _test_rifle() -> void:
 	hits_log.clear()
 	await _shoot(Vector2(800, 0))
 	var weapon := nimbus.stats_component.get_stat(&"weapon")
-	_check("1.6 x Weapon per round", _near(_ratio(), 1.6) and not _hits(a).is_empty() and _near(_hits(a)[0].amount, _ratio() * weapon, 0.5),
+	_check("1.38 x Weapon per round", _near(_ratio(), 1.38) and not _hits(a).is_empty() and _near(_hits(a)[0].amount, _ratio() * weapon, 0.5),
 		"%.1f vs %.1f" % [_hits(a)[0].amount if not _hits(a).is_empty() else 0.0, _ratio() * weapon])
 	_check("pierces one target (hits two)", not _hits(b).is_empty() and _hits(c).is_empty(), "")
 	_check("no crit without a reason", not _hits(a)[0].has_tag(&"crit") if not _hits(a).is_empty() else false, "")
@@ -340,7 +341,7 @@ func _test_overcast() -> void:
 
 # --- Helpers -----------------------------------------------------------------------------------
 
-# The rifle's Weapon ratio, from its data (1.6).
+# The rifle's Weapon ratio, from its data (1.38).
 func _ratio() -> float:
 	return nimbus.get_ranged_ability().data.damage.weapon_ratio
 

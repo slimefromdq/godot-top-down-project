@@ -7,9 +7,9 @@
 
 [sub_resource type="Resource" id="Resource_vnrqo"]
 script = ExtResource("2_hvcnt")
-base = 3.5
-per_level = 0.25
-weapon_ratio = 0.04
+base = 3.78
+per_level = 0.27
+weapon_ratio = 0.0432
 
 [resource]
 script = ExtResource("4_r55xe")

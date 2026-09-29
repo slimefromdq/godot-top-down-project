@@ -88,20 +88,20 @@ After shopping they wait `bot_market_retry_time`.
 Every match one **secret portal** sits at a spot drawn from the
 `island_portal_spawn` markers (seeded, so it differs every game). It is not on
 the minimap and has no arrow. The local player sees a faint shimmer (and hears a
-soft hum) within `island_shimmer_tiles` (10 tiles), the portal itself within
-`island_visible_tiles` (3), and can use it within `island_interact_tiles`
-(1.5). A tile is `tile_size` (160 px, the floor grid).
+soft hum) within `island_shimmer_tiles` (14 tiles), the portal itself within
+`island_visible_tiles` (6), and can use it within `island_interact_tiles`
+(2.5). A tile is `tile_size` (160 px, the floor grid).
 
 Stepping through teleports only that hero to the **Island**: a small walled
 room far off the map (`island_origin`) with a **cache** of `island_cache_motes`
-(8) Motes (normal pickup rules: the carry cap stays, excess Motes stay on the
+(12) Motes (normal pickup rules: the carry cap stays, excess Motes stay on the
 floor). It is an open room: everyone who found the portal is inside together and
 can fight. Visitors leave through the exit portal (interact key) or are sent
-home after `island_stay_time` (12 s), to the spot they left from. Dying on the
+home after `island_stay_time` (18 s), to the spot they left from. Dying on the
 Island just respawns you at your base. While inside, a hero is off every
 minimap.
 
-Every `island_relocate_time` (180 s) the portal despawns and reappears at a new
+Every `island_relocate_time` (150 s) the portal despawns and reappears at a new
 spot (never the same twice in a row), anyone inside is sent home, the cache
 refills, and the HUD gives a faint chime and a soft glow at the screen edges:
 "it moved", with no place in it. Bots ignore the Island
@@ -111,15 +111,16 @@ refills, and the HUD gives a faint chime and a soft glow at the screen edges:
 
 A neutral mote-runner (a `NeutralMonster` with its own brain, `Wanderer`,
 `scenes/match/wanderer.tscn`; body, size and stats from the embedded
-`wanderer_data`). First at `wanderer_first_spawn` (2:00), then
-`wanderer_respawn` (120 s) after it dies or escapes. It meanders quietly and
+`wanderer_data`). First at `wanderer_first_spawn` (1:30), then
+`wanderer_respawn` (100 s) after it dies or escapes. It meanders quietly and
 never attacks.
 
 Each hit that hurts (at least `wanderer_min_hit_damage`, at most one per
 `wanderer_hit_drop_cooldown`, from a hero) **drops `wanderer_motes_per_hit`
 loose Motes** (for anyone; nothing is banked for a team), up to
-`wanderer_max_motes` (6) in all, and it **flees** at `wanderer_flee_speed` (above
-every hero's base speed) until `wanderer_calm_time` (6 s) pass without damage.
+`wanderer_max_motes` (12) in all (`wanderer_motes_per_hit` is 2, the drop
+cooldown 0.15 s), and it **flees** at `wanderer_flee_speed` (480, a little
+above most heroes' base speed) until `wanderer_calm_time` (6 s) pass without damage.
 Killing it drops whatever it still holds and pays the killer
 `wanderer_gold_reward`. It escapes if it lives `wanderer_max_lifetime` or
 survives `wanderer_escape_time` after its first hit.

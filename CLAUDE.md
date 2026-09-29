@@ -8,6 +8,9 @@ Items, shops and neutral objectives (jungle camps, the Nightmare) are in
 (one config: `resources/rules/map_events.tres`) are `docs/MAP_EVENTS.md`; the
 match objective is `docs/OBJECTIVE.md`; menus and the scene flow
 (GameState) are `docs/MENUS_AND_FLOW.md`.
+`docs/FEEL_PATCH.md` lists the last feel/balance patch (no ammo, the faster
+economy, the cast buffs, kill feedback, the MVP screen, the map gap check)
+with its before/after numbers.
 The current design work is in `Six New Heroes Implementation Plan.md` and
 its phase prompts in `Implementation prompts.md`; map work is in
 `Map Liveliness Plan.md` and `Map Liveliness Prompts.md`.

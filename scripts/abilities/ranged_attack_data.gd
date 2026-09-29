@@ -138,7 +138,7 @@ func get_range() -> float:
 # Fire rate, magazine, reload and DPS for the balance CSV. DPS assumes every
 # projectile hits at full damage (no falloff, no charge).
 #   burst_dps      firing continuously, ignoring reloads
-#   sustained_dps  including a full reload every magazine
+#   sustained_dps  including a full reload every magazine (when ammo is on)
 func get_balance_metrics(level: int, weapon: float, magic: float) -> Dictionary:
 	var per_shot := damage.evaluate_at(level, weapon, magic) * projectiles_per_shot if damage != null else 0.0
 	var burst := per_shot * shots_per_second
@@ -147,7 +147,8 @@ func get_balance_metrics(level: int, weapon: float, magic: float) -> Dictionary:
 	if reload_style == ReloadStyle.REGEN and regen_interval > 0.0:
 		# Rounds come back one per interval: that's the long-run fire rate.
 		sustained = minf(burst, per_shot * ammo_per_shot / regen_interval) if ammo_per_shot > 0 else burst
-	elif has_magazine() and shots > 0 and shots_per_second > 0.0:
+	elif GameRules.current().ammo_enabled and has_magazine() and shots > 0 and shots_per_second > 0.0:
+		# (With ammo off, GameRules.ammo_enabled, a magazine gun never reloads.)
 		var cycle := shots / shots_per_second + get_full_reload_time(level)
 		sustained = per_shot * shots / cycle if cycle > 0.0 else burst
 	return {

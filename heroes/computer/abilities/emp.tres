@@ -10,13 +10,13 @@
 [sub_resource type="Resource" id="Resource_a0u3w"]
 script = ExtResource("3_tsmwj")
 kind = 1
-radius = 300.0
+radius = 336
 
 [resource]
 script = ExtResource("5_xtxdj")
 id = &"emp"
 display_name = "EMP"
-description = "Turn the lights off: every enemy within 300 px is silenced for 3 s (they can still shoot)."
+description = "Turn the lights off: every enemy within 336 px is silenced for 3 s (they can still shoot)."
 ability_script = ExtResource("1_0twxv")
 cooldown = 60.0
 hit_shape = SubResource("Resource_a0u3w")

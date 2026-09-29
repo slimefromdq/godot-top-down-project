@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/comet_trail.gd" id="1_c"]
+
+[node name="Comet" type="Node2D"]
+script = ExtResource("1_c")
+length = 130.0
+width = 9.0
+head_color = Color(1,1,0.9,1)
+glow_color = Color(1,0.6,0.85,0.4)
+tail_color = Color(1,0.4,0.7,0)

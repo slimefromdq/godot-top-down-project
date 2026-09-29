@@ -40,18 +40,34 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 
 @export_group("Economy")
 ## Paid to every hero on a team (alive or dead) while the match is PLAYING.
-@export var passive_gold_per_second: float = 2.0
+@export var passive_gold_per_second: float = 2.5
 @export var passive_xp_per_second: float = 4.0
 ## Passive income is paid in chunks this many seconds apart.
 @export var passive_tick_interval: float = 1.0
 ## Paid to the hero who lands the killing blow on an enemy hero.
-@export var kill_gold: float = 150.0
+@export var kill_gold: float = 300.0
 @export var kill_xp: float = 200.0
 ## Paid to each other enemy hero who damaged the victim recently.
-@export var assist_gold: float = 60.0
+@export var assist_gold: float = 120.0
 @export var assist_xp: float = 100.0
 ## How recent that damage must be, in seconds.
 @export var assist_window: float = 10.0
+
+@export_group("MVP")
+## The post-match MVP is the best score on the winning team (the ACE is the
+## best on the losing one). Each weight multiplies one stat of the record.
+@export var mvp_kill_weight: float = 3.0
+@export var mvp_assist_weight: float = 1.5
+@export var mvp_death_weight: float = -1.5
+## Per 1000 damage dealt / taken, and per 1000 health given to allies.
+@export var mvp_damage_dealt_weight: float = 2.0
+@export var mvp_damage_taken_weight: float = 0.5
+@export var mvp_healing_weight: float = 2.0
+## Per Mote value banked and delivered (delivering is worth more).
+@export var mvp_bank_weight: float = 0.4
+@export var mvp_deliver_weight: float = 0.8
+## Bonus for the best kill streak, per kill.
+@export var mvp_streak_weight: float = 0.5
 
 @export_group("Leveling")
 ## XP needed to go from level L to L+1
@@ -309,3 +325,16 @@ func respawn_growth(clock: float) -> float:
 	if respawn_growth_time <= 0.0:
 		return respawn_growth_max
 	return respawn_growth_max * clampf(clock / respawn_growth_time, 0.0, 1.0)
+
+
+## The MVP score of a MatchManager.Record (any object with its stat fields).
+func mvp_score(record: Object) -> float:
+	return record.kills * mvp_kill_weight \
+		+ record.assists * mvp_assist_weight \
+		+ record.deaths * mvp_death_weight \
+		+ record.damage_dealt / 1000.0 * mvp_damage_dealt_weight \
+		+ record.damage_taken / 1000.0 * mvp_damage_taken_weight \
+		+ record.healing_done / 1000.0 * mvp_healing_weight \
+		+ record.motes_banked * mvp_bank_weight \
+		+ record.motes_delivered * mvp_deliver_weight \
+		+ record.best_streak * mvp_streak_weight

@@ -16,8 +16,8 @@
 
 [sub_resource type="Resource" id="Sub_health"]
 script = ExtResource("3_x")
-base = 855.0
-growth = 90.0
+base = 810.0
+growth = 84.0
 
 [sub_resource type="Resource" id="Sub_weapon"]
 script = ExtResource("3_x")
@@ -27,12 +27,12 @@ growth = 3.8889
 [sub_resource type="Resource" id="Sub_magic"]
 script = ExtResource("3_x")
 base = 30.0
-growth = 5.5556
+growth = 5.0
 
 [sub_resource type="Resource" id="Sub_armor"]
 script = ExtResource("3_x")
-base = 40.0
-growth = 3.8889
+base = 38.0
+growth = 3.5
 
 [sub_resource type="Resource" id="Sub_mr"]
 script = ExtResource("3_x")

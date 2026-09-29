@@ -8,14 +8,14 @@
 
 [sub_resource type="Resource" id="Resource_bdfj1"]
 script = ExtResource("2_yj5ob")
-base = 300.0
-per_level = 12.0
-weapon_ratio = 0.5
+base = 324.0
+per_level = 12.96
+weapon_ratio = 0.54
 
 [sub_resource type="Resource" id="Resource_drfqj"]
 script = ExtResource("3_dcpba")
 kind = 1
-radius = 100.0
+radius = 112
 
 [resource]
 script = ExtResource("5_r3uq7")
@@ -24,7 +24,7 @@ speed = 2600.0
 telegraph_time = 0.35
 id = &"main_event"
 display_name = "Main Event"
-description = "Point, pose, then launch yourself 1500 px in a straight line, fist first: 300 damage and a 750 px knockback to everyone you hit."
+description = "Point, pose, then launch yourself 1500 px in a straight line, fist first: 324 damage and a 750 px knockback to everyone you hit."
 ability_script = ExtResource("1_fgtji")
 cooldown = 80.0
 hit_shape = SubResource("Resource_drfqj")

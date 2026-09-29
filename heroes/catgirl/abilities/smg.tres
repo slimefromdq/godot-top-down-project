@@ -7,21 +7,21 @@
 
 [sub_resource type="Resource" id="Resource_qyi7a"]
 script = ExtResource("2_jv5de")
-base = 5.0
-per_level = 0.25
-weapon_ratio = 0.05
+base = 5.4
+per_level = 0.27
+weapon_ratio = 0.054
 
 [resource]
 script = ExtResource("4_b424w")
 projectile = ExtResource("3_hnl1f")
 spread_degrees = 14.0
 shots_per_second = 12.0
-falloff_start = 250.0
-falloff_end = 500.0
+falloff_start = 290.0
+falloff_end = 575.0
 falloff_min_multiplier = 0.5
 id = &"smg"
 display_name = "Pawn-Shop SMG"
-description = "Hold to spray (12 shots/s). Wild and short-ranged: full damage to 250 px, half at 500."
+description = "Hold to spray (12 shots/s). Wild and short-ranged: full damage to 290 px, half at 575."
 ability_script = ExtResource("1_lndea")
 cooldown = 0.0
 damage = SubResource("Resource_qyi7a")

@@ -5,6 +5,8 @@
 * Sight lanes must be clear of hard walls and crystal (shots must get
   through), and are reported in screens. Pits, crystal and every other
   obstacle block walking in the flood fills below; grass blocks nothing.
+* No awkward gaps: nothing that blocks a body sits closer to another such
+  thing than a body is wide without touching it (gaps.py shuts them).
 * Every jump-pad launch/landing and teleporter end must be standable.
 * Walking: every area is reachable on foot from both spawns and can walk
   back to both, and every jump pad / launch flower is an optional shortcut
@@ -896,6 +898,14 @@ def main():
             print(f"  TOO CLOSE: {name} at {p} ({d:.0f}px from cover)")
             ok = False
     print("  checked", len(pts), "points")
+
+    print("== No awkward gaps (nothing narrower than a body but not shut) ==")
+    from gaps import find_gaps
+    gap_list = find_gaps(m, HX, HY)
+    for dist, at, a, b in gap_list[:20]:
+        print(f"  {dist:5.1f}px at ({at[0]:.0f}, {at[1]:.0f}): {a} / {b}")
+    print(f"  {len(gap_list)} found")
+    ok &= not gap_list
 
     print("== Reachability (100px body, one-way ledges) ==")
     grid = build_grid(m)

@@ -39,6 +39,13 @@ const DEFAULT_PATH := "res://resources/rules/game_rules.tres"
 ## duration is ignored: resolve_duration is used.
 @export var resolve_status: StatusEffect
 
+@export_group("Guns")
+## Off: guns fire continuously (no magazine, reload or dry click), whatever
+## their data says. Guns whose ammo REGENERATES (`reload_style = REGEN`: a
+## hero's own charges, like Cosmo's moons) keep working, since they never
+## reload. The ammo code stays for maps or modes that turn it on.
+@export var ammo_enabled: bool = false
+
 @export_group("Ability slots")
 ## Every slot a hero can have, in HUD order.
 @export var slots: Array[SlotDefinition] = []

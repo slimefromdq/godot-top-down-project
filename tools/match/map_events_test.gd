@@ -75,6 +75,7 @@ func _run() -> void:
 	await _frames(3)
 
 	_test_config()
+	_pin_test_numbers()
 	await _test_market_schedule()
 	await _test_market_shop()
 	await _test_market_items()
@@ -95,6 +96,22 @@ func _run() -> void:
 
 # --- Config -----------------------------------------------------------------------------
 
+# The checks below were written around round numbers (180 s periods, an 8 Mote
+# cache, 1 Mote a hit ...). The shipped values are asserted in _test_config;
+# from here on this match's private copy runs on the numbers they expect.
+func _pin_test_numbers() -> void:
+	cfg.island_relocate_time = 180.0
+	cfg.island_cache_motes = 8
+	cfg.island_stay_time = 12.0
+	cfg.island_shimmer_tiles = 10.0
+	cfg.island_visible_tiles = 3.0
+	cfg.island_interact_tiles = 1.5
+	cfg.wanderer_first_spawn = 120.0
+	cfg.wanderer_respawn = 120.0
+	cfg.wanderer_motes_per_hit = 1
+	cfg.wanderer_max_motes = 6
+	cfg.wanderer_hit_drop_cooldown = 0.25
+
 func _test_config() -> void:
 	print("\n-- Config")
 	var defaults := load("res://resources/rules/map_events.tres") as MapEventRules
@@ -110,12 +127,13 @@ func _test_config() -> void:
 	var ids: Array = cfg.blackmarket_items.map(func(i): return i.id)
 	for id in [&"overclock", &"glass_cannon", &"phase_cloak", &"mote_magnet", &"second_wind"]:
 		_check("stock has %s" % id, ids.has(id), str(ids))
-	_check("island: 180 s relocation, 8 cache Motes, 12 s stay", cfg.island_relocate_time == 180.0
-		and cfg.island_cache_motes == 8 and cfg.island_stay_time == 12.0, "")
-	_check("island: shimmer 10 tiles, visible 3", cfg.island_shimmer_tiles == 10.0 and cfg.island_visible_tiles == 3.0, "")
-	_check("wanderer: 2:00, respawn 120 s, 1 Mote per hit up to 6, calms after 6 s",
-		cfg.wanderer_first_spawn == 120.0 and cfg.wanderer_respawn == 120.0 and cfg.wanderer_motes_per_hit == 1
-		and cfg.wanderer_max_motes == 6 and cfg.wanderer_calm_time == 6.0, "")
+	_check("island: 150 s relocation, 12 cache Motes, 18 s stay", cfg.island_relocate_time == 150.0
+		and cfg.island_cache_motes == 12 and cfg.island_stay_time == 18.0, "")
+	_check("island: shimmer 14 tiles, visible 6, use from 2.5", cfg.island_shimmer_tiles == 14.0
+		and cfg.island_visible_tiles == 6.0 and cfg.island_interact_tiles == 2.5, "")
+	_check("wanderer: 1:30, respawn 100 s, 2 Motes per hit up to 12, calms after 6 s",
+		cfg.wanderer_first_spawn == 90.0 and cfg.wanderer_respawn == 100.0 and cfg.wanderer_motes_per_hit == 2
+		and cfg.wanderer_max_motes == 12 and cfg.wanderer_calm_time == 6.0, "")
 	var fastest := 0.0
 	for path in ["avery", "butler", "cosmo", "cpt_yellow", "hazmat", "jose", "melody", "nimbus", "pike", "sam", "tilly"]:
 		var definition = load("res://heroes/%s/%s_definition.tres" % [path, path])

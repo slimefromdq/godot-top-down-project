@@ -65,9 +65,9 @@ func _on_match_ended(winner_team: StringName) -> void:
 	if woken:
 		await _play_wake_sequence()
 	get_tree().paused = true
-	# Launched from the menus: the end-of-match screen, back to the menu.
+	# Any match with a manager: the end-of-match screen (MVP, scoreboard).
 	var manager := MatchManager.find(get_tree())
-	if GameState.in_launched_game and manager != null:
+	if manager != null:
 		end_screen.show_result(GameState.finish_match(manager, winner_team))
 		return
 	var title := "%s VICTORY" % MatchManager.team_name(winner_team).to_upper()

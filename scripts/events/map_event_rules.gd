@@ -63,17 +63,17 @@ class_name MapEventRules
 @export var island_first_spawn_time: float = 0.0
 ## The portal moves to a NEW hidden spot this often (never the same twice
 ## in a row).
-@export var island_relocate_time: float = 180.0
+@export var island_relocate_time: float = 150.0
 ## Motes in the cache (refilled every relocation).
-@export var island_cache_motes: int = 8
+@export var island_cache_motes: int = 12
 ## Most seconds a visitor stays before being sent home (0 = no limit).
-@export var island_stay_time: float = 12.0
+@export var island_stay_time: float = 18.0
 ## A subtle shimmer and sound for the local player within this many tiles...
-@export var island_shimmer_tiles: float = 10.0
+@export var island_shimmer_tiles: float = 14.0
 ## ...and fully visible within this many.
-@export var island_visible_tiles: float = 3.0
+@export var island_visible_tiles: float = 6.0
 ## Stepping this close (in tiles) lets you use it.
-@export var island_interact_tiles: float = 1.5
+@export var island_interact_tiles: float = 2.5
 ## The island lives here in world space, far outside the map.
 @export var island_origin: Vector2 = Vector2(24000.0, 0.0)
 ## Its inside size (walls are built around it).
@@ -87,17 +87,17 @@ class_name MapEventRules
 
 @export_group("Wanderer")
 ## Match-clock seconds of the first spawn (2:00).
-@export var wanderer_first_spawn: float = 120.0
+@export var wanderer_first_spawn: float = 90.0
 ## Seconds after it dies or escapes before the next one.
-@export var wanderer_respawn: float = 120.0
+@export var wanderer_respawn: float = 100.0
 ## Each hit that hurts it drops this many Motes...
-@export var wanderer_motes_per_hit: int = 1
+@export var wanderer_motes_per_hit: int = 2
 ## ...up to this many in total; it dies holding what is left.
-@export var wanderer_max_motes: int = 6
+@export var wanderer_max_motes: int = 12
 ## A hit must deal at least this much to drop Motes, and hits closer together
 ## than the cooldown count as one (damage over time can't farm it).
 @export var wanderer_min_hit_damage: float = 1.0
-@export var wanderer_hit_drop_cooldown: float = 0.25
+@export var wanderer_hit_drop_cooldown: float = 0.15
 ## Gold for the killer (a small reward; XP is 0).
 @export var wanderer_gold_reward: float = 75.0
 ## Seconds without damage before it calms down and wanders again.

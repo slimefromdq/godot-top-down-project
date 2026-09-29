@@ -202,7 +202,10 @@ filtered VFX, the map obstacle types, wall slams) are covered by
 `semi_input_buffer` still fire), `shots_per_second` (scaled by the FIRE_RATE
 status multiplier), `projectiles_per_shot` + `spread_degrees` +
 `spread_pattern` (RANDOM or EVEN fan), `muzzles` (offsets cycled per shot),
-`magazine_size` (0 = infinite), `ammo_per_shot`, `reload_time` /
+`magazine_size` (0 = infinite; **ignored while `GameRules.ammo_enabled` is
+off, which is the default: guns fire continuously, nothing reloads and the
+HUD shows no ammo; only REGEN guns keep their charges.** Turn the flag on in `game_rules.tres` or in a test to
+use magazines, REGEN ammo and reloads again), `ammo_per_shot`, `reload_time` /
 `reload_per_level`, `reload_style` FULL or PER_ROUND (one round per
 `reload_time`, firing interrupts), `auto_reload_when_empty`, and
 `falloff_start` / `falloff_end` / `falloff_min_multiplier`. R (`hero_reload`)

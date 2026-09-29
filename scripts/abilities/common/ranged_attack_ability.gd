@@ -82,8 +82,12 @@ func get_ammo() -> int:
 	return _ammo
 
 
-# 0 = infinite magazine.
+# 0 = infinite magazine. While GameRules.ammo_enabled is off every magazine
+# gun is infinite; a REGEN gun keeps its charges, because those are a hero's
+# mechanic (Cosmo's moons, Pike's knives) and never reload.
 func get_max_ammo() -> int:
+	if not GameRules.current().ammo_enabled and not is_regen():
+		return 0
 	if _max_ammo_override >= 0:
 		return _max_ammo_override
 	var ranged := get_ranged_data()

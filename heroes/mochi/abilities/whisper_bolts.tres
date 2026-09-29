@@ -7,9 +7,9 @@
 
 [sub_resource type="Resource" id="Resource_uj1mt"]
 script = ExtResource("2_k5pom")
-base = 9.0
-per_level = 0.8
-magic_ratio = 0.12
+base = 9.72
+per_level = 0.864
+magic_ratio = 0.1296
 
 [sub_resource type="Resource" id="Resource_eor4f"]
 script = ExtResource("2_k5pom")

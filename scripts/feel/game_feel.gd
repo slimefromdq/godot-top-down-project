@@ -24,6 +24,9 @@ func _ready() -> void:
 	settings = load(SETTINGS_PATH) if ResourceLoader.exists(SETTINGS_PATH) else FeelSettings.new()
 	# A private copy, so live tweaks (debug panel) don't write to disk.
 	settings = settings.duplicate()
+	# Handle every mouse/pad event as it arrives, not one merged event per
+	# frame: aim and clicks land a frame sooner and feel snappier.
+	Input.use_accumulated_input = false
 
 
 # Is this node the player sitting at this screen? Only their hits and hurts

@@ -522,6 +522,24 @@ scene. Impact look and sound are exports on the root: **Hit Effect**,
 **Wall Effect**, **Hit Sound**, **Wall Sound**. The victim's own `hurt` cue
 still plays, so leave Hit Sound empty unless you want an extra layer.
 
+### Shared projectile look: CometTrail
+
+`scripts/visuals/comet_trail.gd` draws a glowing head, a soft halo and a
+tapering tail along -x (additive blend, a gentle pulse). Make a scene whose
+root uses it, set `length`, `width`, `head_color`, `glow_color` and
+`tail_color`, and put it in a `ProjectileData.visual_scene`. The cast heroes'
+guns and grenades use one each (`heroes/<hero>/vfx/comet_*.tscn`).
+
+### The kill marker and sound
+
+`scenes/hud/kill_feedback.gd` (the MatchHud adds one) listens to
+`MatchManager.hero_killed`. When the local player lands the killing blow it
+plays `resources/audio/sfx/kill_confirm.tres` (a flat, non-positional cue
+whose pitch climbs with your streak) and shows a crosshair X with
+"ELIMINATED", the victim's name and the gold it paid; quick repeats read
+DOUBLE / TRIPLE / QUADRA / PENTA KILL. An assist gets a small, quieter
+"ASSIST" marker. It only reads the match, so no hero needs a cue for it.
+
 ## Music
 
 `AudioManager` (autoload) keeps a priority list of music requests and
