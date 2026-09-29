@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" path="res://sprites/heroes/cpt_yellow.svg" id="placeholder_body"]
 [ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="1_x"]
+[ext_resource type="PackedScene" path="res://heroes/cpt_yellow/art/cpt_yellow_live_rig.tscn" id="16_x"]
 [ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="2_x"]
 [ext_resource type="PackedScene" path="res://heroes/cpt_yellow/vfx/bug_army.tscn" id="3_x"]
 [ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="4_x"]
@@ -124,10 +125,9 @@ align_to_direction = false
 [resource]
 script = ExtResource("1_x")
 texture = ExtResource("placeholder_body")
-body_scale = Vector2(0.85, 0.85)
+body_scale = Vector2(0.3, 0.3)
 body_tint = Color(1, 1, 1, 0)
-flip_to_face_aim = false
-body_offset = Vector2(0, -34)
+live_rig = ExtResource("16_x")
 cues = Dictionary[StringName, ExtResource("2_x")]({
 &"spawn": SubResource("Cue_spawn"),
 &"hurt": SubResource("Cue_hurt"),
