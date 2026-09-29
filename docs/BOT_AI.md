@@ -66,6 +66,16 @@ movement abilities for travel; an escort turns to fight only near its
 carrier. This keeps fights local instead of every bot converging on the
 nearest brawl.
 
+### Per-ability timing
+
+Bots cast any ready slot whose range allows it. An ability whose recast
+needs judgment overrides `Ability.bot_should_use(target_point)` (default
+true) to hold it: Mochi's Tentacle places whenever it's ready but only swaps
+below `values/bot_swap_health` of max health or when the tentacle is about to
+expire. Hold abilities (Burnout, Brake) are held for `BotRules.held_duration`
+like any other. Bots don't aim at deployables (turrets, drones, tentacles):
+they're hit only when they're in the way.
+
 ### Ultimates
 
 In a match every hero starts with no ultimate and charges it by playing (see

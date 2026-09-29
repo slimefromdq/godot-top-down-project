@@ -1,0 +1,67 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="1_pq806"]
+[ext_resource type="Resource" path="res://heroes/rocco/abilities/jab_combo.tres" id="2_wen0u"]
+[ext_resource type="Resource" path="res://heroes/rocco/abilities/haymaker.tres" id="3_8nu3g"]
+[ext_resource type="Resource" path="res://heroes/rocco/abilities/jumping_slam.tres" id="4_jvnqh"]
+[ext_resource type="Resource" path="res://heroes/rocco/abilities/cheap_shot.tres" id="5_y243x"]
+[ext_resource type="Resource" path="res://heroes/rocco/abilities/main_event.tres" id="6_2hkso"]
+[ext_resource type="Resource" path="res://heroes/rocco/rocco_audio.tres" id="7_w5xin"]
+[ext_resource type="Resource" path="res://heroes/rocco/rocco_feel.tres" id="8_h7h8s"]
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="9_ia4ul"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="10_rwlns"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="11_4j4m4"]
+[ext_resource type="Resource" path="res://heroes/rocco/rocco_visuals.tres" id="12_rm0xd"]
+
+[sub_resource type="Resource" id="Resource_vcgas"]
+script = ExtResource("10_rwlns")
+base = 22.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_3w5y2"]
+script = ExtResource("10_rwlns")
+base = 560.0
+growth = 55.555600000000005
+
+[sub_resource type="Resource" id="Resource_nsp32"]
+script = ExtResource("10_rwlns")
+base = 10.0
+growth = 0.8889
+
+[sub_resource type="Resource" id="Resource_61f8q"]
+script = ExtResource("10_rwlns")
+base = 18.0
+growth = 1.5556
+
+[sub_resource type="Resource" id="Resource_aae44"]
+script = ExtResource("10_rwlns")
+base = 42.0
+growth = 6.0
+
+[sub_resource type="Resource" id="Resource_e3dta"]
+script = ExtResource("11_4j4m4")
+health = SubResource("Resource_3w5y2")
+weapon = SubResource("Resource_aae44")
+magic = SubResource("Resource_nsp32")
+armor = SubResource("Resource_vcgas")
+magic_resist = SubResource("Resource_61f8q")
+
+[resource]
+script = ExtResource("9_ia4ul")
+hero_id = &"rocco"
+display_name = "Rocco"
+title = "The Heel"
+role = 2
+description = "A cocky heel boxer-wrestler who fights dirty. Every knockback he throws is slam-capable: put someone into a wall and it hurts a lot more."
+stats = SubResource("Resource_e3dta")
+move_speed = 510.0
+abilities = Dictionary[StringName, ExtResource("1_pq806")]({
+&"ability_1": ExtResource("3_8nu3g"),
+&"cc": ExtResource("5_y243x"),
+&"movement": ExtResource("4_jvnqh"),
+&"primary": ExtResource("2_wen0u"),
+&"ultimate": ExtResource("6_2hkso")
+})
+feel_profile = ExtResource("8_h7h8s")
+visual_profile = ExtResource("12_rm0xd")
+audio_profile = ExtResource("7_w5xin")

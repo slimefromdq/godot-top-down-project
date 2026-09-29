@@ -18,6 +18,9 @@ var last_enemy_count: int = 0
 ## Strength the last cast applied its status at.
 var last_strength: float = 0.0
 var _holding := false
+# hold_meter_seconds: fuel 0..1, and the last trail drop point.
+var meter: float = 1.0
+var _last_trail := Vector2.INF
 
 
 func get_self_status_data() -> SelfStatusData:
@@ -33,6 +36,48 @@ func is_held() -> bool:
 			or not actor.status_component.has_status_from(self_data.self_status.id, actor):
 		_holding = false    # ran its full duration, or was cleansed
 	return _holding
+
+
+func uses_meter() -> bool:
+	var self_data := get_self_status_data()
+	return self_data != null and self_data.hold_to_keep and self_data.hold_meter_seconds > 0.0
+
+
+func get_hud_meter() -> float:
+	return meter if uses_meter() else super()
+
+
+func get_block_reason() -> String:
+	var reason := super()
+	if reason == "" and uses_meter() and meter < get_self_status_data().hold_meter_min:
+		return "Empty"
+	return reason
+
+
+func _is_silent_block(reason: String) -> bool:
+	return super(reason) or reason == "Empty"
+
+
+func _physics_process(delta: float) -> void:
+	super(delta)
+	var self_data := get_self_status_data()
+	if self_data == null or not self_data.hold_to_keep:
+		return
+	var holding := is_held()
+	if uses_meter():
+		if holding:
+			meter = maxf(meter - delta / self_data.hold_meter_seconds, 0.0)
+			if meter <= 0.0:
+				release_hold(Vector2.ZERO)
+				holding = false
+		else:
+			meter = minf(meter + delta / maxf(self_data.hold_meter_recharge_seconds, 0.01), 1.0)
+	if holding and self_data.hold_trail_zone != null:
+		if _last_trail == Vector2.INF or actor.global_position.distance_to(_last_trail) >= self_data.hold_trail_spacing:
+			_last_trail = actor.global_position
+			GroundZone.spawn(actor, self_data.hold_trail_zone, actor.global_position, actor.velocity.normalized(), actor)
+	elif not holding:
+		_last_trail = Vector2.INF
 
 
 func release_hold(_target_position: Vector2) -> bool:

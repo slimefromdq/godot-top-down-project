@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_6ahjw"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_wfk2c"]
+
+[resource]
+script = ExtResource("1_6ahjw")
+id = &"mochi_stare"
+display_name = "Petrified"
+duration = 1.5
+stuns = true
+body_tint = Color(0.7, 0.3, 0.9, 0.4)

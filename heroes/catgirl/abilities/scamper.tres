@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/charge_ability.gd" id="1_8nxxb"]
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="2_mwg3j"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_uujlg"]
+
+[resource]
+script = ExtResource("2_mwg3j")
+direction_mode = 1
+distance = 200.0
+speed = 2000.0
+id = &"scamper"
+display_name = "Scamper"
+description = "Dart 200 px the way you're moving. Four charges, each back in 3 s."
+ability_script = ExtResource("1_8nxxb")
+cooldown = 3.0
+max_charges = 4
+tags = Array[StringName]([&"movement"])
+feel_preset = &"dash"

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="GroundZoneData" format=3]
+
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/gadgets_blast.tres" id="1_0hn3o"]
+[ext_resource type="Script" path="res://scripts/combat/ground_zone_data.gd" id="2_et8ri"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_sbc0d"]
+
+[sub_resource type="Resource" id="Resource_4kith"]
+script = ExtResource("3_sbc0d")
+kind = 1
+radius = 90.0
+
+[resource]
+script = ExtResource("2_et8ri")
+shape = SubResource("Resource_4kith")
+duration = 8.0
+meter_label = &"gadgets_oil"
+detonation = ExtResource("1_0hn3o")
+detonated_by_owner_status = &"gadgets_drive"
+max_per_owner = 2
+color = Color(0.1, 0.05, 0.1, 0.5)

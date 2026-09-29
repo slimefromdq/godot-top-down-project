@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="LaunchData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/launch_ability.gd" id="1_3gmlv"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_svgku"]
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="3_1o0wg"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="4_h62vl"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/gadgets_slam_slow.tres" id="5_1xut4"]
+[ext_resource type="Script" path="res://scripts/abilities/launch_data.gd" id="6_c7n66"]
+
+[sub_resource type="Resource" id="Resource_xcc5c"]
+script = ExtResource("2_svgku")
+base = 30.0
+
+[sub_resource type="Resource" id="Resource_bwp6o"]
+script = ExtResource("3_1o0wg")
+windup = 0.0
+active = 0.02
+recovery = 0.05
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+
+[sub_resource type="Resource" id="Resource_3wjxt"]
+script = ExtResource("4_h62vl")
+kind = 1
+
+[resource]
+script = ExtResource("6_c7n66")
+max_distance = 500.0
+air_time = 0.5
+landing_hit_shape = SubResource("Resource_3wjxt")
+id = &"gadget_leap"
+display_name = "Leap Slam"
+description = "TEST: LaunchData landing_hit_shape (a slam and a slow on landing)."
+ability_script = ExtResource("1_3gmlv")
+cooldown = 3.0
+damage = SubResource("Resource_xcc5c")
+on_hit_status = ExtResource("5_1xut4")
+tags = Array[StringName]([&"movement"])
+feel_override = SubResource("Resource_bwp6o")

@@ -78,6 +78,13 @@ const DEFAULT_PATH := "res://resources/rules/game_rules.tres"
 ## A hit's knockback (an impulse, not a timed push) still counts as a
 ## knockback for this long (s), while it slides to a stop.
 @export var wall_impact_window: float = 0.35
+## Wall slam bonus (StatusEffect.slam_bonus_ratio): an impact at this speed
+## (px/s) or faster adds the full ratio of the hit's damage; slower impacts
+## add proportionally less.
+@export var wall_slam_full_speed: float = 2400.0
+## Degrees per second an aim may turn while a TURN_RATE multiplier below 1
+## is on the hero (0.5 = half this). Heroes without one turn instantly.
+@export var limited_turn_rate_degrees: float = 540.0
 ## Grass (Bush): an enemy this close (px) sees you inside it anyway.
 @export var grass_reveal_radius: float = 220.0
 ## Grass: using any ability (shooting included) shows you to everyone for

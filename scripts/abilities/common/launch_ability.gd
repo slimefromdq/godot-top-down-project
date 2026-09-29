@@ -59,4 +59,29 @@ func _on_landed() -> void:
 	var launch := get_launch_data()
 	if launch.landing_status != null:
 		actor.status_component.apply(launch.landing_status, actor)
+	if launch.landing_hit_shape != null:
+		_slam(launch)
 	actor.trigger_cue(StringName(str(ability_id) + "_land"), {"position": actor.global_position})
+
+
+# LaunchData.landing_hit_shape: damage and on_hit_status on enemies around
+# the landing spot. Cue: <id>_slam (context.position, .radius, .targets).
+func _slam(launch: LaunchData) -> void:
+	var amount := launch.damage.evaluate(get_stats()) if launch.damage != null else 0.0
+	amount *= StatusEffectComponent.multiplier_of(actor.status_component, StatusEffect.DAMAGE)
+	var attack_id := DamageInfo.new_attack_id()
+	var hits := 0
+	for hurtbox in Hitbox.query(actor, actor.global_position, cast_direction, launch.landing_hit_shape, actor):
+		var info := DamageInfo.create(amount, actor, launch.damage_type)
+		info.attack_id = attack_id
+		info.label = launch.get_label()
+		info.tags = launch.tags.duplicate()
+		info.tags.append(DamageInfo.TAG_AREA)
+		var away := actor.global_position.direction_to(hurtbox.global_position)
+		info.direction = away if away != Vector2.ZERO else cast_direction
+		info.hit_position = hurtbox.global_position
+		info.add_status(launch.on_hit_status)
+		hurtbox.take_hit(info)
+		hits += 1
+	actor.trigger_cue(StringName(str(ability_id) + "_slam"), {"position": actor.global_position,
+		"radius": launch.landing_hit_shape.get_reach(), "targets": hits})

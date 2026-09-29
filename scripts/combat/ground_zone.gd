@@ -27,6 +27,10 @@ signal target_exited(hurtbox: HurtboxComponent)
 signal ended
 ## Death intercept (GroundZoneData.intercepts_deaths): this ally was saved.
 signal death_intercepted(hurtbox: HurtboxComponent)
+## Detonated (GroundZoneData.detonation) at `at`, just before it ends.
+signal detonated(at: Vector2)
+
+const GROUP := &"ground_zones"
 
 var data: GroundZoneData
 var source: Node
@@ -66,12 +70,67 @@ static func spawn(context: Node, zone_data: GroundZoneData, at: Vector2, dir: Ve
 	# sits at the origin, so position == global here.)
 	zone.position = at
 	zone._follow_owner()
+	if zone_data.max_per_owner > 0:
+		var mine := GroundZone.find_owned(context.get_tree(), from, zone_data.meter_label)
+		while mine.size() >= zone_data.max_per_owner:
+			mine.pop_front().end()
 	context.get_tree().current_scene.add_child(zone)
 	zone.global_position = at if not zone_data.follow_owner else zone.global_position
 	return zone
 
 
+## Live zones of `owner_node` with this meter label (all if empty), oldest
+## first.
+static func find_owned(tree: SceneTree, owner_node: Node, label: StringName = &"") -> Array[GroundZone]:
+	var result: Array[GroundZone] = []
+	for node in tree.get_nodes_in_group(GROUP):
+		var zone := node as GroundZone
+		if zone != null and not zone._ended and zone.source == owner_node \
+				and (label == &"" or zone.data.meter_label == label):
+			result.append(zone)
+	return result
+
+
+func can_detonate() -> bool:
+	return not _ended and data.detonation != null
+
+
+## Blow it up: the data's detonation template goes off here as the owner's
+## hit, then the zone ends (its leaves_zone still spawns). Returns the blast
+## (a Projectile running only its explosion), or null.
+func detonate() -> Projectile:
+	if not can_detonate():
+		return null
+	var owner_node := _owner_source()
+	var template := DamageInfo.create(0.0, owner_node, damage_type_of_detonation())
+	template.label = data.detonation.explosion_label if data.detonation.explosion_label != &"" else StringName(str(data.meter_label) + "_detonation")
+	var blast := Projectile.explode_at(self, data.detonation, global_position, direction, template)
+	detonated.emit(global_position)
+	if owner_node != null and owner_node.has_method(&"trigger_cue"):
+		owner_node.trigger_cue(StringName(str(data.meter_label) + "_detonate"), {"position": global_position})
+	end()
+	return blast
+
+
+func damage_type_of_detonation() -> DamageInfo.Type:
+	return data.damage_type
+
+
+func _check_detonation_trigger() -> void:
+	if data.detonation == null or data.detonated_by_owner_status == &"" or data.shape == null:
+		return
+	var owner_2d := _owner_source() as Node2D
+	if owner_2d == null:
+		return
+	var status := CombatQueries.status_of(owner_2d)
+	if status == null or not status.has_status(data.detonated_by_owner_status):
+		return
+	if global_position.distance_to(owner_2d.global_position) <= data.shape.get_reach():
+		detonate()
+
+
 func _ready() -> void:
+	add_to_group(GROUP)
 	add_to_group(&"bot_zones")
 	if data.visual_scene != null:
 		var visual := data.visual_scene.instantiate()
@@ -134,6 +193,9 @@ func _physics_process(delta: float) -> void:
 		return
 	_age += delta
 	_follow_owner()
+	_check_detonation_trigger()
+	if _ended:
+		return
 	_update_inside()
 	_touch_ramps()
 	_tick_timer += delta

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="MochiGazeData" format=3]
+
+[ext_resource type="Script" path="res://heroes/mochi/abilities/cone_stare.gd" id="1_kttkv"]
+[ext_resource type="Script" path="res://scripts/abilities/attack_step.gd" id="2_gvtwd"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_k67h7"]
+[ext_resource type="Resource" path="res://heroes/mochi/data/mochi_stare_stun.tres" id="4_0mh1c"]
+[ext_resource type="Script" path="res://heroes/mochi/abilities/mochi_gaze_data.gd" id="5_fhwnh"]
+[ext_resource type="Resource" path="res://heroes/mochi/data/mochi_mr_shred.tres" id="6_4tfxe"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="7_1gt4b"]
+
+[sub_resource type="Resource" id="Resource_07bhy"]
+script = ExtResource("3_k67h7")
+radius = 300.0
+arc_degrees = 90.0
+
+[resource]
+script = ExtResource("5_fhwnh")
+shred_status = ExtResource("6_4tfxe")
+id = &"cone_stare"
+display_name = "Cone Stare"
+description = "Open every eye (0.6 s, shown on the ground; a stun stops it): everyone in a 300 px, 90° cone is stunned for 1.5 s and loses 30% Magic Resist for 5 s."
+ability_script = ExtResource("1_kttkv")
+cooldown = 70.0
+hit_shape = SubResource("Resource_07bhy")
+on_hit_status = ExtResource("4_0mh1c")
+tags = Array[StringName]([&"ability", &"ultimate"])
+feel_preset = &"stare"

@@ -36,6 +36,8 @@ var feel_profile: FeelProfile
 
 var _applied := false
 var _layer_before_death: int = 0
+# The aim actually in use while a TURN_RATE slow limits turning.
+var _turned_aim := Vector2.ZERO
 
 
 # Runs BEFORE any child's _ready. Components like VisualsComponent and
@@ -54,6 +56,7 @@ func _enter_tree() -> void:
 	movement.move_speed = definition.move_speed
 	movement.acceleration = definition.acceleration
 	movement.friction = definition.friction
+	movement.traction = definition.traction
 	if definition.visual_profile != null:
 		(get_node(^"Visuals") as VisualsComponent).profile = definition.visual_profile
 	if definition.audio_profile != null:
@@ -85,9 +88,37 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	_limit_turn(delta)
 	velocity = movement_component.get_velocity(velocity, move_direction, delta)
 	move_and_slide()
 	movement_component.after_slide(self)
+
+
+# A TURN_RATE multiplier below 1 (Overdrive) caps how fast the aim turns:
+# the controller's wanted aim is chased at GameRules.limited_turn_rate x
+# the multiplier, and aim_direction / aim_point follow the turned aim.
+func _limit_turn(delta: float) -> void:
+	var mult := StatusEffectComponent.multiplier_of(status_component, StatusEffect.TURN_RATE)
+	if mult >= 1.0 or aim_direction == Vector2.ZERO:
+		_turned_aim = aim_direction
+		return
+	if _turned_aim == Vector2.ZERO:
+		_turned_aim = aim_direction
+	var step := deg_to_rad(GameRules.current().limited_turn_rate_degrees) * maxf(mult, 0.0) * delta
+	var angle := _turned_aim.angle_to(aim_direction)
+	_turned_aim = _turned_aim.rotated(clampf(angle, -step, step)).normalized()
+	var reach := maxf(global_position.distance_to(aim_point), 1.0)
+	aim_direction = _turned_aim
+	aim_point = global_position + _turned_aim * reach
+
+
+# `point` pulled onto the turned aim while turning is limited (a cast
+# started by the controller before this tick's _limit_turn). Unchanged
+# otherwise.
+func limit_aim_point(point: Vector2) -> Vector2:
+	if _turned_aim == Vector2.ZERO or StatusEffectComponent.multiplier_of(status_component, StatusEffect.TURN_RATE) >= 1.0:
+		return point
+	return global_position + _turned_aim * maxf(global_position.distance_to(point), 1.0)
 
 
 # The one entry point for "use the ability in this slot".

@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_hblm4"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="2_otdir"]
+[ext_resource type="PackedScene" path="res://effects/feel/telegraph_line.tscn" id="3_yeyu1"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="4_lumin"]
+[ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="5_6keki"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="6_qrr0g"]
+[ext_resource type="Texture2D" path="res://sprites/heroes/rocco.svg" id="7_nu7xa"]
+
+[sub_resource type="Resource" id="Resource_0vvnt"]
+script = ExtResource("1_hblm4")
+flash_color = Color(1, 0.3, 0.25, 0.9)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_yb13n"]
+script = ExtResource("1_hblm4")
+effect_scene = ExtResource("2_otdir")
+tint = Color(1, 0.8, 0.3, 1)
+
+[sub_resource type="Resource" id="Resource_uk7ek"]
+script = ExtResource("1_hblm4")
+effect_scene = ExtResource("3_yeyu1")
+attach_to_actor = true
+tint = Color(1, 0.8, 0.3, 1)
+
+[sub_resource type="Resource" id="Resource_huvl1"]
+script = ExtResource("1_hblm4")
+effect_scene = ExtResource("3_yeyu1")
+attach_to_actor = true
+tint = Color(1, 0.3, 0.2, 1)
+
+[sub_resource type="Resource" id="Resource_yfyiq"]
+script = ExtResource("1_hblm4")
+effect_scene = ExtResource("4_lumin")
+align_to_direction = false
+tint = Color(1, 0.8, 0.3, 1)
+screen_shake = 0.35
+
+[sub_resource type="Resource" id="Resource_mq4kf"]
+script = ExtResource("1_hblm4")
+effect_scene = ExtResource("4_lumin")
+align_to_direction = false
+tint = Color(1, 0.95, 0.7, 1)
+screen_shake = 0.35
+
+[resource]
+script = ExtResource("6_qrr0g")
+texture = ExtResource("7_nu7xa")
+flip_to_face_aim = false
+cues = Dictionary[StringName, ExtResource("1_hblm4")]({
+&"death": SubResource("Resource_yb13n"),
+&"haymaker_charge_start": SubResource("Resource_uk7ek"),
+&"hurt": SubResource("Resource_0vvnt"),
+&"jumping_slam_slam": SubResource("Resource_yfyiq"),
+&"main_event_windup": SubResource("Resource_huvl1"),
+&"wall_slam": SubResource("Resource_mq4kf")
+})

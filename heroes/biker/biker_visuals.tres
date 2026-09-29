@@ -1,0 +1,64 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_jdrwx"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="2_6v5ec"]
+[ext_resource type="PackedScene" path="res://effects/feel/telegraph_line.tscn" id="3_4vn6h"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="4_hrg87"]
+[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="5_3a7jx"]
+[ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="6_vf13g"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="7_na4s4"]
+[ext_resource type="Texture2D" path="res://sprites/heroes/biker.svg" id="8_ctiub"]
+
+[sub_resource type="Resource" id="Resource_waylr"]
+script = ExtResource("1_jdrwx")
+flash_color = Color(1, 0.3, 0.25, 0.9)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_ny0hp"]
+script = ExtResource("1_jdrwx")
+effect_scene = ExtResource("2_6v5ec")
+tint = Color(1, 0.4, 0.1, 1)
+
+[sub_resource type="Resource" id="Resource_frnio"]
+script = ExtResource("1_jdrwx")
+effect_scene = ExtResource("3_4vn6h")
+attach_to_actor = true
+tint = Color(1, 0.4, 0.1, 1)
+
+[sub_resource type="Resource" id="Resource_7g0go"]
+script = ExtResource("1_jdrwx")
+effect_scene = ExtResource("4_hrg87")
+align_to_direction = false
+tint = Color(1, 0.4, 0.1, 1)
+screen_shake = 0.4
+
+[sub_resource type="Resource" id="Resource_awemv"]
+script = ExtResource("1_jdrwx")
+effect_scene = ExtResource("5_3a7jx")
+tint = Color(1, 0.4, 0.1, 1)
+
+[sub_resource type="Resource" id="Resource_yq8rb"]
+script = ExtResource("1_jdrwx")
+effect_scene = ExtResource("4_hrg87")
+align_to_direction = false
+tint = Color(1, 0.9, 0.6, 1)
+screen_shake = 0.3
+
+[sub_resource type="Resource" id="Resource_56ops"]
+script = ExtResource("1_jdrwx")
+effect_scene = ExtResource("5_3a7jx")
+tint = Color(1, 0.4, 0.1, 1)
+
+[resource]
+script = ExtResource("7_na4s4")
+texture = ExtResource("8_ctiub")
+flip_to_face_aim = false
+cues = Dictionary[StringName, ExtResource("1_jdrwx")]({
+&"brake_contact": SubResource("Resource_awemv"),
+&"burnout_applied": SubResource("Resource_56ops"),
+&"death": SubResource("Resource_ny0hp"),
+&"hellbound_windup": SubResource("Resource_frnio"),
+&"hellfire_oil_detonate": SubResource("Resource_7g0go"),
+&"hurt": SubResource("Resource_waylr"),
+&"wall_slam": SubResource("Resource_yq8rb")
+})

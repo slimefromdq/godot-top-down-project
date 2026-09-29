@@ -1,0 +1,84 @@
+[gd_resource type="Resource" script_class="FeelProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="1_wuuft"]
+[ext_resource type="Script" path="res://scripts/feel/feel_profile.gd" id="2_7nooq"]
+
+[sub_resource type="Resource" id="Resource_4d1lo"]
+resource_name = "gun"
+script = ExtResource("1_wuuft")
+windup = 0.0
+active = 0.02
+recovery = 0.04
+move_multiplier = 0.9
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+weight = 0.25
+windup_lean = 0.0
+windup_squash = 0.0
+release_snap = -3.0
+hitstop = 0.0
+shake_on_hit = 0.02
+camera_nudge = 1.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Resource_2v40s"]
+resource_name = "cast"
+script = ExtResource("1_wuuft")
+active = 0.05
+recovery = 0.12
+move_multiplier = 0.7
+lunge_distance = 0.0
+ability_cancel_after = 0.05
+weight = 0.8
+hitstop = 0.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Resource_7p2ys"]
+resource_name = "quick"
+script = ExtResource("1_wuuft")
+windup = 0.0
+active = 0.02
+recovery = 0.05
+move_multiplier = 1.0
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+weight = 0.5
+hitstop = 0.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Resource_685rf"]
+resource_name = "dash"
+script = ExtResource("1_wuuft")
+windup = 0.02
+active = 0.3
+recovery = 0.05
+move_multiplier = 1.0
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+weight = 0.9
+hitstop = 0.03
+trail_particles = 12
+
+[sub_resource type="Resource" id="Resource_pit6p"]
+resource_name = "emp"
+script = ExtResource("1_wuuft")
+windup = 0.25
+active = 0.05
+recovery = 0.15
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+weight = 1.3
+windup_glow = Color(0.4, 0.7, 1, 0.6)
+hitstop = 0.04
+trail_particles = 0
+
+[resource]
+script = ExtResource("2_7nooq")
+presets = Dictionary[StringName, ExtResource("1_wuuft")]({
+&"cast": SubResource("Resource_2v40s"),
+&"dash": SubResource("Resource_685rf"),
+&"emp": SubResource("Resource_pit6p"),
+&"gun": SubResource("Resource_4d1lo"),
+&"quick": SubResource("Resource_7p2ys")
+})

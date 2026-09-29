@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_7vomu"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_8wfqf"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_ts0ml"]
+
+[sub_resource type="Resource" id="Resource_ubtw5"]
+script = ExtResource("3_ts0ml")
+base = 10.0
+per_level = 0.8
+weapon_ratio = 0.08
+
+[resource]
+script = ExtResource("1_7vomu")
+id = &"biker_hellburn"
+display_name = "Hellfire"
+tick_damage = SubResource("Resource_ubtw5")
+tick_label = &"hellfire"
+body_tint = Color(1, 0.2, 0.05, 0.5)

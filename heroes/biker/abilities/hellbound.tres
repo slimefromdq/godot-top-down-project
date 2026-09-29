@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_3v74u"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_gbqdt"]
+[ext_resource type="Resource" path="res://heroes/biker/data/biker_hellbike.tres" id="3_mm3ew"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="4_c06dg"]
+[ext_resource type="Resource" path="res://heroes/biker/data/biker_bailed.tres" id="5_5h4dw"]
+
+[sub_resource type="Resource" id="Resource_ei5xj"]
+script = ExtResource("2_gbqdt")
+base = 1.0
+
+[resource]
+script = ExtResource("4_c06dg")
+projectile = ExtResource("3_mm3ew")
+self_status_on_fire = ExtResource("5_5h4dw")
+fire_mode = 1
+shots_per_second = 1.0
+id = &"hellbound"
+display_name = "Hellbound"
+description = "Rev up, then send the burning bike flying along your aim (up to 900 px, untouchable in flight). It explodes where it lands for ~400 damage and hellfire. You bail out: slow and on foot (gun only) for 1.6 s until the next bike arrives."
+ability_script = ExtResource("1_3v74u")
+cooldown = 60.0
+damage = SubResource("Resource_ei5xj")
+tags = Array[StringName]([&"ability", &"ultimate"])
+feel_preset = &"rev"

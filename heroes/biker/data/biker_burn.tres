@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_for8d"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_vtsxy"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_km1u0"]
+
+[sub_resource type="Resource" id="Resource_hrpk4"]
+script = ExtResource("3_km1u0")
+base = 7.0
+per_level = 0.5
+weapon_ratio = 0.05
+
+[resource]
+script = ExtResource("1_for8d")
+id = &"biker_burn"
+display_name = "Burning"
+duration = 1.0
+tick_damage = SubResource("Resource_hrpk4")
+tick_label = &"biker_burn"
+body_tint = Color(1, 0.45, 0.1, 0.35)

@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="DeployData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/deploy_ability.gd" id="1_1j5m1"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_8d4b8"]
+[ext_resource type="Script" path="res://scripts/deployables/aura_deployable.gd" id="3_hkk2n"]
+[ext_resource type="Script" path="res://scripts/abilities/deploy_data.gd" id="4_kb50v"]
+
+[sub_resource type="Resource" id="Resource_gvj3i"]
+script = ExtResource("2_8d4b8")
+base = 200.0
+
+[sub_resource type="Resource" id="Resource_d3kiy"]
+script = ExtResource("2_8d4b8")
+base = 200.0
+
+[sub_resource type="Resource" id="Resource_oyfhl"]
+script = ExtResource("2_8d4b8")
+base = 10.0
+per_level = 0.6
+magic_ratio = 0.08
+
+[sub_resource type="Resource" id="Resource_t5pg1"]
+script = ExtResource("2_8d4b8")
+base = 0.5
+
+[resource]
+script = ExtResource("4_kb50v")
+deployable_script = ExtResource("3_hkk2n")
+deploy_health = SubResource("Resource_gvj3i")
+place_range = 350.0
+body_radius = 28.0
+color = Color(0.55, 0.9, 0.6, 1)
+id = &"repair_turret"
+display_name = "Repair Turret"
+description = "Deploy a repair post (200 HP, 10 s) that heals allies within 200 px about 20 health per second."
+ability_script = ExtResource("1_1j5m1")
+cooldown = 14.0
+tags = Array[StringName]([&"ability"])
+meter_label = &"repair_turret"
+values = Dictionary[StringName, ExtResource("2_8d4b8")]({
+&"heal_per_second": SubResource("Resource_oyfhl"),
+&"radius": SubResource("Resource_d3kiy"),
+&"tick_interval": SubResource("Resource_t5pg1")
+})
+feel_preset = &"cast"

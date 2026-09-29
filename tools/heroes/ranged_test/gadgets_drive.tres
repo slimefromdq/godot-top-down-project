@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="SelfStatusData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/self_status_ability.gd" id="1_ej7mg"]
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="2_kg6v8"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/gadgets_trail.tres" id="3_htxb2"]
+[ext_resource type="Script" path="res://scripts/abilities/self_status_data.gd" id="4_kfm48"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/gadgets_drive.tres" id="5_8djfa"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="6_j2h3g"]
+
+[sub_resource type="Resource" id="Resource_bwp6o"]
+script = ExtResource("2_kg6v8")
+windup = 0.0
+active = 0.02
+recovery = 0.05
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+
+[resource]
+script = ExtResource("4_kfm48")
+self_status = ExtResource("5_8djfa")
+count_radius = 600.0
+hold_to_keep = true
+hold_meter_seconds = 2.0
+hold_meter_recharge_seconds = 3.0
+hold_trail_zone = ExtResource("3_htxb2")
+id = &"gadget_drive"
+display_name = "Drive"
+description = "TEST: hold meter (2 s, 3 s refill) + trail; the status has TRACTION, TURN_RATE and a slam-capable contact ram. Drive over your Oil to detonate it."
+ability_script = ExtResource("1_ej7mg")
+cooldown = 0.0
+feel_override = SubResource("Resource_bwp6o")

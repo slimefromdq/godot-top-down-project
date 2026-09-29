@@ -1,0 +1,64 @@
+[gd_resource type="Resource" script_class="DeployData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/deploy_ability.gd" id="1_6lyqa"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_xcf3j"]
+[ext_resource type="Script" path="res://scripts/deployables/mote_drone.gd" id="3_vn8uy"]
+[ext_resource type="Script" path="res://scripts/abilities/deploy_data.gd" id="4_di7wd"]
+
+[sub_resource type="Resource" id="Resource_q76do"]
+script = ExtResource("2_xcf3j")
+base = 100.0
+
+[sub_resource type="Resource" id="Resource_6bktb"]
+script = ExtResource("2_xcf3j")
+base = 380.0
+
+[sub_resource type="Resource" id="Resource_0ki5l"]
+script = ExtResource("2_xcf3j")
+base = 520.0
+
+[sub_resource type="Resource" id="Resource_1j2sr"]
+script = ExtResource("2_xcf3j")
+base = 4.0
+
+[sub_resource type="Resource" id="Resource_rpuxk"]
+script = ExtResource("2_xcf3j")
+base = 700.0
+
+[sub_resource type="Resource" id="Resource_bdrfq"]
+script = ExtResource("2_xcf3j")
+base = 450.0
+
+[sub_resource type="Resource" id="Resource_bx77x"]
+script = ExtResource("2_xcf3j")
+base = 3.0
+
+[sub_resource type="Resource" id="Resource_av48w"]
+script = ExtResource("2_xcf3j")
+base = 40.0
+
+[resource]
+script = ExtResource("4_di7wd")
+deployable_script = ExtResource("3_vn8uy")
+deploy_health = SubResource("Resource_q76do")
+lifetime = 0.0
+block_while_capped = true
+cooldown_after_gone = true
+place_at_caster = true
+body_radius = 18.0
+color = Color(0.8, 0.85, 0.9, 1)
+id = &"mote_drone"
+display_name = "Mote Drone"
+description = "Launch a drone (100 HP) that wanders near you, picks up loose Motes it sees and brings them back. Hit it and it drops what it carries and flees for 4 s. One at a time; 20 s after it's gone."
+ability_script = ExtResource("1_6lyqa")
+cooldown = 20.0
+values = Dictionary[StringName, ExtResource("2_xcf3j")]({
+&"carry_max": SubResource("Resource_bx77x"),
+&"flee_speed": SubResource("Resource_0ki5l"),
+&"flee_time": SubResource("Resource_1j2sr"),
+&"pickup_radius": SubResource("Resource_av48w"),
+&"sight_radius": SubResource("Resource_bdrfq"),
+&"speed": SubResource("Resource_6bktb"),
+&"wander_radius": SubResource("Resource_rpuxk")
+})
+feel_preset = &"quick"

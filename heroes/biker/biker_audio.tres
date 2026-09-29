@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_ghklo"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="2_j1ycm"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="3_j4md0"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="4_vvlgj"]
+[ext_resource type="AudioStream" path="res://audio/sfx/rifle_shot.wav" id="5_0qlub"]
+[ext_resource type="AudioStream" path="res://audio/sfx/skillshot.wav" id="6_fojyt"]
+[ext_resource type="AudioStream" path="res://audio/sfx/overdrive.wav" id="7_wftci"]
+[ext_resource type="AudioStream" path="res://audio/sfx/wall_hit.wav" id="8_et5hs"]
+[ext_resource type="AudioStream" path="res://audio/sfx/zap.wav" id="9_uht6q"]
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="10_5f2xx"]
+
+[sub_resource type="Resource" id="Resource_10kyp"]
+script = ExtResource("1_ghklo")
+streams = Array[AudioStream]([ExtResource("5_0qlub")])
+volume_db = -14.0
+pitch_min = 1.2
+pitch_max = 1.35
+min_interval = 0.06
+max_voices = 3
+
+[sub_resource type="Resource" id="Resource_fpnyf"]
+script = ExtResource("1_ghklo")
+streams = Array[AudioStream]([ExtResource("6_fojyt")])
+volume_db = -6.0
+
+[sub_resource type="Resource" id="Resource_bc46j"]
+script = ExtResource("1_ghklo")
+streams = Array[AudioStream]([ExtResource("7_wftci")])
+volume_db = -2.0
+pitch_min = 0.7
+pitch_max = 0.8
+
+[sub_resource type="Resource" id="Resource_1wmer"]
+script = ExtResource("1_ghklo")
+streams = Array[AudioStream]([ExtResource("7_wftci")])
+volume_db = -6.0
+pitch_min = 1.3
+pitch_max = 1.4
+
+[sub_resource type="Resource" id="Resource_venq7"]
+script = ExtResource("1_ghklo")
+streams = Array[AudioStream]([ExtResource("8_et5hs")])
+volume_db = -4.0
+
+[sub_resource type="Resource" id="Resource_7owob"]
+script = ExtResource("1_ghklo")
+streams = Array[AudioStream]([ExtResource("7_wftci")])
+pitch_min = 0.6
+pitch_max = 0.6
+
+[sub_resource type="Resource" id="Resource_0olsp"]
+script = ExtResource("1_ghklo")
+streams = Array[AudioStream]([ExtResource("9_uht6q")])
+volume_db = -2.0
+pitch_min = 0.6
+pitch_max = 0.7
+
+[resource]
+script = ExtResource("10_5f2xx")
+cues = Dictionary[StringName, ExtResource("1_ghklo")]({
+&"ability_failed": ExtResource("2_j1ycm"),
+&"brake_contact": SubResource("Resource_venq7"),
+&"burnout_applied": SubResource("Resource_1wmer"),
+&"death": ExtResource("4_vvlgj"),
+&"hellbound_fire": SubResource("Resource_0olsp"),
+&"hellbound_windup": SubResource("Resource_7owob"),
+&"hellfire_oil_detonate": SubResource("Resource_bc46j"),
+&"hellfire_oil_fire": SubResource("Resource_fpnyf"),
+&"hellfire_smg_fire": SubResource("Resource_10kyp"),
+&"hurt": ExtResource("3_j4md0")
+})

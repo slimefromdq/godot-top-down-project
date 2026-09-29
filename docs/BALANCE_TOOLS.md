@@ -183,6 +183,13 @@ godot --headless res://tools/heroes/tilly_test.tscn
 godot --headless res://tools/heroes/butler_test.tscn
 godot --headless res://tools/heroes/pike_test.tscn
 godot --headless res://tools/heroes/sam_test.tscn
+godot --headless res://tools/heroes/batch2_infra_test.tscn
+godot --headless res://tools/heroes/biker_test.tscn
+godot --headless res://tools/heroes/horace_test.tscn
+godot --headless res://tools/heroes/mochi_test.tscn
+godot --headless res://tools/heroes/computer_test.tscn
+godot --headless res://tools/heroes/catgirl_test.tscn
+godot --headless res://tools/heroes/rocco_test.tscn
 godot --headless res://tools/heroes/airlock_test.tscn
 godot --headless res://tools/heroes/feel_test.tscn
 godot --headless res://tools/heroes/balance_tools_test.tscn
@@ -201,6 +208,7 @@ godot --headless res://tools/ai/bot_nav_test.tscn
 godot --headless res://tools/ai/bot_role_test.tscn
 godot --headless res://tools/ai/bot_neutral_test.tscn
 godot --headless res://tools/ai/bot_match_smoke_test.tscn
+godot --headless res://tools/ai/batch2_bot_test.tscn
 godot --headless res://tools/visuals/rig_bake_test.tscn
 godot --headless res://tools/visuals/live_rig_test.tscn
 godot --headless res://tools/map/map_pieces_infra_test.tscn

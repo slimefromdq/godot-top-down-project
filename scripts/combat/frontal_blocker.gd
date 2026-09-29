@@ -47,6 +47,11 @@ func is_raised() -> bool:
 	return _raised
 
 
+# Catching shots right now (PlacedBarrier overrides it).
+func is_blocking() -> bool:
+	return _raised
+
+
 func is_broken() -> bool:
 	return _broken
 
@@ -129,7 +134,7 @@ static func find_blocking(tree: SceneTree, source, from: Vector2, to: Vector2) -
 	var best_t := INF
 	for node in tree.get_nodes_in_group(GROUP):
 		var blocker := node as FrontalBlocker
-		if blocker == null or not blocker._raised or not is_instance_valid(blocker.owner_actor):
+		if blocker == null or not blocker.is_blocking() or not is_instance_valid(blocker.owner_actor):
 			continue
 		if not _is_enemy(source, blocker.owner_actor):
 			continue

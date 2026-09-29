@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="1_2a8r0"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/gadgets_ram_knock.tres" id="2_caamy"]
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="3_rliqw"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="4_pwww4"]
+
+[sub_resource type="Resource" id="Resource_afxu3"]
+script = ExtResource("1_2a8r0")
+base = 25.0
+
+[resource]
+script = ExtResource("3_rliqw")
+id = &"gadgets_drive"
+duration = 5.0
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 1.4,
+&"traction": 0.4,
+&"turn_rate": 0.5
+})
+contact_damage = SubResource("Resource_afxu3")
+contact_radius = 70.0
+contact_min_speed = 250.0
+contact_status = ExtResource("2_caamy")
+contact_label = &"gadgets_ram"

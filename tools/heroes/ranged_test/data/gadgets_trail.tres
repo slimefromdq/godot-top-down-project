@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="GroundZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/ground_zone_data.gd" id="1_osttn"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_p3y2n"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_d2wdi"]
+
+[sub_resource type="Resource" id="Resource_5i2ju"]
+script = ExtResource("2_p3y2n")
+kind = 1
+radius = 40.0
+
+[sub_resource type="Resource" id="Resource_mjv62"]
+script = ExtResource("3_d2wdi")
+base = 4.0
+
+[resource]
+script = ExtResource("1_osttn")
+shape = SubResource("Resource_5i2ju")
+tick_damage = SubResource("Resource_mjv62")
+meter_label = &"gadgets_trail"

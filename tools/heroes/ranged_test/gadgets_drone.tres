@@ -1,0 +1,72 @@
+[gd_resource type="Resource" script_class="DeployData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/deploy_ability.gd" id="1_k5ump"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_nft1e"]
+[ext_resource type="Script" path="res://scripts/deployables/mote_drone.gd" id="3_8l46d"]
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="4_mo45s"]
+[ext_resource type="Script" path="res://scripts/abilities/deploy_data.gd" id="5_khcyi"]
+
+[sub_resource type="Resource" id="Resource_xqn6a"]
+script = ExtResource("2_nft1e")
+base = 80.0
+
+[sub_resource type="Resource" id="Resource_bwp6o"]
+script = ExtResource("4_mo45s")
+windup = 0.0
+active = 0.02
+recovery = 0.05
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+
+[sub_resource type="Resource" id="Resource_t8xl1"]
+script = ExtResource("2_nft1e")
+base = 380.0
+
+[sub_resource type="Resource" id="Resource_aq6e2"]
+script = ExtResource("2_nft1e")
+base = 520.0
+
+[sub_resource type="Resource" id="Resource_gm5wl"]
+script = ExtResource("2_nft1e")
+base = 3.0
+
+[sub_resource type="Resource" id="Resource_l0l8g"]
+script = ExtResource("2_nft1e")
+base = 600.0
+
+[sub_resource type="Resource" id="Resource_b7kyu"]
+script = ExtResource("2_nft1e")
+base = 450.0
+
+[sub_resource type="Resource" id="Resource_cgx2w"]
+script = ExtResource("2_nft1e")
+base = 3.0
+
+[sub_resource type="Resource" id="Resource_7k5wi"]
+script = ExtResource("2_nft1e")
+base = 40.0
+
+[resource]
+script = ExtResource("5_khcyi")
+deployable_script = ExtResource("3_8l46d")
+deploy_health = SubResource("Resource_xqn6a")
+lifetime = 0.0
+block_while_capped = true
+cooldown_after_gone = true
+place_at_caster = true
+body_radius = 18.0
+id = &"gadget_drone"
+display_name = "Mote Drone"
+description = "TEST: MoteDrone (an autonomous agent: fetches loose Motes, drops them and flees when hit)."
+ability_script = ExtResource("1_k5ump")
+values = Dictionary[StringName, ExtResource("2_nft1e")]({
+&"carry_max": SubResource("Resource_cgx2w"),
+&"flee_speed": SubResource("Resource_aq6e2"),
+&"flee_time": SubResource("Resource_gm5wl"),
+&"pickup_radius": SubResource("Resource_7k5wi"),
+&"sight_radius": SubResource("Resource_b7kyu"),
+&"speed": SubResource("Resource_t8xl1"),
+&"wander_radius": SubResource("Resource_l0l8g")
+})
+feel_override = SubResource("Resource_bwp6o")

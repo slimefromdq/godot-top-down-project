@@ -1,0 +1,64 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_fy4tb"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="2_jllfj"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="3_xo6lf"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="4_8y55u"]
+[ext_resource type="AudioStream" path="res://audio/sfx/reload.wav" id="5_s8idm"]
+[ext_resource type="AudioStream" path="res://audio/sfx/dash.wav" id="6_8v412"]
+[ext_resource type="AudioStream" path="res://audio/sfx/wall_hit.wav" id="7_dlh7n"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hit.wav" id="8_jjpch"]
+[ext_resource type="AudioStream" path="res://audio/sfx/overdrive.wav" id="9_g8i0f"]
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="10_mfd7e"]
+
+[sub_resource type="Resource" id="Resource_ylykf"]
+script = ExtResource("1_fy4tb")
+streams = Array[AudioStream]([ExtResource("5_s8idm")])
+pitch_min = 0.7
+pitch_max = 0.7
+
+[sub_resource type="Resource" id="Resource_73q6g"]
+script = ExtResource("1_fy4tb")
+streams = Array[AudioStream]([ExtResource("6_8v412")])
+pitch_min = 0.8
+pitch_max = 0.85
+
+[sub_resource type="Resource" id="Resource_iisyn"]
+script = ExtResource("1_fy4tb")
+streams = Array[AudioStream]([ExtResource("7_dlh7n")])
+pitch_min = 0.6
+pitch_max = 0.65
+
+[sub_resource type="Resource" id="Resource_obd1j"]
+script = ExtResource("1_fy4tb")
+streams = Array[AudioStream]([ExtResource("8_jjpch")])
+volume_db = -4.0
+pitch_min = 1.2
+pitch_max = 1.3
+
+[sub_resource type="Resource" id="Resource_708lp"]
+script = ExtResource("1_fy4tb")
+streams = Array[AudioStream]([ExtResource("9_g8i0f")])
+pitch_min = 0.8
+pitch_max = 0.8
+
+[sub_resource type="Resource" id="Resource_pl3hh"]
+script = ExtResource("1_fy4tb")
+streams = Array[AudioStream]([ExtResource("6_8v412")])
+volume_db = 2.0
+pitch_min = 0.5
+pitch_max = 0.55
+
+[resource]
+script = ExtResource("10_mfd7e")
+cues = Dictionary[StringName, ExtResource("1_fy4tb")]({
+&"ability_failed": ExtResource("2_jllfj"),
+&"cheap_shot_active": SubResource("Resource_obd1j"),
+&"death": ExtResource("4_8y55u"),
+&"haymaker_active": SubResource("Resource_73q6g"),
+&"haymaker_charge_full": SubResource("Resource_ylykf"),
+&"hurt": ExtResource("3_xo6lf"),
+&"jumping_slam_slam": SubResource("Resource_iisyn"),
+&"main_event_active": SubResource("Resource_pl3hh"),
+&"main_event_windup": SubResource("Resource_708lp")
+})

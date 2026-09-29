@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://heroes/catgirl/abilities/sticky_bomb.gd" id="1_6ylmc"]
+[ext_resource type="Resource" path="res://heroes/catgirl/data/catgirl_sticky_bomb.tres" id="2_potxo"]
+[ext_resource type="Resource" path="res://heroes/catgirl/data/catgirl_sticky_shot.tres" id="3_x24hw"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="4_q3v7s"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="5_ji5d0"]
+
+[sub_resource type="Resource" id="Resource_ckl4d"]
+script = ExtResource("5_ji5d0")
+base = 220.0
+per_level = 10.0
+weapon_ratio = 0.4
+
+[resource]
+script = ExtResource("4_q3v7s")
+projectile = ExtResource("3_x24hw")
+fire_mode = 1
+shots_per_second = 1.0
+id = &"sticky_bomb"
+display_name = "Sticky Bomb"
+description = "Stick a bomb on one enemy. Everyone sees it; 2 s later it goes off for ~350 damage to them alone. Cleansing it defuses it. Charges twice as fast as other ultimates."
+ability_script = ExtResource("1_6ylmc")
+cooldown = 30.0
+on_hit_status = ExtResource("2_potxo")
+tags = Array[StringName]([&"ability", &"ultimate"])
+values = Dictionary[StringName, ExtResource("5_ji5d0")]({
+&"bomb_damage": SubResource("Resource_ckl4d")
+})
+feel_preset = &"cast"

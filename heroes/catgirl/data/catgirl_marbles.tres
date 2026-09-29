@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="GroundZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/ground_zone_data.gd" id="1_y7wn4"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_rjcbc"]
+[ext_resource type="Resource" path="res://heroes/catgirl/data/catgirl_marbled.tres" id="3_wnnkm"]
+
+[sub_resource type="Resource" id="Resource_uvs3c"]
+script = ExtResource("2_rjcbc")
+kind = 1
+radius = 100.0
+
+[resource]
+script = ExtResource("1_y7wn4")
+shape = SubResource("Resource_uvs3c")
+duration = 4.0
+tick_interval = 0.25
+status_while_inside = ExtResource("3_wnnkm")
+meter_label = &"marbles"
+color = Color(0.6, 0.55, 1, 0.3)
+outline_color = Color(0.8, 0.75, 1, 0.7)

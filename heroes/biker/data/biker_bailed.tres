@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_3y6l3"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_skrcr"]
+
+[resource]
+script = ExtResource("1_3y6l3")
+id = &"biker_bailed"
+display_name = "Bailed out"
+duration = 1.6
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 0.45,
+&"traction": 3.0
+})
+silences = true
+silence_spares_primary = true
+cleansable = false
+body_tint = Color(0.6, 0.6, 0.6, 0.3)

@@ -1,0 +1,82 @@
+[gd_resource type="Resource" script_class="FeelProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="1_sm7ov"]
+[ext_resource type="Script" path="res://scripts/feel/feel_profile.gd" id="2_qicjb"]
+
+[sub_resource type="Resource" id="Resource_j866a"]
+resource_name = "gun"
+script = ExtResource("1_sm7ov")
+windup = 0.0
+active = 0.02
+recovery = 0.04
+move_multiplier = 0.9
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+weight = 0.25
+windup_lean = 0.0
+windup_squash = 0.0
+release_snap = -3.0
+hitstop = 0.0
+shake_on_hit = 0.02
+camera_nudge = 1.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Resource_po3l3"]
+resource_name = "cast"
+script = ExtResource("1_sm7ov")
+active = 0.05
+recovery = 0.12
+move_multiplier = 0.7
+lunge_distance = 0.0
+ability_cancel_after = 0.05
+weight = 0.8
+hitstop = 0.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Resource_fh7bo"]
+resource_name = "quick"
+script = ExtResource("1_sm7ov")
+windup = 0.0
+active = 0.02
+recovery = 0.05
+move_multiplier = 1.0
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+weight = 0.5
+hitstop = 0.0
+trail_particles = 0
+
+[sub_resource type="Resource" id="Resource_t06tj"]
+resource_name = "dash"
+script = ExtResource("1_sm7ov")
+windup = 0.02
+active = 0.3
+recovery = 0.05
+move_multiplier = 1.0
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+weight = 0.9
+hitstop = 0.03
+trail_particles = 12
+
+[sub_resource type="Resource" id="Resource_hlvs8"]
+resource_name = "swipe"
+script = ExtResource("1_sm7ov")
+windup = 0.05
+recovery = 0.1
+move_multiplier = 0.9
+lunge_distance = 40.0
+ability_cancel_after = 0.0
+weight = 0.8
+trail_color = Color(0.8, 0.6, 1, 0.9)
+
+[resource]
+script = ExtResource("2_qicjb")
+presets = Dictionary[StringName, ExtResource("1_sm7ov")]({
+&"cast": SubResource("Resource_po3l3"),
+&"dash": SubResource("Resource_t06tj"),
+&"gun": SubResource("Resource_j866a"),
+&"quick": SubResource("Resource_fh7bo"),
+&"swipe": SubResource("Resource_hlvs8")
+})

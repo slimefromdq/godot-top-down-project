@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PlaceBarrierData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/place_barrier_ability.gd" id="1_yfkjg"]
+[ext_resource type="Script" path="res://scripts/abilities/place_barrier_data.gd" id="2_fqcis"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_43tn0"]
+
+[resource]
+script = ExtResource("2_fqcis")
+place_range = 250.0
+id = &"shield_wall"
+display_name = "Shield Wall"
+description = "Plant a tower shield where you aim (250 px). It stops 3 enemy projectiles, one charge each (a charge returns every 3 s), for 4 s."
+ability_script = ExtResource("1_yfkjg")
+cooldown = 10.0
+tags = Array[StringName]([&"ability"])
+feel_preset = &"cast"

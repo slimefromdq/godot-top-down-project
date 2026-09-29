@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="LaunchData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/launch_ability.gd" id="1_uplmn"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_vr2tl"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_r36ju"]
+[ext_resource type="Resource" path="res://heroes/rocco/data/rocco_slam_slow.tres" id="4_gm8sh"]
+[ext_resource type="Script" path="res://scripts/abilities/launch_data.gd" id="5_er3yr"]
+
+[sub_resource type="Resource" id="Resource_en4yh"]
+script = ExtResource("2_vr2tl")
+base = 40.0
+per_level = 3.0
+weapon_ratio = 0.3
+
+[sub_resource type="Resource" id="Resource_7r5ki"]
+script = ExtResource("3_r36ju")
+kind = 1
+radius = 170.0
+
+[resource]
+script = ExtResource("5_er3yr")
+max_distance = 450.0
+air_time = 0.55
+arc_height = 160.0
+landing_hit_shape = SubResource("Resource_7r5ki")
+id = &"jumping_slam"
+display_name = "Top-Rope Slam"
+description = "Leap up to 450 px to the cursor and slam down: 40 damage and a 40% slow for 1 s around you."
+ability_script = ExtResource("1_uplmn")
+cooldown = 10.0
+damage = SubResource("Resource_en4yh")
+on_hit_status = ExtResource("4_gm8sh")
+tags = Array[StringName]([&"movement"])
+feel_preset = &"quick"

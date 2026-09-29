@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_bf5sh"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_qcbnj"]
+
+[resource]
+script = ExtResource("1_bf5sh")
+id = &"biker_oil_slow"
+display_name = "Oiled"
+duration = 0.7
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 0.65
+})
+body_tint = Color(0.1, 0.05, 0.1, 0.35)

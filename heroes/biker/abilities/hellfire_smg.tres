@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_3e653"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_q6q7x"]
+[ext_resource type="Resource" path="res://heroes/biker/data/biker_bullet.tres" id="3_o01vw"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="4_h0snf"]
+
+[sub_resource type="Resource" id="Resource_7ifov"]
+script = ExtResource("2_q6q7x")
+base = 6.0
+per_level = 0.3
+weapon_ratio = 0.06
+
+[resource]
+script = ExtResource("4_h0snf")
+projectile = ExtResource("3_o01vw")
+spread_degrees = 12.0
+muzzles = Array[Vector2]([Vector2(55, 0)])
+shots_per_second = 10.0
+spin_up_time = 1.5
+spin_cold_spread_degrees = 5.0
+spin_down_time = 0.6
+id = &"hellfire_smg"
+display_name = "Hellfire SMG"
+description = "Hold for a screaming automatic spray: 10 shots/s, low damage. Spread grows from 5° to 12° over 1.5 s of sustained fire."
+ability_script = ExtResource("1_3e653")
+cooldown = 0.0
+damage = SubResource("Resource_7ifov")
+tags = Array[StringName]([&"basic_attack"])
+feel_preset = &"gun"

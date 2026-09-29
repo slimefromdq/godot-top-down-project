@@ -21,6 +21,9 @@ class_name LaunchData
 @export var self_status: StatusEffect
 ## Applied to the caster on landing.
 @export var landing_status: StatusEffect
+## A slam on landing: enemies inside this shape (centred on the landing
+## spot) take `damage` and `on_hit_status` (a slow). Empty = no slam.
+@export var landing_hit_shape: HitShape
 
 
 func get_range() -> float:

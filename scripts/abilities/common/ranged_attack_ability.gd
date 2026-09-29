@@ -53,6 +53,10 @@ var _muzzle_index: int = 0
 var _max_ammo_override: int = -1
 var _regen_interval_override: float = -1.0
 var _regen_elapsed: float = 0.0
+# Spin up (RangedAttackData.spin_up_time): 0 cold .. 1 full, and how long the
+# gun still counts as firing since its last shot.
+var _spin: float = 0.0
+var _spin_hold: float = 0.0
 
 
 func get_ranged_data() -> RangedAttackData:
@@ -154,10 +158,22 @@ func get_reload_remaining() -> float:
 	return maxf(step - _reload_elapsed, 0.0)
 
 
-# Seconds between shots right now (after FIRE_RATE multipliers).
+# Seconds between shots right now (after FIRE_RATE multipliers and spin).
 func get_fire_interval() -> float:
-	return get_ranged_data().get_fire_interval(
-		StatusEffectComponent.multiplier_of(actor.status_component, StatusEffect.FIRE_RATE))
+	var ranged := get_ranged_data()
+	var rate := StatusEffectComponent.multiplier_of(actor.status_component, StatusEffect.FIRE_RATE)
+	if ranged.spin_up_time > 0.0:
+		rate *= lerpf(ranged.spin_start_rate, 1.0, _spin)
+	return ranged.get_fire_interval(rate)
+
+
+## Wind-up weapons: 0 (cold) .. 1 (full spin). Always 1 for other guns.
+func get_spin() -> float:
+	return _spin if get_ranged_data().spin_up_time > 0.0 else 1.0
+
+
+func get_hud_meter() -> float:
+	return _spin if data != null and get_ranged_data().spin_up_time > 0.0 else super()
 
 
 # Begin reloading. False if there's nothing to reload, it's already
@@ -334,6 +350,11 @@ func _fire_shot(aim: Vector2, extra: bool, label: StringName) -> void:
 		projectile.ally_hit.connect(_on_projectile_ally_hit)
 		_on_projectile_fired(projectile, extra)
 
+	if not extra and ranged.self_status_on_fire != null:
+		actor.status_component.apply(ranged.self_status_on_fire, actor)
+	if not extra and ranged.spin_up_time > 0.0:
+		# Still "firing" until a little after the slowest gap between shots.
+		_spin_hold = 1.0 / maxf(ranged.shots_per_second * ranged.spin_start_rate, 0.01) + 0.1
 	if has_magazine() and not extra:
 		_ammo = maxi(_ammo - ranged.ammo_per_shot, 0)
 		ammo_changed.emit(_ammo, get_max_ammo())
@@ -359,6 +380,9 @@ func _spread_angle(i: int, count: int) -> float:
 	var ranged := get_ranged_data()
 	var angle := 0.0
 	var spread := ranged.spread_degrees
+	if ranged.spin_up_time > 0.0:
+		spread = lerpf(ranged.spin_cold_spread_degrees, ranged.spread_degrees, _spin)
+	spread *= StatusEffectComponent.multiplier_of(actor.status_component, StatusEffect.SPREAD)
 	if spread > 0.0:
 		if ranged.spread_pattern == RangedAttackData.SpreadPattern.EVEN:
 			angle = 0.0 if count <= 1 else lerpf(-spread / 2.0, spread / 2.0, float(i) / (count - 1))
@@ -473,6 +497,7 @@ func _hit_is_free_pierce(_hurtbox: HurtboxComponent) -> bool:
 func _physics_process(delta: float) -> void:
 	super(delta)
 	_shot_timer = maxf(_shot_timer - delta, -delta)
+	_advance_spin(delta)
 	if _empty_click_timer > 0.0:
 		_empty_click_timer -= delta
 	if _reloading:
@@ -484,6 +509,17 @@ func _physics_process(delta: float) -> void:
 		if _shot_timer <= StatusEffectComponent.TICK_EPSILON and actor != null:
 			_semi_queued = 0.0
 			try_activate(actor.aim_point)
+
+
+func _advance_spin(delta: float) -> void:
+	var ranged := get_ranged_data()
+	if ranged == null or ranged.spin_up_time <= 0.0:
+		return
+	if _spin_hold > 0.0 and not actor.health_component.is_dead():
+		_spin_hold -= delta
+		_spin = minf(_spin + delta / ranged.spin_up_time, 1.0)
+	elif _spin > 0.0:
+		_spin = maxf(_spin - delta / maxf(ranged.spin_down_time, 0.01), 0.0)
 
 
 # REGEN: one round per interval, whether firing or not; the clock idles

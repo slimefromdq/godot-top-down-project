@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="AudioProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/audio/sound_cue.gd" id="1_iaar5"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/fail.tres" id="2_f5pxo"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/hit.tres" id="3_48whs"]
+[ext_resource type="Resource" path="res://resources/audio/sfx/death.tres" id="4_61e23"]
+[ext_resource type="AudioStream" path="res://audio/sfx/rifle_shot.wav" id="5_5vt7m"]
+[ext_resource type="AudioStream" path="res://audio/sfx/wall_hit.wav" id="6_5sjef"]
+[ext_resource type="AudioStream" path="res://audio/sfx/dash.wav" id="7_c8vrt"]
+[ext_resource type="AudioStream" path="res://audio/sfx/overdrive.wav" id="8_h8c5e"]
+[ext_resource type="AudioStream" path="res://audio/sfx/zap.wav" id="9_2rg6n"]
+[ext_resource type="Script" path="res://scripts/audio/audio_profile.gd" id="10_2utiu"]
+
+[sub_resource type="Resource" id="Resource_hvk01"]
+script = ExtResource("1_iaar5")
+streams = Array[AudioStream]([ExtResource("5_5vt7m")])
+volume_db = -16.0
+pitch_min = 0.8
+pitch_max = 0.9
+min_interval = 0.05
+max_voices = 3
+
+[sub_resource type="Resource" id="Resource_tfpqq"]
+script = ExtResource("1_iaar5")
+streams = Array[AudioStream]([ExtResource("6_5sjef")])
+volume_db = -3.0
+pitch_min = 0.7
+pitch_max = 0.75
+
+[sub_resource type="Resource" id="Resource_i6582"]
+script = ExtResource("1_iaar5")
+streams = Array[AudioStream]([ExtResource("7_c8vrt")])
+pitch_min = 0.7
+pitch_max = 0.75
+
+[sub_resource type="Resource" id="Resource_3bynr"]
+script = ExtResource("1_iaar5")
+streams = Array[AudioStream]([ExtResource("8_h8c5e")])
+volume_db = -3.0
+
+[sub_resource type="Resource" id="Resource_p5puu"]
+script = ExtResource("1_iaar5")
+streams = Array[AudioStream]([ExtResource("9_2rg6n")])
+pitch_min = 0.5
+pitch_max = 0.55
+
+[resource]
+script = ExtResource("10_2utiu")
+cues = Dictionary[StringName, ExtResource("1_iaar5")]({
+&"ability_failed": ExtResource("2_f5pxo"),
+&"death": ExtResource("4_61e23"),
+&"dragonfire_fire": SubResource("Resource_p5puu"),
+&"hurt": ExtResource("3_48whs"),
+&"minigun_fire": SubResource("Resource_hvk01"),
+&"overdrive_applied": SubResource("Resource_3bynr"),
+&"shield_wall_placed": SubResource("Resource_tfpqq"),
+&"steed_active": SubResource("Resource_i6582")
+})

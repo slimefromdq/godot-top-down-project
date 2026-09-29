@@ -30,6 +30,17 @@ class_name SelfStatusData
 ## Keep the status only while the key is held (a scope, a stance): released
 ## = removed. The status's duration caps the hold.
 @export var hold_to_keep: bool = false
+## hold_to_keep only: a meter (0..1) that drains while held and refills
+## while released: hold_meter_seconds of use from full (0 = no meter),
+## hold_meter_recharge_seconds from empty to full. Empty ends the hold; a
+## hold needs hold_meter_min to start. Shown on the ability bar.
+@export var hold_meter_seconds: float = 0.0
+@export var hold_meter_recharge_seconds: float = 5.0
+@export_range(0.0, 1.0, 0.01) var hold_meter_min: float = 0.1
+## hold_to_keep only: while held, drop this zone behind the caster every
+## hold_trail_spacing px travelled (a flame trail).
+@export var hold_trail_zone: GroundZoneData
+@export var hold_trail_spacing: float = 60.0
 
 
 func get_strength(enemies: int) -> float:
@@ -53,6 +64,9 @@ func get_balance_metrics(_level: int, _weapon: float, _magic: float) -> Dictiona
 	if self_status == null:
 		return {}
 	var metrics := {"status_duration": self_status.duration, "strength_alone": get_strength(0)}
+	if hold_meter_seconds > 0.0:
+		metrics["hold_meter_seconds"] = hold_meter_seconds
+		metrics["hold_meter_recharge_seconds"] = hold_meter_recharge_seconds
 	if max_enemies_counted > 0:
 		metrics["strength_max"] = get_strength(max_enemies_counted)
 	return metrics
@@ -65,6 +79,11 @@ func validate() -> PackedStringArray:
 	else:
 		for problem in self_status.validate():
 			problems.append("'%s' self_status: %s" % [id, problem])
+	if hold_meter_seconds < 0.0 or hold_meter_recharge_seconds < 0.0 or hold_trail_spacing <= 0.0:
+		problems.append("'%s' has invalid hold meter/trail values" % id)
+	if hold_trail_zone != null:
+		for problem in hold_trail_zone.validate():
+			problems.append("'%s' hold_trail_zone: %s" % [id, problem])
 	if strength_base < 0.0 or strength_per_enemy < 0.0 or count_radius < 0.0 or max_enemies_counted < 0:
 		problems.append("'%s' has negative strength/radius/count" % id)
 	return problems

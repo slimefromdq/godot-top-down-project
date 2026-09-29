@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/charge_ability.gd" id="1_pnsex"]
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="2_8xh3w"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_7frqb"]
+
+[resource]
+script = ExtResource("2_8xh3w")
+distance = 700.0
+speed = 1400.0
+id = &"steed"
+display_name = "Steed"
+description = "Whistle for your warhorse and ride 700 px, then dismount. No shooting while mounted."
+ability_script = ExtResource("1_pnsex")
+cooldown = 25.0
+tags = Array[StringName]([&"movement"])
+feel_preset = &"ride"

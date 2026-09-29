@@ -206,6 +206,36 @@ func spend(count: int) -> Array[Dictionary]:
 	return taken
 
 
+## Steal up to `n` Motes from `victim` (the last they picked up, Dream
+## Mote last), limited by this carrier's free room. Returns how many moved.
+func steal_from(victim: MoteCarrier, n: int) -> int:
+	if victim == null or victim == self:
+		return 0
+	var moved := 0
+	var room := get_max() - get_mote_count()
+	while moved < n and moved < room and victim.get_mote_count() > 0:
+		var pick := victim._values.size() - 1
+		for j in range(victim._values.size() - 1, -1, -1):
+			if not victim._datas[j].is_dream:
+				pick = j
+				break
+		var data: MoteData = victim._datas[pick]
+		var value: int = victim._values[pick]
+		var source: StringName = victim._sources[pick]
+		victim._values.remove_at(pick)
+		victim._datas.remove_at(pick)
+		victim._sources.remove_at(pick)
+		if not add_mote(data, value, source):
+			victim.add_mote(data, value, source)
+			break
+		moved += 1
+	if moved > 0:
+		victim._emit_changed()
+		MatchManager.play_world_cue(victim.actor, &"mote_stolen", {"position": victim.actor.global_position,
+			"count": moved, "thief": actor})
+	return moved
+
+
 ## Drop everything without scattering it (debug, tests).
 func clear() -> void:
 	_values.clear()

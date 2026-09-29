@@ -1,0 +1,68 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_data.gd" id="1_rc7tc"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/gadgets_spin_gun.tres" id="2_fyhx5"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/gadgets_barrier.tres" id="3_g3sfa"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/gadgets_turret.tres" id="4_8vnui"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/gadgets_leap.tres" id="5_ghobe"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/gadgets_drive.tres" id="6_af60e"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/gadgets_oil.tres" id="7_gbfid"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/gadgets_drone.tres" id="8_8cfcl"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/ranged_test_feel.tres" id="9_tgcka"]
+[ext_resource type="Script" path="res://scripts/heroes/hero_definition.gd" id="10_3ar50"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="11_ngj6c"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="12_44jbe"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/ranged_test_visuals.tres" id="13_61nwq"]
+
+[sub_resource type="Resource" id="Resource_ifvnv"]
+script = ExtResource("11_ngj6c")
+base = 15.0
+growth = 2.0
+
+[sub_resource type="Resource" id="Resource_d03wb"]
+script = ExtResource("11_ngj6c")
+base = 550.0
+growth = 55.0
+
+[sub_resource type="Resource" id="Resource_p5tn7"]
+script = ExtResource("11_ngj6c")
+base = 20.0
+growth = 3.0
+
+[sub_resource type="Resource" id="Resource_i82xo"]
+script = ExtResource("11_ngj6c")
+base = 15.0
+growth = 1.0
+
+[sub_resource type="Resource" id="Resource_n3svf"]
+script = ExtResource("11_ngj6c")
+base = 40.0
+growth = 4.0
+
+[sub_resource type="Resource" id="Resource_nre7b"]
+script = ExtResource("12_44jbe")
+health = SubResource("Resource_d03wb")
+weapon = SubResource("Resource_n3svf")
+magic = SubResource("Resource_p5tn7")
+armor = SubResource("Resource_ifvnv")
+magic_resist = SubResource("Resource_i82xo")
+
+[resource]
+script = ExtResource("10_3ar50")
+hero_id = &"ranged_test_gadgets"
+display_name = "Ranged Test (gadgets)"
+title = "the Harness"
+description = "TEST ONLY (tools/heroes). Exercises hero batch 2's shared pieces: spin-up gun, placed barrier, deployables (turret, Mote drone), landing slam, hold meter + trail + traction + turn rate + slam-capable contact ram, and a detonatable, capped oil pool."
+stats = SubResource("Resource_nre7b")
+ult_charge_rate = 1.5
+abilities = Dictionary[StringName, ExtResource("1_rc7tc")]({
+&"ability_1": ExtResource("3_g3sfa"),
+&"ability_2": ExtResource("4_8vnui"),
+&"cc": ExtResource("6_af60e"),
+&"item": ExtResource("8_8cfcl"),
+&"movement": ExtResource("5_ghobe"),
+&"primary": ExtResource("2_fyhx5"),
+&"ultimate": ExtResource("7_gbfid")
+})
+feel_profile = ExtResource("9_tgcka")
+visual_profile = ExtResource("13_61nwq")

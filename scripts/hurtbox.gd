@@ -39,6 +39,11 @@ func take_hit(info: DamageInfo) -> void:
 		movement_component.apply_knockback(info.knockback
 			* StatusEffectComponent.multiplier_of(status_component, StatusEffect.DISPLACEMENT_TAKEN))
 		movement_component.begin_knockback(info.source, GameRules.current().wall_impact_window)
+	# A slam-capable push (StatusEffect.slam_bonus_ratio) arms the knock.
+	if movement_component != null:
+		for effect in info.statuses:
+			if effect != null and effect.slam_bonus_ratio > 0.0 and effect.displace_distance > 0.0:
+				movement_component.arm_slam(info.amount * effect.slam_bonus_ratio)
 
 
 # Abilities use this to reject targets that are already dead.

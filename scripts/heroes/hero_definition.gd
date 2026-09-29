@@ -27,6 +27,11 @@ enum Role { TANK, CARRY, TEMPO, FLEX }
 @export var move_speed: float = 540.0
 @export var acceleration: float = 2600.0
 @export var friction: float = 2800.0
+## Grip (MovementComponent.traction): 1 = normal; low = the hero drifts and
+## slides, velocity following input slowly (a bike).
+@export var traction: float = 1.0
+## Ultimate charge gained x this in a match (2 = charges twice as fast).
+@export var ult_charge_rate: float = 1.0
 
 @export_group("Abilities")
 ## Slot id -> ability. Slot ids come from GameRules (primary, ability_1,

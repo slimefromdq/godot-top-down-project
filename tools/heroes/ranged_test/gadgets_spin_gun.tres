@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="1_peq12"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_qq2hw"]
+[ext_resource type="Script" path="res://scripts/feel/attack_feel.gd" id="3_7hwkf"]
+[ext_resource type="Resource" path="res://tools/heroes/ranged_test/data/ranged_test_bullet.tres" id="4_mghxv"]
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="5_30vbo"]
+
+[sub_resource type="Resource" id="Resource_6sms2"]
+script = ExtResource("2_qq2hw")
+base = 4.0
+
+[sub_resource type="Resource" id="Resource_bwp6o"]
+script = ExtResource("3_7hwkf")
+windup = 0.0
+active = 0.02
+recovery = 0.05
+lunge_distance = 0.0
+ability_cancel_after = 0.0
+lock_aim = false
+
+[resource]
+script = ExtResource("5_30vbo")
+projectile = ExtResource("4_mghxv")
+spread_degrees = 3.0
+shots_per_second = 16.0
+spin_up_time = 1.5
+spin_start_rate = 0.25
+spin_cold_spread_degrees = 14.0
+id = &"gadget_spin_gun"
+display_name = "Spin-up Gun"
+description = "TEST: RangedAttackData spin-up (4 -> 16 shots/s over 1.5 s, spread 14° -> 3°)."
+ability_script = ExtResource("1_peq12")
+cooldown = 0.0
+damage = SubResource("Resource_6sms2")
+feel_override = SubResource("Resource_bwp6o")

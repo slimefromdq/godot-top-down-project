@@ -264,6 +264,28 @@ func can_be_taken_by(hero: Hero) -> bool:
 	return _can_take(hero, false)
 
 
+## Could a non-hero agent of `team` (a Mote drone) collect it now? Only
+## idle Motes, not the Dream Mote, not claimed by another team.
+func can_be_taken_by_agent(team: StringName) -> bool:
+	if state != State.IDLE or is_queued_for_deletion() or is_dream():
+		return false
+	return not (claim_left > 0.0 and claim_team != &"" and team != claim_team)
+
+
+## A non-hero agent collects it: returns {"data", "value", "source"} and the
+## Mote is gone ({} if it can't; a decoy pops and gives {}). The agent is
+## responsible for handing it to a MoteCarrier (or dropping it again).
+func take_by_agent(team: StringName) -> Dictionary:
+	if not can_be_taken_by_agent(team):
+		return {}
+	queue_free()
+	if is_decoy:
+		MatchManager.play_world_cue(self, &"mote_decoy_pop", {"position": global_position})
+		return {}
+	MatchManager.play_world_cue(self, &"mote_pickup", {"position": global_position, "count": 1})
+	return {"data": data, "value": value, "source": source}
+
+
 func _can_take(hero: Hero, pulling: bool) -> bool:
 	if hero == null or not is_instance_valid(hero) or not hero.is_inside_tree():
 		return false

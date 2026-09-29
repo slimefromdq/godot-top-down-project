@@ -47,6 +47,10 @@ enum ReloadStyle {
 ## cycle through them in order (alternating dual pistols = two entries).
 @export var muzzles: Array[Vector2] = [Vector2(60, 0)]
 
+## Put on the shooter every time a shot leaves (a recoil slow, bailing off
+## a bike that flies on as the projectile). Not for fire_extra_shot.
+@export var self_status_on_fire: StatusEffect
+
 @export_group("Fire")
 @export var fire_mode: FireMode = FireMode.AUTO
 ## Shots per second before status multipliers (FIRE_RATE).
@@ -54,6 +58,16 @@ enum ReloadStyle {
 ## SEMI only: a press up to this many seconds before the next shot is
 ## allowed still fires (fast clicking isn't eaten).
 @export var semi_input_buffer: float = 0.12
+
+@export_group("Spin up")
+## Wind-up weapon (a minigun): seconds of continuous fire from cold to full
+## spin. 0 = off. The fire rate runs from spin_start_rate x shots_per_second
+## (cold) to shots_per_second (full); spread from spin_cold_spread_degrees
+## to spread_degrees. Letting go spins down over spin_down_time.
+@export var spin_up_time: float = 0.0
+@export_range(0.0, 1.0, 0.01) var spin_start_rate: float = 1.0
+@export var spin_cold_spread_degrees: float = 0.0
+@export var spin_down_time: float = 1.0
 
 @export_group("Ammo")
 ## Rounds per magazine. 0 = infinite, never reloads.
@@ -141,6 +155,7 @@ func get_balance_metrics(level: int, weapon: float, magic: float) -> Dictionary:
 		"magazine_size": magazine_size,
 		"reload_time": get_full_reload_time(level),
 		"damage_per_shot": per_shot,
+		"spin_up_time": spin_up_time,
 		"burst_dps": burst,
 		"sustained_dps": sustained,
 	}
@@ -172,6 +187,8 @@ func validate() -> PackedStringArray:
 		problems.append("'%s' ammo_per_shot is larger than the magazine" % id)
 	if reload_style == ReloadStyle.REGEN and regen_interval <= 0.0:
 		problems.append("'%s' REGEN needs a positive regen_interval" % id)
+	if spin_up_time < 0.0 or spin_down_time < 0.0 or spin_cold_spread_degrees < 0.0:
+		problems.append("'%s' has negative spin-up values" % id)
 	if falloff_start < 0.0 or falloff_end < 0.0 or (falloff_end > 0.0 and falloff_end < falloff_start):
 		problems.append("'%s' falloff range is invalid" % id)
 	return problems

@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/common/charge_ability.gd" id="1_fgtji"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_yj5ob"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_dcpba"]
+[ext_resource type="Resource" path="res://heroes/rocco/data/rocco_main_event_knock.tres" id="4_0fk0t"]
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="5_r3uq7"]
+
+[sub_resource type="Resource" id="Resource_bdfj1"]
+script = ExtResource("2_yj5ob")
+base = 300.0
+per_level = 12.0
+weapon_ratio = 0.5
+
+[sub_resource type="Resource" id="Resource_drfqj"]
+script = ExtResource("3_dcpba")
+kind = 1
+radius = 100.0
+
+[resource]
+script = ExtResource("5_r3uq7")
+distance = 1500.0
+speed = 2600.0
+telegraph_time = 0.35
+id = &"main_event"
+display_name = "Main Event"
+description = "Point, pose, then launch yourself 1500 px in a straight line, fist first: 300 damage and a 750 px knockback to everyone you hit."
+ability_script = ExtResource("1_fgtji")
+cooldown = 80.0
+hit_shape = SubResource("Resource_drfqj")
+damage = SubResource("Resource_bdfj1")
+on_hit_status = ExtResource("4_0fk0t")
+tags = Array[StringName]([&"ability", &"ultimate"])
+ability_range = 1400.0
+feel_preset = &"punch_dash"

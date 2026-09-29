@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="ProjectileData" format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="1_bhjjj"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="2_513x3"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_ohufk"]
+[ext_resource type="Resource" path="res://heroes/biker/data/biker_hellburn.tres" id="4_81hgs"]
+[ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="5_0fd6c"]
+
+[sub_resource type="Resource" id="Resource_2lhn8"]
+script = ExtResource("1_bhjjj")
+base = 320.0
+per_level = 10.0
+weapon_ratio = 0.5
+
+[sub_resource type="Resource" id="Resource_pys63"]
+script = ExtResource("3_ohufk")
+kind = 1
+radius = 220.0
+
+[resource]
+script = ExtResource("5_0fd6c")
+speed = 600.0
+lifetime = 1.5
+radius = 40.0
+lobbed = true
+explode_on_expire = true
+explosion_shape = SubResource("Resource_pys63")
+explosion_damage = SubResource("Resource_2lhn8")
+explosion_status = ExtResource("4_81hgs")
+explosion_label = &"hellbound"
+explosion_effect = ExtResource("2_513x3")

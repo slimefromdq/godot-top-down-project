@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_st1dj"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="2_5ssby"]
+
+[resource]
+script = ExtResource("1_st1dj")
+id = &"rocco_cheap"
+display_name = "Cheap shot"
+duration = 0.15
+displace_distance = 140.0
+displace_duration = 0.12
+displace_direction = 1
+slam_bonus_ratio = 0.5

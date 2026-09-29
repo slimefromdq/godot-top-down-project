@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="VisualProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="1_qyuwl"]
+[ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="2_er61k"]
+[ext_resource type="PackedScene" path="res://effects/feel/ring_burst.tscn" id="3_iy1b7"]
+[ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="4_08qc4"]
+[ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="5_oiltl"]
+[ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="6_anyjf"]
+[ext_resource type="Texture2D" path="res://sprites/heroes/catgirl.svg" id="7_h1lu1"]
+
+[sub_resource type="Resource" id="Resource_tsu0a"]
+script = ExtResource("1_qyuwl")
+flash_color = Color(1, 0.3, 0.25, 0.9)
+flash_duration = 0.12
+
+[sub_resource type="Resource" id="Resource_87ngw"]
+script = ExtResource("1_qyuwl")
+effect_scene = ExtResource("2_er61k")
+tint = Color(0.65, 0.45, 1, 1)
+
+[sub_resource type="Resource" id="Resource_gjvv5"]
+script = ExtResource("1_qyuwl")
+effect_scene = ExtResource("3_iy1b7")
+align_to_direction = false
+tint = Color(0.8, 0.95, 1, 1)
+
+[sub_resource type="Resource" id="Resource_octay"]
+script = ExtResource("1_qyuwl")
+effect_scene = ExtResource("4_08qc4")
+tint = Color(0.65, 0.45, 1, 1)
+
+[sub_resource type="Resource" id="Resource_vii1o"]
+script = ExtResource("1_qyuwl")
+effect_scene = ExtResource("3_iy1b7")
+align_to_direction = false
+tint = Color(1, 0.35, 0.2, 1)
+screen_shake = 0.4
+
+[resource]
+script = ExtResource("6_anyjf")
+texture = ExtResource("7_h1lu1")
+flip_to_face_aim = false
+cues = Dictionary[StringName, ExtResource("1_qyuwl")]({
+&"death": SubResource("Resource_87ngw"),
+&"hurt": SubResource("Resource_tsu0a"),
+&"scamper_active": SubResource("Resource_octay"),
+&"sticky_bomb_boom": SubResource("Resource_vii1o"),
+&"swipe_steal": SubResource("Resource_gjvv5")
+})
