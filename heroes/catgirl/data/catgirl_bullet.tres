@@ -1,9 +1,11 @@
 [gd_resource type="Resource" script_class="ProjectileData" format=3]
 
 [ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="1_1cds8"]
+[ext_resource type="PackedScene" path="res://heroes/catgirl/vfx/comet_bullet.tscn" id="vis_comet"]
 
 [resource]
 script = ExtResource("1_1cds8")
 speed = 1700.0
-lifetime = 0.3
-radius = 9.0
+lifetime = 0.345
+radius = 12.15
+visual_scene = ExtResource("vis_comet")

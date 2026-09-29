@@ -166,12 +166,12 @@ match) ultimates keep their cooldowns so they can be practised.
 
 | Value | Default | What it does |
 |---|---|---|
-| `passive_gold_per_second` | 2.0 | Paid to every hero on a team (alive or dead) while the match is PLAYING. |
+| `passive_gold_per_second` | 2.5 | Paid to every hero on a team (alive or dead) while the match is PLAYING. |
 | `passive_xp_per_second` | 4.0 | As above. |
 | `passive_tick_interval` | 1.0 | Passive income is paid in chunks this many seconds apart. |
-| `kill_gold` | 150.0 | Paid to the hero who lands the killing blow on an enemy hero. |
+| `kill_gold` | 300.0 | Paid to the hero who lands the killing blow on an enemy hero. |
 | `kill_xp` | 200.0 | As above. |
-| `assist_gold` | 60.0 | Paid to each other enemy hero who damaged the victim recently. |
+| `assist_gold` | 120.0 | Paid to each other enemy hero who damaged the victim recently. |
 | `assist_xp` | 100.0 | As above. |
 | `assist_window` | 10.0 | How recent that damage must be, in seconds. |
 

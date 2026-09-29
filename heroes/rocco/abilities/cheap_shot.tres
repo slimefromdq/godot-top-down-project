@@ -9,20 +9,20 @@
 
 [sub_resource type="Resource" id="Resource_hajnx"]
 script = ExtResource("3_43xou")
-base = 50.0
-per_level = 3.5
-weapon_ratio = 0.35
+base = 54.0
+per_level = 3.78
+weapon_ratio = 0.378
 
 [sub_resource type="Resource" id="Resource_7oimy"]
 script = ExtResource("4_hdt32")
-radius = 125.0
+radius = 140.0
 arc_degrees = 80.0
 
 [resource]
 script = ExtResource("6_7vu66")
 id = &"cheap_shot"
 display_name = "Cheap Shot"
-description = "A quick dirty punch: 50 damage, a small knockback, and it heals you for 40% of the damage."
+description = "A quick dirty punch: 54 damage, a small knockback, and it heals you for 40% of the damage."
 ability_script = ExtResource("1_8smnu")
 cooldown = 6.0
 hit_shape = SubResource("Resource_7oimy")

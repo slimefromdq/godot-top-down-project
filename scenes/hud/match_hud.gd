@@ -44,6 +44,7 @@ class_name MatchHud
 
 var match_manager: MatchManager
 var announcer: Announcer
+var kill_feedback: KillFeedback
 var shop_panel: ShopPanel
 var events_hud: MapEventsHud
 
@@ -87,6 +88,10 @@ func _bind() -> void:
 	announcer.name = "Announcer"
 	add_child(announcer)
 	announcer.bind(match_manager)
+	kill_feedback = KillFeedback.new()
+	kill_feedback.name = "KillFeedback"
+	add_child(kill_feedback)
+	kill_feedback.bind(match_manager)
 	shop_panel = ShopPanel.new()
 	shop_panel.name = "ShopPanel"
 	add_child(shop_panel)

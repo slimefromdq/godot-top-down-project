@@ -7,10 +7,10 @@
 
 [sub_resource type="Resource" id="Resource_hxf38"]
 script = ExtResource("2_0yagi")
-base = 15.0
-per_level = 2.0
-weapon_ratio = 0.1
-magic_ratio = 0.15
+base = 16.2
+per_level = 2.16
+weapon_ratio = 0.108
+magic_ratio = 0.162
 
 [resource]
 script = ExtResource("4_h24eh")

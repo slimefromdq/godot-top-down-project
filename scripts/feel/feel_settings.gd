@@ -20,8 +20,8 @@ class_name FeelSettings
 ## Shake wobble speed. Lower is smoother and less nauseating.
 @export var shake_frequency: float = 18.0
 @export var hitstop_enabled: bool = true
-@export_range(0.0, 2.0, 0.05) var hitstop_scale: float = 1.0
-@export_range(0.0, 2.0, 0.05) var camera_nudge_scale: float = 1.0
+@export_range(0.0, 2.0, 0.05) var hitstop_scale: float = 0.6
+@export_range(0.0, 2.0, 0.05) var camera_nudge_scale: float = 0.8
 @export var flash_enabled: bool = true
 ## Show the match announcer's banner text (its sounds always play).
 @export var announcer_text: bool = true

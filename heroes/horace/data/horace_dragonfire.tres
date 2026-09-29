@@ -8,7 +8,7 @@
 [sub_resource type="Resource" id="Resource_4y0cd"]
 script = ExtResource("2_ksc3l")
 kind = 1
-radius = 220.0
+radius = 246.4
 
 [sub_resource type="Resource" id="Resource_6lwlq"]
 script = ExtResource("4_b7vqi")

@@ -126,13 +126,24 @@ func finish_match(manager: MatchManager, winner_team: StringName) -> Dictionary:
 			"name": hero.definition.display_name if hero.definition != null else str(hero.name),
 			"team": hero.team,
 			"is_player": hero == player,
+			"portrait": _portrait_of(hero),
 			"kills": record.kills,
 			"deaths": record.deaths,
 			"assists": record.assists,
 			"motes_banked": record.motes_banked,
 			"motes_delivered": record.motes_delivered,
 			"gold": record.gold,
+			"damage_dealt": record.damage_dealt,
+			"damage_taken": record.damage_taken,
+			"healing_done": record.healing_done,
+			"best_streak": record.best_streak,
+			"mvp_score": manager.get_rules().mvp_score(record),
 		})
+	var winner_mvp: Variant = _best_row(rows, winner_team, true)
+	var loser_mvp: Variant = _best_row(rows, winner_team, false)
+	for row in rows:
+		row["is_mvp"] = row == winner_mvp
+		row["is_ace"] = row == loser_mvp
 	last_result = {
 		"winner": winner_team,
 		"player_team": player.team if player != null else config.player_team,
@@ -142,6 +153,29 @@ func finish_match(manager: MatchManager, winner_team: StringName) -> Dictionary:
 	}
 	match_finished.emit(last_result)
 	return last_result
+
+
+func _portrait_of(hero: Hero) -> Texture2D:
+	var definition := hero.definition
+	if definition == null:
+		return null
+	if definition.portrait != null:
+		return definition.portrait
+	if definition.icon != null:
+		return definition.icon
+	return definition.visual_profile.texture if definition.visual_profile != null else null
+
+
+# The top-scoring row on the winning team (`winning`) or on the other one.
+# Ties go to the earlier row. Null when that side has no row (or no winner).
+func _best_row(rows: Array, winner_team: StringName, winning: bool) -> Variant:
+	var best: Variant = null
+	for row in rows:
+		if (row.team == winner_team) != winning:
+			continue
+		if best == null or row.mvp_score > best.mvp_score:
+			best = row
+	return best
 
 
 # --- Helpers -------------------------------------------------------------------------

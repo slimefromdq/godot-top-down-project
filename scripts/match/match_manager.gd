@@ -92,6 +92,14 @@ class Record:
 	## Mote value this hero put into their own Dreamer / the enemy's.
 	var motes_banked: int = 0
 	var motes_delivered: int = 0
+	## Damage dealt to and taken from enemy heroes, and health given to
+	## allies (not self): the MVP screen's numbers.
+	var damage_dealt: float = 0.0
+	var damage_taken: float = 0.0
+	var healing_done: float = 0.0
+	## Kills since the last death, and the best run of the match.
+	var streak: int = 0
+	var best_streak: int = 0
 	## Attacker hero -> time of their latest damage (for assists).
 	var damaged_by: Dictionary = {}
 	## Seconds until respawn while dead (< 0 = not waiting).
@@ -556,6 +564,8 @@ func _on_hero_healed(amount: float, source: Node, target: Hero) -> void:
 	if healer == null or healer.team != target.team:
 		return
 	var r := get_rules()
+	if healer != target and _records.has(healer):
+		(_records[healer] as Record).healing_done += amount
 	var mult := r.ult_charge_self_heal_mult if healer == target else 1.0
 	add_ultimate_charge(healer, amount * r.ult_charge_per_heal * mult)
 
@@ -650,6 +660,10 @@ func _on_hero_damaged(info: DamageInfo, victim: Hero) -> void:
 	var record: Record = _records.get(victim)
 	if record != null:
 		record.damaged_by[attacker] = _time
+		record.damage_taken += info.final_amount
+	var dealer: Record = _records.get(attacker)
+	if dealer != null:
+		dealer.damage_dealt += info.final_amount
 	var r := get_rules()
 	add_ultimate_charge(attacker, info.final_amount * r.ult_charge_per_damage)
 	add_ultimate_charge(victim, (info.final_amount + info.absorbed) * r.ult_charge_per_damage_taken)
@@ -660,6 +674,7 @@ func _on_hero_died(victim: Hero) -> void:
 	if record == null:
 		return
 	record.deaths += 1
+	record.streak = 0
 	var r := get_rules()
 	var killer := _hero_of(victim.health_component.last_damage_source)
 	if killer != null and (killer == victim or killer.team == victim.team or not _records.has(killer)):
@@ -673,7 +688,10 @@ func _on_hero_died(victim: Hero) -> void:
 	record.damaged_by.clear()
 	if state == State.PLAYING:
 		if killer != null:
-			(_records[killer] as Record).kills += 1
+			var killer_record: Record = _records[killer]
+			killer_record.kills += 1
+			killer_record.streak += 1
+			killer_record.best_streak = maxi(killer_record.best_streak, killer_record.streak)
 			grant_actor(killer, r.kill_gold, r.kill_xp, REASON_KILL)
 			add_ultimate_charge(killer, r.ult_charge_kill)
 		for hero in assisters:

@@ -120,7 +120,7 @@ The file is tidy (long) format, with one row per hero × level × metric, at lev
 | source | `stat`, `derived` (effective HP, plus hero-level numbers an ability reports through `get_hero_metrics`, e.g. Cosmo's `moon_volley` and `burst_combo`) or `ability` |
 | slot | `ability_1` (empty for stats) |
 | ability | `searing_cut` (empty for stats) |
-| metric | `health`, `cooldown`, `range`, `damage`, `heal_per_target`, `combo_steps/3/damage`, `values/lifesteal` …; guns add `shots_per_second`, `magazine_size`, `reload_time` (empty to full), `damage_per_shot`, `burst_dps` and `sustained_dps` (with reloads) |
+| metric | `health`, `cooldown`, `range`, `damage`, `heal_per_target`, `combo_steps/3/damage`, `values/lifesteal` …; guns add `shots_per_second`, `magazine_size`, `reload_time` (empty to full), `damage_per_shot`, `burst_dps` and `sustained_dps` (with reloads, when `GameRules.ammo_enabled` is on; otherwise the same as burst) |
 | value | `63.3` |
 
 ```r
@@ -203,6 +203,7 @@ godot --headless res://tools/match/ultimate_test.tscn
 godot --headless res://tools/match/items_test.tscn
 godot --headless res://tools/match/objectives_test.tscn
 godot --headless res://tools/match/map_events_test.tscn
+godot --headless res://tools/match/feel_patch_test.tscn
 godot --headless res://tools/ai/bot_test.tscn
 godot --headless res://tools/ai/bot_nav_test.tscn
 godot --headless res://tools/ai/bot_role_test.tscn

@@ -792,7 +792,7 @@ gate(-2310, -1990, 3470, 80, "Cloister Door", lever=(0, 170), offset=8.0)
 # open toward the road. Hide in it, shoot out of it, or shatter it.
 breakable(2860, 3542, 60, 300, "Glasshouse West")
 breakable(3320, 3542, 60, 300, "Glasshouse East")
-breakable(3090, 3692, 300, 60, "Glasshouse Back")
+breakable(3090, 3692, 412, 60, "Glasshouse Back")
 hazard(-3600, -1167, 420, 300, "sleep_fog", "Ridge Fog")
 hazard(3600, 3250, 360, 260, "thorn_bed", "Orchard Thorns")
 # The Homeway (geometry pass, phase 4): a belt down each Plaza avenue, from
@@ -917,4 +917,10 @@ def build():
         if new is None:
             continue
         out["labels"].append({**lb, "x": -lb["x"], "y": -lb["y"], "text": new})
+    # Last: shut every slit a hero's body can't squeeze through (gaps.py).
+    from gaps import seal
+    def circle(x, y, r, n=16):
+        return [(x + r * math.cos(2 * math.pi * i / n), y + r * math.sin(2 * math.pi * i / n)) for i in range(n)]
+    bodies = [{"pts": circle(d["x"], d["y"], d["body"]), "kind": "dreamer"} for d in out["dreamers"]]
+    seal(out, HX, HY, bodies)
     return out

@@ -84,12 +84,18 @@ Cues (match profiles, or the hero's own): `item_bought`, `item_sold`.
 
 ### The shop window (ShopPanel)
 
-**B** (`shop_toggle`) opens and closes it, Escape closes it. Rows are
-families, columns are tiers; each button shows your price right now (with
-the full price in brackets when a component comes off it). Disabled buttons
-say why in their tooltip ("Not enough gold", "Inventory full", "One active
-item only", "Return to base to shop"). Your items are listed underneath:
-click one to sell it. The match HUD shows a "B Shop" hint under your gold
+**B** (`shop_toggle`) opens and closes it, Escape closes it. Three zones:
+a **header** (your gold, and a green or red status chip: "In base: buy and
+sell" or why you can't shop), the **catalog** on the left (rows are
+families, columns are tiers, one card per item with a colour stripe, glyph,
+name and your price right now, "(was N)" when a component comes off it), and
+a **details card** on the right that fills when you hover or focus (Tab /
+arrows) an item: its tier, price and the real numbers from
+`ItemData.describe()`, plus why it can't be bought if it can't ("Not enough
+gold", "Inventory full", "One active item only", "Return to base to
+shop"). A price is green when you can buy it, red when you can't afford it,
+grey when the shop is closed to you. Your item slots run along the bottom
+(hover for the sell details, click to sell). Tests: `feel_patch_test`. The match HUD shows a "B Shop" hint under your gold
 whenever you can buy.
 
 ### Bots

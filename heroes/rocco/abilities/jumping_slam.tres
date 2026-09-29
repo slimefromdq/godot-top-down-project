@@ -8,14 +8,14 @@
 
 [sub_resource type="Resource" id="Resource_en4yh"]
 script = ExtResource("2_vr2tl")
-base = 40.0
-per_level = 3.0
-weapon_ratio = 0.3
+base = 43.2
+per_level = 3.24
+weapon_ratio = 0.324
 
 [sub_resource type="Resource" id="Resource_7r5ki"]
 script = ExtResource("3_r36ju")
 kind = 1
-radius = 170.0
+radius = 190.4
 
 [resource]
 script = ExtResource("5_er3yr")
@@ -25,7 +25,7 @@ arc_height = 160.0
 landing_hit_shape = SubResource("Resource_7r5ki")
 id = &"jumping_slam"
 display_name = "Top-Rope Slam"
-description = "Leap up to 450 px to the cursor and slam down: 40 damage and a 40% slow for 1 s around you."
+description = "Leap up to 450 px to the cursor and slam down: 43 damage and a 40% slow for 1 s around you."
 ability_script = ExtResource("1_uplmn")
 cooldown = 10.0
 damage = SubResource("Resource_en4yh")

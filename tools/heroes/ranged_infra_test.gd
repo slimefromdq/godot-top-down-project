@@ -28,6 +28,7 @@ var cues: Array = []    # [cue, context] from the main hero
 func _ready() -> void:
 	# Check the authored numbers, not the global TTK knob.
 	GameRules.current().ttk_damage_multiplier = 1.0
+	GameRules.current().ammo_enabled = true    # this test checks the magazine and reload code
 	_run.call_deferred()
 
 

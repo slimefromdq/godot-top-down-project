@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="1_7vpco"]
 [ext_resource type="Resource" path="res://heroes/catgirl/data/catgirl_marbles.tres" id="2_ayf5o"]
 [ext_resource type="Script" path="res://scripts/combat/projectile_data.gd" id="3_vjxe4"]
+[ext_resource type="PackedScene" path="res://heroes/catgirl/vfx/comet_marble.tscn" id="vis_comet"]
 
 [sub_resource type="Resource" id="Resource_u6gd0"]
 script = ExtResource("1_7vpco")
@@ -12,9 +13,10 @@ radius = 100.0
 [resource]
 script = ExtResource("3_vjxe4")
 speed = 900.0
-lifetime = 0.7
-radius = 12.0
+lifetime = 0.805
+radius = 16.2
 lobbed = true
 explode_on_expire = true
 explosion_shape = SubResource("Resource_u6gd0")
 explosion_zone = ExtResource("2_ayf5o")
+visual_scene = ExtResource("vis_comet")

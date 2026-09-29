@@ -8,13 +8,13 @@
 
 [sub_resource type="Resource" id="Resource_5isdh"]
 script = ExtResource("3_ydovc")
-base = 25.0
-per_level = 2.5
-weapon_ratio = 0.35
+base = 27.0
+per_level = 2.7
+weapon_ratio = 0.378
 
 [sub_resource type="Resource" id="Resource_ykoeu"]
 script = ExtResource("4_crimi")
-radius = 130.0
+radius = 145.6
 arc_degrees = 110.0
 
 [sub_resource type="Resource" id="Resource_6e2f2"]
@@ -25,7 +25,7 @@ base = 5.0
 script = ExtResource("5_dbsmk")
 id = &"swipe"
 display_name = "Swipe"
-description = "A quick claw swipe (130 px) that steals up to 5 of the target's carried Motes into your own stack (your carry limit applies)."
+description = "A quick claw swipe (146 px) that steals up to 5 of the target's carried Motes into your own stack (your carry limit applies)."
 ability_script = ExtResource("1_kexnp")
 hit_shape = SubResource("Resource_ykoeu")
 damage = SubResource("Resource_5isdh")

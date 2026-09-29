@@ -22,6 +22,7 @@ var cues: Array = []    # [cue, context]
 func _ready() -> void:
 	# Check the authored numbers, not the global TTK knob.
 	GameRules.current().ttk_damage_multiplier = 1.0
+	GameRules.current().ammo_enabled = true    # this test checks the magazine and reload code
 	CombatEvents.damage_dealt.connect(func(info: DamageInfo): hits_log.append(info))
 	_run.call_deferred()
 
@@ -79,8 +80,8 @@ func _test_primary_and_flourish() -> void:
 		var gap: float = (fires[0].position as Vector2).distance_to(fires[1].position)
 		_check("left/right muzzles are apart", gap > 30.0, "%.0f px" % gap)
 	var hits := hits_log.filter(func(i: DamageInfo): return i.target == target and i.label == &"twin_longarms")
-	# 22 + 0.55 x 44 Weapon.
-	_check("every round hits for base + Weapon ratio", hits.size() == 12 and is_equal_approx(hits[0].final_amount, 46.2),
+	# 16.2 + 0.405 x 44 Weapon (trimmed: no reloads now).
+	_check("every round hits for base + Weapon ratio", hits.size() == 12 and is_equal_approx(hits[0].final_amount, 16.2 + 0.405 * 44.0),
 		"%d hits, %.1f" % [hits.size(), hits[0].final_amount if not hits.is_empty() else 0.0])
 	_check("auto reload when empty", gun.get_ammo() == 0 and gun.is_reloading(), "")
 	_check("reload is long (flip is the better reload)", gun.get_reload_remaining() > 2.0, "%.2f" % gun.get_reload_remaining())
@@ -132,8 +133,8 @@ func _test_last_word() -> void:
 	await _physics_frames(2)
 	var shot := jose.get_ability(&"ability_1") as RangedAttackAbility
 	var gun := jose.get_ranged_ability()
-	var low := 50.0 + 0.8 * 44.0
-	var full := 160.0 + 2.0 * 44.0
+	var low := 54.0 + 0.864 * 44.0
+	var full := 172.8 + 2.16 * 44.0
 	var ammo_before := gun.get_ammo()
 
 	# Partial charge.
@@ -243,13 +244,13 @@ func _test_coin() -> void:
 	hits_log.clear()
 	await _fire_one(marked.global_position)
 	_check("above the threshold: a normal hit", not marked.health_component.is_dead()
-		and is_equal_approx(marked.health_component.current_health, 500.0 - 46.2) and _sum(marked, &"coin_execute") == 0.0,
+		and is_equal_approx(marked.health_component.current_health, 500.0 - (16.2 + 0.405 * 44.0)) and _sum(marked, &"coin_execute") == 0.0,
 		"%.1f" % marked.health_component.current_health)
 
 	# Crossing the threshold executes, through heavy mitigation.
 	marked.configure(1000.0, 300.0, 0.0, 1)    # 300 armor: a revolver round does ~12
 	marked.status_component.apply(load("res://heroes/jose/data/jose_coin_mark.tres"), jose)
-	_set_health(marked, 125.0)    # threshold is 12% of 1000 = 120
+	_set_health(marked, 122.0)    # threshold is 12% of 1000 = 120 (a round does ~4 here)
 	var tough := StatusEffect.new()
 	tough.id = &"test_tough"
 	tough.duration = 10.0
