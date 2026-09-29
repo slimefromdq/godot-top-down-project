@@ -80,6 +80,8 @@ class_name MapEventRules
 @export var island_size: Vector2 = Vector2(1500.0, 1000.0)
 ## Where the cache Motes sit, as fractions of half the island's size.
 @export var island_cache_spread: float = 0.55
+## The portal's colour (warm amber, so it never reads as a purple teleporter).
+@export var island_portal_color: Color = Color("f59e0b")
 ## Seconds between the shimmer sound while you're near the portal.
 @export var island_shimmer_sound_interval: float = 2.5
 
