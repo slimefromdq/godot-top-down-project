@@ -573,8 +573,7 @@ drive), `StatusEffect` carry (`carry_enabled`, `carry_max_offset`,
 `carry_max_speed`), `RideData`/`RideAbility`, `SelfStatusData`/
 `SelfStatusAbility`, `ChargeData.telegraph_time` / arrival release /
 `arrival_status`, and `effects/feel/area_telegraph.tscn` (a warning circle
-for any area that lands around its caster). His body-is-the-army look is
-`vfx/bug_army.gd` (cosmetic, spawned by the `spawn` cue).
+for any area that lands around its caster).
 `tools/heroes/cpt_yellow_test` covers the kit.
 
 ## What Melody took

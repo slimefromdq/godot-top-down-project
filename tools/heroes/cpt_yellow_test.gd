@@ -35,7 +35,6 @@ func _run() -> void:
 	await _test_rally()
 	await _test_sting()
 	await _test_charge()
-	await _test_bug_army()
 
 	print("\n%s (%d failed)" % ["ALL PASSED" if failures == 0 else "FAILURES", failures])
 	get_tree().quit(failures)
@@ -270,25 +269,6 @@ func _test_charge() -> void:
 		and victim.status_component.has_status(&"charge_dropped"), "")
 	_clear()
 	await _seconds(0.3)
-
-
-# --- Bug army (cosmetic) ------------------------------------------------------------
-
-func _test_bug_army() -> void:
-	_reset(Vector2(0, 17000), 1)
-	await _physics_frames(2)
-	var army: Node = yellow.visuals.get_meta(&"cpt_yellow_bug_army") if yellow.visuals.has_meta(&"cpt_yellow_bug_army") else null
-	_check("the bug army is on him", is_instance_valid(army), "")
-	if not is_instance_valid(army):
-		return
-	var full: int = army.get_shown_count()
-	yellow.hurtbox.take_hit(DamageInfo.create(yellow.health_component.max_health * 0.5, null, DamageInfo.Type.TRUE))
-	await _physics_frames(1)
-	var hurt: int = army.get_shown_count()
-	_check("losing half his HP drops about half the bugs", hurt < full and hurt >= full / 2 - 1, "%d -> %d" % [full, hurt])
-	yellow.health_component.heal(yellow.health_component.max_health)
-	await _physics_frames(1)
-	_check("healing brings them back", army.get_shown_count() == full, "%d" % army.get_shown_count())
 
 
 # --- Helpers ----------------------------------------------------------------------
