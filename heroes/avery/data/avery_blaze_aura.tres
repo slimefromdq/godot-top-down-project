@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="GroundZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/ground_zone_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_x"]
+[ext_resource type="Resource" path="res://heroes/avery/data/avery_burn.tres" id="4_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("2_x")
+kind = 1
+radius = 260.0
+
+[sub_resource type="Resource" id="Sub_2"]
+script = ExtResource("3_x")
+base = 4.0
+magic_ratio = 0.2
+
+[resource]
+script = ExtResource("1_x")
+shape = SubResource("Sub_1")
+duration = 6.0
+tick_interval = 0.5
+tick_damage = SubResource("Sub_2")
+damage_type = 1
+status = ExtResource("4_x")
+meter_label = &"blaze_aura"
+follow_owner = true
+ends_if_owner_dies = true
+outlives_cast = true
+color = Color(1, 0.5, 0.1, 0.22)
+outline_color = Color(1, 0.7, 0.25, 0.95)
+outline_width = 5.0
+draw_z_index = -3

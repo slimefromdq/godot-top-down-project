@@ -90,7 +90,7 @@ Tracks the local player since the last reset:
 
 * Damage dealt, with DPS over a rolling 5-second window. DPS divides by the time actually spent fighting in that window, so a short burst isn't diluted.
 * Shields: "Shielding done" (damage your shields absorbed, by status) and "Shielded" (damage absorbed for you, never counted as damage taken).
-* A **breakdown by source**, using each hit's label: `blade`, `crescent`, `burn`, `fire_trail`, `searing_cut`, `dawnbreaker`, `phoenix_burst` …, with total, share and hit count.
+* A **breakdown by source**, using each hit's label: `blade`, `crescent`, `burn`, `fire_trail`, `searing_cut`, `sunbrand`, `sunbrand_burn`, `blaze_aura`, `phoenix_burst` …, with total, share and hit count.
 * **Healing received** by source (`searing_cut_heal`, `phoenix_rebirth` …) and damage taken.
 
 Each dummy also shows its own DPS and its total since it last reset.

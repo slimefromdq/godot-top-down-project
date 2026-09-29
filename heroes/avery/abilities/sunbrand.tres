@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="RangedAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="1_x"]
+[ext_resource type="Script" path="res://scripts/abilities/common/ranged_attack_ability.gd" id="2_x"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="3_x"]
+[ext_resource type="Resource" path="res://heroes/avery/data/sunbrand_flare.tres" id="4_x"]
+[ext_resource type="Resource" path="res://heroes/avery/data/avery_sunbrand_status.tres" id="5_x"]
+
+[sub_resource type="Resource" id="Sub_1"]
+script = ExtResource("3_x")
+base = 25.0
+weapon_ratio = 0.35
+magic_ratio = 0.35
+
+[resource]
+script = ExtResource("1_x")
+projectile = ExtResource("4_x")
+muzzles = Array[Vector2]([Vector2(60, 0)])
+fire_mode = 1
+shots_per_second = 2.0
+id = &"sunbrand"
+display_name = "Sunbrand"
+description = "Hurl a flare (750 px). The first enemy hit is branded for 3 s: slowed 40% and burning for true damage that scales with Magic."
+ability_script = ExtResource("2_x")
+cooldown = 10.0
+cooldown_per_level = -0.3
+damage = SubResource("Sub_1")
+damage_type = 1
+on_hit_status = ExtResource("5_x")
+tags = Array[StringName]([&"ability", &"cc"])
+meter_label = &"sunbrand"
+feel_preset = &"flare"

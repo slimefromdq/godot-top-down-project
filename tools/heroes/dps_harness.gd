@@ -71,7 +71,7 @@ func _burst_jose() -> void:
 	await _hold_primary(BURST_TIME - 1.15)
 
 
-# Searing Cut and Dawnbreaker, then the combo.
+# Searing Cut and Sunbrand, then the combo.
 func _burst_avery() -> void:
 	var at := _dummy.global_position
 	_hero.global_position = at - Vector2(120, 0)

@@ -35,7 +35,7 @@ heroes/<name>/
 | `AbilityData` (+ subclasses) | cooldown, cost, hit shape, damage/heal `ScalingValue`s, statuses, feel preset, **which script runs it** | `abilities/*.tres` |
 | `ScalingValue` | `base + per_level·(lvl−1) + weapon_ratio·Weapon + magic_ratio·Magic` | every damage/heal number |
 | `FeelProfile` / `AttackFeel` | windup / active / recovery, lunge, slow, cancel windows, hitstop, shake, trail, sounds | `avery_feel.tres` |
-| `StatusEffect` | slow, stun, root, silence, knockback/pull, burn, compel, stat modifiers; stacking rules | `data/avery_stun.tres`, `data/avery_burn.tres` |
+| `StatusEffect` | slow, stun, root, silence, knockback/pull, burn, compel, stat modifiers; stacking rules | `data/avery_sunbrand_status.tres`, `data/avery_burn.tres` |
 | `ProjectileData`, `GroundZoneData` | projectile flight / ground fire | `data/sun_crescent.tres`, `data/fire_trail.tres` |
 
 Slots come from `resources/rules/game_rules.tres`: `primary` (LMB),
@@ -331,12 +331,13 @@ zones, still under characters.
 | primary | `sunblade_slash.tres`: 3 `combo_steps` (light, light, finisher) + `swing_projectile` = the crescent | generic `MeleeAttackAbility` |
 | ability_1 | `searing_cut.tres` (`SearingCutData`: heal per target, falloff, cap) | `searing_cut_ability.gd`: heals via the `hit_dealt` hook |
 | movement | `solar_charge.tres` (`ChargeData` + `trail_zone`) | generic `ChargeAbility` |
-| cc | `dawnbreaker.tres` with `on_hit_status = avery_stun.tres` | generic `MeleeAttackAbility` |
-| ultimate | `phoenix_rebirth.tres` (`PhoenixRebirthData`) | `phoenix_rebirth_ability.gd`: cancels death via `about_to_die` |
+| cc | `sunbrand.tres`: one-shot `RangedAttackData` (750 px flare); `on_hit_status` = `avery_sunbrand_status.tres` (40% slow + a true-damage burn) | generic `RangedAttackAbility` |
+| ultimate | `phoenix_rebirth.tres` (`PhoenixRebirthData`): the revive, plus `blaze_status` / `blaze_zone` for the alive use | `phoenix_rebirth_ability.gd`: cancels death via `about_to_die`; pressing the key while alive casts the Blaze (speed, regen, a `follow_owner` burning aura) |
 
-To swap Dawnbreaker's stun for a knockback or pull, point its
-`on_hit_status` at `avery_cc_knockback.tres` or `avery_cc_pull.tres`. No
-code.
+Her burn (`avery_burn.tres`) is TRUE damage scaling with Magic, so running away
+doesn't shake it. Searing Cut has no knockback, so it never pushes a target out
+of her reach. Both uses of the ultimate share one cooldown (or match charge):
+Blazing means no revive until it returns.
 
 **Named numbers.** Any extra number a script needs goes in the ability's
 `values` dictionary as a `ScalingValue`, and the script reads it with

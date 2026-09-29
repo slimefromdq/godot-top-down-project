@@ -5,16 +5,19 @@
 
 [sub_resource type="Resource" id="Sub_1"]
 script = ExtResource("2_x")
-base = 3.0
-magic_ratio = 0.15
+base = 4.0
+magic_ratio = 0.2
 
 [resource]
 script = ExtResource("1_x")
-id = &"avery_burn"
-display_name = "Burn"
-duration = 2.0
+id = &"avery_sunbrand"
+display_name = "Branded"
+duration = 3.0
+stat_multipliers = Dictionary[StringName, float]({
+&"move_speed": 0.6
+})
 tick_damage = SubResource("Sub_1")
 tick_interval = 0.5
 tick_damage_type = 2
-tick_label = &"burn"
-body_tint = Color(1, 0.5, 0.15, 0.6)
+tick_label = &"sunbrand_burn"
+body_tint = Color(1, 0.4, 0.1, 0.5)

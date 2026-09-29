@@ -6,7 +6,7 @@ class_name DamageMeter
 # global CombatEvents feed and never touches gameplay.
 #
 # "Source" in the breakdown is the DamageInfo label: blade, crescent, burn,
-# fire_trail, searing_cut, dawnbreaker, phoenix_burst ... so blade vs.
+# fire_trail, searing_cut, sunbrand, phoenix_burst ... so blade vs.
 # crescent vs. burn vs. abilities falls straight out of the data.
 #
 # DPS is over a rolling window: damage in the last `window` seconds divided by

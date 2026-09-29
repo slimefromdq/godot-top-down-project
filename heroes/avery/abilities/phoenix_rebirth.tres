@@ -8,6 +8,9 @@
 [ext_resource type="Resource" path="res://heroes/avery/data/avery_rebirth_state.tres" id="6_x"]
 [ext_resource type="Resource" path="res://heroes/avery/data/avery_burn.tres" id="7_x"]
 
+[ext_resource type="Resource" path="res://heroes/avery/data/avery_blaze_self.tres" id="8_x"]
+[ext_resource type="Resource" path="res://heroes/avery/data/avery_blaze_aura.tres" id="9_x"]
+
 [sub_resource type="Resource" id="Sub_1"]
 script = ExtResource("3_x")
 kind = 1
@@ -23,7 +26,7 @@ magic_ratio = 1.0
 script = ExtResource("1_x")
 id = &"phoenix_rebirth"
 display_name = "Phoenix Rebirth"
-description = "Passive. When Avery would die, she is reborn in flame with 40% HP and scorches everything around her. Long cooldown."
+description = "When Avery would die, she is reborn in flame with 40% HP and scorches everything around her. Press the key while alive to spend it on a Blaze instead: 6 s of speed, regeneration and a burning aura, but no revive until it returns."
 ability_script = ExtResource("2_x")
 cooldown = 100.0
 cooldown_per_level = -3.0
@@ -33,6 +36,7 @@ damage_type = 1
 on_hit_status = ExtResource("5_x")
 tags = Array[StringName]([&"ability", &"ultimate"])
 meter_label = &"phoenix_burst"
+feel_preset = &"blaze"
 restore_health_ratio = 0.4
 rebirth_duration = 1.2
 invulnerable_after = 0.3
@@ -40,3 +44,6 @@ rebirth_state = ExtResource("6_x")
 cleanse_on_trigger = true
 burst_enabled = true
 burst_extra_status = ExtResource("7_x")
+blaze_enabled = true
+blaze_status = ExtResource("8_x")
+blaze_zone = ExtResource("9_x")

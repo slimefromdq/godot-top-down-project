@@ -31,7 +31,9 @@ func _run() -> void:
 	await _test_crescent_pokes()
 	await _test_searing_cut()
 	await _test_charge()
-	await _test_cc_stun()
+	await _test_burn()
+	await _test_sunbrand()
+	await _test_blaze()
 	await _test_revive()
 	await _test_levels()
 
@@ -134,16 +136,83 @@ func _test_charge() -> void:
 	_clear_dummies()
 
 
-func _test_cc_stun() -> void:
+func _test_burn() -> void:
+	var burn := load("res://heroes/avery/data/avery_burn.tres") as StatusEffect
+	_check("burn is true damage", burn.tick_damage_type == DamageInfo.Type.TRUE, str(burn.tick_damage_type))
+	var stats := avery.stats_component
+	var at_1 := burn.tick_damage.evaluate(stats)
+	stats.set_level(10)
+	var at_10 := burn.tick_damage.evaluate(stats)
+	stats.set_level(1)
+	_check("burn scales with Magic", burn.tick_damage.magic_ratio > 0.0 and at_10 > at_1 * 1.5,
+		"%.1f -> %.1f per tick" % [at_1, at_10])
+	# True damage ignores armor / magic resist: a dummy's tick lands in full.
 	_reset_avery(Vector2.ZERO)
-	var target := _dummy(Vector2(120, 0))
+	var target := _dummy(Vector2(400, 0))
 	await _physics_frames(2)
-	avery.request_slot(&"cc", target.global_position)
-	await _seconds(0.35)
-	_check("CC stuns the target", target.status_component.is_stunned(), "")
-	await _seconds(0.8)
-	_check("stun wears off (~0.75 s)", not target.status_component.is_stunned(), "")
+	hits_log.clear()
+	target.status_component.apply(burn, avery)
+	await _seconds(0.6)
+	var ticks := hits_log.filter(func(i: DamageInfo): return i.target == target and i.label == &"burn")
+	var expected := at_1 * GameRules.current().ttk_damage_multiplier    # only the global knob applies
+	_check("burn ticks land in full", not ticks.is_empty() and is_equal_approx(ticks[0].final_amount, expected),
+		"%s vs %.1f" % [str(ticks.map(func(i): return i.final_amount)), expected])
 	_clear_dummies()
+
+
+func _test_sunbrand() -> void:
+	_reset_avery(Vector2.ZERO)
+	var target := _dummy(Vector2(600, 0))
+	await _physics_frames(2)
+	hits_log.clear()
+	var data := avery.get_ability(&"cc").data as RangedAttackData
+	_check("Sunbrand reaches past Searing Cut", data.projectile.speed * data.projectile.lifetime
+		> (avery.get_ability(&"ability_1").data as SearingCutData).hit_shape.get_reach() * 2.0, "")
+	avery.request_slot(&"cc", target.global_position)
+	await _seconds(0.7)
+	_check("Sunbrand hits at range", _sum(target, &"sunbrand") > 0.0, "")
+	var brand := target.status_component.has_status(&"avery_sunbrand")
+	_check("target is branded", brand, "")
+	_check("branded target is slowed, not stunned", not target.status_component.is_stunned(), "")
+	var speed_mult := target.status_component.get_multiplier(StatusEffect.MOVE_SPEED)
+	_check("brand slows movement 40%", is_equal_approx(speed_mult, 0.6), str(speed_mult))
+	await _seconds(1.0)
+	_check("brand burns for true damage", _sum(target, &"sunbrand_burn") > 0.0, "")
+	_clear_dummies()
+
+
+func _test_blaze() -> void:
+	_reset_avery(Vector2.ZERO)
+	var near := _dummy(Vector2(200, 0))
+	await _physics_frames(2)
+	hits_log.clear()
+	var ult := avery.get_ability(&"ultimate")
+	var data := ult.data as PhoenixRebirthData
+	avery.health_component.current_health = 100.0
+	_check("ult is ready", ult.is_ready(), "")
+	_check("Blaze can be cast while alive", avery.request_slot(&"ultimate", near.global_position), "")
+	await _seconds(0.5)
+	_check("Blaze spends the ultimate", not ult.is_ready(), "")
+	_check("Blaze puts the status on Avery", avery.status_component.has_status(&"avery_blaze"), "")
+	_check("Blaze is faster", avery.status_component.get_multiplier(StatusEffect.MOVE_SPEED) > 1.2, "")
+	await _seconds(1.0)
+	_check("Blaze aura burns enemies", _sum(near, &"blaze_aura") > 0.0 and near.status_component.has_status(&"avery_burn"), "")
+	_check("Blaze regenerates health", avery.health_component.current_health > 100.0,
+		str(avery.health_component.current_health))
+	# No revive while the ultimate is spent.
+	var died := [false]
+	var on_died := func(): died[0] = true
+	avery.health_component.died.connect(on_died)
+	avery.health_component.apply_damage(DamageInfo.create(99999.0, near, DamageInfo.Type.TRUE))
+	_check("no revive after Blazing", died[0], "")
+	avery.health_component.died.disconnect(on_died)
+	_check("Blaze data validates", data.validate().is_empty(), "\n".join(data.validate()))
+	_clear_dummies()
+	avery.queue_free()
+	avery = load(AVERY).instantiate()
+	avery.team = &"a"
+	add_child(avery)
+	await _physics_frames(2)
 
 
 func _test_revive() -> void:

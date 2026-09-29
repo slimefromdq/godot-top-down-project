@@ -11,8 +11,11 @@ extends Ability
 #   3. When the rebirth ends she heals to restore_health_ratio of max HP and,
 #      if enabled, releases a fire burst around her.
 #
-# If it's on cooldown, we do nothing and she dies normally. The key does
-# nothing but report that it's passive.
+# If it's on cooldown, we do nothing and she dies normally.
+#
+# Pressing the key while alive (and ready) is the second use: a Blaze. She gets
+# blaze_status (faster, regenerating) and a burning aura follows her for its
+# duration. It spends the ultimate, so there is no revive until it is back.
 #
 # Cues: phoenix_rebirth (sequence starts), phoenix_rebirth_end (she rises,
 # with context.radius for the burst visuals).
@@ -36,7 +39,21 @@ func is_reviving() -> bool:
 
 
 func _activate(_target_position: Vector2) -> String:
-	return "Passive: triggers when you'd die"
+	var rebirth := get_rebirth_data()
+	if _reviving:
+		return "Reborn"
+	if not rebirth.blaze_enabled:
+		return "Passive: triggers when you'd die"
+	return ""
+
+
+# The alive use: the zone is not tied to the cast (a stun doesn't end it).
+func _on_active_start() -> void:
+	var rebirth := get_rebirth_data()
+	var duration := rebirth.blaze_status.duration if rebirth.blaze_status != null else rebirth.blaze_zone.duration
+	actor.status_component.apply(rebirth.blaze_status, actor)
+	GroundZone.spawn(actor, rebirth.blaze_zone, actor.global_position, cast_direction, actor, duration)
+	actor.trigger_cue(&"phoenix_blaze", {"duration": duration, "radius": rebirth.get_range()})
 
 
 func _on_about_to_die(event: DeathEvent) -> void:
