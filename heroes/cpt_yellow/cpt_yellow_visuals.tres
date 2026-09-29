@@ -4,7 +4,6 @@
 [ext_resource type="Script" path="res://scripts/visuals/visual_profile.gd" id="1_x"]
 [ext_resource type="PackedScene" path="res://heroes/cpt_yellow/art/cpt_yellow_live_rig.tscn" id="16_x"]
 [ext_resource type="Script" path="res://scripts/visuals/visual_cue.gd" id="2_x"]
-[ext_resource type="PackedScene" path="res://heroes/cpt_yellow/vfx/bug_army.tscn" id="3_x"]
 [ext_resource type="PackedScene" path="res://effects/floating_text.tscn" id="4_x"]
 [ext_resource type="PackedScene" path="res://effects/death_burst.tscn" id="5_x"]
 [ext_resource type="PackedScene" path="res://effects/hit_spark.tscn" id="6_x"]
@@ -17,12 +16,6 @@
 [ext_resource type="PackedScene" path="res://heroes/cpt_yellow/vfx/wave_crest.tscn" id="13_x"]
 [ext_resource type="PackedScene" path="res://effects/dash_puff.tscn" id="14_x"]
 [ext_resource type="PackedScene" path="res://effects/kill_confirm.tscn" id="15_x"]
-
-[sub_resource type="Resource" id="Cue_spawn"]
-script = ExtResource("2_x")
-effect_scene = ExtResource("3_x")
-attach_to_actor = true
-align_to_direction = false
 
 [sub_resource type="Resource" id="Cue_hurt"]
 script = ExtResource("2_x")
@@ -129,7 +122,6 @@ body_scale = Vector2(0.3, 0.3)
 body_tint = Color(1, 1, 1, 0)
 live_rig = ExtResource("16_x")
 cues = Dictionary[StringName, ExtResource("2_x")]({
-&"spawn": SubResource("Cue_spawn"),
 &"hurt": SubResource("Cue_hurt"),
 &"heal": SubResource("Cue_heal"),
 &"death": SubResource("Cue_death"),
