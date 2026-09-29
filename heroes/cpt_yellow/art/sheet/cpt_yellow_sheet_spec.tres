@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="SheetSpec" format=3]
+
+[ext_resource type="Script" path="res://scripts/visuals/sheet_spec.gd" id="1_spec"]
+
+[resource]
+script = ExtResource("1_spec")
+source_path = "res://heroes/cpt_yellow/art/sheet/cpt_yellow_sheet.webp"
+column_edges = PackedInt32Array(0, 400, 800, 1200, 1600, 2000)
+row_edges = PackedInt32Array(0, 667)
+column_names = PackedStringArray("down", "down_right", "right", "up_right", "up")
+row_names = PackedStringArray("body")
+export_columns = PackedStringArray("down", "down_right", "right", "up_right", "up")
+out_dir = "res://heroes/cpt_yellow/art/directions"
+restore_enclosed_rows = PackedStringArray("body")
