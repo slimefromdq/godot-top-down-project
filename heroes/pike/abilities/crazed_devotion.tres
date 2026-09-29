@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="ChargeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/charge_data.gd" id="1_a"]
+[ext_resource type="Script" path="res://heroes/pike/abilities/crazed_devotion_ability.gd" id="2_a"]
+[ext_resource type="Script" path="res://scripts/combat/hit_shape.gd" id="3_a"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
+
+[sub_resource type="Resource" id="Shape"]
+script = ExtResource("3_a")
+kind = 1
+radius = 80.0
+
+[sub_resource type="Resource" id="Damage"]
+script = ExtResource("9_v")
+base = 25.0
+per_level = 3.0
+weapon_ratio = 0.5
+
+[sub_resource type="Resource" id="Threshold"]
+script = ExtResource("9_v")
+base = 0.15
+
+[sub_resource type="Resource" id="PerStack"]
+script = ExtResource("9_v")
+base = 0.02
+
+[resource]
+script = ExtResource("1_a")
+distance = 550.0
+speed = 2200.0
+carry_momentum = false
+telegraph_time = 0.08
+id = &"crazed_devotion"
+display_name = "Crazed Devotion"
+description = "Dash through enemies, cutting each once. Anyone left under 15% health (+2% per stack of bleed on them) is executed for true damage. A kill brings the dash back at once."
+ability_script = ExtResource("2_a")
+cooldown = 14.0
+cooldown_per_level = -0.3
+hit_shape = SubResource("Shape")
+damage = SubResource("Damage")
+damage_type = 0
+tags = Array[StringName]([&"ability", &"cc"])
+meter_label = &"crazed_devotion"
+values = Dictionary[StringName, ExtResource("9_v")]({
+&"execute_threshold": SubResource("Threshold"),
+&"execute_per_bleed_stack": SubResource("PerStack")
+})
+feel_preset = &"quick"

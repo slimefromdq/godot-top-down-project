@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/abilities/ranged_attack_data.gd" id="1_a"]
 [ext_resource type="Script" path="res://heroes/pike/abilities/juggled_knives.gd" id="2_a"]
 [ext_resource type="Resource" path="res://heroes/pike/data/pike_knife.tres" id="3_a"]
+[ext_resource type="Resource" path="res://heroes/pike/data/pike_bleed.tres" id="4_a"]
 [ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="9_v"]
 
 [sub_resource type="Resource" id="Damage"]
@@ -24,11 +25,12 @@ reload_style = 2
 regen_interval = 0.5
 id = &"juggled_knives"
 display_name = "Juggled Knives"
-description = "Fast thrown knives: 0.4 x Weapon + 0.5% of the target's max HP. Five orbit her; one comes back every 0.5 s."
+description = "Fast thrown knives: 0.4 x Weapon + 0.5% of the target's max HP, and each one adds a stack of Bleeding (up to 8, 4 s): true damage every 0.5 s per stack. Five orbit her; one comes back every 0.5 s."
 ability_script = ExtResource("2_a")
 cooldown = 0.0
 damage = SubResource("Damage")
 damage_type = 0
+on_hit_status = ExtResource("4_a")
 tags = Array[StringName]([&"basic_attack"])
 meter_label = &"juggled_knives"
 values = Dictionary[StringName, ExtResource("9_v")]({

@@ -455,10 +455,10 @@ Template → "Pike", basic attack deleted, then:
 | Slot | Data | Script |
 |---|---|---|
 | passive | `obsession.tres` (`PikeObsessionData`): `unseen_status` (`invisible`, +20% speed, 0.4 alpha), `ambush_status` (0.75 s root), `values/ambush_cooldown` 6, `ambush_damage_multiplier` 2, `restealth_delay` 1.5, `keeps_stealth_slots` [movement] | `obsession.gd`: breaking the Beloved's line of sight (`CombatQueries`) hides her until she attacks or casts; the knife out of hiding is the ambush |
-| primary | `juggled_knives.tres`: `RangedAttackData`, AUTO 4/s, 5 rounds, REGEN 0.5 s, 0.4 x Weapon, `values/max_hp_ratio` 0.005 | `juggled_knives.gd`: the max-HP part, the ambush knife; `vfx/knife_orbit.gd` shows the ammo |
+| primary | `juggled_knives.tres`: `RangedAttackData`, AUTO 4/s, 5 rounds, REGEN 0.5 s, 0.4 x Weapon, `values/max_hp_ratio` 0.005, `on_hit_status` = `pike_bleed.tres` (STACK, 8 stacks, 4 s, TRUE damage every 0.5 s: 1 + 8% Weapon per stack) | `juggled_knives.gd`: the max-HP part, the ambush knife; `vfx/knife_orbit.gd` shows the ammo |
 | ability_1 | `beloved.tres`: one-shot heart, `on_hit_status` = the Beloved mark (`stack_per_applier`, `ends_if_applier_dies`, `vfx/beloved_heart.tscn`) | `beloved_ability.gd`: one Beloved at a time, `get_beloved()` |
 | movement | `there_you_are.tres`: `ChargeData` 300 px (no Beloved), `values/teleport_range` 900, `behind_offset` | `there_you_are_ability.gd`: `teleport_to` behind the Beloved |
-| cc | `dont_go.tres`: one-shot knife, 1 s root; `values/beloved_root_duration` 1.5 | `dont_go_ability.gd`: the longer root on her Beloved |
+| cc | `crazed_devotion.tres`: `ChargeData` bash dash (550 px, 2200 speed, 80 px circle); `values/execute_threshold` 0.15, `execute_per_bleed_stack` 0.02 | `crazed_devotion_ability.gd`: after the cut, executes (TRUE) anyone under the threshold, raised by their Bleeding stacks; a kill resets the cooldown |
 | ultimate | `only_us.tres`: `values/ring_radius` 450, `ring_duration` 4, `max_distance` 600 | `only_us_ability.gd`: a `ContainmentRing` around both |
 
 The heart draws big for the Beloved and Pike, small for the Beloved's allies
