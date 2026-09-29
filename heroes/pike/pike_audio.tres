@@ -62,14 +62,14 @@ script = ExtResource("2_a")
 streams = Array[AudioStream]([ExtResource("11_a")])
 volume_db = -2.0
 
-[sub_resource type="Resource" id="Snd_dont_go_fire"]
+[sub_resource type="Resource" id="Snd_crazed_devotion_active"]
 script = ExtResource("2_a")
 streams = Array[AudioStream]([ExtResource("6_a")])
 volume_db = -4.0
 pitch_min = 0.82
 pitch_max = 0.88
 
-[sub_resource type="Resource" id="Snd_dont_go_hit"]
+[sub_resource type="Resource" id="Snd_crazed_devotion_hit"]
 script = ExtResource("2_a")
 streams = Array[AudioStream]([ExtResource("12_a")])
 volume_db = -2.0
@@ -94,8 +94,9 @@ cues = Dictionary[StringName, ExtResource("2_a")]({
 &"beloved_fire": SubResource("Snd_beloved_fire"),
 &"beloved_chosen": SubResource("Snd_beloved_chosen"),
 &"there_you_are_blink": SubResource("Snd_there_you_are_blink"),
-&"dont_go_fire": SubResource("Snd_dont_go_fire"),
-&"dont_go_hit": SubResource("Snd_dont_go_hit"),
+&"crazed_devotion_active": SubResource("Snd_crazed_devotion_active"),
+&"crazed_devotion_hit": SubResource("Snd_crazed_devotion_hit"),
+&"crazed_devotion_execute": SubResource("Snd_crazed_devotion_hit"),
 &"only_us_ring": SubResource("Snd_only_us_ring")
 })
 kill_sound = ExtResource("14_a")

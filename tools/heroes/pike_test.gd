@@ -34,7 +34,8 @@ func _run() -> void:
 	await _test_beloved()
 	await _test_there_you_are()
 	await _test_obsession()
-	await _test_knives_and_dont_go()
+	await _test_knives_and_bleed()
+	await _test_crazed_devotion()
 	await _test_only_us()
 	_test_audio(audio)
 
@@ -222,6 +223,9 @@ func _test_obsession() -> void:
 	_check("casting another ability reveals her too", not obsession.is_unseen(), "")
 	_check("...with no ambush while it's on cooldown", not obsession.is_ambush_ready(), "")
 	wall2.queue_free()
+	pike.ability_controller.interrupt()
+	pike.movement_component.stop_forced_move()
+	pike.global_position = target.global_position - Vector2(500, 0)    # the dash carried her past him
 
 	# A reveals status beats the invisibility.
 	await _seconds(delay + 0.1)
@@ -248,49 +252,104 @@ func _knife_damage(target: TrainingDummy) -> float:
 	return 0.4 * pike.stats_component.get_stat(&"weapon") + 0.005 * target.health_component.max_health
 
 
-# --- Knives and Don't Go -----------------------------------------------------------------------
+# --- Knives and Bleeding ------------------------------------------------------------------------
 
-func _test_knives_and_dont_go() -> void:
-	print("\n-- Knives and Don't Go")
+func _test_knives_and_bleed() -> void:
+	print("\n-- Knives and Bleeding")
 	_reset(Vector2(0, 9000))
 	var target := _dummy(Vector2(400, 9000), &"b", 4000.0)
 	await _physics_frames(2)
 	hits_log.clear()
 	_aim(target.global_position)
-	for i in 3:
+	for i in 40:    # held for ~0.65 s: three knives at 4/s
 		pike.request_slot(&"primary", target.global_position)
 		await get_tree().physics_frame
 	await _seconds(0.5)
 	var hits := hits_log.filter(func(i): return i.target == target and i.label == &"juggled_knives")
 	_check("each knife: 0.4 x Weapon + 0.5% of max HP", not hits.is_empty() and _near(hits[0].amount, _knife_damage(target), 0.1),
 		"%.1f vs %.1f" % [hits[0].amount if not hits.is_empty() else 0.0, _knife_damage(target)])
-
-	var plain := _dummy(Vector2(400, 9400), &"b")
-	var beloved := _dummy(Vector2(0, 9500), &"b")
-	await _physics_frames(2)
-	_aim(plain.global_position)
-	pike.request_slot(&"cc", plain.global_position)
-	var plain_root := await _root_time(plain)
-	_check("Don't Go roots the first enemy hit for 1 s", _near(plain_root, 1.0, 0.05), "%.2f" % plain_root)
-	await _mark(beloved)
-	pike.get_ability(&"cc").cooldown_remaining = 0.0
-	_aim(beloved.global_position)
-	pike.request_slot(&"cc", beloved.global_position)
-	var beloved_root := await _root_time(beloved)
-	_check("...1.5 s if it's her Beloved", _near(beloved_root, 1.5, 0.05), "%.2f" % beloved_root)
+	var stacks := target.status_component.get_stacks(&"pike_bleed")
+	_check("(three knives landed)", hits.size() >= 3, str(hits.size()))
+	_check("every knife adds a stack of Bleeding", stacks == hits.size() and stacks >= 3, "%d stacks / %d knives" % [stacks, hits.size()])
+	var bleed := hits_log.filter(func(i): return i.target == target and i.label == &"bleed")
+	var tick := (1.0 + 0.08 * pike.stats_component.get_stat(&"weapon")) * stacks
+	_check("bleed ticks are true damage: (1 + 8% Weapon) per stack", not bleed.is_empty()
+		and bleed[0].type == DamageInfo.Type.TRUE and _near(bleed[0].final_amount, tick * GameRules.current().ttk_damage_multiplier, 0.2),
+		"%s vs %.1f" % [str(bleed.map(func(i): return i.final_amount)), tick])
+	for i in 12:
+		pike.get_ranged_ability().add_ammo(5)
+		pike.request_slot(&"primary", target.global_position)
+		await _seconds(0.26)
+	_check("bleed stacks cap at 8", target.status_component.get_stacks(&"pike_bleed") == 8,
+		str(target.status_component.get_stacks(&"pike_bleed")))
+	var before := hits_log.size()
+	await _seconds(1.0)
+	var later := hits_log.slice(before).filter(func(i): return i.target == target and i.label == &"bleed")
+	var full := (1.0 + 0.08 * pike.stats_component.get_stat(&"weapon")) * 8.0 * GameRules.current().ttk_damage_multiplier
+	_check("eight stacks tick for 8x", not later.is_empty() and _near(later[0].final_amount, full, 0.3),
+		"%s vs %.1f" % [str(later.map(func(i): return i.final_amount)), full])
 	_clear()
 	await _physics_frames(2)
 
 
-func _root_time(target: TrainingDummy) -> float:
-	var waited := 0.0
-	while waited < 1.0:
-		await get_tree().physics_frame
-		waited += get_physics_process_delta_time()
-		if target.status_component.has_status(&"pike_dont_go"):
-			await get_tree().physics_frame    # a Beloved's longer root lands right after
-			return target.status_component.get_time_left(&"pike_dont_go") + get_physics_process_delta_time()
-	return 0.0
+# --- Crazed Devotion -----------------------------------------------------------------------------
+
+func _test_crazed_devotion() -> void:
+	print("\n-- Crazed Devotion")
+	_reset(Vector2(0, 10500))
+	var cc := pike.get_ability(&"cc")
+	var low := _dummy(Vector2(250, 10500), &"b")
+	var healthy := _dummy(Vector2(450, 10500 + 40), &"b")
+	low.can_die = true
+	healthy.can_die = true
+	await _physics_frames(2)
+	low.health_component.current_health = low.health_component.max_health * 0.10
+	hits_log.clear()
+	_aim(Vector2(700, 10500))
+	pike.request_slot(&"cc", Vector2(700, 10500))
+	await _seconds(0.7)
+	_check("the dash travels ~550 px", absf(pike.global_position.x - 550.0) < 40.0, str(pike.global_position))
+	_check("it cuts everyone it runs through once", _sum(healthy, &"crazed_devotion") > 0.0
+		and hits_log.filter(func(i): return i.target == healthy and i.label == &"crazed_devotion").size() == 1, "")
+	_check("a target at 10% health is executed", low.health_component.is_dead(), str(low.health_component.current_health))
+	var executes := hits_log.filter(func(i): return i.target == low and i.label == &"crazed_devotion_execute")
+	_check("...by a true-damage execute", not executes.is_empty() and executes[0].type == DamageInfo.Type.TRUE, "")
+	_check("a healthy target survives", not healthy.health_component.is_dead(), "")
+	_check("a kill brings the dash back at once", cc.cooldown_remaining == 0.0, "%.1f" % cc.cooldown_remaining)
+
+	# No kill: the cooldown stays.
+	_reset(Vector2(0, 10500))
+	await _physics_frames(2)
+	pike.request_slot(&"cc", Vector2(700, 10500))
+	await _seconds(0.7)
+	_check("no kill: the cooldown is spent (14 s)", cc.cooldown_remaining > 12.0, "%.1f" % cc.cooldown_remaining)
+	_clear()
+
+	# Bleeding raises the threshold: 22% health is safe alone, dead with 4 stacks.
+	_reset(Vector2(0, 11000))
+	var plain := _dummy(Vector2(250, 11000), &"b")
+	var bleeding := _dummy(Vector2(250, 11300), &"b")
+	plain.can_die = true
+	bleeding.can_die = true
+	await _physics_frames(2)
+	var bleed := load("res://heroes/pike/data/pike_bleed.tres") as StatusEffect
+	for i in 4:
+		bleeding.status_component.apply(bleed, pike)
+	for d in [plain, bleeding]:
+		d.health_component.current_health = d.health_component.max_health * 0.22
+	pike.global_position = Vector2(0, 11000)
+	_aim(Vector2(700, 11000))
+	pike.request_slot(&"cc", Vector2(700, 11000))
+	await _seconds(0.7)
+	_check("22% health, no bleed: not executed", not plain.health_component.is_dead(), "")
+	pike.global_position = Vector2(0, 11300)
+	pike.get_ability(&"cc").cooldown_remaining = 0.0
+	_aim(Vector2(700, 11300))
+	pike.request_slot(&"cc", Vector2(700, 11300))
+	await _seconds(0.7)
+	_check("22% health with 4 stacks of bleed (15% + 8%): executed", bleeding.health_component.is_dead(), "")
+	_clear()
+	await _physics_frames(2)
 
 
 # --- Only Us ------------------------------------------------------------------------------------
@@ -419,6 +478,14 @@ func _clear() -> void:
 		if is_instance_valid(node):
 			node.queue_free()
 	spawned.clear()
+
+
+func _sum(target: Node, label: StringName) -> float:
+	var total := 0.0
+	for info in hits_log:
+		if info.target == target and info.label == label:
+			total += info.final_amount
+	return total
 
 
 func _near(a: float, b: float, tolerance: float = 0.01) -> bool:

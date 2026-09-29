@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/stats/scaling_value.gd" id="2_s"]
+
+[sub_resource type="Resource" id="Tick"]
+script = ExtResource("2_s")
+base = 1.0
+weapon_ratio = 0.08
+
+[resource]
+script = ExtResource("1_s")
+id = &"pike_bleed"
+display_name = "Bleeding"
+duration = 4.0
+stack_rule = 2
+max_stacks = 8
+tick_damage = SubResource("Tick")
+tick_interval = 0.5
+tick_damage_type = 2
+tick_label = &"bleed"
+body_tint = Color(0.8, 0.05, 0.1, 0.3)
