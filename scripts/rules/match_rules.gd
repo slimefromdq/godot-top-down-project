@@ -201,6 +201,11 @@ const DEFAULT_PATH := "res://resources/rules/match_rules.tres"
 ## multiplier too, like every other new Mote.
 @export var objective_motes_use_late_mult: bool = true
 
+@export_group("Map events")
+## The Black Market, the Mote Island and the Wanderer: every number of the
+## three lives in this one resource (resources/rules/map_events.tres).
+@export var map_events: MapEventRules
+
 @export_group("Shop")
 ## What the shop sells.
 @export var shop_catalog: ShopCatalog

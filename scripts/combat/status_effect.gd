@@ -39,6 +39,9 @@ const DAMAGE_TAKEN_MAGIC := &"damage_taken_magic"
 ## How far knockbacks, pulls and other displacements move this actor
 ## (0.6 = 40% shorter). Launches (jump pads) and carries aren't affected.
 const DISPLACEMENT_TAKEN := &"displacement_taken"
+## How far a loose Mote can be from this hero and still fly to them (1.5 =
+## 50% wider than MoteData.magnet_radius). The Black Market's Mote Magnet.
+const MOTE_PICKUP_RADIUS := &"mote_pickup_radius"
 
 ## What happens when the same status is applied again while active.
 enum StackRule {
@@ -113,6 +116,9 @@ enum VfxVisibleTo {
 ## Carries, self-applied CC, pulls you can walk out of and formations are
 ## already exempt without this.
 @export var ignores_resolve: bool = false
+## A cleanse (Second Wind) removes this status if it is harmful (is_debuff).
+## Off for a self-inflicted drawback that must stay (Glass Cannon's lost HP).
+@export var cleansable: bool = true
 
 @export_group("Parry")
 ## While active, the first enemy hit is caught instead of landing, and the
@@ -262,6 +268,29 @@ func is_hard_cc() -> bool:
 	if ignores_resolve or carry_enabled:
 		return false
 	return stuns or roots or (compel_enabled and compel_overrides_input and not compel_follow_trail)
+
+
+## Harmful to whoever has it: crowd control, damage over time, a multiplier
+## that makes them slower / weaker / squishier, or a stat modifier that takes
+## something away. What StatusEffectComponent.cleanse() removes (unless
+## `cleansable` is off).
+func is_debuff() -> bool:
+	if not cleansable:
+		return false
+	if is_crowd_control() or silences or tick_damage != null:
+		return true
+	for stat in stat_multipliers:
+		var mult: float = get_stat_multiplier(stat)
+		if stat in [MOVE_SPEED, FIRE_RATE, DAMAGE, COOLDOWN_RATE] and mult < 1.0:
+			return true
+		if stat in [DAMAGE_TAKEN, DAMAGE_TAKEN_PHYSICAL, DAMAGE_TAKEN_MAGIC] and mult > 1.0:
+			return true
+	if incoming_physical_multiplier > 1.0 or incoming_magic_multiplier > 1.0:
+		return true
+	for modifier in stat_modifiers:
+		if modifier != null and (modifier.flat < 0.0 or modifier.percent < 0.0):
+			return true
+	return false
 
 
 func ends_with_applier() -> bool:

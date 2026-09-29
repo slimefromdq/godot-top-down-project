@@ -38,6 +38,8 @@ var _panel: PanelContainer
 var _tabs: TabContainer
 var _inspector: PanelContainer
 var _inspector_label: Label
+# F1 > Match > Map events: the per-source Mote table.
+var _ledger_label: Label
 var _meter_panel: PanelContainer
 var _meter_label: Label
 var _inspect_timer: float = 0.0
@@ -97,6 +99,8 @@ func _process(delta: float) -> void:
 			_inspector_label.text = inspect_text()
 		if _meter_panel.visible:
 			_refresh_meter()
+		if _ledger_label != null and _ledger_label.is_visible_in_tree():
+			_ledger_label.text = mote_ledger_report()
 
 
 # F1 > Tools: play Sam's airlock on the player, alone.
@@ -378,6 +382,119 @@ func pop_all_geysers() -> int:
 
 func get_objective_director() -> ObjectiveDirector:
 	return ObjectiveDirector.find(get_tree())
+
+
+# --- Map events (Black Market, Mote Island, Wanderer) ---------------------------------
+
+func get_map_events() -> MapEvents:
+	return MapEvents.find(get_tree())
+
+
+## Open the Black Market now, on `side` (&"left" / &"right") or a random edge.
+func force_spawn_market(side: StringName = &"") -> void:
+	var events := get_map_events()
+	if events != null:
+		events.force_spawn_market(side)
+
+
+func force_close_market() -> void:
+	var events := get_map_events()
+	if events != null:
+		events.force_close_market()
+
+
+## Move the Island portal to a new hidden spot now.
+func force_relocate_island() -> void:
+	var events := get_map_events()
+	if events != null:
+		events.force_relocate_island()
+
+
+func force_spawn_wanderer() -> void:
+	var events := get_map_events()
+	if events != null:
+		events.force_spawn_wanderer()
+
+
+## Put the local player beside the portal / the market / the Wanderer (debug).
+func teleport_player_to(what: StringName) -> String:
+	var events := get_map_events()
+	var player := get_player()
+	if events == null or player == null:
+		return "No match"
+	var point := Vector2.INF
+	match what:
+		&"portal":
+			if events.island.has_portal():
+				point = events.island.portal.global_position
+		&"market":
+			if events.market.is_open():
+				point = events.market.market.global_position
+		&"wanderer":
+			if events.wanderer.is_up():
+				point = events.wanderer.wanderer.global_position
+	if point == Vector2.INF:
+		return "Nothing to go to (is it up?)"
+	player.teleport_to(point + Vector2(120, 0))
+	return ""
+
+
+## Give the player a Black Market buff for free (any hero, incl. Ranged Test).
+func give_player_temp_item(item: BlackMarketItem) -> void:
+	var player := get_player()
+	if player != null and item != null:
+		TempItems.ensure_on(player).grant(item)
+
+
+## The per-source Mote table (MoteLedger).
+func mote_ledger_report() -> String:
+	var events := get_map_events()
+	return events.ledger.report() if events != null else "No match"
+
+
+func reset_mote_ledger() -> void:
+	var events := get_map_events()
+	if events != null:
+		events.ledger.reset()
+
+
+## Save the ledger as CSV (user://mote_sources.csv). Returns the path.
+func export_mote_ledger() -> String:
+	var events := get_map_events()
+	if events == null:
+		return ""
+	var path := "user://mote_sources.csv"
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file != null:
+		file.store_string(events.ledger.to_csv())
+	return ProjectSettings.globalize_path(path)
+
+
+## Text commands for the map events (the panel's box, tests):
+## "market [left|right]", "market close", "island", "wanderer",
+## "goto portal|market|wanderer", "motes". Returns the reply.
+func run_command(text: String) -> String:
+	var words := text.strip_edges().to_lower().split(" ", false)
+	if words.is_empty():
+		return "market [left|right|close] | island | wanderer | goto portal|market|wanderer | motes"
+	match words[0]:
+		"market":
+			if words.size() > 1 and words[1] == "close":
+				force_close_market()
+				return "market closing"
+			force_spawn_market(StringName(words[1]) if words.size() > 1 else &"")
+			return "market opening"
+		"island":
+			force_relocate_island()
+			return "portal relocating"
+		"wanderer":
+			force_spawn_wanderer()
+			return "wanderer spawned"
+		"goto":
+			return teleport_player_to(StringName(words[1])) if words.size() > 1 else "goto what?"
+		"motes":
+			return mote_ledger_report()
+	return "unknown command"
 
 
 # --- Items -----------------------------------------------------------------------
@@ -1060,6 +1177,50 @@ func _match_tab(hero: Hero) -> Control:
 	box.add_child(items_row)
 	box.add_child(item_result)
 	box.add_child(_check("Shop anywhere", manager.get_rules().shop_anywhere, set_shop_anywhere))
+
+	box.add_child(_label("Map events", 15))
+	var events_row := HFlowContainer.new()
+	events_row.add_child(_button("Market (random edge)", func(): force_spawn_market()))
+	events_row.add_child(_button("Market LEFT", func(): force_spawn_market(&"left")))
+	events_row.add_child(_button("Market RIGHT", func(): force_spawn_market(&"right")))
+	events_row.add_child(_button("Close market", force_close_market))
+	events_row.add_child(_button("Relocate island", force_relocate_island))
+	events_row.add_child(_button("Spawn Wanderer", force_spawn_wanderer))
+	box.add_child(events_row)
+	var goto_row := HFlowContainer.new()
+	var goto_result := _label("")
+	for what in [&"portal", &"market", &"wanderer"]:
+		goto_row.add_child(_button("Go to %s" % what, func(): goto_result.text = teleport_player_to(what)))
+	box.add_child(goto_row)
+	box.add_child(goto_result)
+	var temp_row := HFlowContainer.new()
+	var temp_list := OptionButton.new()
+	var temp_items: Array[BlackMarketItem] = manager.get_rules().map_events.blackmarket_items \
+		if manager.get_rules().map_events != null else ([] as Array[BlackMarketItem])
+	for item in temp_items:
+		temp_list.add_item("%s (%d Motes + %d gold)" % [item.display_name, item.mote_cost, item.gold_cost])
+	temp_row.add_child(temp_list)
+	temp_row.add_child(_button("Give temp item", func():
+		if temp_list.selected >= 0 and temp_list.selected < temp_items.size():
+			give_player_temp_item(temp_items[temp_list.selected])))
+	box.add_child(temp_row)
+	var command_box := LineEdit.new()
+	command_box.placeholder_text = "command: market left | island | wanderer | goto portal | motes"
+	var command_result := _label("")
+	command_result.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	command_box.text_submitted.connect(func(text: String):
+		command_result.text = run_command(text)
+		command_box.clear())
+	box.add_child(command_box)
+	box.add_child(command_result)
+	box.add_child(_label("Mote sources this match (spawned / banked / delivered / spent)", 15))
+	_ledger_label = _label("")
+	_ledger_label.add_theme_font_override(&"font", ThemeDB.fallback_font)
+	box.add_child(_ledger_label)
+	var ledger_row := HFlowContainer.new()
+	ledger_row.add_child(_button("Reset counters", reset_mote_ledger))
+	ledger_row.add_child(_button("Save CSV", func(): _ledger_label.text = "Saved " + export_mote_ledger()))
+	box.add_child(ledger_row)
 
 	box.add_child(_label("Dreamers", 15))
 	for team in MatchManager.TEAMS:

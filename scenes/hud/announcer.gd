@@ -92,6 +92,9 @@ func bind(manager: MatchManager) -> void:
 			say("%s has the Dream Mote!" % MatchManager.team_name(actor.team), NORMAL, MatchManager.team_color(actor.team)))
 		director.dream_mote_spawned.connect(func(mote):
 			get_tree().call_group(&"minimaps", &"add_ping", mote.global_position, &"", &"dream_mote"))
+	var events := manager.get_node_or_null(^"MapEvents") as MapEvents
+	if events != null:
+		_bind_map_events(events)
 	var objectives := manager.get_node_or_null(^"ObjectiveDirector") as ObjectiveDirector
 	if objectives != null:
 		objectives.objective_warning.connect(func(camp: NeutralCamp, seconds: float):
@@ -104,6 +107,24 @@ func bind(manager: MatchManager) -> void:
 
 func get_player() -> Hero:
 	return get_tree().get_first_node_in_group(&"player") as Hero
+
+
+# The map events (Black Market, Wanderer) speak to everyone; the Island's
+# portal says nothing at all (it is a secret: the HUD's tell is the only cue).
+func _bind_map_events(events: MapEvents) -> void:
+	events.market.market_opened.connect(func(market: BlackMarket):
+		say("The Black Market opens on the %s flank!" % str(market.side).to_upper(), MAJOR, Color("c4b5fd"), &"banner_major")
+		get_tree().call_group(&"minimaps", &"add_ping", market.global_position, &"", &"dream_mote"))
+	events.market.market_closed.connect(func(_market: BlackMarket):
+		say("The Black Market has closed", NORMAL, Color("c4b5fd")))
+	events.wanderer.wanderer_spawned.connect(func(_w: Wanderer):
+		if events.get_rules().wanderer_announce:
+			say("A Wanderer scurries through the Basin!", MINOR, Color("fde047")))
+	events.wanderer.wanderer_killed.connect(func(_w: Wanderer, killer: Hero):
+		if killer != null and get_player() != null and killer.team == get_player().team:
+			toast("Wanderer caught!  +%d gold" % roundi(events.get_rules().wanderer_gold_reward), Color("fde047")))
+	events.wanderer.wanderer_escaped.connect(func(_w: Wanderer):
+		toast("The Wanderer got away", Color("fef3c7")))
 
 
 ## Queue a banner. A higher priority than the one showing cuts it short.

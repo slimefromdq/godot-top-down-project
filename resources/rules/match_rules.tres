@@ -5,6 +5,7 @@
 [ext_resource type="Resource" path="res://resources/match/match_audio.tres" id="3_audio"]
 [ext_resource type="Resource" path="res://resources/status/sweet_dreams.tres" id="4_sweet"]
 [ext_resource type="Resource" path="res://resources/items/shop_catalog.tres" id="5_shop"]
+[ext_resource type="Resource" path="res://resources/rules/map_events.tres" id="6_events"]
 
 [resource]
 script = ExtResource("1_rules")
@@ -12,6 +13,7 @@ cue_visuals = ExtResource("2_visuals")
 cue_audio = ExtResource("3_audio")
 sweet_dreams_status = ExtResource("4_sweet")
 shop_catalog = ExtResource("5_shop")
+map_events = ExtResource("6_events")
 mote_shake_factor = 1.0
 shake_repickup_delay = 0.75
 shake_drop_distance = 110.0

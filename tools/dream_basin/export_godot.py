@@ -361,6 +361,14 @@ def export_map(m):
         name = cp["name"].title().replace(" ", "").replace("The", "") + side
         s.node(name, "NeutralCamps", "Node2D", script=camp_script, position=v2((cp["x"], cp["y"])),
                data=data, display_name=f'"{cp["name"]}"')
+    # --- map events: where the Black Market opens, where the Island portal hides ------
+    s.node("EventSpots", ".", "Node2D")
+    for i, sp in enumerate(m["blackmarket"]):
+        s.node(f"BlackMarketSpot{i + 1}", "EventSpots", "Marker2D", groups=["blackmarket_spawn"],
+               position=v2((sp["x"], sp["y"])))
+    for i, sp in enumerate(m["island_portals"]):
+        s.node(f"IslandSpot{i + 1}", "EventSpots", "Marker2D", groups=["island_portal_spawn"],
+               position=v2((sp["x"], sp["y"])))
     export_pieces(s, m)
     s.node("DreamZones", ".", "Node2D")
     seen_pairs = {}

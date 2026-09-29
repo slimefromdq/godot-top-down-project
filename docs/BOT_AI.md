@@ -107,6 +107,17 @@ walks home to shop. An active item is cast like any other slot when ready.
   is. A neutral that attacks a bot is fought back, like an enemy hero would
   be.
 
+### Black Market and the Island
+
+A bot visits the Black Market (`BotHeroInput._choose_market`, after shopping
+trips and before the Nightmare) only when it is open, the bot is healthy
+(`bot_market_min_health`), has no enemy target and wasn't just hit, can reach
+it in time within `bot_market_max_distance`, and holds enough **carried Motes
+and gold** for an item. At the stall it buys the affordable item with the
+highest `bot_priority`, then waits `bot_market_retry_time`. Every number is in
+`resources/rules/map_events.tres` (`docs/MAP_EVENTS.md`). Bots **ignore the
+Mote Island** for now: `IslandDirector.bot_can_use_island()` is the TODO hook.
+
 ### Fill
 
 F1 > Bots fills each team to `team_size` following `BotRules.team_composition`
@@ -127,7 +138,7 @@ obstacles. The graph is rebuilt when a new map is loaded.
 
 ## Tests and limits
 
-Run the five scenes in `tools/ai/`: `bot_test.tscn` checks control,
+Run the scenes in `tools/ai/` (the bots' market visit is checked in `tools/match/map_events_test.tscn`): `bot_test.tscn` checks control,
 perception, projectile dodge, fill, and overlay; `bot_role_test.tscn` checks
 engage radii per role, the strategy decisions (roam, escort, bank or deliver,
 hunt with a hunter cap, Mote claims, defend) and that twelve bots with fights

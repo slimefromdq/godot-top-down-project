@@ -1,0 +1,172 @@
+[gd_resource type="Resource" script_class="MapEventRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/events/black_market_item.gd" id="1_508c3"]
+[ext_resource type="Script" path="res://scripts/combat/status_effect.gd" id="2_bwbrp"]
+[ext_resource type="Script" path="res://scripts/stats/stat_modifier.gd" id="3_730m2"]
+[ext_resource type="Script" path="res://scripts/events/phase_cloak_effect.gd" id="4_kl8dy"]
+[ext_resource type="Script" path="res://scripts/events/mote_magnet_effect.gd" id="5_q25tj"]
+[ext_resource type="Script" path="res://scripts/events/second_wind_effect.gd" id="6_y33hc"]
+[ext_resource type="Script" path="res://scripts/events/map_event_rules.gd" id="7_kargu"]
+[ext_resource type="PackedScene" path="res://scenes/match/neutral_look.tscn" id="8_386uf"]
+[ext_resource type="Script" path="res://scripts/match/neutral_data.gd" id="9_bnhii"]
+[ext_resource type="Script" path="res://scripts/stats/stat_scaling.gd" id="10_uibj8"]
+[ext_resource type="Script" path="res://scripts/stats/stat_block.gd" id="11_q7ckj"]
+
+[sub_resource type="Resource" id="Resource_7b3ms"]
+script = ExtResource("2_bwbrp")
+id = &"overclock"
+display_name = "Overclock"
+duration = 60.0
+stat_multipliers = Dictionary[StringName, float]({
+&"fire_rate": 1.4,
+&"move_speed": 1.2
+})
+body_tint = Color(0.35, 0.85, 1, 0.18)
+
+[sub_resource type="Resource" id="Resource_hguf6"]
+script = ExtResource("1_508c3")
+id = &"overclock"
+display_name = "Overclock"
+description = "Guns fire and you run faster."
+glyph = ">>"
+color = Color(0.21960784, 0.7411765, 0.972549, 1)
+mote_cost = 3
+gold_cost = 350
+status = SubResource("Resource_7b3ms")
+bot_priority = 5
+
+[sub_resource type="Resource" id="Resource_7muk7"]
+script = ExtResource("3_730m2")
+stat = &"health"
+percent = -0.3
+source_id = &"glass_cannon"
+
+[sub_resource type="Resource" id="Resource_lep1v"]
+script = ExtResource("2_bwbrp")
+id = &"glass_cannon"
+display_name = "Glass Cannon"
+duration = 60.0
+stat_multipliers = Dictionary[StringName, float]({
+&"damage": 1.5
+})
+cleansable = false
+stat_modifiers = Array[ExtResource("3_730m2")]([SubResource("Resource_7muk7")])
+body_tint = Color(1, 0.35, 0.4, 0.16)
+
+[sub_resource type="Resource" id="Resource_kosmt"]
+script = ExtResource("1_508c3")
+id = &"glass_cannon"
+display_name = "Glass Cannon"
+description = "Weapon and magic hit harder; you have less health."
+glyph = "!"
+color = Color(0.9843137, 0.44313726, 0.52156866, 1)
+mote_cost = 4
+gold_cost = 400
+status = SubResource("Resource_lep1v")
+bot_priority = 4
+
+[sub_resource type="Resource" id="Resource_ynsvv"]
+script = ExtResource("2_bwbrp")
+id = &"phase_cloak"
+display_name = "Phase Cloak"
+duration = 60.0
+invisible = true
+body_alpha = 0.35
+
+[sub_resource type="Resource" id="Resource_fg762"]
+script = ExtResource("1_508c3")
+id = &"phase_cloak"
+display_name = "Phase Cloak"
+description = "A short invulnerable dash, then unseen by enemies."
+glyph = "~"
+color = Color(0.654902, 0.54509807, 0.98039216, 1)
+mote_cost = 3
+duration = 5.0
+status = SubResource("Resource_ynsvv")
+effect = ExtResource("4_kl8dy")
+values = Dictionary[StringName, float]({
+&"dash_distance": 450.0,
+&"dash_time": 0.25,
+&"invuln_grace": 0.1
+})
+bot_priority = 1
+
+[sub_resource type="Resource" id="Resource_u8o5x"]
+script = ExtResource("2_bwbrp")
+id = &"mote_magnet"
+display_name = "Mote Magnet"
+duration = 60.0
+stat_multipliers = Dictionary[StringName, float]({
+&"mote_pickup_radius": 2.0
+})
+body_tint = Color(0.99, 0.88, 0.28, 0.14)
+
+[sub_resource type="Resource" id="Resource_3q7lk"]
+script = ExtResource("1_508c3")
+id = &"mote_magnet"
+display_name = "Mote Magnet"
+description = "Loose Motes fly to you; you grab them from further away."
+glyph = "U"
+color = Color(0.99215686, 0.8784314, 0.2784314, 1)
+gold_cost = 250
+status = SubResource("Resource_u8o5x")
+effect = ExtResource("5_q25tj")
+values = Dictionary[StringName, float]({
+&"pull_radius": 700.0,
+&"pull_speed": 900.0
+})
+bot_priority = 3
+
+[sub_resource type="Resource" id="Resource_bmlyv"]
+script = ExtResource("1_508c3")
+id = &"second_wind"
+display_name = "Second Wind"
+description = "Heal 60% of your max health and shake off every harmful effect."
+glyph = "+"
+color = Color(0.2901961, 0.87058824, 0.5019608, 1)
+mote_cost = 3
+effect = ExtResource("6_y33hc")
+values = Dictionary[StringName, float]({
+&"heal_pct": 0.6
+})
+bot_priority = 2
+
+[sub_resource type="Resource" id="Resource_75x5u"]
+script = ExtResource("10_uibj8")
+
+[sub_resource type="Resource" id="Resource_5tyf3"]
+script = ExtResource("10_uibj8")
+base = 180.0
+growth = 15.0
+
+[sub_resource type="Resource" id="Resource_a0fk6"]
+script = ExtResource("10_uibj8")
+
+[sub_resource type="Resource" id="Resource_jo2mw"]
+script = ExtResource("10_uibj8")
+
+[sub_resource type="Resource" id="Resource_4vw6r"]
+script = ExtResource("10_uibj8")
+
+[sub_resource type="Resource" id="Resource_bml7f"]
+script = ExtResource("11_q7ckj")
+health = SubResource("Resource_5tyf3")
+weapon = SubResource("Resource_4vw6r")
+magic = SubResource("Resource_a0fk6")
+armor = SubResource("Resource_75x5u")
+magic_resist = SubResource("Resource_jo2mw")
+
+[sub_resource type="Resource" id="Resource_xamkq"]
+script = ExtResource("9_bnhii")
+id = &"wanderer"
+display_name = "Wanderer"
+stats = SubResource("Resource_bml7f")
+look_scene = ExtResource("8_386uf")
+size = 64.0
+color = Color(0.99215686, 0.8784314, 0.2784314, 1)
+icon_color = Color(0.99215686, 0.8784314, 0.2784314, 1)
+
+[resource]
+script = ExtResource("7_kargu")
+blackmarket_items = Array[ExtResource("1_508c3")]([SubResource("Resource_hguf6"), SubResource("Resource_kosmt"), SubResource("Resource_fg762"), SubResource("Resource_3q7lk"), SubResource("Resource_bmlyv")])
+wanderer_data = SubResource("Resource_xamkq")

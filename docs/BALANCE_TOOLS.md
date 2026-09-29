@@ -59,6 +59,12 @@ values.
   * **Neutral objectives**: spawn the jungle camps now, the Nightmare now,
     start the Nightmare's 30 s warning now (watch the whole announce), clear
     every neutral, and an **Objectives on** switch.
+  * **Map events** (`docs/MAP_EVENTS.md`): open the Black Market now (random
+    edge, left or right) or close it, relocate the Island portal, spawn a
+    Wanderer, go to the portal / market / Wanderer, give yourself a temp item
+    (any hero), type a command (`market left`, `island`, `wanderer`,
+    `goto portal`, `motes`), and read the **Mote sources** table (spawned /
+    banked / delivered / spent per source, save it as CSV).
   * **Items**: pick any catalog item and **Give free** or **Buy** it (buying
     follows the shop rules), clear your items, open the shop, make every bot
     shop now, and **Shop anywhere** (lifts the in-base rule).
@@ -189,6 +195,7 @@ godot --headless res://tools/match/polish_test.tscn
 godot --headless res://tools/match/ultimate_test.tscn
 godot --headless res://tools/match/items_test.tscn
 godot --headless res://tools/match/objectives_test.tscn
+godot --headless res://tools/match/map_events_test.tscn
 godot --headless res://tools/ai/bot_test.tscn
 godot --headless res://tools/ai/bot_nav_test.tscn
 godot --headless res://tools/ai/bot_role_test.tscn

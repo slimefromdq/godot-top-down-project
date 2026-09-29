@@ -25,6 +25,11 @@ class_name MoteCarrier
 #   heavy       extra_air_time(): jump pads add it to the flight
 #   deposits    can_deposit(): not airborne, abducted or inside a
 #               ContainmentRing. take_highest() hands Motes to a Dreamer (M3).
+#   spending    spend(n) takes the n least valuable non-Dream Motes out of
+#               the stack (the Black Market's price); they are gone, not
+#               dropped and not banked.
+#   sources     every Mote keeps the MoteLedger tag it was spawned with, so
+#               the ledger can say where banked Motes came from.
 #
 # Signals: changed(count, value), dropped(position, n), deposit_ready.
 
@@ -39,6 +44,8 @@ const REVEALED_GROUP := &"minimap_revealed"
 var actor: Hero
 var _values: Array[int] = []
 var _datas: Array[MoteData] = []
+# Where each Mote came from (MoteLedger source tag), parallel to _values.
+var _sources: Array[StringName] = []
 var _jostles: int = 0
 var _last_jostle_time: float = -INF
 var _jostle_pending := false
@@ -106,6 +113,11 @@ func has_dream_mote() -> bool:
 	return _datas.any(func(d: MoteData): return d.is_dream)
 
 
+## Motes a price may take (everything but the Dream Mote).
+func get_spendable_count() -> int:
+	return _datas.filter(func(d: MoteData): return not d.is_dream).size()
+
+
 func get_datas() -> Array[MoteData]:
 	return _datas
 
@@ -138,11 +150,12 @@ func can_deposit() -> bool:
 # --- Changing ----------------------------------------------------------------
 
 ## Returns false (and adds nothing) when full.
-func add_mote(data: MoteData, value: int) -> bool:
+func add_mote(data: MoteData, value: int, source: StringName = &"") -> bool:
 	if get_mote_count() >= get_max():
 		return false
 	_values.append(value)
 	_datas.append(data)
+	_sources.append(source)
 	_emit_changed()
 	MatchManager.play_world_cue(actor, &"mote_pickup", {"position": actor.global_position,
 		"count": get_mote_count(), "pitch": get_rules().chime_pitch(get_mote_count())})
@@ -161,9 +174,34 @@ func take_highest() -> Dictionary:
 	for i in _values.size():
 		if _values[i] > _values[best]:
 			best = i
-	var taken := {"data": _datas[best], "value": _values[best]}
+	var taken := {"data": _datas[best], "value": _values[best], "source": _sources[best]}
 	_values.remove_at(best)
 	_datas.remove_at(best)
+	_sources.remove_at(best)
+	_emit_changed()
+	return taken
+
+
+## Take `count` Motes as a price: the least valuable non-Dream ones first.
+## Returns what was taken ({"data", "value", "source"} each), or [] and
+## nothing taken when there aren't `count` to spend.
+func spend(count: int) -> Array[Dictionary]:
+	var taken: Array[Dictionary] = []
+	if count <= 0:
+		return taken
+	if get_spendable_count() < count:
+		return taken
+	for i in count:
+		var pick := -1
+		for j in _values.size():
+			if _datas[j].is_dream:
+				continue
+			if pick < 0 or _values[j] < _values[pick]:
+				pick = j
+		taken.append({"data": _datas[pick], "value": _values[pick], "source": _sources[pick]})
+		_values.remove_at(pick)
+		_datas.remove_at(pick)
+		_sources.remove_at(pick)
 	_emit_changed()
 	return taken
 
@@ -172,6 +210,7 @@ func take_highest() -> Dictionary:
 func clear() -> void:
 	_values.clear()
 	_datas.clear()
+	_sources.clear()
 	_jostle_pending = false
 	_shake_owed = 0.0
 	_emit_changed()
@@ -184,9 +223,10 @@ func drop_one(distance: float = -1.0) -> Mote:
 		return null
 	var data: MoteData = _datas.pop_back()
 	var value: int = _values.pop_back()
+	var source: StringName = _sources.pop_back()
 	var d := distance if distance >= 0.0 else get_rules().jostle_drop_distance
 	var at := _clear_point(actor.global_position, Vector2.from_angle(randf() * TAU), d)
-	var mote := Mote.spawn(actor, data, at, value, true, actor.global_position, actor)
+	var mote := Mote.spawn(actor, data, at, value, true, actor.global_position, actor, -1.0, source)
 	_emit_changed()
 	MatchManager.play_world_cue(actor, &"mote_drop", {"position": at})
 	dropped.emit(at, 1)
@@ -202,9 +242,10 @@ func drop_some(n: int) -> Array[Mote]:
 	for i in n:
 		var data: MoteData = _datas.pop_back()
 		var value: int = _values.pop_back()
+		var source: StringName = _sources.pop_back()
 		var at := _clear_point(actor.global_position, Vector2.from_angle(start + TAU * i / maxi(n, 1)),
 			d * randf_range(0.8, 1.3))
-		spawned.append(Mote.spawn(actor, data, at, value, true, actor.global_position, actor))
+		spawned.append(Mote.spawn(actor, data, at, value, true, actor.global_position, actor, -1.0, source))
 	if n > 0:
 		_emit_changed()
 		MatchManager.play_world_cue(actor, &"mote_drop", {"position": actor.global_position, "count": n})
@@ -249,8 +290,9 @@ func _scatter(n: int, radius: float, lockout: float) -> Array[Mote]:
 	for i in n:
 		var data: MoteData = _datas.pop_back()
 		var value: int = _values.pop_back()
+		var source: StringName = _sources.pop_back()
 		var at := _clear_point(from, Vector2.from_angle(start + TAU * i / n), radius * randf_range(0.5, 1.4))
-		spawned.append(Mote.spawn(actor, data, at, value, true, from, actor, lockout))
+		spawned.append(Mote.spawn(actor, data, at, value, true, from, actor, lockout, source))
 	_emit_changed()
 	return spawned
 

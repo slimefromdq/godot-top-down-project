@@ -99,7 +99,7 @@ func pop() -> Array[Mote]:
 	for i in data.mote_count:
 		var dir := Vector2.from_angle(start + TAU * i / maxf(1.0, data.mote_count))
 		motes.append(Mote.spawn(self, mote_data, global_position + dir * data.mote_burst_radius,
-				value, true, global_position))
+				value, true, global_position, null, -1.0, MoteLedger.GEYSER))
 	if data.break_cue != &"":
 		MatchManager.play_world_cue(self, data.break_cue)
 	popped.emit(motes)

@@ -46,6 +46,10 @@ var claim_team: StringName = &""
 var claim_left: float = 0.0
 ## Set by the director: the spawn point or dreaming-zone half it came from.
 var origin: Node
+## Which system made it (MoteLedger.TRICKLE ...): kept while carried and
+## dropped, so a deposit can say where its Motes came from. &"" = untracked
+## (debug spawns).
+var source: StringName = &""
 ## On the minimap only where your team can see it (the Dream Mote is always
 ## shown instead).
 var minimap_fogged: bool = true
@@ -66,11 +70,16 @@ var _look_node: Node
 ## Put a Mote into the current scene at `at`. With `land_from`, it flies
 ## from there to `at` first (a drop). `locked` can't pick it up for a moment:
 ## `lockout` seconds, or data.regrab_lockout when negative.
+##
+## `source` tags the Mote for the MoteLedger. A Mote counts as new production
+## (ledger "spawned") unless `locked` is set: only a carrier's drop passes
+## that, and it re-uses the tag it was carrying.
 static func spawn(context: Node, mote_data: MoteData, at: Vector2, mote_value: int = -1,
 		is_dropped: bool = false, land_from: Variant = null, locked: Hero = null,
-		lockout: float = -1.0) -> Mote:
+		lockout: float = -1.0, mote_source: StringName = &"") -> Mote:
 	var mote: Mote = load(SCENE).instantiate()
 	mote.data = mote_data
+	mote.source = mote_source
 	mote.value = mote_value if mote_value >= 0 else mote_data.value
 	mote.dropped = is_dropped
 	mote.last_carrier = locked
@@ -84,6 +93,10 @@ static func spawn(context: Node, mote_data: MoteData, at: Vector2, mote_value: i
 	else:
 		mote.position = at
 	context.get_tree().current_scene.add_child(mote)
+	if mote_source != &"" and locked == null:
+		var ledger := MoteLedger.find(context.get_tree())
+		if ledger != null:
+			ledger.record_spawn(mote_source, mote.value)
 	return mote
 
 
@@ -232,14 +245,23 @@ func fade() -> void:
 
 func _nearest_taker() -> Hero:
 	var best: Hero = null
-	var best_distance := data.magnet_radius
+	var best_distance := INF
 	for node in get_tree().get_nodes_in_group(&"heroes"):
 		var hero := node as Hero
 		var d := hero.global_position.distance_to(global_position)
-		if d <= best_distance and _can_take(hero, false):
+		# A status can widen a hero's reach (Mote Magnet).
+		var reach := data.magnet_radius * StatusEffectComponent.multiplier_of(hero.status_component,
+			StatusEffect.MOTE_PICKUP_RADIUS)
+		if d <= reach and d < best_distance and _can_take(hero, false):
 			best = hero
 			best_distance = d
 	return best
+
+
+## Could this hero take it right now (room, not claimed against them, not
+## their own fresh drop)? Effects that pull Motes ask before moving one.
+func can_be_taken_by(hero: Hero) -> bool:
+	return _can_take(hero, false)
 
 
 func _can_take(hero: Hero, pulling: bool) -> bool:
@@ -257,7 +279,7 @@ func _attach(hero: Hero) -> void:
 	var carrier := MoteCarrier.find_on(hero)
 	if is_decoy:
 		MatchManager.play_world_cue(self, &"mote_decoy_pop", {"position": global_position, "source": hero})
-	elif not carrier.add_mote(data, value):
+	elif not carrier.add_mote(data, value, source):
 		# Another Mote filled the last slot first.
 		_target = null
 		state = State.IDLE
