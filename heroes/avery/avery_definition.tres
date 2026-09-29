@@ -7,7 +7,7 @@
 [ext_resource type="Resource" path="res://heroes/avery/abilities/sunblade_slash.tres" id="5_x"]
 [ext_resource type="Resource" path="res://heroes/avery/abilities/searing_cut.tres" id="6_x"]
 [ext_resource type="Resource" path="res://heroes/avery/abilities/solar_charge.tres" id="7_x"]
-[ext_resource type="Resource" path="res://heroes/avery/abilities/dawnbreaker.tres" id="8_x"]
+[ext_resource type="Resource" path="res://heroes/avery/abilities/sunbrand.tres" id="8_x"]
 [ext_resource type="Resource" path="res://heroes/avery/abilities/phoenix_rebirth.tres" id="9_x"]
 [ext_resource type="Resource" path="res://heroes/avery/avery_feel.tres" id="10_x"]
 [ext_resource type="Resource" path="res://heroes/avery/avery_visuals.tres" id="11_x"]
@@ -52,7 +52,7 @@ hero_id = &"avery"
 display_name = "Avery"
 title = "the Sunblade"
 role = 0
-description = "A valiant knight with a flaming sword. Consistent at every level, with strong late-game sustain. Blade damage scales with Weapon; fire and healing scale with Magic."
+description = "A valiant knight with a flaming sword. Consistent at every level, with strong late-game sustain. Blade damage scales with Weapon; fire and healing scale with Magic. Her burns, brands and ultimate flames hurt for true damage, so a hero who runs still burns."
 stats = SubResource("Sub_6")
 move_speed = 486.0
 acceleration = 2600.0

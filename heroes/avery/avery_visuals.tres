@@ -91,6 +91,15 @@ script = ExtResource("2_x")
 effect_scene = ExtResource("12_x")
 align_to_direction = false
 
+[sub_resource type="Resource" id="Sub_15"]
+script = ExtResource("2_x")
+effect_scene = ExtResource("11_x")
+align_to_direction = false
+tint = Color(1, 0.6, 0.2, 1)
+flash_color = Color(1, 0.7, 0.25, 1)
+flash_duration = 0.4
+screen_shake = 0.4
+
 [resource]
 script = ExtResource("1_x")
 body_scale = Vector2(0.55, 0.55)
@@ -101,6 +110,7 @@ cues = Dictionary[StringName, ExtResource("2_x")]({
 &"death": SubResource("Sub_4"),
 &"heal": SubResource("Sub_3"),
 &"hurt": SubResource("Sub_2"),
+&"phoenix_blaze": SubResource("Sub_15"),
 &"phoenix_rebirth": SubResource("Sub_12"),
 &"phoenix_rebirth_end": SubResource("Sub_13"),
 &"searing_cut_hit": SubResource("Sub_7"),
