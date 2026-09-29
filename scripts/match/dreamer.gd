@@ -193,6 +193,9 @@ func _deposit_one(manager: MatchManager, hero: Hero, carrier: MoteCarrier, visit
 	var value: int = taken.value
 	var rules := get_rules()
 	var delivered := hero.team != team
+	var ledger := MoteLedger.find(get_tree())
+	if ledger != null:
+		ledger.record_deposit(taken.get("source", &""), value, delivered)
 	visit.index += 1
 	visit.total += value
 	var gold := value * (rules.deliver_gold_per_value if delivered else rules.bank_gold_per_value)

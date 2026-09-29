@@ -36,6 +36,7 @@ func _run() -> void:
 	await _test_team_filter()
 	await _test_ultimate_charge_gate()
 	await _test_item_hooks()
+	await _test_temp_items()
 	_test_validation()
 	await _test_scaffold()
 
@@ -419,6 +420,74 @@ func _test_item_hooks() -> void:
 	await _frames(1)
 	_check("remove_ability empties it again", tester.get_ability(&"item") == null
 		and tester.ability_controller.abilities.size() == count and not is_instance_valid(extra), "")
+	tester.queue_free()
+	await _frames(1)
+
+
+# Black Market buffs (TempItems / TempEffect) and the cleanse they rely on. The
+# market's own rules are checked in tools/match/map_events_test.
+func _test_temp_items() -> void:
+	var tester: Hero = load("res://tools/heroes/ranged_test/ranged_test_hero.tscn").instantiate()
+	tester.team = &"a"
+	tester.position = Vector2(0, -900)
+	add_child(tester)
+	await _frames(2)
+	var status := tester.status_component
+
+	var slow := StatusEffect.new()
+	slow.id = &"t_slow"
+	slow.stat_multipliers = {StatusEffect.MOVE_SPEED: 0.6}
+	var stun := StatusEffect.new()
+	stun.id = &"t_stun"
+	stun.stuns = true
+	var burn := StatusEffect.new()
+	burn.id = &"t_burn"
+	burn.tick_damage = ScalingValue.new()
+	var amp := StatusEffect.new()
+	amp.id = &"t_amp"
+	amp.stat_multipliers = {StatusEffect.DAMAGE_TAKEN: 1.3}
+	var haste := StatusEffect.new()
+	haste.id = &"t_haste"
+	haste.stat_multipliers = {StatusEffect.MOVE_SPEED: 1.3, StatusEffect.MOTE_PICKUP_RADIUS: 2.0}
+	var drawback := StatusEffect.new()
+	drawback.id = &"t_drawback"
+	drawback.stat_modifiers = [StatModifier.make(StatBlock.HEALTH, 0.0, -0.3)]
+	drawback.cleansable = false
+	_check("is_debuff: slow, stun, DoT, vulnerability", slow.is_debuff() and stun.is_debuff() and burn.is_debuff() and amp.is_debuff(), "")
+	_check("is_debuff: not a haste, not an opted-out drawback", not haste.is_debuff() and not drawback.is_debuff(), "")
+	_check("the -HP modifier is a debuff unless opted out", not drawback.is_debuff() and (func():
+		drawback.cleansable = true
+		var result := drawback.is_debuff()
+		drawback.cleansable = false
+		return result).call(), "")
+	for effect in [slow, stun, amp, haste, drawback]:
+		status.apply(effect, tester, Vector2.ZERO, 1.0, 30.0)
+	var cleansed := status.cleanse()
+	_check("cleanse ends the harmful ones only", cleansed == 3 and not status.has_status(&"t_slow")
+		and not status.has_status(&"t_stun") and not status.has_status(&"t_amp"), "%d" % cleansed)
+	_check("buffs and the opted-out drawback stay", status.has_status(&"t_haste") and status.has_status(&"t_drawback"), "")
+	_check("mote_pickup_radius reads as a multiplier", is_equal_approx(status.get_multiplier(StatusEffect.MOTE_PICKUP_RADIUS), 2.0), "")
+	status.clear()
+
+	var item := BlackMarketItem.new()
+	item.id = &"t_item"
+	item.status = haste
+	var temp := TempItems.ensure_on(tester)
+	_check("ensure_on returns the same component", TempItems.ensure_on(tester) == temp, "")
+	var effect := temp.grant(item, 0.4)
+	_check("grant runs the item's status", effect != null and temp.has_item(&"t_item") and status.has_status(&"t_haste"), "")
+	await _physics_frames(15)
+	_check("still running before the timer", temp.has_item(&"t_item"), "")
+	await _physics_frames(15)
+	_check("ends with the timer, status and all", not temp.has_item(&"t_item") and not status.has_status(&"t_haste"), "")
+	temp.grant(item, 30.0)
+	tester.health_component.kill()
+	await _physics_frames(2)
+	_check("death ends it", not temp.has_item(&"t_item") and not status.has_status(&"t_haste"), "")
+	var problems := item.validate()
+	_check("a data-only item validates", problems.is_empty(), str(problems))
+	item.status = null
+	_check("an item that does nothing is flagged", not item.validate().is_empty(), "")
 	tester.queue_free()
 	await _frames(1)
 

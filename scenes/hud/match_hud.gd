@@ -45,6 +45,7 @@ class_name MatchHud
 var match_manager: MatchManager
 var announcer: Announcer
 var shop_panel: ShopPanel
+var events_hud: MapEventsHud
 
 var _clock_label: Label
 var _state_label: Label
@@ -90,6 +91,10 @@ func _bind() -> void:
 	shop_panel.name = "ShopPanel"
 	add_child(shop_panel)
 	shop_panel.bind(match_manager)
+	events_hud = MapEventsHud.new()
+	events_hud.name = "MapEventsHud"
+	add_child(events_hud)
+	events_hud.bind(match_manager)
 	for slot_team in [[wake_slot_a, &"a", true], [wake_slot_b, &"b", false]]:
 		var meter := WakeMeter.new()
 		meter.name = "WakeMeter"

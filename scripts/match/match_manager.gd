@@ -59,6 +59,8 @@ const REASON_DEBUG := &"debug"
 const REASON_SHOP := &"shop"
 ## A slain neutral camp or the Nightmare.
 const REASON_OBJECTIVE := &"objective"
+## Gold paid at the Black Market.
+const REASON_MARKET := &"black_market"
 
 ## Empty = a private copy of MatchRules.current(), so the debug panel's live
 ## edits never touch the .tres.
@@ -66,6 +68,11 @@ const REASON_OBJECTIVE := &"objective"
 ## Start the warmup countdown on _ready. Tests turn it off and call
 ## start_warmup() / start_playing() themselves.
 @export var auto_start: bool = true
+## The match's seed. Everything random that must agree between machines (the
+## map events' schedule and places) derives from it through make_rng() /
+## seeded_int(). 0 = a fresh random seed at _ready. Set it (before _ready, or
+## with set_match_seed) to replay a match's events.
+@export var match_seed: int = 0
 
 var state: State = State.WARMUP
 ## Seconds since PLAYING began (0 during warmup).
@@ -128,6 +135,9 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	if rules == null:
 		rules = MatchRules.current().duplicate()
+		# The map events' numbers are a private copy too (F1 edits never touch the .tres).
+		if rules.map_events != null:
+			rules.map_events = rules.map_events.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	if get_node_or_null(^"MoteDirector") == null:
 		var director := MoteDirector.new()
 		director.name = "MoteDirector"
@@ -136,6 +146,14 @@ func _ready() -> void:
 		var objectives := ObjectiveDirector.new()
 		objectives.name = "ObjectiveDirector"
 		add_child(objectives)
+	if match_seed == 0:
+		match_seed = int(Time.get_ticks_usec() ^ (randi() << 8)) & 0x7fffffff
+		if match_seed == 0:
+			match_seed = 1
+	if get_node_or_null(^"MapEvents") == null:
+		var events := MapEvents.new()
+		events.name = "MapEvents"
+		add_child(events)
 	if get_node_or_null(^"MatchMusic") == null:
 		var music := MatchMusic.new()
 		music.name = "MatchMusic"
@@ -159,6 +177,28 @@ func _register_all() -> void:
 
 func get_rules() -> MatchRules:
 	return rules if rules != null else MatchRules.current()
+
+
+## A generator for one purpose ("market", "island" ...), seeded from the match
+## seed: two machines with the same match_seed draw the same numbers.
+func make_rng(purpose: String) -> RandomNumberGenerator:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%d/%s" % [match_seed, purpose])
+	return rng
+
+
+## The `index`-th number of the stream (purpose, index): a pure function of the
+## match seed, so a schedule can be read at any point (after a clock jump)
+## without replaying the draws before it.
+func seeded_int(purpose: String, index: int) -> int:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%d/%s/%d" % [match_seed, purpose, index])
+	return rng.randi()
+
+
+func set_match_seed(value: int) -> void:
+	match_seed = maxi(value, 1)
+	get_tree().call_group(&"seeded_systems", &"on_match_seed_changed")
 
 
 # ---------------------------------------------------------------------------

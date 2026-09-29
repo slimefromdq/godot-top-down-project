@@ -317,6 +317,65 @@ def check_objectives(m, grid):
     return ok
 
 
+EVENT_MARKET_CLEARANCE = 380     # the stall (and its reach ring) needs open ground
+EVENT_PORTAL_CLEARANCE = 130
+EVENT_PORTAL_CAMP_DISTANCE = 450
+EVENT_PORTAL_MOTE_DISTANCE = 250
+EVENT_PORTAL_DOOR_DISTANCE = 1500
+EVENT_MIN_PORTALS = 6
+
+
+def check_events(m, grid):
+    """Black Market spots and Island portal spots: mirrored, reachable on
+    foot, clear of cover; portals also off camps, Mote points and spawn doors,
+    and there are enough that the same one is never forced twice."""
+    print("== Map events ==")
+    ok = True
+    market = [(sp["x"], sp["y"]) for sp in m["blackmarket"]]
+    portals = [(sp["x"], sp["y"]) for sp in m["island_portals"]]
+    print(f"  {len(market)} Black Market spots, {len(portals)} Island portal spots")
+    left = [p for p in market if p[0] < 0]
+    right = [p for p in market if p[0] > 0]
+    if not left or not right:
+        print("  the Black Market needs a spot on BOTH the far left and far right")
+        ok = False
+    for p in _mirrored(market) + _mirrored(portals):
+        print(f"  NOT MIRRORED: {p}")
+        ok = False
+    if len(portals) < EVENT_MIN_PORTALS:
+        print(f"  needs at least {EVENT_MIN_PORTALS} portal spots")
+        ok = False
+    doors = []
+    for sign in (1, -1):
+        for door in ((0, Y(3300)), (-1400, Y(3650)), (1400, Y(3650))):
+            doors.append((door[0] * sign, door[1] * sign))
+    camps = [(cp["x"], cp["y"]) for cp in m["camps"]]
+    motes = [(mk["x"], mk["y"]) for mk in m["mote_spawns"]]
+    seen, cell_of = flood(m, grid, (-700, Y(3880)), use_pads=False)
+    for label, points, need in (("Black Market", market, EVENT_MARKET_CLEARANCE),
+                                ("Island portal", portals, EVENT_PORTAL_CLEARANCE)):
+        for p in points:
+            r, c = cell_of(*p)
+            if not seen[r][c]:
+                print(f"  UNREACHABLE ON FOOT: {label} {p}")
+                ok = False
+            d = min(dist_to_poly(p, o["pts"]) for o in walk_blockers(m))
+            if d < need:
+                print(f"  TOO CLOSE TO COVER: {label} {p} ({d:.0f}px, needs {need})")
+                ok = False
+            if min(math.dist(p, door) for door in doors) < EVENT_PORTAL_DOOR_DISTANCE:
+                print(f"  TOO CLOSE TO A SPAWN DOOR: {label} {p}")
+                ok = False
+    for p in portals:
+        if min(math.dist(p, c) for c in camps) < EVENT_PORTAL_CAMP_DISTANCE:
+            print(f"  PORTAL TOO CLOSE TO A CAMP: {p}")
+            ok = False
+        if min(math.dist(p, q) for q in motes) < EVENT_PORTAL_MOTE_DISTANCE:
+            print(f"  PORTAL TOO CLOSE TO A MOTE POINT: {p}")
+            ok = False
+    return ok
+
+
 PIECE_CLEARANCE = 120        # room to walk around a piece and shoot it
 STAIR_CLEARANCE = 400        # pads and flowers stay this far from any stairwell
 
@@ -863,6 +922,7 @@ def main():
     ok &= check_motes(m, grid)
     ok &= check_dreamers(m)
     ok &= check_objectives(m, grid)
+    ok &= check_events(m, grid)
     ok &= check_pieces(m, grid)
     ok &= check_walking(m, grid, probes)
     ok &= check_base_routes(m, grid)

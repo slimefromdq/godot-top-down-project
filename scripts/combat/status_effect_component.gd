@@ -196,6 +196,20 @@ func clear() -> void:
 	_clearing = false
 
 
+## End every harmful status (StatusEffect.is_debuff): stuns, slows, damage over
+## time, vulnerability. Buffs stay. Like clear(), it grants no Resolve.
+## Returns how many ended.
+func cleanse() -> int:
+	var count := 0
+	_clearing = true
+	for entry in _active.values().duplicate():
+		if entry.effect.is_debuff():
+			_end(entry, REASON_REMOVED)
+			count += 1
+	_clearing = false
+	return count
+
+
 # --- Resolve -----------------------------------------------------------------
 
 # True while new hard CC on this actor is shortened.

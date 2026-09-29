@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/match/neutral_monster.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/events/wanderer.gd" id="2_wanderer"]
+
+[node name="Wanderer" instance=ExtResource("1_base")]
+script = ExtResource("2_wanderer")

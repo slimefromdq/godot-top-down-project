@@ -55,6 +55,9 @@ L = {
     # Items and neutral objectives
     "shops": [],        # {x, y, team} one per team, in its spawn room
     "camps": [],        # neutral camps {x, y, kind, name}; kind = a NeutralData file
+    # Map events (docs/MAP_EVENTS.md): real px, not authored (no vertical stretch applied)
+    "blackmarket": [],      # Black Market stall spots on the far left / right edges {x, y}
+    "island_portals": [],   # hidden Mote Island portal spots {x, y}
     # Map pieces (Map Liveliness Plan): breakable cover and Mote geysers
     "pieces": [],       # {x, y, kind, w, h, name, ...}; kind = "breakable" | "geyser" |
                         # "gate" | "hazard" | "travelator" | "flower" (see helpers)
@@ -238,6 +241,18 @@ def camp(x, y, kind, name):
     """A neutral camp (resources/match/neutrals/<kind>.tres). The rotation
     makes its twin, except for a camp on the centre."""
     L["camps"].append({"x": x, "y": Y(y), "kind": kind, "name": name})
+
+
+def blackmarket(x, y):
+    """A Black Market spot on the far left edge, in real px; the rotation
+    makes the right edge's twin. The market opens at one of these."""
+    L["blackmarket"].append({"x": x, "y": y})
+
+
+def island_portal(x, y):
+    """A hidden Mote Island portal spot in a nook, in real px; the rotation
+    makes its twin. One is picked per relocation (see IslandDirector)."""
+    L["island_portals"].append({"x": x, "y": y})
 
 
 def breakable(x, y, w, h, name):
@@ -734,6 +749,21 @@ camp(-4100, 1600, "dream_wisps", "Garden Wisps")
 camp(1500, 1150, "dream_wisps", "Fountain Wisps")
 
 # ==========================================================================
+# MAP EVENTS (docs/MAP_EVENTS.md)
+#   The Black Market opens on the far left or right edge (the rotation makes
+#   the twin, so both teams are equally far). The Island portal hides in nooks: cliff
+#   corners and pockets that few sightlines reach (check.py keeps them clear
+#   of cover, camps and Mote points, reachable on foot, and mirrored; keep
+#   them off bushes, grass and map pieces by eye). Real px.
+# ==========================================================================
+blackmarket(-4650, -650)
+island_portal(-4700, 1600)    # Garden Court corner
+island_portal(-4700, 2600)    # Garden Court, far south
+island_portal(-4700, -2300)   # Upper Terrace corner
+island_portal(-1100, 2500)    # Old Colonnade pocket
+island_portal(2900, -1300)    # Driftfield's outer side
+
+# ==========================================================================
 # MAP PIECES (Map Liveliness Plan, phase 2)
 #   Dream-glass panes that shatter and regrow: one screening the Plaza
 #   approach, one at the Driftfield's inner edge, one on the Glade/Ridge
@@ -856,6 +886,9 @@ def build():
         out["dreamers"].append({**d, "x": -d["x"], "y": -d["y"], "team": _swap(d["team"])})
     for sh in L["shops"]:
         out["shops"].append({**sh, "x": -sh["x"], "y": -sh["y"], "team": _swap(sh["team"])})
+    for key in ("blackmarket", "island_portals"):
+        for spot in L[key]:
+            out[key].append({"x": -spot["x"], "y": -spot["y"]})
     for cp in L["camps"]:
         if cp["x"] == 0 and cp["y"] == 0:
             continue  # the centre is its own twin

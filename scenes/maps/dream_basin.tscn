@@ -3429,6 +3429,44 @@ position = Vector2(-1500, -1380)
 data = ExtResource("16_dream_wisps")
 display_name = "Fountain Wisps"
 
+[node name="EventSpots" type="Node2D" parent="."]
+
+[node name="BlackMarketSpot1" type="Marker2D" parent="EventSpots" groups=["blackmarket_spawn"]]
+position = Vector2(-4650, -650)
+
+[node name="BlackMarketSpot2" type="Marker2D" parent="EventSpots" groups=["blackmarket_spawn"]]
+position = Vector2(4650, 650)
+
+[node name="IslandSpot1" type="Marker2D" parent="EventSpots" groups=["island_portal_spawn"]]
+position = Vector2(-4700, 1600)
+
+[node name="IslandSpot2" type="Marker2D" parent="EventSpots" groups=["island_portal_spawn"]]
+position = Vector2(-4700, 2600)
+
+[node name="IslandSpot3" type="Marker2D" parent="EventSpots" groups=["island_portal_spawn"]]
+position = Vector2(-4700, -2300)
+
+[node name="IslandSpot4" type="Marker2D" parent="EventSpots" groups=["island_portal_spawn"]]
+position = Vector2(-1100, 2500)
+
+[node name="IslandSpot5" type="Marker2D" parent="EventSpots" groups=["island_portal_spawn"]]
+position = Vector2(2900, -1300)
+
+[node name="IslandSpot6" type="Marker2D" parent="EventSpots" groups=["island_portal_spawn"]]
+position = Vector2(4700, -1600)
+
+[node name="IslandSpot7" type="Marker2D" parent="EventSpots" groups=["island_portal_spawn"]]
+position = Vector2(4700, -2600)
+
+[node name="IslandSpot8" type="Marker2D" parent="EventSpots" groups=["island_portal_spawn"]]
+position = Vector2(4700, 2300)
+
+[node name="IslandSpot9" type="Marker2D" parent="EventSpots" groups=["island_portal_spawn"]]
+position = Vector2(1100, -2500)
+
+[node name="IslandSpot10" type="Marker2D" parent="EventSpots" groups=["island_portal_spawn"]]
+position = Vector2(-2900, 1300)
+
 [node name="MapPieces" type="Node2D" parent="."]
 
 [node name="PlazaGlassA" parent="MapPieces" instance=ExtResource("17_breakable_cover")]

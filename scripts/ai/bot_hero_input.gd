@@ -91,6 +91,8 @@ var _attacked_time: float = -INF
 # carriers update at their minimap ping rate.
 var _known_carriers: Dictionary = {}
 var _shop_left: float = 0.0
+# Black Market: no new visit before this bot time (after buying, or failing to).
+var _market_retry_time: float = 0.0
 # The camp being cleared (intent jungle / nightmare), and a neutral that hit us.
 var _camp: NeutralCamp
 var _neutral_attacker: NeutralMonster
@@ -409,6 +411,10 @@ func _choose_goal(manager: MatchManager) -> void:
 	if _wants_shop_trip(manager, carried) and sanctuary != null:
 		_set_goal(&"shop", &"travel", sanctuary.area.get_center())
 		return
+	if _choose_market(manager, health_fraction):
+		return
+	# TODO(bots): the Mote Island. IslandDirector.bot_can_use_island() is the
+	# hook (it says false for now), so bots ignore the secret portal.
 	if _choose_nightmare(manager, health_fraction):
 		return
 	if _choose_job():
@@ -521,6 +527,60 @@ func try_shopping() -> Array[ItemData]:
 	if inventory == null or plan == null or plan.item_build.is_empty() or not inventory.can_shop():
 		return []
 	return inventory.buy_from_build(plan.item_build)
+
+
+# The Black Market: a bot goes only when the stall is open and reachable in
+# time, it is healthy and out of a fight, and it can afford something (carried
+# Motes AND gold). At the stall it buys the affordable item its priority list
+# ranks first (MapEventRules items' bot_priority), then goes back to work.
+func _choose_market(manager: MatchManager, health_fraction: float) -> bool:
+	var events := MapEvents.find(get_tree())
+	if events == null or manager == null or _time < _market_retry_time:
+		return false
+	var rules := events.get_rules()
+	var director := events.market
+	if not rules.bot_market_enabled or not director.is_open():
+		return false
+	if target != null or _time - _attacked_time <= BotRules.current().self_defence_time \
+			or health_fraction < rules.bot_market_min_health:
+		return false
+	var wanted := _market_pick(director, rules)
+	if wanted == null:
+		return false
+	var stall := director.market
+	var distance := hero.global_position.distance_to(stall.global_position)
+	var speed := maxf(hero.movement_component.get_move_speed(), 1.0)
+	if distance > rules.bot_market_max_distance or director.get_time_left() < distance / speed + 4.0:
+		return false
+	if stall.can_interact(hero):
+		for i in rules.blackmarket_items.size():
+			var item := _market_pick(director, rules)
+			if item == null or director.purchase(hero, item) != "":
+				break
+		_market_retry_time = _time + rules.bot_market_retry_time
+		return false    # done shopping: back to the usual work
+	_set_goal(&"market", &"travel", stall.global_position)
+	return true
+
+
+# The affordable, not-yet-bought item with the highest bot_priority (null = none).
+func _market_pick(director: BlackMarketDirector, rules: MapEventRules) -> BlackMarketItem:
+	var best: BlackMarketItem = null
+	for item in rules.blackmarket_items:
+		if director.bought_count(hero, item) >= rules.blackmarket_max_per_item:
+			continue
+		var carrier := MoteCarrier.find_on(hero)
+		if carrier == null or carrier.get_spendable_count() < item.mote_cost \
+				or _gold_of(hero) + 0.001 < item.gold_cost:
+			continue
+		if best == null or item.bot_priority > best.bot_priority:
+			best = item
+	return best
+
+
+func _gold_of(who: Hero) -> float:
+	var manager := MatchManager.find(get_tree())
+	return manager.get_gold(who) if manager != null else 0.0
 
 
 # Worth walking home for: enough gold, the next item affordable, nothing

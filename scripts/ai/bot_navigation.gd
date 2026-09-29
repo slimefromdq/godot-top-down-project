@@ -39,6 +39,11 @@ var _query := PhysicsShapeQueryParameters2D.new()
 
 
 static func for_actor(actor: Hero) -> BotNavigation:
+	return for_node(actor)
+
+
+## The map's graph for any node in the tree (the Wanderer plans its escape on it).
+static func for_node(actor: Node) -> BotNavigation:
 	if actor == null or not actor.is_inside_tree():
 		return null
 	var current_map := actor.get_tree().get_first_node_in_group(&"game_map") as GameMap
@@ -64,6 +69,31 @@ func path(from: Vector2, to: Vector2) -> PackedVector2Array:
 	if not result.is_empty() and _edge_clear(result[result.size() - 1], to):
 		result.append(to)
 	return result
+
+
+## How many graph points lie within `hops` steps of `point`: a dead end or a
+## narrow pocket has few, an open lane or a plaza has many. 0 = off the graph.
+func openness_at(point: Vector2, hops: int) -> int:
+	var start := _nearest(point)
+	if start == 0:
+		return 0
+	var seen := {start: true}
+	var frontier: Array[int] = [start]
+	for _hop in hops:
+		var next: Array[int] = []
+		for id in frontier:
+			for neighbour in graph.get_point_connections(id):
+				if not seen.has(neighbour) and not graph.is_point_disabled(neighbour):
+					seen[neighbour] = true
+					next.append(neighbour)
+		frontier = next
+	return seen.size()
+
+
+## The graph point nearest to `point` (Vector2.INF if none is close).
+func nearest_position(point: Vector2) -> Vector2:
+	var id := _nearest(point)
+	return graph.get_point_position(id) if id != 0 else Vector2.INF
 
 
 func _build() -> void:

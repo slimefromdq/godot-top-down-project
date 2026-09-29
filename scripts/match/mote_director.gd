@@ -172,7 +172,9 @@ func get_next_zone_time() -> float:
 ## A new Mote at `at`, worth its data's value times the late-match multiplier.
 func spawn_mote(at: Vector2, dream: bool = false, from: Node = null) -> Mote:
 	var data := dream_data if dream else small_data
-	var mote := Mote.spawn(self, data, at, roundi(data.value * get_value_multiplier()))
+	var source := MoteLedger.DREAM if dream else (MoteLedger.ZONE if from is DreamZone else MoteLedger.TRICKLE)
+	var mote := Mote.spawn(self, data, at, roundi(data.value * get_value_multiplier()),
+		false, null, null, -1.0, source)
 	mote.origin = from
 	return mote
 
@@ -193,8 +195,8 @@ func _tick_trickle(delta: float) -> void:
 	if _trickle_left > 0.0:
 		return
 	_trickle_left = rules.trickle_interval
-	if get_loose_motes().size() >= rules.max_loose_motes:
-		return
+	if get_loose_motes().filter(func(m: Mote): return m.source != MoteLedger.ISLAND).size() >= rules.max_loose_motes:
+		return    # (the sealed Island cache doesn't count against the map)
 	var point := pick_trickle_point()
 	if point != null:
 		spawn_mote(point.global_position, false, point)

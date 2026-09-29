@@ -180,7 +180,7 @@ func burst_motes(at: Vector2, data: NeutralData, team: StringName) -> Array[Mote
 	for i in data.mote_count:
 		var dir := Vector2.from_angle(start + TAU * i / data.mote_count)
 		var distance := data.mote_burst_radius * (0.6 + 0.4 * ((i * 7) % 5) / 4.0)
-		var mote := Mote.spawn(self, mote_data, at + dir * distance, value, true, at)
+		var mote := Mote.spawn(self, mote_data, at + dir * distance, value, true, at, null, -1.0, MoteLedger.NEUTRAL)
 		mote.claim(team, data.mote_claim_time)
 		motes.append(mote)
 	return motes
